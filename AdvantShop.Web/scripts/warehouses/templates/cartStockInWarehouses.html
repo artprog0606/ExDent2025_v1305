@@ -1,0 +1,60 @@
+﻿<div data-ng-switch="cartStock.countOutStock > 0" class="cart-stock-in-warehouses">
+    <div data-ng-switch-when="true">
+        <a
+            href=""
+            class="cart-stock-in-warehouses__out-stock-link"
+            data-ng-click="cartStock.showItems = !cartStock.showItems"
+            data-ng-switch="cartStock.remainderCountOutStockOf100 > 10 && cartStock.remainderCountOutStockOf100 < 20">
+            <div data-ng-switch-when="true">{{cartStock.countOutStock}} {{'Js.CartStockInWarehouses.NotAvailable5' | translate}}</div>
+            <div data-ng-switch-when="false">
+                <div data-ng-switch="cartStock.remainderCountOutStockOf10 > 1 && cartStock.remainderCountOutStockOf10 < 5">
+                    <span data-ng-switch-when="true">{{cartStock.countOutStock}} {{'Js.CartStockInWarehouses.NotAvailable2' | translate}}</span>
+                    <span data-ng-switch-when="false">
+                        <span data-ng-if="cartStock.remainderCountOutStockOf10 === 1">
+                            {{cartStock.countOutStock}} {{'Js.CartStockInWarehouses.NotAvailable1' | translate}}
+                        </span>
+                        <span data-ng-if="cartStock.remainderCountOutStockOf10 !== 1">
+                            {{cartStock.countOutStock}} {{'Js.CartStockInWarehouses.NotAvailable5' | translate}}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </a>
+        <div class="cart-stock-list cart-stock-in-warehouses__list" data-ng-show="cartStock.showItems">
+            <!--            <div class="cart-stock-list__head">-->
+            <!--                <div class="cart-stock-list__row">-->
+            <!--                    <div class="cart-stock-list__header">В наличии:</div>-->
+            <!--                    <div class="cart-stock-list__header">Цена:</div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <div class="cart-stock-list__body">
+                <!-- TODO вывести цену
+                <div class="cart-stock-list__row">
+                    <div class="cart-stock-list__data">Шорты</div>
+                    <div class="cart-stock-list__data">2525</div>
+                </div>
+                <div class="cart-stock-list__row">
+                    <div class="cart-stock-list__data">Шорты</div>
+                    <div class="cart-stock-list__data">1401</div>
+                </div>
+                <div class="cart-stock-list__row cart-stock-list__row--out-stock">
+                    <div class="cart-stock-list__data">Шорты</div>
+                    <div class="cart-stock-list__data">Нет в наличии</div>
+                </div>
+                <div class="cart-stock-list__row cart-stock-list__row--out-stock">
+                    <div class="cart-stock-list__data">Шорты</div>
+                    <div class="cart-stock-list__data">Нет в наличии</div>
+                </div>-->
+
+                <!--                ng-repeat="item in cartStock.stockInWarehouses | filter:{ OutStock: true } track by item.Id"-->
+                <div class="cart-stock-list__row" ng-repeat="item in cartStock.stockInWarehouses | filter:{OutStock: true} track by item.Id">
+                    <div class="cart-stock-list__data" data-ng-bind="item.Name"></div>
+                    <div
+                        class="cart-stock-list__data"
+                        data-ng-class="{'cart-stock-list__data--out-stock': item.OutStock}"
+                        data-ng-bind="item.AvailableMessage"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

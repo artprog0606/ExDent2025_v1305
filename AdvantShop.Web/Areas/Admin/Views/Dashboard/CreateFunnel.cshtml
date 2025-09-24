@@ -1,0 +1,212 @@
+﻿@model AdvantShop.Core.Services.Landing.Templates.LpTemplate
+@using AdvantShop.Core.Services.SalesChannels;
+@{
+    Html.AddAsset("createSite");
+}
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@*@{
+
+        var isFirstTimeCreateStore = SalesChannelService.IsFirstTimeCreateStore();
+        if (isFirstTimeCreateStore)
+        {
+            Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_FirstTimeCreateLayout.cshtml";
+        }
+
+    }*@
+<div class="create__site-page create__site-page--create-funnel">
+
+
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Dashboard.CreateFunnel.Back").ToString(),
+            Url = Url.AbsoluteActionUrl("CreateSite") + "?tabs=" + Model.SiteCategory
+        };
+
+        headerModel.Title = isMobile ? T("Admin.Dashboard.CreateFunnel.FunnelCreation").ToString() : Model.Name;
+    }
+
+    @Html.Header(headerModel)
+
+    <div class="balance__padding-page balance__padding-page--m-t-n ">
+        <div class="create__sites-balance__block create__sites-balance__block--max-width">
+            @if (isMobile)
+            {
+                <h2>@Model.Name</h2>
+            }
+            <div class="m-t p-t-xs">
+                <div class="create__sites-block-content">
+                    <div class="create__sites-left-block">
+
+                        <div class="m-b-md">
+                            <div class="bold fs-md p-b-xs create__sites-description-title">
+                                @T("Admin.Dashboard.CreateFunnel.Description")
+                            </div>
+                            <div class="create__sites-description">
+                                @Html.Raw(Model.Description)
+                            </div>
+                        </div>
+
+                        @if (Model.Intent.IsNotEmpty())
+                        {
+                            <div class="m-b-md">
+                                <div class="bold fs-md p-b-xs create__sites-description-title">
+                                    @T("Admin.Dashboard.CreateFunnel.Goals")
+                                </div>
+                                <div class="create__sites-description">
+                                    @Html.Raw(Model.Intent)
+                                </div>
+                            </div>
+                        }
+
+
+                        @if (Model.Advice.IsNotEmpty())
+                        {
+                            <div class="m-b-md">
+                                <div class="bold fs-md p-b-xs create__sites-description-title">
+                                    @T("Admin.Dashboard.CreateFunnel.Advice")
+                                </div>
+                                <div class="create__sites-description">
+                                    @Html.Raw(Model.Advice)
+                                </div>
+                            </div>
+                        }
+
+                        <div class="m-t-md @(!isMobile ? "" : "flex between-xs")">
+                            @if (Model.Video.IsNotEmpty())
+                            {
+                                <span class="inline @(!isMobile ? "p-r-md" : "create__sites-btn-wrap text-center")">
+                                    <a magnific-popup="" magnific-popup-options="{type: 'iframe'}" href="@Model.Video" class="">@T("Admin.Dashboard.CreateFunnel.VideoReviewFunnel")</a>
+                                </span>
+                            }
+                            @if (Model.Scheme.IsNotEmpty())
+                            {
+                                <span class="inline @(!isMobile ? "" : "create__sites-btn-wrap text-center")">
+                                    <a magnific-popup="" href="@Model.Scheme">@T("Admin.Dashboard.CreateFunnel.FunnelDiagram")</a>
+                                </span>
+                            }
+                        </div>
+                        @if (!isMobile && Model.Screens != null && Model.Screens.Count > 0 && Model.Screens.Select(x => x.Title).Where(x => !string.IsNullOrEmpty(x)).Count() != 0)
+                        {
+                            <div class="pages-site">
+                                <h3 class="m-t-md m-b-xs">@T("Admin.Dashboard.CreateFunnel.FunnelPages")</h3>
+
+                                @for (var i = 0; i < Model.Screens.Count; i++)
+                                {
+                                    <a class="screenshot-item block p-t-xs p-b-xs text-decoration-none" ng-class="{'active': createSite.activePageLanding == @i, '': createSite.activePageLanding != @i}" ng-click="createSite.selectPageLanding(@i , @Model.Screens.Count)">
+                                        @(i + 1). @Model.Screens[i].Title
+                                    </a>
+
+                                    @*<div class="screenshot-item flex middle-xs" ng-class="{'active': createSite.activePageLanding == @i, '': createSite.activePageLanding != @i}">
+                                            @(i + 1). <a href="" ng-click="createSite.selectPageLanding(@i , @Model.Screens.Count)" class="flex-grow">@Model.Screens[i].Title</a>
+                                        </div>*@
+                                }
+                            </div>
+                        }
+
+                        <div class="m-t-md flex middle-xs @(!isMobile ? "" : "between-xs")">
+                            <ui-modal-trigger class="create__sites-btn-wrap" data-controller="'ModalAddLandingSiteCtrl'" controller-as="ctrl" size="lg"
+                                              template-url="@Html.GetAssetPath("addLandingSite.html")"
+                                              data-resolve="{data: {lpType: '@Model.TemplateType', template: '@Model.Key', 'showStepZero': @(Model.TemplateType.ToString() == "ProductCrossSellDownSell" ? "true" : "false")}}">
+                                <button class="btn btn-md m-r-xs btn-success @(!isMobile ? "" : "btn--full-width")" data-e2e="funnelCreateBtn">
+                                    @T("Admin.Dashboard.CreateFunnel.CreateFunnel")
+                                </button>
+                            </ui-modal-trigger>
+                            <div class="create__sites-btn-wrap">
+                                <a href="@Model.DemoLink" target="_blank" class="btn btn-default btn-md @(!isMobile ? " m-l-xs" : "btn--full-width")" data-e2e="funnelDemoLink">@T("Admin.Dashboard.CreateFunnel.OnlineDemo")</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="create__sites-right-block" ng-init="createSite.imgUrl = '@Model.Picture'">
+                        @if (Model.Screens != null && Model.Screens.Count > 1)
+                        {
+                            <div class="@(isMobile ? "" : "col-xs first-xs")">
+                                <div class="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-list create__sites-carousel-list @(!isMobile ? "ng-cloak" : "")"
+                                             data-carousel
+                                             data-stretch="true"
+                                             data-dots="true"
+                                             data-dots-item-class="create-sites-carousel__dots-item"
+                                             data-nav="true"
+                                             @Html.Raw(!isMobile ? "nav-position=\"outside\"" : "")
+                                             data-prev-icon="carousel-main-prev-custom"
+                                             data-next-icon="carousel-main-next-custom"
+                                             data-responive="{768 : {dots : false, slideToShow:1}}"
+                                             data-speed="500"
+                                             data-auto=" true"
+                                             data-auto-pause="99999999" @* аля бесконечная карусель без авто *@
+                                             data-visible-max="1"
+                                             data-init-fn="createSite.initCarousel(carousel)">
+
+                                            @for (var i = 0; i < Model.Screens.Count; i++)
+                                            {
+                                                <div class="carousel-item create__sites-carousel-item">
+                                                    <div class="create__sites-carousel-item-inner">
+                                                        <div class="carousel-main-item-title create__site-title @(!isMobile ? "bold": "")">
+                                                            @Model.Screens[i].Title
+                                                        </div>
+                                                        <div class="create__site-img-wrap">
+                                                            <div class="browser-top-menu-block">
+                                                                <div class="browser-top-menu-oval browser-top-menu-oval--red"></div>
+                                                                <div class="browser-top-menu-oval browser-top-menu-oval--orange"></div>
+                                                                <div class="browser-top-menu-oval browser-top-menu-oval--green"></div>
+                                                            </div>
+                                                            <img src="@(i == 0 ? Model.Screens[i].Url : string.Empty)" ng-src="@(i > 0 ? Model.Screens[i].Url : string.Empty)" />
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (!isMobile) { 
+                                    <div class="carousel-nav">
+                                        <button class="carousel-nav-prev fa fa-angle-left" ng-click="createSite.buttonCarousel(createSite.activePageLanding - 1, @Model.Screens.Count)"></button>
+                                        <button class="carousel-nav-next fa fa-angle-right " ng-click="createSite.buttonCarousel(createSite.activePageLanding + 1, @Model.Screens.Count)"></button>
+                                    </div>
+                                    }
+                                    @if (isMobile)
+                                    {
+                                        <ul class="carousel-dots ">
+                                            @for (var i = 0; i < Model.Screens.Count; i++)
+                                            {
+                                                <li class="carousel-dots-item create-sites-carousel__dots-item" data-index="@i"><i class="carousel-dots-item-inner cs-bg-i-1"></i></li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (Model.Screens != null && Model.Screens.Count == 1)
+                        {
+                            <div class="create__site-img-wrap">
+                                <div class="browser-top-menu-block">
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--red"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--orange"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--green"></div>
+                                </div>
+                                <img ng-src=" @(Model.Screens[0].Url)" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="create__site-img-wrap">
+                                <div class="browser-top-menu-block">
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--red"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--orange"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--green"></div>
+                                </div>
+                                <img ng-src="{{createSite.imgUrl}}" />
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

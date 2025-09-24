@@ -1,0 +1,70 @@
+﻿@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<ServicesGroupModel>("items");
+    var colorScheme = Model.Block.TryGetSetting("color_scheme");
+    var styleCustom = Model.Block.TryGetSetting("style_custom");
+    var bg = styleCustom[colorScheme].background_color_default;
+    string bgActive = styleCustom[colorScheme].background_color_active;
+
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        <div class="row between-xs">
+            <div class="col-xs-12" data-ng-init="accordionItems@(Model.Block.Id) = []">
+                <div class="lp-accordion lp-accordion-theme--list" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        <input type="checkbox" class="lp-accordion__state" @((items.Count == 1 && Model.Block.TryGetSetting("first_tab_open")) || (Model.Block.TryGetSetting("first_tab_open") && i == 0) ? "data-ng-init=accordionItems" + Model.Block.Id + "[" + @i + "]=true" : "") id="accordion_@(i)_@(Model.Block.Id)_@(Model.Block.LandingId)" data-ng-model="accordionItems@(Model.Block.Id)[@i]" />
+                        <div class="lp-accordion__item color-scheme__bg--alt" data-ng-style="{'background-color': !accordionItems@(Model.Block.Id)[@i] ? '' : '@bgActive' }">
+                            <label class="lp-accordion__trigger lp-font-size--middle" for="accordion_@(i)_@(Model.Block.Id)_@(Model.Block.LandingId)">
+                                @Html.Raw(items[i].Header)
+                            </label>
+                            <div class="lp-accordion__content  lp-font-size--small">
+                                <ol class="lp-accordion__content-list">
+                                    @if (items[i].ContentItems != null)
+                                    {
+                                        for (var j = 0; j < items[i].ContentItems.Count; j++)
+                                        {
+                                            <li class="lp-accordion__content-divider color-scheme__divider"></li>
+                                            <li class="lp-accordion__content-item">
+                                                <div class="lp-block-services-accordion__row-info">
+                                                    <div @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].description")>
+                                                        @if (items[i].ContentItems[j].Description != null)
+                                                        {
+                                                            @Html.Raw(items[i].ContentItems[j].Description)
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.Raw(items[i].ContentItems[j].Text)
+                                                        }
+                                                    </div>
+                                                    @if (items[i].ContentItems[j].ShowPrice)
+                                                    {
+                                                        <div class="lp-block-services-accordion__price" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].price")>
+                                                            @Html.Raw(items[i].ContentItems[j].Price)
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                </ol>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ServicesBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

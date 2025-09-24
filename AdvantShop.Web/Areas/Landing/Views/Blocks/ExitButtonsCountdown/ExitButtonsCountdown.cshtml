@@ -1,0 +1,83 @@
+﻿@model BlockModel
+
+@{
+    var modalId = "modal_exit_" + Model.Block.Id;
+    var ouibounce = Model.Block.TryGetSetting<OuibounceModel>("ouibounce");
+    var callback = "modalOuibounce.modalOuibounceClose()";
+    var date = Model.Block.TryGetSetting("date");
+    string countdownDate = "";
+    int loopMinutes = 0;
+    bool isLoop = date.selectType.value == "loop";
+
+    if (isLoop)
+    {
+
+        loopMinutes = (int)Model.Block.TryGetSetting("date").end_date;
+    }
+    else
+    {
+        countdownDate = date.end_date.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+    }
+}
+<div class="ng-hide"
+     id="@modalId"
+     modal-control
+     modal-class="color-scheme--light lp-block-exit-modal lp-block-exit-popup-buttons-countdown-modal"
+     modal-ouibounce
+     modal-ouibounce-disabled="@Model.Inplace.ToLowerString()"
+     modal-ouibounce-options="{delay: @(ouibounce.Delay)}">
+    <div class="modal-content">
+
+        <div class="row text-center">
+            <article class="col-xs-12 col-sm">
+                <header class="lp-block-exit-popup-buttons-countdown__header">
+                    @Html.BlockHeader(Model)
+                </header>
+                <div class="lp-block-exit-popup-buttons-countdown__widget">
+                    <div data-ng-if="modal.isOpen" data-on-finish="@(Model.Inplace ? "" : callback)" countdown @Html.Raw(isLoop == true ? "is-loop=\"" + loopMinutes + "\"" : "end-time=\"'" + countdownDate + "'\"")></div>
+                </div>
+                <footer class="lp-block-exit-popup-buttons-countdown__footer">
+                    <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ExitBtnRow">
+                        <div class="col-xs-12">
+                            @if (Model.Block.TryGetValuableSetting<bool>("show_button") == true)
+                            {
+                                var button = Model.Block.TryGetSetting<LpButton>("button");
+
+                                button.Callback = callback;
+
+                                <div>
+                                    @Html.Button(Model.Block, button)
+                                </div>
+                            }
+                            @if (Model.Block.TryGetValuableSetting<bool>("show_button2") == true)
+                            {
+                                var button = Model.Block.TryGetSetting<LpButton>("button2");
+
+                                button.Callback = callback;
+
+                                <div class="m-t-sm">
+                                    @Html.Button(Model.Block, button)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </footer>
+            </article>
+        </div>
+    </div>
+</div>
+
+@if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    <div class="ng-cloak lp-block-products-view__empty--admin block-padding-top--35 block-padding-bottom--35">
+        <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                            data-block-id="@Model.Block.Id"
+                            data-name="@Model.Block.Name"
+                            data-type="@Model.Block.Type"
+                            data-is-show-options="::true"
+                            data-template-custom="true">
+            <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock('tabFormFront')">Настроить блок Exit popup</button>
+            <button type="button" class="lp-btn lp-btn--secondary" modal-open="@modalId">Показать</button>
+        </blocks-constructor>
+    </div>
+}

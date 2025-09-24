@@ -1,0 +1,597 @@
+﻿@using AdvantShop.Core.Services.Auth
+@using AdvantShop.Core.Services.Catalog
+@using AdvantShop.Customers
+@using AdvantShop.ViewModel.Common
+@using AdvantShop.ViewModel.Sms
+@model AdvantShop.ViewModel.Checkout.CheckoutUserViewModel
+@{
+    var useFullNameSuggestions = Model.SuggestionsModule != null && Model.SuggestionsModule.SuggestFullNameInClient;
+    var useAddressSuggestions = Model.SuggestionsModule != null && Model.SuggestionsModule.SuggestAddressInClient;
+}
+
+@if (!Model.IsLanding)
+{
+    <div class="checkout-usertype">
+        <label class=" flex checkout-usertype-label form-field-input">
+            <input type="checkbox" class="custom-input-native" data-ng-model="checkout.userUnRegType" data-ng-init="checkout.userUnRegType = 'newCustomer'" data-ng-true-value="'oldCustomer'" data-ng-false-value="'newCustomer'" />
+            <span class="custom-input-checkbox shrink-none"></span>
+            <span class="custom-input-text">
+                @(!Model.IsBonusSystemActive
+                    ? T("Checkout.CheckoutUser.AlreadyHaveAccount")
+                    : T("Checkout.CheckoutUser.AlreadyHaveAccountBonusCard"))
+            </span>
+        </label>
+        @if (SettingsOAuth.IsOauthEnabled())
+        {
+            <a href="javascript:void(0)"
+               class="auth-social-link"
+               data-modal-open="modalLoginOpenId">
+                @T("Checkout.CheckoutUser.LogInViaASocialNetwork")
+            </a>
+        }
+    </div>
+}
+else
+{
+    <span data-ng-model="checkout.userUnRegType" data-ng-init="checkout.userUnRegType = 'newCustomer'"></span>
+}
+<div class="row">
+    <div class="col-xs-12 col-md-10 ng-cloak">
+        <div>
+            <div data-ng-if="checkout.userUnRegType !== 'oldCustomer'">
+                <form name="checkoutNewCustomerForm" novalidate="novalidate">
+                    <div data-ng-init="checkout.checkoutNewCustomerForm = checkoutNewCustomerForm">
+                        @if (Model.IsLegalCustomer && Model.IsPhysicalCustomer)
+                        {
+                            <div>
+                                <label class="vertical-interval-xsmall p-r-sm">
+                                    @Html.RadioButtonFor(x => x.Data.User.CustomerType, CustomerType.PhysicalEntity, new
+                                    {
+                                        @class = "custom-input-native",
+                                        data_ng_model = "checkout.customerType",
+                                        data_ng_change = "checkout.saveNewCustomer()"
+                                    })
+                                    <span class="custom-input-radio"></span>
+                                    <span class="custom-input-text">
+                                        Физическое лицо
+                                    </span>
+                                </label>
+                                <label class="vertical-interval-xsmall">
+                                    @Html.RadioButtonFor(x => x.Data.User.CustomerType, CustomerType.LegalEntity, new
+                                    {
+                                        @class = "custom-input-native",
+                                        data_ng_model = "checkout.customerType",
+                                        data_ng_change = "checkout.saveNewCustomer()"
+                                    })
+                                    <span class="custom-input-radio"></span>
+                                    <span class="custom-input-text">
+                                        Юридическое лицо
+                                    </span>
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <span data-ng-model="checkout.customerType" data-ng-init="checkout.customerType = '@(Model.IsPhysicalCustomer ? CustomerType.PhysicalEntity.ToString() : @CustomerType.LegalEntity.ToString())'"></span>
+                        }
+                        @if (SettingsCheckout.IsShowEmail)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredEmail ? "input-required" : "")">@T("Checkout.CheckoutUser.Email")</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="form-field-input vertical-interval-xsmall">
+                                        @*
+                        //pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)",
+                        //pattern = "^(([^\\s])([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@(([^<>()[\\]\\.,;:\\s@\"]+\\.)+[^<>()[\\]\\.,;:\\s@\"]{2,})$",
+                        //pattern = "^(([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$",
+                        //pattern = "^(([^<>()\\[\\]\\.,;:\\s@\"]+ (\\.[^<>()\\[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a - zA - Z\\-0 - 9]+\\.)+[a-zA-Z]{2,}))$",
+                        //pattern = "^(([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$",
+                                        *@
+                                        @Html.TextBoxFor(x => x.Data.User.Email, new
+                                        {
+                                            @class = "input-small",
+                                            type = "text",
+                                            data_ng_required = SettingsCheckout.IsRequiredEmail.ToLowerString(),
+                                            data_ng_model = "checkout.newCustomer.email",
+                                            data_ng_blur = "checkout.saveNewCustomer('email')",
+                                            autocomplete = "email",
+                                            pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)$",
+                                            maxlength = "70"
+                                        })
+                                    </span>
+                                </span>
+                            </div>
+                        }
+                        <div class="row middle-xs form-field-control">
+                            <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                <span class="form-field-name vertical-interval-xsmall input-required">@SettingsCheckout.CustomerFirstNameField</span>
+                            </span>
+                            <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                      data-field="Value" data-autocompleter data-min-length="1"
+                                      data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                      data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                      data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                      data-params="{part: 'FirstName', lastname: checkout.newCustomer.lastname, patronymic: checkout.newCustomer.patronymic}">
+                                    @Html.TextBoxFor(x => x.Data.User.FirstName, new
+                                    {
+                                        @class = "input-small",
+                                        data_ng_model = "checkout.newCustomer.firstname",
+                                        required = "required",
+                                        maxlength = "70",
+                                        data_ng_change = "checkout.saveNewCustomer()",
+                                        data_autocompleter_input = "",
+                                        data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                        autocomplete = useFullNameSuggestions ? "new-password" : "given-name",
+                                        data_autocomplete_debounce = "400",
+                                        data_autocomplete_apply_on_blur = "false"
+                                    })
+                                </span>
+                            </span>
+                        </div>
+
+                        @if (SettingsCheckout.IsShowLastName)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredLastName ? "input-required" : "")">@T("Checkout.CheckoutUser.LastName")</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                          data-field="Value" data-autocompleter data-min-length="1"
+                                          data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                          data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                          data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                          data-params="{part: 'LastName', firstname: checkout.newCustomer.firstname, patronymic: checkout.newCustomer.patronymic}">
+                                        @Html.TextBoxFor(x => x.Data.User.LastName, new
+                                        {
+                                            @class = "input-small",
+                                            data_ng_model = "checkout.newCustomer.lastname",
+                                            data_ng_required = SettingsCheckout.IsRequiredLastName.ToLowerString(),
+                                            maxlength = "70",
+                                            data_ng_change = "checkout.saveNewCustomer()",
+                                            data_autocompleter_input = "",
+                                            data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                            autocomplete = useFullNameSuggestions ? "new-password" : "family-name",
+                                            data_autocomplete_debounce = "400",
+                                            data_autocomplete_apply_on_blur = "false"
+                                        })
+                                    </span>
+                                </span>
+                            </div>
+                        }
+                        @if (SettingsCheckout.IsShowPatronymic)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredPatronymic ? "input-required" : "")">@T("Checkout.CheckoutUser.Patronymic")</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                          data-field="Value" data-autocompleter data-min-length="1"
+                                          data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                          data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                          data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                          data-params="{part: 'Patronymic', firstname: checkout.newCustomer.firstname, lastname: checkout.newCustomer.lastname}">
+                                        @Html.TextBoxFor(x => x.Data.User.Patronymic, new
+                                        {
+                                            @class = "input-small",
+                                            data_ng_model = "checkout.newCustomer.patronymic",
+                                            data_ng_required = SettingsCheckout.IsRequiredPatronymic.ToLowerString(),
+                                            maxlength = "70",
+                                            data_ng_change = "checkout.saveNewCustomer()",
+                                            data_autocompleter_input = "",
+                                            data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                            autocomplete = useFullNameSuggestions ? "new-password" : "additional-name",
+                                            data_autocomplete_debounce = "400",
+                                            data_autocomplete_apply_on_blur = "false"
+                                        })
+                                    </span>
+                                </span>
+                            </div>
+                        }
+                        @if (SettingsCheckout.IsShowPhone)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredPhone ? "input-required" : "")">@SettingsCheckout.CustomerPhoneField</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="form-field-input vertical-interval-xsmall">
+                                        @Html.TextBoxFor(x => x.Data.User.Phone, new
+                                        {
+                                            @class = "input-small",
+                                            type = "tel",
+                                            placeholder = "{{ :: 'Js.Phone.PhonePlaceholder' | translate }}",
+                                            data_mask_control = SettingsMain.EnablePhoneMask.ToLowerString(),
+                                            data_mask_control_preset = "phone",
+                                            data_ng_required = SettingsCheckout.IsRequiredPhone.ToLowerString(),
+                                            data_ng_model = "checkout.newCustomer.phone",
+                                            autocomplete = "tel",
+                                            maxlength = 70,
+                                            data_ng_change = "checkout.saveNewCustomer()"
+                                        })
+                                    </span>
+                                </span>
+                            </div>
+                            if (SettingsOAuth.AuthByCodeActive)
+                            {
+                                @Html.Partial("_SmsConfirmation", new SmsViewModel { Phone = "checkout.newCustomer.phone", PageName = "'checkout'" });
+                            }
+                        }
+                        @if (SettingsCheckout.IsShowBirthDay)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredBirthDay ? "input-required" : "")">@SettingsCheckout.BirthDayFieldName</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="form-field-input vertical-interval-xsmall">
+                                        <span class="flatpickr-custom" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false}" fp-on-change="checkout.saveNewCustomer()">
+                                            <input type="text" id="Data_User_BirthDay" name="Data.User.BirthDay" class="input-small flatpickr-custom__input" @Html.Raw(Model.Data.User.BirthDay != null ? "value=\"" + Model.Data.User.BirthDay.Value.ToString("dd.MM.yyyy") + "\"" : "") data-ng-required="@SettingsCheckout.IsRequiredBirthDay.ToLowerString()" ng-flatpickr-input data-ng-model="checkout.newCustomer.birthday" data-mask-control data-mask-control-preset="date">
+                                            <span class="flatpickr-custom__toggle" data-toggle>
+                                                <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                    <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </span>
+                            </div>
+                        }
+
+                        @Html.Partial("_CustomerFields", new CustomerFieldsViewModel(Model.Data.User.CustomerFields, "Data.User", "checkout.newCustomer", "checkout.saveNewCustomer()", "col-xs-5 col-md-4 form-field-name-wrap", "col-xs-7 col-md-8 form-field-input-wrap", true, CustomerFieldShowMode.Checkout, "checkout.customerType", Model.SuggestionsModule))
+
+                        @if (SettingsCheckout.IsShowOrderRecipient)
+                        {
+                            <div class="row form-field-control p-t-sm">
+                                <div class="col-xs-12 col-md-8 col-md-offset-4 checkout-bonus-card-checkbox-wrap">
+                                    <div class="vertical-interval-xsmall">
+                                        <div class="row">
+                                            <div class="col-xs-10 col-lg-9">
+                                                <label class="flex mobile-form-field-control-last">
+                                                    @Html.CheckBoxFor(x => x.Data.User.IsAddRecipient, new { @class = "custom-input-native", data_ng_model = "checkout.newCustomer.isAddRecipient", data_ng_change = "checkout.saveRecipient()" })
+                                                    <span class="custom-input-checkbox shrink-none"></span>
+                                                    <span class="custom-input-text">
+                                                        @T("Checkout.CheckoutUser.AddRecipient") <br />
+                                                        <span class="cs-t-3">
+                                                            @T("Checkout.CheckoutUser.AddRecipient.Help")
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-if="checkout.newCustomer.isAddRecipient">
+
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall input-required">@SettingsCheckout.CustomerFirstNameField</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                              data-field="Value" data-autocompleter data-min-length="1"
+                                              data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                              data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                              data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                              data-params="{part: 'FirstName', lastname: checkout.newCustomer.recipientLastName, patronymic: checkout.newCustomer.recipientPatronymic}">
+                                            @Html.TextBoxFor(x => x.Data.User.RecipientFirstName, new
+                                            {
+                                                @class = "input-small",
+                                                data_ng_model = "checkout.newCustomer.recipientFirstName",
+                                                required = "required",
+                                                maxlength = "70",
+                                                data_ng_change = "checkout.saveRecipient()",
+                                                data_autocompleter_input = "",
+                                                data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                                autocomplete = useFullNameSuggestions ? "new-password" : "given-name",
+                                                data_autocomplete_debounce = "400",
+                                                data_autocomplete_apply_on_blur = "false"
+                                            })
+                                        </span>
+                                    </span>
+                                </div>
+
+                                @if (SettingsCheckout.IsShowLastName)
+                                {
+                                    <div class="row middle-xs form-field-control">
+                                        <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                            <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredLastName ? "input-required" : "")">@T("Checkout.CheckoutUser.LastName")</span>
+                                        </span>
+                                        <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                            <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                                  data-field="Value" data-autocompleter data-min-length="1"
+                                                  data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                                  data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                                  data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                                  data-params="{part: 'LastName', firstname: checkout.newCustomer.recipientFirstName, patronymic: checkout.newCustomer.recipientPatronymic}">
+                                                @Html.TextBoxFor(x => x.Data.User.RecipientLastName, new
+                                                {
+                                                    @class = "input-small",
+                                                    data_ng_model = "checkout.newCustomer.recipientLastName",
+                                                    data_ng_required = SettingsCheckout.IsRequiredLastName.ToLowerString(),
+                                                    maxlength = "70",
+                                                    data_ng_change = "checkout.saveRecipient()",
+                                                    data_autocompleter_input = "",
+                                                    data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                                    autocomplete = useFullNameSuggestions ? "new-password" : "family-name",
+                                                    data_autocomplete_debounce = "400",
+                                                    data_autocomplete_apply_on_blur = "false"
+                                                })
+                                            </span>
+                                        </span>
+                                    </div>
+                                }
+                                @if (SettingsCheckout.IsShowPatronymic)
+                                {
+                                    <div class="row middle-xs form-field-control">
+                                        <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                            <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredPatronymic ? "input-required" : "")">@T("Checkout.CheckoutUser.Patronymic")</span>
+                                        </span>
+                                        <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                            <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                                  data-field="Value" data-autocompleter data-min-length="1"
+                                                  data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                                                  data-template-path="scripts/_common/autocompleter/templates/common.html"
+                                                  data-apply-fn="checkout.saveNewCustomer(null, 0)"
+                                                  data-params="{part: 'Patronymic', firstname: checkout.newCustomer.recipientFirstName, lastname: checkout.newCustomer.recipientLastName}">
+                                                @Html.TextBoxFor(x => x.Data.User.RecipientPatronymic, new
+                                                {
+                                                    @class = "input-small",
+                                                    data_ng_model = "checkout.newCustomer.recipientPatronymic",
+                                                    data_ng_required = SettingsCheckout.IsRequiredPatronymic.ToLowerString(),
+                                                    maxlength = "70",
+                                                    data_ng_change = "checkout.saveRecipient()",
+                                                    data_autocompleter_input = "",
+                                                    data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                                    autocomplete = useFullNameSuggestions ? "new-password" : "additional-name",
+                                                    data_autocomplete_debounce = "400",
+                                                    data_autocomplete_apply_on_blur = "false"
+                                                })
+                                            </span>
+                                        </span>
+                                    </div>
+                                }
+                                @if (SettingsCheckout.IsShowPhone)
+                                {
+                                    <div class="row middle-xs form-field-control">
+                                        <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                            <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredPhone ? "input-required" : "")">@SettingsCheckout.CustomerPhoneField</span>
+                                        </span>
+                                        <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                            <span class="form-field-input vertical-interval-xsmall">
+                                                @Html.TextBoxFor(x => x.Data.User.RecipientPhone, new
+                                                {
+                                                    @class = "input-small",
+                                                    type = "tel",
+                                                    placeholder = "{{ :: 'Js.Phone.PhonePlaceholder' | translate }}",
+                                                    data_mask_control = SettingsMain.EnablePhoneMask.ToLowerString(),
+                                                    data_mask_control_preset = "phone",
+                                                    data_ng_required = SettingsCheckout.IsRequiredPhone.ToLowerString(),
+                                                    data_ng_model = "checkout.newCustomer.recipientPhone",
+                                                    autocomplete = "tel",
+                                                    maxlength = 70,
+                                                    data_ng_change = "checkout.saveRecipient();"
+                                                })
+                                            </span>
+                                        </span>
+                                    </div>
+                                }
+
+                            </div>
+                        }
+
+                        @if (!SettingsDesign.AutodetectCity)
+                        {
+                            if (SettingsCheckout.IsShowCity)
+                            {
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredCity ? "input-required" : "")">@T("Checkout.CheckoutUser.City")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="autocompleter-block form-field-input vertical-interval-xsmall"
+                                              data-field="Name" data-autocompleter data-request-url="/location/GetCitiesAutocomplete" data-template-path="scripts/_common/autocompleter/templates/location.html"
+                                              data-apply-fn="checkout.processCity(obj, 0)">
+                                            @Html.TextBoxFor(x => x.Data.Contact.City, new
+                                            {
+                                                @class = "input-small",
+                                                data_ng_model = "checkout.contact.City",
+                                                data_ng_required = SettingsCheckout.IsRequiredCity.ToLowerString(),
+                                                data_ng_init = "checkout.contact.City='" + Model.Data.Contact.City + "'",
+                                                maxlength = "70",
+                                                data_ng_change = "checkout.processCity()",
+                                                data_autocompleter_input = "",
+                                                autocomplete = useAddressSuggestions ? "new-password" : "address-level2",
+                                                data_autocomplete_debounce = "400",
+                                                data_autocomplete_apply_on_blur = "false"
+                                            })
+                                        </span>
+                                    </span>
+                                </div>
+                            }
+                            if (SettingsCheckout.IsShowDistrict)
+                            {
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredDistrict ? "input-required" : "")">@T("Checkout.CheckoutUser.District")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="form-field-input vertical-interval-xsmall">
+                                            @Html.TextBoxFor(x => x.Data.Contact.District, new
+                                            {
+                                                @class = "input-small",
+                                                data_ng_required = SettingsCheckout.IsRequiredDistrict.ToLowerString(),
+                                                data_ng_model = "checkout.contact.District",
+                                                data_ng_init = "checkout.contact.District='" + Model.Data.Contact.District + "'",
+                                                data_ng_change = "checkout.saveContact()",
+                                                autocomplete = useAddressSuggestions ? "new-password" : "address-level3",
+                                                maxlength = "70"
+                                            })
+                                        </span>
+                                    </span>
+                                </div>
+                            }
+                            if (SettingsCheckout.IsShowState)
+                            {
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredState ? "input-required" : "")">@T("Checkout.CheckoutUser.Region")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="autocompleter-block form-field-input vertical-interval-xsmall" data-field="Name" data-autocompleter
+                                              data-request-url="/location/GetRegionsAutocomplete" data-template-path="scripts/_common/autocompleter/templates/location.html"
+                                              data-apply-fn="checkout.saveContact()">
+                                            @Html.TextBoxFor(x => x.Data.Contact.Region, new
+                                            {
+                                                @class = "input-small",
+                                                data_ng_model = "checkout.contact.Region",
+                                                data_ng_required = SettingsCheckout.IsRequiredState.ToLowerString(),
+                                                data_ng_init = "checkout.contact.Region='" + Model.Data.Contact.Region + "'",
+                                                maxlength = "70",
+                                                data_ng_change = "checkout.saveContact()",
+                                                data_autocompleter_input = "",
+                                                autocomplete = useAddressSuggestions ? "new-password" : "address-level1",
+                                                data_autocomplete_debounce = "400",
+                                                data_autocomplete_apply_on_blur = "false"
+                                            })
+                                        </span>
+                                    </span>
+                                </div>
+                            }
+                            if (SettingsCheckout.IsShowCountry)
+                            {
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredCountry ? "input-required" : "")">@T("Checkout.CheckoutUser.Country")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="form-field-input vertical-interval-xsmall">
+                                            @Html.TextBoxFor(x => x.Data.Contact.Country, new
+                                            {
+                                                @class = "input-small",
+                                                data_ng_required = SettingsCheckout.IsRequiredCountry.ToLowerString(),
+                                                data_ng_model = "checkout.contact.Country",
+                                                data_ng_init = "checkout.contact.Country='" + Model.Data.Contact.Country + "'",
+                                                data_ng_change = "checkout.saveContact()",
+                                                autocomplete = useAddressSuggestions ? "new-password" : "country-name",
+                                                maxlength = "70"
+                                            })
+                                        </span>
+                                    </span>
+                                </div>
+                            }
+                        }
+
+                        @if (SettingsCheckout.IsShowZip && SettingsCheckout.ZipDisplayPlace)
+                        {
+                            <div class="row middle-xs form-field-control">
+                                <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                    <span class="form-field-name vertical-interval-xsmall @(SettingsCheckout.IsRequiredZip ? "input-required" : "")">@T("Checkout.CheckoutShippingAddress.Zip")</span>
+                                </span>
+                                <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                    <span class="form-field-input vertical-interval-xsmall">
+                                        @Html.TextBoxFor(x => x.Data.Contact.Zip, new
+                                        {
+                                            @class = "input-small",
+                                            data_ng_model = "checkout.contact.Zip",
+                                            data_ng_required = SettingsCheckout.IsRequiredZip.ToLowerString(),
+                                            data_ng_init = "checkout.contact.Zip='" + Model.Data.Contact.Zip + "'",
+                                            data_ng_change = "checkout.saveContact()",
+                                            maxlength = "70",
+                                            autocomplete = useAddressSuggestions ? "new-password" : "postal-code"
+                                        })
+                                    </span>
+                                </span>
+                            </div>
+                        }
+
+                        @if (!Model.IsLanding)
+                        {
+                            <div class="row form-field-control">
+                                <div class="col-xs-12 col-md-8 col-md-offset-4 checkout-bonus-card-checkbox-wrap">
+                                    <div class="vertical-interval-xsmall">
+                                        <div class="row">
+                                            <div class="col-xs-10 col-lg-9">
+                                                <label class="flex mobile-form-field-control-last">
+                                                    @Html.CheckBoxFor(x => x.Data.User.WantRegist, new { @class = "custom-input-native", data_ng_model = "checkout.newCustomer.wantRegist", data_ng_change = "checkout.saveNewCustomer()" })
+                                                    <span class="custom-input-checkbox shrink-none"></span>
+                                                    <span class="custom-input-text">
+                                                        @if (!Model.IsBonusSystemActive)
+                                                        {
+                                                            @T("Checkout.CheckoutUser.RegistAsRegularCustomer")
+                                                        }
+                                                        else
+                                                        {
+                                                            @(Model.BonusPlus > 0 ? T("Checkout.CheckoutUser.RegistAndGetBonusesOnCard", Model.BonusPlus.FormatBonuses(), "") : T("Checkout.CheckoutUser.RegistAndGetBonusCard"))
+                                                        }
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            @if (Model.IsBonusSystemActive)
+                                            {
+                                                <div class="col-xs text-align-right bonus-card-icon-wrap">
+                                                    <div class="bonus-card-icon bonus-card-block-inline bonus-card-block-inline_without-margin"></div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-ng-if="checkout.newCustomer.wantRegist">
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall input-required">@T("Checkout.CheckoutUser.Password")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="form-field-input vertical-interval-xsmall">
+                                            <input type="password" data-ng-model="checkout.newCustomer.password" name="password" id="password" value="" class="input-small" required autocomplete="off" />
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="row middle-xs form-field-control">
+                                    <span class="col-xs-5 col-md-4 form-field-name-wrap">
+                                        <span class="form-field-name vertical-interval-xsmall input-required">@T("Checkout.CheckoutUser.PasswordConfirm")</span>
+                                    </span>
+                                    <span class="col-xs-7 col-md-8 form-field-input-wrap">
+                                        <span class="form-field-input vertical-interval-xsmall">
+                                            <input type="password" data-ng-model="checkout.newCustomer.confirm" name="passwordRepeat" id="passwordRepeat" value="" class="input-small" required autocomplete="off" validation-compare-to="checkout.newCustomer.password" />
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </form>
+            </div>
+            <div data-ng-if="checkout.userUnRegType === 'oldCustomer'" class="ng-cloak">
+                @switch (Model.AuthMethod)
+                {
+                    case EAuthMethod.Email:
+                        @Html.Action("Authorization", "User", new { redirectTo = Url.RouteUrl("checkout") })
+                        break;
+                    case EAuthMethod.Code:
+                        @Html.Action("CodeAuthorization", "User", new { redirectTo = Url.RouteUrl("checkout") })
+                        break;
+                }
+            </div>
+
+            @if (SettingsOAuth.IsOauthEnabled())
+            {
+                <div data-modal-control
+                     id="modalLoginOpenId"
+                     class="ng-hide"
+                     data-modal-class="modal-login-open-id">
+                    <div class="modal-content">
+                        @Html.Action("LoginOpenId", "User", new { pagetoredirect = "/checkout" })
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

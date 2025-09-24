@@ -1,0 +1,52 @@
+﻿<div is-mobile ng-class="{'container-fluid': !isMobile.value}">
+    <div class="row">
+        <div class="col-xs-12 col-md-4" ng-switch="isMobile.value">
+            <div ng-switch-when="true" class="m-b">
+                Категория:
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCategoriesCtrl'"
+                    data-controller-as="ctrl"
+                    data-on-close="$ctrl.onSelectCategory(result)"
+                    data-resolve="{treeAjax: {url: $ctrl.selectvizrTreeUrl}, treePlugins: {items: 'search'}, notUnboxingCategory: true, treeShowRoot: true}"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html">
+                    <a href="" class="link-dashed" ng-bind="$ctrl.categoryNameSelected || 'Корневая'"></a>
+                </ui-modal-trigger>
+            </div>
+            <div ng-switch-default>
+                <div
+                    class=""
+                    js-tree
+                    tree-ajax="{{::$ctrl.selectvizrTreeUrl}}"
+                    data-show-root="true"
+                    tree-events="select_node:$ctrl.treeCallbacks.select_node;"
+                    tree-plugins="search"
+                    tree-search="$ctrl.selectvizrTreeSearch"></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <ui-grid-custom
+                grid-unique-id="gridOffersSelectvizr"
+                grid-url="$ctrl.selectvizrGridUrl"
+                grid-options="$ctrl.selectvizrGridOptions"
+                grid-params="$ctrl.selectvizrGridParams"
+                grid-on-init="$ctrl.gridOnInit(grid)"
+                grid-selection-on-change="$ctrl.gridSelectionOnChange()"
+                grid-selection-on-init="$ctrl.gridSelectionOnInit(selectionCustom)"
+                grid-search-placeholder="'Admin.Js.SearchByNameAndVendorCode'|translate"
+                grid-selection-items-selected-fn="$ctrl.gridSelectionItemsSelectedFnWrap(rowEntity)"
+                grid-on-fetch="$ctrl.gridOnFetch(grid)"
+                grid-tree-view-enabled="true"
+                grid-prevent-state-in-hash="true"
+                grid-selection-enabled="true"
+                grid-swipe-line="true">
+                <ui-grid-custom-override-control class="ng-cloak">
+                    <div
+                        data-product-grid-item
+                        data-row="row"
+                        data-grid-scope="grid.appScope"
+                        data-renderer-columns="colContainer.renderedColumns"></div>
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

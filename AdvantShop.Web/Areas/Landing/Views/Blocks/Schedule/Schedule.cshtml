@@ -1,0 +1,98 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<ScheduleModel>("items");
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                <div class="text-center">
+                    @Html.BlockHeader(Model)
+                </div>
+                @if (items != null)
+                {
+                    <div @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                        @for (var i = 0; i < items.Count; i++)
+                        {
+                            <div class="row center-xs middle-xs lp-block-schedule__item">
+
+                                @if (Model.Block.TryGetSetting("hide_photo") == false)
+                                {
+                                    <div class="col-xs-12 col-md-2">
+                                        <div class="lp-block-schedule__image" data-e2e="schedulePic">
+                                            @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                       {
+                                           LandingPageId = Model.Block.LandingId,
+                                           BlockId = Model.Block.Id,
+                                           Current = items[i].Picture != null ? items[i].Picture.Src : null,
+                                           GalleryIconsEnabled = false,
+                                           OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                           OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                           OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                           OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                           LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                            LazyLoadEnabled = items[i].Picture != null ? items[i].Picture.LazyLoadEnabled : true,
+                                           CropperParams = new CropperParams()
+                                           {
+                                               AspectRatio = "1"
+                                           },
+                                           MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                                           MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                                           WidthPicture = items[i].Picture.Width,
+                                           HeightPicture = items[i].Picture.Height
+                                       })
+                                        </div>
+
+                                    </div>
+                                }
+                                <div class="col-xs-12 col-md">
+                                    <div class="row text-align-left-md">
+                                        <div class="col-xs-12 col-md">
+                                            @if (items[i].Name.IsNotEmpty())
+                                            {
+                                                <div class="lp-block-schedule__name lp-font-size--large" data-e2e="scheduleName" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].name")>
+                                                    @Html.Raw(items[i].Name)
+                                                </div>
+                                            }
+                                            @if (items[i].Position.IsNotEmpty())
+                                            {
+                                                <div class="lp-block-schedule__position lp-font-size--middle lp-h3--color" data-e2e="schedulePosition" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].position")>
+                                                    @Html.Raw(items[i].Position)
+                                                </div>
+                                            }
+                                            @if (items[i].Text.IsNotEmpty())
+                                            {
+                                                <div class="lp-block-schedule__text  lp-font-size--large" data-e2e="scheduleText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                    @Html.Raw(items[i].Text)
+                                                </div>
+                                            }
+                                        </div>
+                                        @if (items[i].Time.IsNotEmpty())
+                                        {
+                                            <div class="col-xs-12 col-md-3 col-lg-2 end-md lp-block-schedule__col-time">
+                                                <div class="lp-block-schedule__time lp-font-size--middle" data-e2e="scheduleTime" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].time")>
+                                                    @Html.Raw(items[i].Time)
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (Model.Block.TryGetSetting("show_button") == true)
+                {
+                    <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ScheduleBtnRow">
+                        <div class="col-xs-12">
+                            <div class="lp-block-schedule__btn">
+                                @Html.Button(Model.Block, "button")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

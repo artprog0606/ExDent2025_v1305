@@ -1,0 +1,287 @@
+﻿@using AdvantShop.Customers
+@using AdvantShop.Core.Services.Crm.LeadFields
+@using AdvantShop.App.Landing.Models.Landing
+
+@model AdvantShop.App.Landing.Models.Landing.LpFormModel
+@{
+    Layout = null;
+    bool hasTitle = Model.Form.Title.IsNotEmpty();
+    bool hasSubTitle = Model.Form.SubTitle.IsNotEmpty();
+    var prefix = Model.NgModel.IsNotEmpty() ? Model.NgModel : "lpForm.form";
+    var inputTextPosition = Model.Form.InputTextPosition;
+}
+
+@if (hasTitle && !Model.IsVertical)
+{
+    <div class="col-xs-12 col-sm-slim lp-form__field lp-form__title lp-form__title--horizontal lp-font-size--large" data-e2e="FormTitle" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "Title")>
+        @Html.Raw(Model.Form.Title)
+    </div>
+}
+
+@for (int i = 0; i < Model.Form.Fields.Count; i++)
+{
+    var field = Model.Form.Fields[i];
+
+    var fieldPrefix = prefix + ".fields[" + i + "]";
+    var ngModel = fieldPrefix + ".value";
+    var fieldName = fieldPrefix + ".fieldname";
+    var ngModelFile = prefix + ".files[" + i + "]";
+    var ngModelInvalidFile = prefix + ".filesInvalid[" + i + "]";
+    var init = fieldPrefix + ".type=" + (int)field.FieldType;
+    var required = field.Required.ToLowerString();
+
+    <div class="col-xs-12 @(!Model.IsVertical ? "col-sm-slim" : "") lp-form__field" data-ng-init="@init">
+
+        @if (inputTextPosition == eInputTextPosition.Outside)
+        {
+            <div class="lp-form__field-label lp-font-size--middle text-left" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "Fields[" + i + "].Title")>
+                @Html.Raw(field.Title)
+            </div>
+        }
+
+        @if (field.Type == "text")
+        {
+            <input type="@(field.FieldType == ELpFormFieldType.Email ? "email" : "text")" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" class="lp-input" data-ng-required="@required" />
+        }
+        else if (field.Type == "tel")
+        {
+            <input type="tel" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" class="lp-input" data-ng-required="@required" data-mask-control= "@AdvantShop.Configuration.SettingsMain.EnablePhoneMask.ToLowerString()" data-mask-control-preset="phone" autocomplete="tel" />
+        }
+        else if (field.Type == "number")
+        {
+            <input type="number" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" class="lp-input" data-ng-required="@required" />
+        }
+        else if (field.Type == "textarea")
+        {
+            <textarea placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-textarea"></textarea>
+        }
+        else if (field.Type == "picture")
+        {
+            <div class="row lp-form__picture-block @(Model.IsVertical ? "" : "lp-form__picture-block--horizontal") ng-cloak" ng-init="@fieldName = '@((field.Title ?? "").Replace("'", "\\'"))'">
+                <div class="@(Model.IsVertical ? "col-xs-12 col-md-3" : "lp-form__picture-item--horizontal") lp-form__picture-item" data-ng-repeat="picture in @ngModelFile track by $index">
+                    <div class="lp-form__picture-item-wrap">
+                        <img class="lp-form__picture" ngf-src="picture">
+                        <button class="lp-form__picture-delete" type="button" data-ng-click="lpForm.removePicture(picture, $index, @i)">
+                            <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#eee" d="M256 0C114.836 0 0 114.836 0 256s114.836 256 256 256 256-114.836 256-256S397.164 0 256 0zm0 0"/>
+                                <path fill="#bbb" d="M256 512C114.836 512 0 397.164 0 256S114.836 0 256 0s256 114.836 256 256-114.836 256-256 256zm0-480C132.48 32 32 132.48 32 256s100.48 224 224 224 224-100.48 224-224S379.52 32 256 32zm0 0"/>
+                                <path fill="#bbb" d="M176.813 351.21c-4.098 0-8.196-1.558-11.31-4.694-6.25-6.25-6.25-16.383 0-22.633l158.4-158.399c6.253-6.254 16.386-6.254 22.636 0 6.25 6.25 6.25 16.383 0 22.633L188.137 346.516a16.02 16.02 0 01-11.325 4.695zm0 0"/>
+                                <path fill="#bbb" d="M335.188 351.21c-4.094 0-8.192-1.558-11.305-4.694L165.484 188.117c-6.254-6.25-6.254-16.383 0-22.633 6.25-6.254 16.383-6.254 22.633 0l158.399 158.399c6.254 6.25 6.254 16.383 0 22.633a15.95 15.95 0 01-11.329 4.695zm0 0"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="@(Model.IsVertical ? "col-xs-12 col-md-3" : "lp-form__picture-item--horizontal") lp-form__picture-item">
+                    <button class="lp-form__picture-button-add" type="button"
+                            data-ng-required="@required"
+                            data-ng-model="@ngModelFile"
+                            ngf-model-invalid="@ngModelInvalidFile"
+                            ngf-select="lpForm.selectPicture($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $invalidFile, $event, @i)"
+                            ngf-keep="true"
+                            ngf-pattern="'image/jpeg,image/jpg,image/png,image/gif'"
+                            ngf-accept="'image/jpeg,image/jpg,image/png,image/gif'"
+                            ngf-max-size="15MB"
+                            ngf-multiple="true"
+                            ngf-model-options="{allowInvalid: true}">
+                        +
+                    </button>
+                </div>
+            </div>
+        }
+        else if (field.Type == "filearchive")
+        {
+            <div class="lp-form__picture-block @(Model.IsVertical ? "row" : "lp-form__picture-block--horizontal") ng-cloak" ng-init="@fieldName = '@((field.Title ?? "").Replace("'", "\\'"))'">
+                <div class="@(Model.IsVertical ? "col-xs-12 col-md-3" : "lp-form__picture-item--horizontal") lp-form__picture-item" data-ng-repeat="picture in @ngModelFile track by $index">
+                    <div class="lp-form__picture-item-wrap">
+                        <div class="lp-form__filearchive">
+                            <svg class="svg-inline--fa fa-file fa-w-12 lp-form__filearchive-icon" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="file" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" data-fa-i2svg="">
+                                <path fill="currentColor" d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"></path>
+                            </svg>
+                            <div class="lp-form__filearchive-name">{{picture.name}}</div>
+                        </div>
+                        <button class="lp-form__picture-delete" type="button" data-ng-click="lpForm.removePicture(picture, $index, @i)">
+                            <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#eee" d="M256 0C114.836 0 0 114.836 0 256s114.836 256 256 256 256-114.836 256-256S397.164 0 256 0zm0 0"/>
+                                <path fill="#bbb" d="M256 512C114.836 512 0 397.164 0 256S114.836 0 256 0s256 114.836 256 256-114.836 256-256 256zm0-480C132.48 32 32 132.48 32 256s100.48 224 224 224 224-100.48 224-224S379.52 32 256 32zm0 0"/>
+                                <path fill="#bbb" d="M176.813 351.21c-4.098 0-8.196-1.558-11.31-4.694-6.25-6.25-6.25-16.383 0-22.633l158.4-158.399c6.253-6.254 16.386-6.254 22.636 0 6.25 6.25 6.25 16.383 0 22.633L188.137 346.516a16.02 16.02 0 01-11.325 4.695zm0 0"/>
+                                <path fill="#bbb" d="M335.188 351.21c-4.094 0-8.192-1.558-11.305-4.694L165.484 188.117c-6.254-6.25-6.254-16.383 0-22.633 6.25-6.254 16.383-6.254 22.633 0l158.399 158.399c6.254 6.25 6.254 16.383 0 22.633a15.95 15.95 0 01-11.329 4.695zm0 0"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="@(Model.IsVertical ? "col-xs-12 col-md-3" : "lp-form__picture-item--horizontal") lp-form__picture-item">
+                    <button class="lp-form__picture-button-add" type="button"
+                            data-ng-required="@required"
+                            data-ng-model="@ngModelFile"
+                            ngf-model-invalid="@ngModelInvalidFile"
+                            ngf-select="lpForm.selectPicture($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $invalidFile, $event, @i)"
+                            ngf-keep="true"
+                            ngf-pattern="'.zip,.arj,.rar,.cab,.tar,.lzh,.txt,.pdf,.doc,.docx,.xls,.xlsx'"
+                            ngf-accept="'.zip,.arj,.rar,.cab,.tar,.lzh,.txt,.pdf,.doc,.docx,.xls,.xlsx'"
+                            ngf-max-size="15MB"
+                            ngf-multiple="true"
+                            ngf-model-options="{allowInvalid: true}">
+                        +
+                    </button>
+                </div>
+            </div>
+        }
+        else if (field.Type == "date")
+        {
+            <div class="lp-flatpickr" data-ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                <span class="lp-flatpickr__input-wrap">
+                    <input class="lp-flatpickr__input lp-input input-alt" type="text" data-mask-control data-mask-control-preset="date" data-ng-flatpickr-input data-ng-model="@ngModel" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-required="@required">
+                </span>
+            </div>
+        }
+        else if (field.CustomerField != null)
+        {
+            if (field.CustomerField.FieldType == CustomerFieldType.Text)
+            {
+                <input type="text" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-input" />
+            }
+            else if (field.CustomerField.FieldType == CustomerFieldType.Number)
+            {
+                <input type="number" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-input" />
+            }
+            else if (field.CustomerField.FieldType == CustomerFieldType.TextArea)
+            {
+                <textarea placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-textarea"></textarea>
+            }
+            else if (field.CustomerField.FieldType == CustomerFieldType.Select)
+            {
+                if (field.CustomerField.Values != null)
+                {
+
+                    <div class="lp-select-wrap">
+                        <select class="lp-select" data-ng-model="@ngModel" data-ng-required="@required" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")">
+                            @{
+                                var option = "<option selected value='' " + (field.Required ? "disabled hidden" : "") + ">" + (inputTextPosition == eInputTextPosition.Inside ? field.Title : "----") + "</option>";
+                            }
+                            @Html.Raw(inputTextPosition == eInputTextPosition.Inside || !field.Required ? option : "")
+                            @foreach (var item in field.CustomerField.Values)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span class="lp-select-arrow-emul">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.192 10.879l-4.07 4.07-4.072-4.07" />
+                            </svg>
+                        </span>
+                    </div>
+                }
+            }
+            else if (field.CustomerField.FieldType == CustomerFieldType.Date)
+            {
+                <div class="lp-flatpickr" data-ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                    <span class="lp-flatpickr__input-wrap">
+                        <input class="lp-flatpickr__input lp-input input-alt" type="text"  data-mask-control data-mask-control-preset="date" data-ng-flatpickr-input data-ng-model="@ngModel" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-required="@required">
+                    </span>
+                </div>
+            } else if (field.CustomerField.FieldType == CustomerFieldType.Checkbox)
+            {
+                <label class="lp-label">
+                    <input class="lp-checkbox" 
+                           type="checkbox"
+                           @(field.Required == true ? "required" : "")
+                           value="{{@ngModel}}"
+                           data-ng-model="@ngModel">
+                    <span class="lp-checkbox-decor"></span>
+                    <span class="lp-font-size--middle">@field.CustomerField.Name</span>
+                </label>
+            } else if (field.CustomerField.FieldType == CustomerFieldType.Email)
+            {
+                var attributes = new Dictionary<string, object>()
+                {
+                    {"class", "lp-input"},
+                    {"ng-model", ngModel},
+                    {"ng-required", required},
+                    {"placeholder", inputTextPosition == eInputTextPosition.Inside ? field.Title : ""},
+                    {"type", "email"},
+                    {"pattern", "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)"},
+                };
+                @Html.TextBox("customerFields[" + i + "].value", field.CustomerField.Value, attributes)
+            } else if (field.CustomerField.FieldType == CustomerFieldType.Tel)
+            {
+                <input type="tel" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" class="lp-input" data-ng-required="@required" data-mask-control= "@AdvantShop.Configuration.SettingsMain.EnablePhoneMask.ToLowerString()" data-mask-control-preset="phone" autocomplete="tel" />
+            }
+
+            <span data-ng-init="@(fieldPrefix).objId=@field.CustomerField.Id"></span>
+        }
+        else if (field.LeadField != null)
+        {
+            if (field.LeadField.FieldType == LeadFieldType.Text)
+            {
+                <input type="text" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-input" />
+            }
+            else if (field.LeadField.FieldType == LeadFieldType.Number)
+            {
+                <input type="number" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-input" />
+            }
+            else if (field.LeadField.FieldType == LeadFieldType.TextArea)
+            {
+                <textarea placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-model="@ngModel" data-ng-required="@required" class="lp-textarea"></textarea>
+            }
+            else if (field.LeadField.FieldType == LeadFieldType.Select)
+            {
+                if (field.LeadField.Values != null)
+                {
+
+                    <div class="lp-select-wrap">
+                        <select class="lp-select" data-ng-model="@ngModel" data-ng-required="@required" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")">
+                            @{
+                                var option = "<option selected value='' " + (field.Required ? "disabled hidden" : "") + ">" + field.Title + "</option>";
+                            }
+                            @Html.Raw(inputTextPosition == eInputTextPosition.Inside ? option : "")
+                            @foreach (var item in field.LeadField.Values)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span class="lp-select-arrow-emul">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.192 10.879l-4.07 4.07-4.072-4.07" />
+                            </svg>
+                        </span>
+                    </div>
+                }
+            }
+            else if (field.LeadField.FieldType == LeadFieldType.Date)
+            {
+                <div class="lp-flatpickr" data-ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                    <span class="lp-flatpickr__input-wrap">
+                        <input class="lp-flatpickr__input lp-input input-alt" type="text"  data-mask-control data-mask-control-preset="date" data-ng-flatpickr-input data-ng-model="@ngModel" placeholder="@(inputTextPosition == eInputTextPosition.Inside ? field.Title : "")" data-ng-required="@required">
+                    </span>
+                </div>
+            }
+
+            <span data-ng-init="@(fieldPrefix).objId=@field.LeadField.Id"></span>
+        }
+    </div>
+}
+
+
+@if (hasSubTitle && !Model.IsVertical)
+{
+    <div class="col-xs-12 @(!Model.IsVertical ? "last-sm" : "") lp-form__field lp-form__subtitle lp-form__subtitle--horizontal"  data-e2e="FormSubTitle" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "SubTitle")>
+        @Html.Raw(Model.Form.SubTitle)
+    </div>
+}
+
+@if (Model.Form.ShowAgreement.HasValue && Model.Form.ShowAgreement == true)
+{
+    <div class="col-xs-12 @(!Model.IsVertical ? "last-sm" : "") lp-form__agreement">
+        <label class="lp-label">
+            <input class="lp-checkbox"
+                   type="checkbox"
+                   data-ng-model="ctrl.form.agreement"
+                   @Html.Raw(Model.Form.AgreementDefaultChecked.HasValue && Model.Form.AgreementDefaultChecked.Value == true ? "checked=\"checked\" data-ng-init=\"ctrl.form.agreement=true\"" : "" )
+                   required />
+            <span class="lp-checkbox-decor"></span>
+            <div @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "AgreementText") @Html.Raw(LpService.Inplace ? "onclick=\"event.stopPropagation();event.preventDefault();\"" : "")>
+            @Html.Raw(Model.Form.AgreementText)
+            </div>
+        </label>
+    </div>
+}

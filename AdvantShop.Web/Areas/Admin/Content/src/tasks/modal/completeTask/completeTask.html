@@ -1,0 +1,89 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.Tasks.CompleteTask.CompletionOfTask'|translate}}<span ng-bind="ctrl.task.id"></span></h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="" ng-class="{'control-label': isMobile.value}"
+                >{{'Admin.Js.Tasks.CompleteTask.EnterTheResultOfTaskExecution'|translate}}</label
+            >
+            <input
+                data-e2e="taskResult"
+                type="text"
+                class="form-control input-alt"
+                placeholder="{{'Admin.Js.Tasks.CompleteTask.Result'|translate}}"
+                ng-model="ctrl.taskResult"
+                data-autofocus="!isMobile.value"
+                ng-keypress="$event.keyCode === 13 && ctrl.taskResult && ctrl.completeTask()"
+                validation-input-text="{{'Admin.Js.Tasks.CompleteTask.Result'|translate}}" />
+        </div>
+        <div class="form-group" ng-if="ctrl.isNotBeCompleted">
+            <label class="" ng-class="{'control-label': isMobile.value}"
+                ><span class="text-required">{{'Admin.Js.Tasks.EditTask.Project'|translate}}</span></label
+            >
+            <select
+                data-e2e="edittaskGroup"
+                ng-model="ctrl.task.taskGroupId"
+                ng-options="s.value as s.label for s in ctrl.taskGroups"
+                validation-input-text="{{'Admin.Js.Tasks.EditTask.Project'|translate}}"
+                class="form-control input-alt"
+                convert-to-number
+                required
+                data-ng-on-change="ctrl.getStatusList(ctrl.task.taskGroupId)"></select>
+        </div>
+        <div class="form-group" ng-if="ctrl.statusList != null">
+            <label class="" ng-class="{'control-label': isMobile.value}"><span class="text-required">Cтатус</span></label>
+            <select
+                data-e2e="edittaskStatus"
+                ng-model="ctrl.taskStatusId"
+                ng-options="s.id as s.name for s in ctrl.statusList"
+                validation-input-text="Cтатус"
+                class="form-control input-alt"
+                required></select>
+        </div>
+        <div class="form-group" ng-if="ctrl.task.orderId != null">
+            <label class="" ng-class="{'control-label': isMobile.value}"
+                >{{'Admin.Js.Tasks.CompleteTask.ChangeOrderStatus'|translate}}<span ng-bind="ctrl.task.orderId"></span
+            ></label>
+            <ui-select class="input-alt" ng-model="ctrl.orderStatusId">
+                <ui-select-match>
+                    <span
+                        ng-bind="$select.selected.label + ($select.selected.value === ctrl.orderStatusIdCurrent ? ' ' + '(' + ('Admin.Js.Tasks.CompleteTask.StatusCurrent'|translate) + ')': '')"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="s.value as s in ctrl.orderStatuses">
+                    <span
+                        ng-bind="s.label + (s.value === ctrl.orderStatusIdCurrent ? ' ' + '(текущий статус)': '')"
+                        ng-class="{'bold': s.value === ctrl.orderStatusIdCurrent}"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <div class="form-group" ng-if="ctrl.task.leadId != null">
+            <label class="" ng-class="{'control-label': isMobile.value}"
+                >{{'Admin.Js.Tasks.CompleteTask.ChangeTheStageOfLead'|translate}}<span ng-bind="ctrl.task.leadId"></span
+            ></label>
+            <ui-select class="input-alt" ng-model="ctrl.dealStatusId">
+                <ui-select-match>
+                    <span
+                        ng-bind="$select.selected.label + ($select.selected.value === ctrl.dealStatusIdCurrent ? ' ' + '(' + ('Admin.Js.Tasks.CompleteTask.StageCurrent'|translate) + ')': '')"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="s.value as s in ctrl.dealStatuses">
+                    <span
+                        ng-bind="s.label + (s.value === ctrl.dealStatusIdCurrent ? ' ' + '(текущий этап)': '')"
+                        ng-class="{'bold': s.value === ctrl.dealStatusIdCurrent}"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            button-validation=""
+            data-button-validation-success="ctrl.completeTask()"
+            ladda="ctrl.btnSleep">
+            {{'Admin.Js.Tasks.CompleteTask.Complete'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.Tasks.CompleteTask.Cancel'|translate}}</button>
+    </div>
+</form>

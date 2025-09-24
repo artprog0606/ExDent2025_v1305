@@ -1,0 +1,291 @@
+﻿<div class="form-group" ng-if="$ctrl.canBeEditing || $ctrl.bookingInfo.status != 'new'">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="btn-group funnel__change-status-btns-wrap">
+                <button
+                    class="btn btn-sm btn-default"
+                    type="button"
+                    ng-click="$ctrl.changeStatus('confirmed')"
+                    ng-if="$ctrl.bookingInfo.status != 'confirmed'"
+                    ng-disabled="!$ctrl.canBeEditing">
+                    Подтвердить
+                </button>
+                <button
+                    class="btn btn-sm btn-success"
+                    type="button"
+                    ng-click="$ctrl.changeStatus('new')"
+                    ng-if="$ctrl.bookingInfo.status == 'confirmed'"
+                    ng-disabled="!$ctrl.canBeEditing">
+                    Подтверждена
+                </button>
+                <button
+                    class="btn btn-sm btn-default"
+                    type="button"
+                    ng-click="$ctrl.changeStatus('completed')"
+                    ng-if="$ctrl.bookingInfo.status != 'completed'"
+                    ng-disabled="!$ctrl.canBeEditing">
+                    Завершить
+                </button>
+                <button
+                    class="btn btn-sm btn-success"
+                    type="button"
+                    ng-if="$ctrl.bookingInfo.status == 'completed'"
+                    ng-disabled="!$ctrl.canBeEditing">
+                    Завершена
+                </button>
+                <button
+                    class="btn btn-sm btn-default"
+                    type="button"
+                    ng-click="$ctrl.changeStatus('cancel')"
+                    ng-if="$ctrl.bookingInfo.status != 'cancel'"
+                    ng-disabled="!$ctrl.canBeEditing">
+                    Отменить
+                </button>
+                <button class="btn btn-sm btn-success" type="button" ng-if="$ctrl.bookingInfo.status == 'cancel'" ng-disabled="!$ctrl.canBeEditing">
+                    Отменена
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="form-group" ng-if="$ctrl.canBeEditing">
+    <div class="row">
+        <div class="col-xs-12">
+            <switcher-state checked="$ctrl.bookingInfo.payed" text-off="Не оплачена" text-on="Оплачена" on-change="$ctrl.changePay(checked)"></switcher-state>
+        </div>
+    </div>
+</div>-->
+
+<div class="form-group" ng-if="$ctrl.choiceAffiliates" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">Выберите филиал</div>
+        <div class="col-xs-12 col-md-8">
+            <ui-select
+                class="input-alt"
+                data-e2e="bookingAffiliate"
+                ng-model="$ctrl.bookingInfo.affiliateId"
+                data-autofocus="!isMobile.value"
+                validation-input-text="Филиал"
+                ng-change="$ctrl.selectAffiliate()"
+                ng-disabled="!$ctrl.canBeEditing">
+                <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                <ui-select-choices repeat="s.value as s in $ctrl.affiliates | filter: $select.search">
+                    <div>{{s.label}}</div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">{{'Admin.Js.AddUpdateBooking.Employee'|translate}}</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <ui-select
+                class="input-alt"
+                data-e2e="bookingReservationResource"
+                required
+                ng-model="$ctrl.bookingInfo.reservationResourceId"
+                validation-input-text="{{'Admin.Js.AddUpdateBooking.Employee'|translate}}"
+                ng-change="$ctrl.changeReservationResource()"
+                ng-disabled="!$ctrl.canBeEditing">
+                <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                <ui-select-choices repeat="s.value as s in $ctrl.reservationResources | filter: $select.search">
+                    <div>{{s.label}}</div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" ng-if="$ctrl.bookingInfo.dateTimeMode === 'select'" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">{{'Admin.Js.AddUpdateBooking.Date'|translate}}</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div
+                class="input-group"
+                ng-flatpickr
+                fp-on-change="$ctrl.changeDate()"
+                fp-opts="$ctrl.fpOptions"
+                fp-on-setup="$ctrl.onFlatpickrInit(fpItem)">
+                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                    <input
+                        data-e2e="bookingBeginDate"
+                        type="text"
+                        class="form-control input-alt"
+                        required
+                        ng-flatpickr-input
+                        ng-model="$ctrl.bookingInfo.date"
+                        ng-disabled="!$ctrl.canBeEditing"
+                        validation-input-text="{{'Admin.Js.AddUpdateBooking.Date'|translate}}" />
+                    <span class="flatpickr-custom-clear" data-close data-clear ng-if="$ctrl.canBeEditing"><i class="fas fa-times"></i></span>
+                </span>
+                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" ng-if="$ctrl.bookingInfo.dateTimeMode === 'select'" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">{{'Admin.Js.AddUpdateBooking.Time'|translate}}</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <ui-select
+                class="input-alt"
+                ng-model="$ctrl.bookingInfo.time"
+                required
+                validation-input-text="{{'Admin.Js.AddUpdateBooking.Time'|translate}}"
+                ng-disabled="!$ctrl.canBeEditing">
+                <ui-select-match>{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="time as time in $ctrl.times | filter: $select.search">
+                    <div>{{time}}</div>
+                </ui-select-choices>
+            </ui-select>
+
+            <div
+                ng-if="$ctrl.bookingInfo.reservationResourceId && $ctrl.canBeEditing"
+                class="inline"
+                ng-class="{'m-t-sm inline-block' : isMobile.value}">
+                <ui-modal-trigger
+                    data-controller="'ModalReservationResourceShedulerCtrl'"
+                    controller-as="ctrl"
+                    size="xs-11"
+                    data-resolve="{params: { affiliateId: $ctrl.bookingInfo.affiliateId, reservationResourceId: $ctrl.bookingInfo.reservationResourceId, date: $ctrl.bookingInfo.date, mode: 'select-free-time'}}"
+                    template-url="../areas/admin/content/src/bookingJournal/modal/reservationResourceSheduler/ModalReservationResourceSheduler.html"
+                    on-close="$ctrl.selectTime(result)">
+                    <a href="" class="edit link-decoration-none m-l-xs">Выбрать время</a>
+                </ui-modal-trigger>
+            </div>
+            <div ng-if="$ctrl.canBeEditing" class="inline" ng-class="{'m-t-sm inline-block' : isMobile.value}">
+                <a href="" class="edit link-decoration-none m-l-xs" ng-click="$ctrl.changeDateTimeMode('free')">Указать диапазон</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" ng-if="$ctrl.bookingInfo.dateTimeMode === 'free'" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">Дата начала</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div
+                class="input-group"
+                ng-flatpickr
+                fp-on-change="$ctrl.changeBeginDate()"
+                fp-opts="$ctrl.fpBeginEndOptions"
+                fp-on-setup="$ctrl.onFlatpickrBeginInit(fpItem)">
+                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                    <input
+                        data-e2e="bookingBeginDateTime"
+                        type="text"
+                        class="form-control input-alt"
+                        required
+                        ng-flatpickr-input
+                        ng-model="$ctrl.bookingInfo.beginDate"
+                        ng-disabled="!$ctrl.canBeEditing"
+                        validation-input-text="Дата начала" />
+                    <span class="flatpickr-custom-clear" data-close data-clear ng-if="$ctrl.canBeEditing"><i class="fas fa-times"></i></span>
+                </span>
+                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" ng-if="$ctrl.bookingInfo.dateTimeMode === 'free'" is-mobile>
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">Дата окончания</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div
+                class="input-group"
+                ng-flatpickr
+                fp-on-change="$ctrl.changeEndDate()"
+                fp-opts="$ctrl.fpBeginEndOptions"
+                fp-on-setup="$ctrl.onFlatpickrEndInit(fpItem)">
+                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                    <input
+                        data-e2e="bookingEndDateTime"
+                        type="text"
+                        class="form-control input-alt"
+                        required
+                        ng-flatpickr-input
+                        ng-model="$ctrl.bookingInfo.endDate"
+                        ng-disabled="!$ctrl.canBeEditing"
+                        validation-input-text="Дата окончания" />
+                    <span class="flatpickr-custom-clear" data-close data-clear ng-if="$ctrl.canBeEditing"><i class="fas fa-times"></i></span>
+                </span>
+                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="inline" ng-class="{'m-t-sm inline-block' : isMobile.value}">
+        <a href="" class="edit link-decoration-none m-l-xs" ng-click="$ctrl.changeDateTimeMode('select')">Вернуться</a>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span>Менеджер</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <ui-select
+                class="input-alt"
+                ng-model="$ctrl.bookingInfo.managerId"
+                convert-to-number
+                validation-input-text="Менеджер"
+                ng-disabled="!$ctrl.canBeEditing">
+                <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                <ui-select-choices repeat="s.value as s in $ctrl.managers | filter: $select.search">
+                    <div>{{s.label}}</div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            <span class="text-required">Источник</span>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <ui-select
+                class="input-alt ui-select__rigth-text-hidden"
+                ng-model="$ctrl.bookingInfo.orderSourceId"
+                required
+                convert-to-number
+                validation-input-text="Источник"
+                ng-disabled="!$ctrl.canBeEditing">
+                <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                <ui-select-choices repeat="s.value as s in $ctrl.bookingSources | filter: $select.search">
+                    <div>{{s.label}}</div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">Дополнительная информация</div>
+        <div class="col-xs-12 col-md-8">
+            <input
+                type="text"
+                class="form-control input-alt"
+                ng-model="$ctrl.bookingInfo.adminComment"
+                ng-disabled="!$ctrl.canBeEditing"
+                maxlength="255" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,166 @@
+﻿@model BlockModel
+@using AdvantShop.App.Landing.Domain.ColorSchemes
+@using AdvantShop.Diagnostics
+@using Newtonsoft;
+@{
+    var blockId = "block_" + Model.Block.Id;
+    bool? settingFixedOnScroll = Model.Block.TryGetSetting("fixedOnScroll");
+    bool? settingFixedOnScrollMobile = Model.Block.TryGetSetting("fixedOnScrollMobile");
+    bool? runDown = Model.Block.TryGetSetting("runDown");
+    string mediaQueryFixed = "";
+    string transformerHtml = "";
+
+    if (settingFixedOnScroll != null || settingFixedOnScrollMobile != null)
+    {
+        if (settingFixedOnScroll == true && (settingFixedOnScrollMobile == null || settingFixedOnScrollMobile == false))
+        {
+            //only desktop
+            mediaQueryFixed = "(min-width: 64em)";
+        }
+        else if ((settingFixedOnScroll == null || settingFixedOnScroll == false) && settingFixedOnScrollMobile == true)
+        {
+            //only mobile
+            mediaQueryFixed = "(max-width: 63em)";
+        }
+    }
+
+
+    if ((settingFixedOnScroll == true || settingFixedOnScrollMobile == true) && !LpService.Inplace)
+    {
+        transformerHtml = String.Format("data-transformer data-container-limit=\"wrap_{0}\" {1}", blockId, mediaQueryFixed.IsNotEmpty() ? "data-responsive-options=\"'" + mediaQueryFixed + "'\"" : "");
+    }
+
+
+    var background_settings = Model.Block.TryGetSetting("background_settings");
+    var parallax = background_settings != null && background_settings.parallax == true;
+    var isBackgroundFixed = background_settings != null && background_settings.background_fixed == true;
+    string backgroundImage = Model.Block.TryGetValuableSetting<string>("background_image");
+}
+
+@if (Model.Block.TryGetSetting("color_scheme") == "color-scheme--custom")
+{
+    var scheme = new LpColorSchemeService().GetByBlockId(Model.Block.Id);
+    if (scheme != null)
+    {
+        @:<style>
+        @Html.Partial("_CssBlockItem", scheme)
+        @:</style>
+    }
+}
+
+@if (settingFixedOnScroll == true || settingFixedOnScrollMobile == true)
+{
+    @:<div id="wrap_@blockId">
+}
+
+@if (Model.Inplace)
+{
+    <blocks-constructor class="lp-blocks-constructor"
+                        data-ng-class="{'lp-blocks-constructor--hover': app['@(blockId)_hover']}"
+                        data-landingpage-id="@LpService.CurrentLanding.Id"
+                        data-block-id="@Model.Block.Id"
+                        data-name="@Model.Block.Name"
+                        data-type="@Model.Block.Type"
+                        data-sort-order="@Model.Block.SortOrder"
+                        data-is-show-options="::true"></blocks-constructor>
+    <blocks-constructor-container data-ng-mouseenter="app['@(blockId)_hover'] = true"
+                                  data-ng-mouseleave="app['@(blockId)_hover'] = false"
+                                  data-string-id="@blockId"
+                                  data-block-id="@Model.Block.Id"
+                                  class="blocks-constructor-container @(runDown == true ? "lp-block--run_block" : "") @("block-type-" + Model.Block.Type)"
+                                  @Html.Raw(transformerHtml)>
+        <div class="hidden-xs visible-lg ng-cloak lp-block-constructor-hint">@Model.Block.Name, ID блока: @Model.Block.Id</div>
+        
+        @if (Model.ShowStoreClosedWarning)
+        {
+            <div class="color-scheme--light lp-font-size--middle lp-blocks-constructor-store-warning">
+                Вирина закрыта для покупателей. Данный блок не будет показываться. <a href="adminv3/settingstemplate?settingsTemplateTab=common" target="_blank">Изменить настройки</a>
+            </div>
+        }
+        
+        <div id="@blockId"
+             style="@Model.Block.TryGetStyleString(new List<string>(new string[]{"background-size", "background-attachment", "background-position"}))"
+             ng-style="blocksConstructorContainer.data.Settings.style"
+             class="lp-block lp-blocks-constructor-container @(parallax ? "parallax" : isBackgroundFixed ? "background-attachment-fixed" : "background-attachment-scroll") @Model.Block.TryGetClassesString() @(Model.Block.TryGetSetting("full_height") != null && Model.Block.TryGetSetting("full_height") == true ? "block-full-height":"")"
+             ng-class="blocksConstructorContainer.data.Settings.classes"
+             @(parallax ? "data-enllax-type=background data-enllax-url=\"" + backgroundImage + "\"  data-enllax-id=" + blockId + " data-enllax-ratio=.2" : "" )>
+            @try
+            {
+                @Html.Partial(Model.Config.BlockPath, Model)
+            }
+            catch (Exception ex)
+            {
+                Debug.Log.Error(ex);
+
+                <div class="error-render">Ошибка при рендере блока:<br>@ex.Message @ex.StackTrace @ex.InnerException</div>
+                <div>
+                    <a href="javascript:void(0)" ng-click="blocksConstructorContainer.recreateBlock(@Model.Block.Id)">Пересоздать блок с настройками по умолчанию</a>
+                </div>
+            }
+        </div>
+        @if (Model.Block.TryGetSetting("form") != null && Model.Form != null && Model.Form.IsHidden)
+        {
+            var button = Model.Block.TryGetSetting<LpButton>("button");
+            Model.Form.ModalClass = "color-scheme--light"; /*Model.Block.GetQuickViewClass()*/
+            if (button != null && button.Action == "Form")
+            {
+                @Html.Form(Model.Form)
+            }
+        }
+    </blocks-constructor-container>
+}
+else
+{
+    try
+    {
+        var backgroundSettings = Model.Block.TryGetSetting("background_settings");
+        bool? lazyLoadBackground = backgroundSettings != null ? (bool?)backgroundSettings["background_lazy_load_enabled"] : false;
+        bool renderLazyLoadBackground = backgroundImage.IsNotEmpty() && (lazyLoadBackground == null || lazyLoadBackground == true) && LpService.PreviewInAdmin == false;
+
+
+        if (!LpService.ConvertingToHtml)
+        {
+            <div id="@blockId" @Html.Raw(transformerHtml) class="@(runDown == true ? "lp-block--run_block" : "") @("block-type-" + Model.Block.Type)">
+                <div @Html.Raw(parallax ? "data-enllax-type=\"background\" data-enllax-url=\"" + backgroundImage + "\" data-enllax-id=\"" + blockId + "\" data-enllax-ratio=\".4\"" : "")
+                     class="@Model.Block.TryGetClassesString() lp-block @(parallax ? "parallax" : isBackgroundFixed ? "background-attachment-fixed" : "background-attachment-scroll") @(Model.Block.TryGetSetting("full_height") != null && Model.Block.TryGetSetting("full_height") == true ? "block-full-height":"")"
+                     style="@Model.Block.TryGetStyleString(renderLazyLoadBackground ? new List<string>(new string[]{"background-image","background-size", "background-attachment", "background-position"}) : null)"
+                     @Html.Raw(renderLazyLoadBackground ? "data-qazy-background data-background-image=\"" + backgroundImage + "\"" : "")>
+                    @{
+                        try
+                        {
+                            @Html.Partial(Model.Config.BlockPath, Model)
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Log.Error(ex);
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="@Model.Block.TryGetClassesString() lp-block" style="@Model.Block.TryGetStyleString()">
+                @Html.Partial(Model.Config.BlockPath, Model)
+            </div>
+        }
+
+        if (Model.Block.TryGetSetting("form") != null && Model.Form != null && Model.Form.IsHidden)
+        {
+            var button = Model.Block.TryGetSetting<LpButton>("button");
+            Model.Form.ModalClass = "color-scheme--light";
+            if (button != null && button.Action == "Form")
+            {
+                @Html.Form(Model.Form)
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.Log.Error(ex);
+    }
+}
+@if (settingFixedOnScroll == true || settingFixedOnScrollMobile == true)
+{
+    @:</div>
+}

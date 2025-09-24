@@ -1,0 +1,103 @@
+﻿@using AdvantShop.Track
+@using AdvantShop.Core.Services.Landing;
+@model AdvantShop.Web.Admin.ViewModels.Landings.FunnelDetailsViewModel
+
+
+<div class="wrapper">
+    @Html.Back("Типы воронок", Url.AbsoluteActionUrl("CreateFunnel", "Funnels"))
+    <div class="sticky-page-name">
+        <h1 class="page-name-block-text">Создание Воронки</h1>
+        @*<div class="row m-t-lg m-b-md">
+            <div class="col-xs-slim">
+                @if (!string.IsNullOrEmpty(Model.FunnelModel.Video))
+                {
+                    <iframe id="funnelVideo" style="width: 100%; min-width: 480px;  max-width: 540px; height: 270px; display: block; margin: auto;"
+                            src="@Model.FunnelModel.Video" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+                }
+            </div>
+            <div class="col-xs">
+                <h2 class="page-name-block-text m-b-md">@Model.FunnelModel.Name</h2>
+                <div class="border"></div>
+                <div class="m-t-md">
+                    @Html.Raw(Model.FunnelModel.Description)
+                </div>
+            </div>
+        </div>*@
+    </div>
+
+    <div class="ibox m-n">
+        <div class="tasks-navbar">
+            <ul class="nav nav-tabs nav-collapse-tab">
+                <li class="ng-tab nav-item @(Model.Category == LpFunnelCategory.SalesOfGoods ? "active" : "")">
+                    <a href="./funnels/funneldetails?category=SalesOfGoods" class="nav-link">
+                        Продажа товаров
+                    </a>
+                </li>
+                <li class="ng-tab nav-item @(Model.Category == LpFunnelCategory.CollectContacts ? "active" : "")">
+                    <a href="./funnels/funneldetails?category=CollectContacts" class="nav-link">
+                        Сбор контактов + Продажа
+                    </a>
+                </li>
+                <li class="ng-tab nav-item @(Model.Category == LpFunnelCategory.AdditionalSales ? "active" : "")">
+                    <a href="./funnels/funneldetails?category=AdditionalSales" class="nav-link">
+                        Допродажи
+                    </a>
+                </li>
+                <li class="ng-tab nav-item @(Model.Category == LpFunnelCategory.SellingThrowContent ? "active" : "")">
+                    <a href="./funnels/funneldetails?category=SellingThrowContent" class="nav-link">
+                        Продажа через Контент
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @if (Model.Templates.Any())
+    {
+        <div class="funnel-details__wrapper">
+            @foreach (var item in Model.Templates)
+            {
+                <div class="funnel-details__container">
+                    <div class="row funnel">
+                        <div class="col-xs-slim">
+                            <div class="funnel-details__image-wrap">
+                                <div class="funnel-details__image-inner"><img src="@item.ImageSrc" /></div>
+                            </div>
+                        </div>
+                        <div class="col-xs">
+                            <div class="funnel__info funnel__info--padding funnel__info--color-black">
+                                <h3 class="funnel__name">@item.Name</h3>
+                                <div class="funnel__description">@item.Description</div>
+                                <div class="m-t">
+                                    <ui-modal-trigger class="m-r-md"
+                                                      data-controller="'ModalAddLandingSiteCtrl'" controller-as="ctrl" size="lg"  data-backdrop="static"
+                                                      template-url="@Html.GetAssetPath("addLandingSite.html")"
+                                                      data-resolve="{data: {lpType: '@item.TemplateType', template: '@item.Key', 'showStepZero': @(item.TemplateType=="ProductCrossSellDownSell" ? "true" : "false")}}"
+                                                      onclick="return advTrack('@ETrackEvent.Shop_Funnels_ClickTemplate.ToString()');">
+                                        <button class="btn btn-sm m-r-xs btn-success">Выбрать</button>
+                                    </ui-modal-trigger>
+                                    @if (item.Video.IsNotEmpty())
+                                    {
+                                        <span class="inline p-r-md">
+                                            <a magnific-popup="" magnific-popup-options="{type: 'iframe'}" href="@item.Video" class="link-danger">Видео обзор воронки</a>
+                                        </span>
+                                    }
+                                    @if (item.Scheme.IsNotEmpty())
+                                    {
+                                        <span class="inline">
+                                            <a magnific-popup="" href="@item.Scheme"
+                                               onclick="return advTrack('@ETrackEvent.Shop_Funnels_WatchScheme.ToString()');">
+                                                Схема воронки
+                                            </a>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+    }
+</div>

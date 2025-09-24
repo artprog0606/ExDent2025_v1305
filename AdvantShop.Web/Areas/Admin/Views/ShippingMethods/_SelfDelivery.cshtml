@@ -1,0 +1,57 @@
+﻿@using AdvantShop.Localization
+@using Newtonsoft.Json;
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.SelfDeliveryShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.SelfDelivery.PriceOfDelivery")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.ShippingPrice, new { ng_model = "shippingMethod.Params.ShippingPrice", @class = "form-control", required = "required", validation_input_text = T("Admin.ShippingMethods.SelfDelivery.PriceOfDelivery") })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.SelfDelivery.CostOfDelivery")">
+            @*@T("Admin.ShippingMethods.SelfDelivery.PriceInBaseCurrency")<br><br>*@
+            @T("Admin.ShippingMethods.SelfDelivery.ForExample100rub")<br><br>
+            @T("Admin.ShippingMethods.SelfDelivery.IfSeldDeliveryIsFree")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.SelfDelivery.DeliveryTime")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.DeliveryTime, new { ng_model = "shippingMethod.Params.DeliveryTime", @class = "form-control input-alt", })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.SelfDelivery.DeliveryTime")">
+            @T("Admin.ShippingMethods.SelfDelivery.DeliveryTimeAsPeriodOfTime")<br><br>
+            @T("Admin.ShippingMethods.SelfDelivery.ForExample2days")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.warehouses == null || shippingMethod.warehouses.length === 0">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.SelfDelivery.Address")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Address, new { ng_model = "shippingMethod.Params.Address", @class = "form-control input-alt", })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.warehouses == null || shippingMethod.warehouses.length === 0">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <a href="https://yandex.ru/map-constructor/location-tool/" target="_blank">@T("Admin.ShippingMethods.SelfDelivery.Coordinates")</a>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Coordinates, new { ng_model = "shippingMethod.Params.Coordinates", @class = "form-control input-alt", ng_pattern= "/^(\\[)?(\\d+(\\.\\d+)?,[ ]?\\d+(\\.\\d+)?)(\\])?$/i"})
+    </div>
+</div>

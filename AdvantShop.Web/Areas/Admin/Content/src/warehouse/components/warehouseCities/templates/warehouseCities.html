@@ -1,0 +1,25 @@
+<div is-mobile ng-init="$ctrl.init()">
+    <div class="row m-b-sm middle-xs" is-mobile>
+        <div class="col-xs-6 col-md-3 m-b-sm" ng-repeat="item in $ctrl.cities track by item.CityId">
+            <span> {{item.CityName}} </span>
+            <span class="col-slim m-l-xs">
+                <a class="link link-invert link-decoration-none fas fa-trash" ng-click="$ctrl.removeCity($index, item)"></a>
+            </span>
+        </div>
+    </div>
+
+    <div>
+        <ui-modal-trigger
+            size="middle"
+            controller="'ModalSelectCitiesCtrl'"
+            controller-as="ctrl"
+            data-resolve="{params: {countryId: $ctrl.countryId, regionId: $ctrl.regionId}}"
+            template-url="../areas/admin/content/src/_shared/modal/selectCities/selectCities.html"
+            on-close="$ctrl.addCities(result)">
+            <button type="button" ng-class="{'btn btn-sm btn-success':isMobile.value,'btn btn-save btn-default':!isMobile.value}">
+                <span ng-if="!isMobile.value" class="fa fa-plus"></span>
+                {{'Admin.Js.WarehouseCities.Add' | translate}}
+            </button>
+        </ui-modal-trigger>
+    </div>
+</div>

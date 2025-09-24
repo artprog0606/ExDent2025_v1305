@@ -1,0 +1,214 @@
+﻿@using Newtonsoft.Json;
+@using AdvantShop.Core.Services.Landing.Pictures;
+@model PictureLoaderTriggerModel
+
+@{
+
+    var currentPicture = Model.Current.IsNotEmpty() ? Model.Current : (Model.NgCurrent.IsNotEmpty() ? Model.NgCurrent : "");
+    int? imgWidth = Model.WidthPicture.HasValue ? (int?)Model.WidthPicture.Value : (Model.MaxWidthPicture.HasValue ? (int?)Model.MaxWidthPicture.Value : null);
+    int? imgHeight = Model.HeightPicture.HasValue ? (int?)Model.HeightPicture.Value : (Model.MaxHeightPicture.HasValue ? (int?)Model.MaxHeightPicture.Value : null);
+    bool isCustomSizeFull = Model.WidthPicture.HasValue && Model.HeightPicture.HasValue; 
+    string widthStr = imgWidth.HasValue ? String.Format(Model.WidthPicture.HasValue ? "width: {0}px;" : "width=\"{0}\"", imgWidth.Value) : null;
+    string heightStr = imgHeight.HasValue ? String.Format(Model.HeightPicture.HasValue ? "height: {0}px;" : "height=\"{0}\"", imgHeight.Value) : null;
+    string pictureStyle = "";
+  
+    if(isCustomSizeFull){
+         pictureStyle = String.Format("style=\"{0} {1}\"", widthStr, heightStr);
+    }else if(Model.WidthPicture.HasValue){
+         pictureStyle = String.Format("style=\"{0}\" {1}", widthStr, heightStr);
+    }else if (Model.HeightPicture.HasValue){
+        pictureStyle = String.Format("style=\"{0}\" {1}", heightStr, widthStr);
+    }
+   
+    string ngPictureStyle = Model.NgWidthPicture.IsNotEmpty() || Model.NgHeightPicture.IsNotEmpty() ? String.Format("data-ng-style=\"{{width: {0} + 'px', height: {1} + 'px'}}\"", Model.NgWidthPicture, Model.NgHeightPicture): "";
+    string styleSizes = pictureStyle + " " + ngPictureStyle;
+}
+<div class="picture-loader-trigger__wrap @(Model.BackgroundMode == true ? "picture-loader-trigger-backround-wrap" : "")">
+    @if (LpService.Inplace && !LpService.PreviewInAdmin)
+    {
+        var uid = "app['pictureLoaderTrigger_" + Guid.NewGuid() + "_LazyLoadState']";
+        <picture-loader-trigger ng-init="@(uid + "=" + (Model.LazyLoadEnabled != null ? Model.LazyLoadEnabled.ToString().ToLower() : "true"))"
+                                lp-id="@Model.LandingPageId"
+                                block-id="@Model.BlockId"
+                                on-upload-file="@Model.OnUploadFile"
+                                on-upload-by-url="@Model.OnUploadByUrl"
+                                on-delete="@Model.OnDelete"
+                                on-init="@Model.OnInit"
+                                on-upload-icon="@Model.OnUploadIcon"
+                                on-apply="@Model.OnApply"
+                                on-resize="@Model.OnResize"
+                                on-lazy-load-change="@(Model.OnLazyLoadChange.IsNotEmpty() ? Model.OnLazyLoadChange : "subblockInplace.onLazyLoadChange(result)");@(uid) = result;"
+                                parameters="@Model.Parameters"
+                                cropper-params='@(JsonConvert.SerializeObject(Model.CropperParams))'
+                                current="@(Model.Current.IsNotEmpty() ? "'" + Model.Current + "'" : (Model.NgCurrent.IsNotEmpty() ? Model.NgCurrent : "" ) )"
+                                upload-url-file="@Model.UploadUrlFile"
+                                upload-url-by-address="@Model.UploadUrlByAddress"
+                                delete-url="@Model.DeleteUrl"
+                                max-width="@Model.MaxWidth"
+                                max-height="@Model.MaxHeight"
+                                max-width-picture="@Model.MaxWidthPicture"
+                                max-height-picture="@Model.MaxHeightPicture"
+                                delete-picture="@(Model.DeletePicture != null ? Model.DeletePicture.ToString().ToLower() : "true")"
+                                gallery-icons-enabled="@(Model.GalleryIconsEnabled != null ? Model.GalleryIconsEnabled.Value.ToLowerString() : "true")"
+                                lazy-load-enabled="@(uid)"
+                                data-picture-show-type="@(Model.PictureShowType.IsNotEmpty() ? "'" + Model.PictureShowType + "'" : Model.PictureShowType )"
+                                no-photo="areas/landing/frontend/images/nophoto.jpg"
+                                data-background-mode="@Model.BackgroundMode.ToString().ToLower()"
+                                width-picture="@(Model.NgWidthPicture.IsNotEmpty() ? Model.NgWidthPicture : Model.WidthPicture.ToString())"
+                                height-picture="@(Model.NgHeightPicture.IsNotEmpty() ? Model.NgHeightPicture  : Model.HeightPicture.ToString())"
+                                @Html.Raw(Model.Type != null ? "type=\"" + Model.Type.StrName() +"\"" : "")>
+
+            <span picture-loader-replacement>
+
+                @if (Model.NgType != null && Model.NgCurrent.IsNotEmpty())
+                {
+
+
+                    if (Model.BackgroundMode == true)
+                    {
+                        <span class="picture-loader-trigger-image-background" ng-style="{'background-image': 'url(' + pictureLoaderTrigger.imgSrc + ')'}"></span>
+                    }
+                    else
+                    {
+                        <span ng-switch="@Model.NgType === '@(ePictureLoaderImageType.Svg.ToString().ToLower())'">
+                            <span ng-switch-when="true" ng-bind-html="@currentPicture | sanitize">
+                            </span>
+                            <span class="picture-loader-trigger-image-inner" ng-switch-default>
+                                <img ng-src="{{pictureLoaderTrigger.imgSrc}}" class="picture-loader-trigger-image" @Html.Raw(styleSizes) alt="">
+                            </span>
+                        </span>
+                    }
+
+                }
+                else
+                {
+
+                    if (Model.Type == ePictureLoaderImageType.Svg && Model.Current.IsNotEmpty())
+                    {
+                        @Html.Raw(Model.Current)
+                    }
+                    else
+                    {
+                        if (Model.BackgroundMode == true)
+                        {
+                            <span class="picture-loader-trigger-image-background" ng-style="{'background-image': 'url(' + pictureLoaderTrigger.imgSrc + ')'}"></span>
+
+                        }
+                        else
+                        {
+                            <span class="picture-loader-trigger-image-inner">
+                                <img ng-src="{{pictureLoaderTrigger.imgSrc}}" onerror="this.src='./areas/landing/frontend/images/nophoto_cover.png';" @Html.Raw(styleSizes) class="picture-loader-trigger-image" alt="">
+                            </span>
+                        }
+
+                    }
+                }
+
+            </span>
+            <i picture-loader-element-trigger class="subblock-inplace-image-trigger"></i>
+        </picture-loader-trigger>
+    }
+    else
+    {
+        if (Model.Current != null || Model.NgCurrent != null)
+        {
+            var bgImage = "";
+            bool bgImageIsLazyLoad = false;
+
+            if (Model.BackgroundMode == true)
+            {
+
+                bgImageIsLazyLoad = (Model.LazyLoadEnabled == true || Model.LazyLoadEnabled == null) && LpService.Inplace == false;
+            }
+
+            if (Model.NgType != null && Model.NgCurrent.IsNotEmpty())
+            {
+
+                if (Model.BackgroundMode == true)
+                {
+                    bgImage = bgImageIsLazyLoad ? "data-qazy-background data-background-image=\"{{pictureLoaderTrigger.imgSrc}}\"" : "'background-image': 'url(' + pictureLoaderTrigger.imgSrc + ')'";
+                    <span class="picture-loader-trigger-image-background" @Html.Raw(bgImageIsLazyLoad ? bgImage : "") ng-style="{@(bgImageIsLazyLoad == false ? bgImage : "" )}"></span>
+
+                }
+                else
+                {
+                    <span ng-switch="@Model.NgType === '@(ePictureLoaderImageType.Svg.ToString().ToLower())'">
+                        <span ng-switch-when="true" ng-bind-html="@currentPicture | sanitize">
+                        </span>
+                        <span class="picture-loader-trigger-image-inner" ng-switch-default>
+                            <img ng-src="{{pictureLoaderTrigger.imgSrc}}" class="picture-loader-trigger-image" @Html.Raw(styleSizes) alt="">
+                        </span>
+                    </span>
+                }
+            }
+            else
+            {
+                if (Model.Type == ePictureLoaderImageType.Svg)
+                {
+                    @Html.Raw(Model.Current)
+                }
+                else
+                {
+                    if (LpService.PreviewInAdmin || Model.LazyLoadEnabled == false)
+                    {
+                        Model.LazyLoadType = ePictureLoaderLazyLoadType.None;
+                    }
+
+                    string parameterPath;
+
+                    if (Model.PictureShowType.IsNotEmpty())
+                    {
+                        var parameterFileName = Model.Current.Split('/').Last();
+                        var parameterExt = parameterFileName.Split('.').Last();
+                        var parameterName = parameterFileName.Replace("." + parameterExt, "");
+                        var parameterDirectory = Model.Current.Replace(parameterFileName, "");
+                        parameterPath = parameterDirectory.TrimStart('/') + parameterName + "_" + Model.PictureShowType + "." + parameterExt;
+
+                        if (parameterPath.StartsWith("http") || (!parameterPath.StartsWith("http") && !File.Exists(Server.MapPath("~/" + parameterPath))))
+                        {
+                            parameterPath = Model.Current;
+                        }
+                    }
+                    else
+                    {
+                        if (Model.NgCurrent != null)
+                        {
+                            parameterPath = "{{" + Model.NgCurrent + "}}";
+
+                        }
+                        else
+                        {
+                            parameterPath = Model.Current;
+                        }
+
+                    }
+
+
+                    if (Model.BackgroundMode == true)
+                    {
+                        bgImage = bgImageIsLazyLoad ? "data-qazy-background data-background-image=\"" + parameterPath + "\"" : "background-image:url('" + parameterPath + "')";
+                        <div class="picture-loader-trigger-image-background" @Html.Raw(bgImageIsLazyLoad ? bgImage : "") style="@Html.Raw(bgImageIsLazyLoad == false ? bgImage : "" )"></div>
+
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(Model.ImageLink))
+                        {
+
+                            @:<a href="@Model.ImageLink">
+                            }
+                            <span class="picture-loader-trigger-image-inner">
+                                <img @Html.Raw(Model.LazyLoadType.StrName() + "=\"" + parameterPath + "\"") @(Model.LazyLoadType == ePictureLoaderLazyLoadType.Default ? "data-qazy" : "") @Html.Raw(styleSizes) class="picture-loader-trigger-image" alt="">
+
+                            </span>
+                            if (!string.IsNullOrEmpty(Model.ImageLink))
+                            {
+                            @:</a>
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+</div>

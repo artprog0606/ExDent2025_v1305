@@ -1,0 +1,334 @@
+﻿@using AdvantShop.Core.Common.Extensions
+@using AdvantShop.Core.Services.Admin
+@using AdvantShop.ExportImport
+@model AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+        if (AdminAreaTemplate.IsAdminv3() && (Model.Type == EExportFeedType.Csv || Model.Type == EExportFeedType.CsvV2 || Model.Type == EExportFeedType.YandexMarket) && !isMobile)
+        {
+            Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Catalog/_TopContentCatalogLayout.cshtml";
+        }
+    }
+    var isAdminv3 = AdminAreaTemplate.IsAdminv3();
+    var TypeString = Model.Type == EExportFeedType.YandexMarket || Model.Type == EExportFeedType.YandexDirect || Model.Type == EExportFeedType.YandexWebmaster
+                        ? "Csv" 
+                        : Model.Type.StrName();
+    var rnd = new Random().NextDouble();
+
+    Html.AddAsset("exportFeeds");
+}
+<form name="exportFeedForm" novalidate="novalidate">
+    @{ 
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.DefaultTitle = Model.Name;
+        headerModel.ShowOnlySticky = true;
+
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index" + TypeString),
+            NgBackTriggerCallback = "exportFeeds.backInMobile()"
+        };
+
+        headerModel.Controls = new List<IButton>();
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+        {
+                eButtonModificators.OnlyIcon
+                    },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Add,
+             // Attributes = new[] { "ng-show=\"exportFeeds.tabActiveIndex === 4\"" },
+             WrapStart = " <ui-modal-trigger ng-show=\"exportFeeds.tabActiveIndex === 4\" data-controller=\"'ModalAddEditYandexPromoCodeCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/exportfeeds/modal/addEditYandexPromoCode/addEditYandexPromoCode.html\" data-on-close=\"exportFeeds.AddEditYandexPromoCode(result)\" data-resolve=\"{value: { ExportFeedId: exportFeeds.ExportFeedId}}\">",
+             WrapEnd = "</ui-modal-trigger>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 },
+             }
+         }
+    );
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+        {
+                eButtonModificators.OnlyIcon
+                    },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Add,
+             // Attributes = new[] { "ng-show=\"exportFeeds.tabActiveIndex === 5\"" },
+             WrapStart = " <ui-modal-trigger ng-show=\"exportFeeds.tabActiveIndex === 5\" data-controller=\"'ModalAddEditYandexPromoFlashCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/exportfeeds/modal/addEditYandexPromoFlash/addEditYandexPromoFlash.html\" data-on-close=\"exportFeeds.AddEditYandexPromoFlash(result)\" data-resolve=\"{value: { ExportFeedId: exportFeeds.ExportFeedId}}\">",
+             WrapEnd = "</ui-modal-trigger>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 },
+             }
+         }
+    );
+        headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+       {
+                eButtonModificators.OnlyIcon
+                   },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-show=\"exportFeeds.tabActiveIndex === 6\"" },
+            WrapStart = " <ui-modal-trigger ng-show=\"exportFeeds.tabActiveIndex === 6\" data-controller=\"'ModalAddEditYandexPromoGiftCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/exportfeeds/modal/addEditYandexPromoGift/addEditYandexPromoGift.html\" data-on-close=\"exportFeeds.AddEditYandexPromoGift(result)\" data-resolve=\"{value: { ExportFeedId: exportFeeds.ExportFeedId}}\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        }
+   );
+
+        headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+       {
+                eButtonModificators.OnlyIcon
+                   },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-show=\"exportFeeds.tabActiveIndex === 7\"" },
+            WrapStart = " <ui-modal-trigger ng-show=\"exportFeeds.tabActiveIndex === 7\" data-controller=\"'ModalAddEditYandexPromoNPlusMCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/exportfeeds/modal/addEditYandexPromoNPlusM/addEditYandexPromoNPlusM.html\" data-on-close=\"exportFeeds.AddEditYandexPromoNPlusM(result)\" data-resolve=\"{value: { ExportFeedId: exportFeeds.ExportFeedId}}\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        }
+   );
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.OnlyIcon
+                        },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             Attributes = new[] { "ng-show=\"exportFeeds.tabActiveIndex === 1 || exportFeeds.tabActiveIndex === 2 || exportFeeds.tabActiveIndex === 3\"" ,
+                 "ng-disabled=\"!exportFeedForm.modified\"", "type=\"submit\"", "data-button-validation-success=\"exportFeeds.saveExportFeed()\"" },
+             Validation = true,
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "done",
+                 Attributes = new { width = 25, height = 25 }
+             }
+         }
+   );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if=\"exportFeeds.tabActiveIndex === 2 || exportFeeds.tabActiveIndex == null\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"exportFeeds.setNoneExportFeedFields()\"", "type=\"submit\""},
+            RowAttributes = new { ng_if = "exportFeeds.tabActiveIndex === 2" },
+            Text = T("Admin.ExportFeeds.ChoiceOfFields.ResetData"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "refresh",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"exportFeeds.setDefaultExportFeedFields()\"", "type=\"submit\""},
+            RowAttributes = new { ng_if = "exportFeeds.tabActiveIndex === 2" },
+            Text = T("Admin.ExportFeeds.ChoiceOfFields.SetDefaultData"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"exportFeeds.startExport()\"" },
+            Text = T("Экспортировать"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "document-export",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"exportFeeds.deleteExport(" + Model.Id + ")\"" },
+            Text = T("Удалить"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls.Add(moreButton);
+    }
+
+    @Html.Header(headerModel)
+
+
+    <div class="wrapper" ng-init="exportFeeds.exportFeedForm=exportFeedForm">
+        <div class="row" ng-init="exportFeeds.init(@Model.Id, '@TypeString.ToLower()')">
+            <div class="col-xs">
+                @if (isAdminv3 && !isMobile)
+                {
+                    <div class="m-b-xs">
+                        @Html.Back(T("Admin.ExportFeed.ComeBackToList").ToString(), Url.AbsoluteActionUrl("Index" + TypeString))
+                    </div>
+                }
+
+                @if(!isMobile)
+                {
+                    <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="">
+                            <h1 class="page-name-block-text sticky-page-name-text m-b-xs">
+                                @Model.Name
+                            </h1>
+
+                            @if (Model.LastExport.HasValue || !string.IsNullOrEmpty(Model.LastExportFileFullName))
+                            {
+                                <div>
+                                    @T("Admin.ExportFeed.FileLink")
+                                    <a href="@(SettingsMain.SiteUrl + '/' + Model.LastExportFileFullName + "?rnd="+rnd)" target="_blank">@Model.LastExportFileFullName</a>
+                                </div>
+                                
+                                <div>
+                                    @T("Admin.ExportFeed.DateCreated")
+                                    @(((DateTime)Model.LastExport).ToString("dd.MM.yyyy H:mm"))
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    @T("Admin.ExportFeeds.Index.WasNotExported")
+                                </div>
+                            }
+                            @if (!isAdminv3)
+                            {
+                                <div class="export-feed-comeback-link">
+                                    <a data-e2e="ComebackLink" href="@Url.AbsoluteActionUrl("Index" + TypeString)">
+                                        @T("Admin.ExportFeed.ComeBackToList")
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <div class="page-name-block-item-additional">
+                            <a data-e2e="DeleteExport" href="" class="link-danger m-r-sm" ng-click="@("exportFeeds.deleteExport(" + @Model.Id + ")")">
+                                @T("Admin.ExportFeeds.Index.Delete")</a>
+                            <button class="btn btn-sm btn-success m-l-xs" data-e2e="Export" type="button"
+                                    data-button-validation=""
+                                    data-button-validation-success="@("exportFeeds.startExport()")">
+                                @T("Admin.ExportFeeed.ChoiceOfProducts.Export")
+                            </button>
+                            <button data-e2e="ButtonSave" type="submit" class="btn btn-sm btn-success"
+                                    data-button-validation=""
+                                    data-button-validation-success="exportFeeds.saveExportFeed()"
+                                    ng-disabled="!exportFeedForm.modified"
+                                    disabled>
+                                <i class="fa fa-check"></i>
+                                @T("Admin.Save")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+                
+                <div class="ibox">
+                    <div class="ibox-content settings-block">
+                        <div class="form-horizontal">
+                            @Html.AntiForgeryToken()
+                            <div class="error">
+                                @Html.ValidationSummary()
+                            </div>
+
+                            <uib-tabset active uid="exportfeedtab" on-select-batch="exportFeeds.onSelectTab(tab.index)"
+                                        @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+                                <uib-tab index="1" heading="@T("Admin.ExportFeeds.Index.SelectionGoods")" classes="ng-tab">
+                                    @Html.Partial("ChoiceOfProducts", Model)
+                                </uib-tab>
+                                @if (Model.Type == AdvantShop.ExportImport.EExportFeedType.Csv ||
+                                     Model.Type == AdvantShop.ExportImport.EExportFeedType.Reseller)
+                                {
+                            <uib-tab index="2" heading="@T("Admin.ExportFeeds.Index.ExportingFields")" classes="ng-tab">
+                                @Html.Action("ChoiceOfFields", "ExportFeeds", new { exportFeedId = Model.Id, exportFeedType = Model.Type.ToString() })
+                            </uib-tab> }
+                                        else if (Model.Type == AdvantShop.ExportImport.EExportFeedType.CsvV2)
+                                        {
+                            <uib-tab index="2" heading="@T("Admin.ExportFeeds.Index.ExportingFields")" classes="ng-tab">
+                                @Html.Action("ChoiceOfCsvFieldsV2", "ExportFeeds", new { exportFeedId = Model.Id, advancedSettings = Model.ExportFeedSettings.AdvancedSettings })
+                            </uib-tab>}
+                                <uib-tab index="3" heading="@T("Admin.ExportFeeds.Index.ExportParameters")" classes="ng-tab">
+                                    @Html.Partial("ExportFeedSettings", Model)
+                                </uib-tab>
+                                @if (Model.Type == AdvantShop.ExportImport.EExportFeedType.YandexMarket || Model.Type == AdvantShop.ExportImport.EExportFeedType.YandexDirect || Model.Type == AdvantShop.ExportImport.EExportFeedType.YandexWebmaster)
+                                {
+                            <uib-tab index="4" heading="@T("Admin.ExportFeed.YandexPromoCode")" classes="ng-tab">
+                                @Html.Action("YandexPromoCode", "ExportFeeds", new { exportFeed = Model })
+                            </uib-tab>
+                                            <uib-tab index="5" heading="@T("Admin.ExportFeed.YandexPromoFlash")" classes="ng-tab">
+                                                @Html.Action("YandexPromoFlash", "ExportFeeds", new { exportFeed = Model })
+                                            </uib-tab>
+                                                            <uib-tab index="6" heading="@T("Admin.ExportFeed.YandexPromoGift")" classes="ng-tab">
+                                                                @Html.Action("YandexPromoGift", "ExportFeeds", new { exportFeed = Model })
+                                                            </uib-tab>
+                                                                            <uib-tab index="7" heading="@T("Admin.ExportFeed.YandexPromoNPlusM")" classes="ng-tab">
+                                                                                @Html.Action("YandexPromoNPlusM", "ExportFeeds", new { exportFeed = Model })
+                                                                            </uib-tab>}
+                            </uib-tabset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

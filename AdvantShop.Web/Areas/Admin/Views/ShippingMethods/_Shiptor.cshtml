@@ -1,0 +1,71 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.ShiptorShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Виджет ключ</span>
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ApiKey", @class = "form-control input-alt", required = "required", validation_input_text = "Виджет ключ" })
+    </div>
+</div>
+@Html.HiddenFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ExistApi" })
+
+<div class="form-group row middle-xs setting__form-group" ng-if="!shippingMethod.Params.ExistApi">
+    <div class="col-xs-12">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            Укажите "Виджет ключ" и сохраните настройки метода для отображения дополнительных настроек
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Название группирующего метода доставки в ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.PickupName, new { ng_model = "shippingMethod.Params.PickupName", @class = "form-control input-alt", required = "required", validation_input_text = "Название группирующего метода доставки в ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Наложенный платеж картой</span>
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.PaymentCodCardId, Model.PaymentsCod, new { ng_model = "shippingMethod.Params.PaymentCodCardId", @class = "form-control input-alt", validation_input_text = "Наложенный платеж картой" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Наложенный платеж картой">
+            Наложенный платеж, который будет считаться наложенным платежом с оплатой банковской картой
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="WithInsure">Со страховкой</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            Необходим для подключения поисковой строки по карте<br />
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Partial("_SyncStatuses", Model)

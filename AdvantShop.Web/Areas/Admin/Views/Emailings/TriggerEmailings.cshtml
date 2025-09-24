@@ -1,0 +1,91 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Emailings.TriggerAnalyticsViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Triggers/_TriggersLayout.cshtml";
+    }
+
+    Html.AddAsset("emailings");
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+        headerModel.Controls = new List<IButton>();
+        headerModel.DefaultTitle = "Аналитика Email";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Edit", "Triggers", new { id = Model.TriggerId })
+        };
+        
+        @Html.Header(headerModel)
+    }
+}
+@if (!isMobile)
+{
+    <div class="m-b-sm">
+        @Html.Back("Триггер \"" + Model.Name + "\"", Url.AbsoluteActionUrl("Edit", "Triggers", new { id = Model.TriggerId }))
+    </div>
+
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text">@T("Admin.Analytics.EmailingAnalytics")</h1>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!SettingsMail.UseAdvantshopMail)
+{
+    @Html.Partial("AnalyticsUnavailable")
+}
+else
+{
+    <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+        <div class="m-b">
+            <div class="row m-b-xs">
+                <div class="col-xs-12 @(isMobile ? "setting__label m-b-xs" : "")">
+                    Временной интервал:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 flex middle-xs @(isMobile ? "" : "flex-wrap")">
+                    <div class="input-group @(isMobile ? "flex flex-nowrap" : "inline")" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}" fp-on-change="triggerAnalytics.fetch()">
+                        <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                            <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="triggerAnalytics.dateFrom">
+                        </span>
+                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                    <div class="inline m-l-sm m-r-sm" style="">-</div>
+                    <div class="input-group @(isMobile ? "flex flex-nowrap" : "inline")" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}" fp-on-change="triggerAnalytics.fetch()">
+                        <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                            <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="triggerAnalytics.dateTo">
+                        </span>
+                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @foreach (var action in Model.TriggerActions)
+        {
+            <emailing-analytics emailing-id="@action.EmailingId"
+                                email-subject="@action.SendEmailData.EmailSubject"
+                                send-time="@(action.TimeDelay == null || action.TimeDelay.Interval == 0 ? "сразу" : string.Format("через {0} {1}", action.TimeDelay.Interval, action.TimeDelay.Numeral()))"
+                                email-log-url="'@UrlService.GetUrl("adminv2/emailings/log/" + action.EmailingId)?grid='"
+                                email-data-url="emailings/getTriggerEmailingsAnalytics"
+                                email-date-from="triggerAnalytics.dateFrom"
+                                email-date-to="triggerAnalytics.dateTo"
+                                hide-flatpickr="true"
+                                hide-come-back-link="true"
+                                request-params="{'triggerId': @Model.TriggerId}">
+            </emailing-analytics>
+        }
+    </div>
+}

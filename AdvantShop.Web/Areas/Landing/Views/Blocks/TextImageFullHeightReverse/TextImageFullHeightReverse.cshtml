@@ -1,0 +1,55 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+<div class="text-image-full-height__inner-wrap">
+    <div class="text-image-full-height__inner">
+
+        <div class="flex flex-wrap middle-xs">
+            <div class="text-image-full-height__content">
+                <div class="flex middle-xs full-height">
+                    <div class="flex-grow text-image-full-height__content-inner @(Model.Block.TryGetSetting("columnBackground") == true ? "color-scheme__bg--alt color-scheme__text-alt" : "")">
+                        @Html.BlockHeader(Model)
+                        <div class="lp-h3--color text-image-full-height__text lp-block-text--middle lp-font-size--middle" data-e2e="textImageText">
+                            @Html.SubBlock(Model, "text")
+                        </div>
+                        @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                        {
+                            <div class="text-image-full-height__buttons-wrap">
+                                <div class="row @Model.Block.TryGetSetting("align_btns")">
+                                    <div class="col-xs-12">
+                                        <div class="lp-btn-group @Model.Block.TryGetSetting("align_btns")">
+                                            @if (Model.Block.TryGetSetting("show_button") == true)
+                                            {
+                                                <div class="lp-btn-group__item--indent" data-e2e="textImageBtn1">
+                                                    @Html.Button(Model.Block, "button")
+                                                </div>
+                                            }
+                                            @if (Model.Block.TryGetSetting("show_button2") == true)
+                                            {
+                                                <div class="lp-btn-group__item--indent" data-e2e="textImageBtn2">
+                                                    @Html.Button(Model.Block, "button2")
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="text-image-full-height__picture-wrap" data-e2e="textImagePicture">
+                @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                {
+                    DeletePicture = false,
+                    GalleryIconsEnabled = false,
+                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                    MaxWidthPicture = PictureLoaderImageSize.LargeWidth,
+                    MaxHeightPicture = PictureLoaderImageSize.LargeWidth,
+                    ImageLink = Model.Block.TryGetSetting("image_link")
+                }, Model.Inplace)
+            </div>
+        </div>
+
+    </div>
+</div>

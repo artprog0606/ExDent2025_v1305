@@ -1,0 +1,57 @@
+﻿@model AdvantShop.Web.Admin.Models.Crm.Leads.CrmNavMenuModel
+@foreach (var salesFunnel in Model.SaleFunnels)
+{
+    <li class="dropdown-submenu">
+        <a href="@Url.AbsoluteActionUrl("Index", "Leads", new {salesFunnelId = salesFunnel.Id})">
+            @salesFunnel.Name
+        </a>
+    </li>
+}
+@if (Model.SaleFunnels != null && Model.SaleFunnels.Any())
+{
+    <li class="divider divider-small">
+    </li>
+}
+<li class="dropdown-submenu">
+    <a href="@Url.AbsoluteActionUrl("Index", "Leads", new {salesFunnelId = -1, useKanban = false})">
+        @T("Admin.Leads.CrmNavMenu.ControlLeads")
+    </a>
+</li>
+
+@if (Model.IsFullAccess)
+{
+    <li class="dropdown-submenu">
+        <a href="@Url.AbsoluteActionUrl("Index", "settingscrm")">
+            @T("Admin.Leads.CrmNavMenu.SettingsList")
+        </a>
+    </li>
+}
+
+@if ((!AdvantShop.Saas.SaasDataService.IsSaasEnabled || AdvantShop.Saas.SaasDataService.CurrentSaasData.HaveCrm) && Model.IsFullAccess)
+{
+    <li class="divider divider-small">
+    </li>
+    if (Model.ExcludeLeadListId > 0)
+    {
+        <li class="dropdown-submenu">
+            <a href="">
+                <ui-modal-trigger data-controller="'ModalAddEditSalesFunnelCtrl'" controller-as="ctrl" size="middle"
+                                  template-url="@Html.GetAssetPath("addEditSalesFunnel.html")"
+                                  data-on-close="leads.updateSalesFunnel(result)"
+                                  data-resolve="{'Id': @Model.ExcludeLeadListId}"
+                                  class="m-r-sm">
+                    @T("Admin.Leads.CrmNavMenu.EditCurrentList")
+                </ui-modal-trigger>
+            </a>
+        </li>
+    }
+
+    <li class="dropdown-submenu">
+        <a href="" class="js-menu-link">
+            <ui-modal-trigger data-controller="'ModalAddEditSalesFunnelCtrl'" controller-as="ctrl" size="middle"
+                              template-url="@Html.GetAssetPath("addEditSalesFunnel.html")">
+                @T("Admin.Leads.CrmNavMenu.AddFunnel")
+            </ui-modal-trigger>
+        </a>
+    </li>
+}

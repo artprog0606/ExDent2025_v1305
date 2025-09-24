@@ -1,0 +1,115 @@
+﻿<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.background_image !== undefined">
+    <div class="blocks-constructor-row__name bold">Фоновое изображение</div>
+    <picture-loader-trigger
+        data-lp-id="{{$ctrl.modalData.landingpageId}}"
+        data-block-id="{{$ctrl.modalData.blockId}}"
+        data-lp-setting="$ctrl.modalData.data"
+        data-delete-picture="true"
+        data-current="$ctrl.modalData.settings.background_image"
+        data-max-width-picture="{{::$ctrl.pictureMaxSize.wallWidth}}"
+        data-max-height-picture="{{:: $ctrl.pictureMaxSize.wallHeight}}"
+        data-on-upload-by-url="$ctrl.onUpdateFileBackground(result)"
+        data-on-upload-file="$ctrl.onUpdateFileBackground(result)"
+        data-on-delete="$ctrl.onUpdateFileBackground(result)"
+        data-gallery-icons-enabled="false"
+        data-use-external-save="true"
+        data-external-save="$ctrl.pictureLoaderSave(pictureLoader, saveFn, base64String)"
+        on-lazy-load-change="$ctrl.onBackgroundLazyLoadChange(result)"
+        lazy-load-enabled="$ctrl.modalData.settings.background_settings.background_lazy_load_enabled"
+        on-change-state="$ctrl.setDissalowSave(state)"
+        alllow-change-size="false">
+        <div class="picture-loader-trigger-image-wrap cursor" picture-loader-element-trigger>
+            <img
+                data-e2e="ImgPicture"
+                ng-src="{{$ctrl.modalData.settings.background_image || './areas/landing/frontend/images/nophoto_cover.png'}}"
+                class="blocks-constructor-picture--as-background"
+                alt="" />
+            <button type="button" data-e2e="UpdatePicture" picture-loader-element-trigger class="blocks-constructor-picture-update">
+                <svg
+                    class="blocks-constructor-picture-update-icon"
+                    width="16px"
+                    height="16px"
+                    viewBox="0 0 16 16"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <path
+                        fill="currentColor"
+                        d="M15.3846154,0.0683760684 C15.0700855,0.0683760684 14.8239316,0.314529915 14.8239316,0.629059829 L14.8239316,3.95213675 C13.4153846,1.58632479 10.8581197,0.0683760684 8,0.0683760684 C3.62393162,0.0683760684 0.0683760684,3.62393162 0.0683760684,8.01367521 C0.0683760684,12.4034188 3.62393162,15.9452991 8,15.9452991 C12.3760684,15.9452991 15.9316239,12.3897436 15.9316239,8.01367521 C15.9316239,7.6991453 15.6854701,7.45299145 15.3709402,7.45299145 C15.0564103,7.45299145 14.8102564,7.6991453 14.8102564,8.01367521 C14.8102564,11.774359 11.7470085,14.8376068 7.98632479,14.8376068 C4.22564103,14.8376068 1.17606838,11.7606838 1.17606838,8 C1.17606838,4.23931624 4.23931624,1.17606838 8,1.17606838 C10.6940171,1.17606838 13.1008547,2.74871795 14.1948718,5.15555556 L10.2700855,5.15555556 C9.95555556,5.15555556 9.70940171,5.4017094 9.70940171,5.71623932 C9.70940171,6.03076923 9.95555556,6.27692308 10.2700855,6.27692308 L15.3709402,6.27692308 C15.6854701,6.27692308 15.9316239,6.03076923 15.9316239,5.71623932 L15.9316239,0.615384615 C15.9316239,0.314529915 15.6854701,0.0683760684 15.3846154,0.0683760684 Z"
+                        id="Shape"></path>
+                </svg>
+                Обновить изображение
+            </button>
+        </div>
+    </picture-loader-trigger>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.background_image != null && $ctrl.modalData.settings.background_image.length > 0">
+    <div class="blocks-constructor-row__name">Поведение</div>
+    <span class="blocks-constructor-select">
+        <select
+            data-e2e="BehaviorBackground"
+            ng-model="$ctrl.backgroundSettings"
+            on-change="$ctrl.changeBackgroundSettings($ctrl.backgroundSettings)"
+            disabled-autobind>
+            <option value="" selected="selected">Не выбрано</option>
+            <option value="background_fixed">Фиксированный фон</option>
+            <option value="parallax">Параллакс</option>
+        </select>
+    </span>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.darken !== undefined">
+    <!--ng-if="$ctrl.modalData.settings.background_image != null && $ctrl.modalData.settings.background_image.length > 0"-->
+    <div class="blocks-constructor-row__name">Затемнение фона</div>
+    <span
+        class="blocks-constructor-slider"
+        data-e2e="ShadingBackground"
+        range-slider
+        pin-handle="min"
+        decimal-places="1"
+        min="$ctrl.rangeSlider.min"
+        max="$ctrl.rangeSlider.max"
+        model-max="$ctrl.modalData.settings.darken"
+        step="$ctrl.rangeSlider.step"
+        show-inputs="false"
+        show-values="false"
+        on-handle-move-up="$ctrl.rangeSlider.change(event, modelMin, modelMax)"></span>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.darkenItems != null">
+    <!--ng-if="$ctrl.modalData.settings.background_image != null && $ctrl.modalData.settings.background_image.length > 0"-->
+    <div class="blocks-constructor-row__name">Затемнение фона у вложенных блоков</div>
+    <span
+        class="blocks-constructor-slider"
+        data-e2e="ShadingBackgroundItem"
+        range-slider
+        pin-handle="min"
+        decimal-places="1"
+        min="$ctrl.rangeSlider.min"
+        max="$ctrl.rangeSlider.max"
+        model-max="$ctrl.modalData.settings.darkenItems"
+        step="$ctrl.rangeSlider.step"
+        show-inputs="false"
+        show-values="false"
+        on-handle-move-up="$ctrl.rangeSlider.changeItems(event, modelMin, modelMax)"></span>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.useEffectZoom != null">
+    <label class="blocks-constructor-label" data-e2e="EffectZoom">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.useEffectZoom" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Увеличение изображения при наведении </span>
+    </label>
+</div>
+
+<div ng-include="'areas/landing/frontend/_common/blocks-constructor/templates/partials/_system-manipulation.html'"></div>
+
+<div ng-if="$ctrl.modalData.data.ReferenceBlocks != null && $ctrl.modalData.data.ReferenceBlocks.length > 0">
+    <div class="blocks-constructor-row">
+        <div class="blocks-constructor-row__name bold">Блоки, в которых используется данный блок</div>
+        <div class="blocks-constructor-row__name" ng-repeat="item in $ctrl.modalData.data.ReferenceBlocks">
+            <a href="{{item.Url}}" target="_blank">{{item.Id}}</a>
+        </div>
+    </div>
+</div>

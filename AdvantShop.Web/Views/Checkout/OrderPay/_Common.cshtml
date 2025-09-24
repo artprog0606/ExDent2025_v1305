@@ -1,0 +1,40 @@
+﻿@using AdvantShop.Payment
+@model AdvantShop.Core.Services.Payment.OrderPayModel
+
+@{
+    var classType =
+        Model.PageWithPaymentButton == PageWithPaymentButton.myaccount
+            ? "btn-confirm"
+            : "btn-submit";
+    var classSize =
+        Model.PageWithPaymentButton == PageWithPaymentButton.myaccount
+            ? "btn-small"
+            : "btn-middle";
+}
+
+@Html.Raw(Model.Javascript)
+
+@if (Model.PaymentForm != null)
+{
+    <form name="@Model.PaymentForm.FormName" method="@Model.PaymentForm.Method" action="@Model.PaymentForm.Url" accept-charset="@Model.PaymentForm.Encoding.WebName">
+        @foreach (var key in Model.PaymentForm.InputValues.AllKeys)
+        {
+            var values = Model.PaymentForm.InputValues.GetValues(key);
+            if (values != null)
+            {
+                foreach (var value in values)
+                {
+                    <input name="@key" type="hidden" value="@value"/>
+                }
+            }
+        }
+    </form>
+}
+
+<span class="btn-c" onclick="@Model.ButtonOnClick">
+    <a class="btn btn--pay @classType @classSize"
+       href="@(Model.ButtonHref ?? "javascript:void(0);")"
+       @(!Model.ValidationDisabled ? "data-button-validation": "")>
+        @Model.PaymentMethod.ButtonText
+    </a>
+</span>

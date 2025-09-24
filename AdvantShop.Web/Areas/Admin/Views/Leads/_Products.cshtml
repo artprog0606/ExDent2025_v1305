@@ -1,0 +1,186 @@
+﻿@model AdvantShop.Web.Admin.Models.Crm.Leads.LeadModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox @(isMobile ? "container-fluid" : "m-b")" ng-init="lead.hasComment=@((!string.IsNullOrEmpty(Model.Lead.Comment)).ToLowerString())"
+     ng-show="lead.gridLeadItemsOptions.data.length > 0 || lead.hasComment || (lead.hasComment == null && @((!string.IsNullOrEmpty(Model.Lead.Comment)).ToLowerString()))">
+    @if (isMobile)
+    {
+        <hr class="delimiter delimiter--negative-popup" />
+    }
+    <div class="ibox-content">
+        <div class="m-b-md" ng-if="lead.gridLeadItemsOptions.data.length > 0">
+            <h1 class="@(isMobile ? "form-control-title form-control-title--middle setting__subtitle" : "page-name-block-text m-b-sm")">
+                Адрес
+            </h1>
+            <div class="m-b-xs">
+                    @if(Model.Lead.CustomerId.HasValue != null){
+                        <ui-modal-trigger data-controller="'ModalChangeOrderAddressCtrl'"
+                                          data-controller-as="ctrl"
+                                          data-resolve="{ params: { customerId: '@Model.Lead.CustomerId' }}"
+                                          data-on-close="lead.onSelectAddress(result)"
+                                          template-url="@Html.GetAssetPath("orderCustomerChangeAddress.html")">
+                            <a href="" class="m-b inline-block" data-e2e="ChangeAddress">
+                                Выбрать адрес
+                            </a>
+                        </ui-modal-trigger>
+                    }
+                <div class="row">
+                    <div class="col-xs-12 col-md-3">
+                        <div class="row @(isMobile ? "setting__form-group" : "m-b") relative">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.City")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Lead.City, new
+                                {
+                                    @class = "form-control input-alt",
+                                    ng_model = "lead.instance.lead.City",
+                                    autocompleter_address = "",
+                                    on_select = "lead.processCity(leadForm, item)",
+                                    ng_blur = "orderCustomerForm['Lead.City'].modified === true && lead.processCitylead(orderCustomerForm)"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <div class="row @(isMobile ? "setting__form-group" : "m-b")">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.District")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Lead.District, new
+                                {
+                                    @class = "form-control input-alt",
+                                    ng_model = "lead.instance.lead.District",
+                                    ng_blur = "lead.saveAddress()"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <div class="row @(isMobile ? "setting__form-group" : "m-b") relative">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Region")</label>
+                            </div>
+                            <div class="col-xs-12">
+
+                                @Html.TextBoxFor(x => x.Lead.Region, new
+                                {
+                                    @class = "form-control input-alt",
+                                    ng_model = "lead.instance.lead.Region",
+                                    ng_blur = "lead.saveAddress()",
+                                    autocompleter = "",
+                                    on_type = "region"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <div class="row @(isMobile ? "setting__form-group" : "m-b") relative">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Country")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Lead.Country, new
+                                {
+                                    @class = "form-control input-alt",
+                                    ng_model = "lead.instance.lead.Country",
+                                    ng_blur = "lead.saveAddress()",
+                                    autocompleter = "",
+                                    on_type = "country"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <div class="row @(isMobile ? "" : "m-b")">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Zip")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Lead.Zip, new
+                                {
+                                    @class = "form-control input-alt",
+                                    ng_model = "lead.instance.lead.Zip",
+                                    ng_blur = "lead.saveAddress()"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-b-sm clearfix" ng-if="lead.gridLeadItemsOptions.data.length > 0">
+            <div class="row between-xs @(isMobile ? "middle-xs" : "")">
+                <div class="col-xs">
+                    <div class="flex between-xs inline">
+                        <h1 style="@(isMobile ? "margin-bottom:0;" : "")" class="@(isMobile ? "form-control-title form-control-title--middle setting__subtitle" : "page-name-block-text m-b-xs")">
+                            @T("Admin.Leads.Products.Goods")
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-xs-slim">
+                    <ui-modal-trigger ng-if="!lead.readOnly" class="link" size="xs-11" data-controller="'ModalOffersSelectvizrCtrl'" data-controller-as="ctrl"
+                                      data-on-close="lead.addLeadItems(result)"
+                                      template-url="@Html.GetAssetPath("offersSelectvizrModal.html")">
+                        <button type="button" class="btn @(isMobile ? "btn-link" : "btn-sm btn-success")" data-e2e="LeadProductAdd">
+                            @if (isMobile == false)
+                            {
+                                <span class="fa fa-plus"></span>
+                            }
+                            @T("Admin.Leads.Product.AddGoods")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="m-b" ng-show="lead.gridLeadItemsOptions.data.length > 0 || lead.hasComment">
+            <div ng-show="lead.gridLeadItemsOptions.data.length > 0">
+                <ui-grid-custom grid-unique-id="gridLeadItems"
+                                grid-on-init="lead.gridLeadItemsOnInit(grid)"
+                                grid-filter-enabled="false"
+                                grid-pagination-enabled="true"
+                                grid-selection-enabled="false"
+                                grid-params="{leadId: lead.instance.Id}"
+                                grid-options="lead.gridLeadItemsOptions"
+                                grid-url="'leads/getLeadItems'"
+                                grid-inplace-url="'leads/updateLeadItem'"
+                                grid-on-inplace-apply="lead.gridLeadItemUpdate()"
+                                grid-on-delete="lead.gridLeadItemDelete()"
+                                grid-empty-text="'@T("Admin.Leads.Products.SelectGoods")'"
+                                grid-extend-ctrl="lead"
+                                grid-swipe-line="true">
+                    @if (isMobile)
+                    {
+                        <ui-grid-custom-override-control class="ng-cloak">
+                            <div data-product-grid-item
+                                 data-row="row"
+                                 data-grid-scope="grid.appScope"
+                                 data-renderer-columns="colContainer.renderedColumns"></div>
+                        </ui-grid-custom-override-control>
+                    }
+                </ui-grid-custom>
+            </div>
+            <div class="row">
+                @if (!string.IsNullOrEmpty(Model.Lead.Comment))
+                {
+                    <div class="col-xs-6 m-t">
+                        <h3 class="m-b-xs">@T("Admin.Leads.Products.UsersComment")</h3>
+                        <div class="pre-line" ng-non-bindable>@Html.Raw(HttpUtility.HtmlEncode(Model.Lead.Comment.Replace("<br>", "-br-").Replace("<br/>", "-br-")).Replace("-br-", "<br>"))</div>
+                    </div>
+                }
+                <div class="col-xs" ng-show="lead.gridLeadItemsOptions.data.length > 0">
+                    <lead-items-summary data-lead-id="lead.instance.Id"
+                                        on-init="lead.initLeadItemsSummary(leadItemsSummary)"
+                                        on-change-discount="lead.leadItemsSummaryUpdate()"
+                                        on-change-address="lead.onChangeAddress(address)"
+                                        readonly="lead.readOnly">
+                    </lead-items-summary>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

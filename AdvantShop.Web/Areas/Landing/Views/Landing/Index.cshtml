@@ -1,0 +1,54 @@
+﻿@using AdvantShop.App.Landing.Domain.Common
+@model IndexViewModel
+
+<div class="lp-main">
+    @foreach (var block in Model.BlocksOnAllPagesTop)
+    {
+        @Html.Block(block.Id, useCache: false)
+    }
+
+    @if (Model.Blocks.Count > 0)
+    {
+        foreach (var block in Model.Blocks)
+        {
+            @Html.Block(block.Id, useCache: !block.NoCache && !block.ShowOnAllPagesTop && !block.ShowOnAllPagesBottom)
+        }
+    }
+
+    @if (LpService.ShowShoppingCart)
+    {
+        <button type="button" class="lp-cart-trigger lp-cart-trigger--fixed" data-modal-open="modalLpCartPopup">
+            <svg class="lp-cart-trigger__icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 510 510">
+                <path fill="currentColor" d="M153,408c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51S181.05,408,153,408z M0,0v51h51l91.8,193.8L107.1,306
+			c-2.55,7.65-5.1,17.85-5.1,25.5c0,28.05,22.95,51,51,51h306v-51H163.2c-2.55,0-5.1-2.55-5.1-5.1v-2.551l22.95-43.35h188.7
+			c20.4,0,35.7-10.2,43.35-25.5L504.9,89.25c5.1-5.1,5.1-7.65,5.1-12.75c0-15.3-10.2-25.5-25.5-25.5H107.1L84.15,0H0z M408,408
+			c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51S436.05,408,408,408z" />
+            </svg>
+            @if (Model.ShoppingCartType == ELpShoppingCartType.Goods)
+            {
+                <span class="lp-cart-trigger__count" data-cart-count data-ng-bind-html="cartCount.getValue()">@AdvantShop.Orders.ShoppingCartService.CurrentShoppingCart.TotalItems</span>
+            }
+            @if (Model.ShoppingCartType == ELpShoppingCartType.Booking)
+            {
+                <span class="lp-cart-trigger__count" data-booking-cart-count data-ng-bind-html="bookingCartCount.getValue()">@AdvantShop.Core.Services.Booking.Cart.ShoppingCartService.CurrentShoppingCart.Count</span>
+            }
+        </button>
+
+        <lp-cart-popup data-lp-id="@Model.LandingPage.Id" data-type="@Model.ShoppingCartType.ToString().ToLower()" data-hide-shipping="@Model.ShoppingCartHideShipping.ToLowerString()"></lp-cart-popup>
+    }
+
+    @foreach (var block in Model.BlocksOnAllPagesBottom)
+    {
+        @Html.Block(block.Id, useCache: false)
+    }
+</div>
+
+@if (LpService.Inplace)
+{
+    <div class="lp-blocks-constructor-empty">
+        <blocks-constructor-container>
+            <blocks-constructor data-landingpage-id="@Model.LandingPage.Id" />
+        </blocks-constructor-container>
+    </div>
+}
+

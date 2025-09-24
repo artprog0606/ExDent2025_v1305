@@ -1,0 +1,130 @@
+﻿<div is-mobile class="relative processing" ng-class="{'booking-processing': $ctrl.isProcessing}">
+    <div class="sortable-row" ng-model="$ctrl.items" as-sortable="$ctrl.sortableOptions">
+        <div ng-if="!isMobile.value" class="row" ng-repeat="item in $ctrl.items" as-sortable-item ng-cloak>
+            <div class="col-xs-12">
+                <div
+                    class="flex payment-row middle-xs between-xs"
+                    ng-class="{'disabled-row': (!item.Enabled || ($ctrl.bindingToAffiliate && !item.AffiliateId))}">
+                    <div class="flex middle-xs col-xs">
+                        <div class="as-sortable-item-handle" as-sortable-item-handle ng-if="item.Id != null">
+                            <icon-move />
+                        </div>
+                        <span class="shipping-text" ng-if="item.Id != null">
+                            <a ng-href="bookingcategory/view/{{item.Id}}" ng-if="item.AffiliateId">{{item.Name}}</a>
+                            <span ng-if="!item.AffiliateId">{{item.Name}}</span>
+                        </span>
+                        <span class="shipping-text col-xs-12" ng-if="item.Id == null">
+                            <input type="text" class="form-control" ng-model="$ctrl.newName" data-e2e="ListBookingCategoriesName" />
+                        </span>
+                    </div>
+                    <div class="flex middle-xs" ng-if="$ctrl.bindingToAffiliate && item.Id != null">
+                        <div class="booking-categories-switcher">
+                            <switcher-state
+                                on-change="$ctrl.bindToAffiliate(item.Id, checked)"
+                                text-off="{{'Admin.Js.BookingCategories.Disable'|translate}}"
+                                text-on="{{'Admin.Js.BookingCategories.Enable'|translate}}"
+                                checked="item.Enabled"></switcher-state>
+                        </div>
+                    </div>
+                    <!--<div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                    <a ng-href="bookingcategory/view/{{item.Id}}" ng-if="item.AffiliateId">Отвязать от филиала</a>
+                </div>-->
+                    <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                        <ui-modal-trigger
+                            data-controller="'ModalAddEditBookingCategoryCtrl'"
+                            controller-as="ctrl"
+                            backdrop="static"
+                            template-url="../areas/admin/content/src/bookingCategories/modals/addEditCategory/addEditCategoryBooking.html"
+                            data-resolve="{params: {'id': item.Id}}"
+                            data-on-close="$ctrl.fetch()"
+                            data-e2e-booking="BookingCategory"
+                            data-e2e-booking-booking-category-id="{{item.Id}}">
+                            <button
+                                type="button"
+                                aria-label="Редактировать"
+                                class="btn-icon link-invert ui-grid-custom-service-icon fas fa-pencil-alt"></button>
+                        </ui-modal-trigger>
+                    </div>
+                    <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                        <a
+                            href=""
+                            class="fa fa-times link-invert link-decoration-none"
+                            ng-click="$ctrl.deleteItem(item.Id)"
+                            data-e2e-crm="ListBookingCategoriesDelete"
+                            data-e2e-crm-deal-status-delete-id="{{item.Id}}"></a>
+                    </div>
+                    <div class="flex middle-xs" ng-if="item.Id == null">
+                        <a
+                            href=""
+                            class="btn btn-sm btn-success"
+                            ng-click="$ctrl.addItem()"
+                            data-e2e="ListBookingCategoriesAdd"
+                            ng-disabled="!$ctrl.newName">
+                            <span class="fa fa-plus"></span> {{'Admin.Js.AddEdit.Add'|translate}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="isMobile.value && item.Id != null" ng-repeat="item in $ctrl.items" as-sortable-item class="swipe-line" style="margin-bottom: 3px">
+            <div class="swipe-line__inner" data-swipe-line>
+                <div class="swipe-line__content shipping-methods-list__card card card--middle">
+                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                        <icon-move>
+                            <svg
+                                class="icon-move"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="10.000000pt"
+                                height="20.000000pt"
+                                viewBox="0 0 10.000000 20.000000"
+                                preserveAspectRatio="xMidYMid meet">
+                                <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                    <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                </g>
+                            </svg>
+                        </icon-move>
+                    </div>
+                    <span class="navigation-item__text flex flex-column flex-grow" ng-if="item.Id != null">
+                        <a
+                            class="shipping-methods-list__link shipping-methods-list__name"
+                            ng-href="bookingcategory/view/{{item.Id}}"
+                            ng-if="item.AffiliateId"
+                            >{{item.Name}}</a
+                        >
+                        <span class="shipping-methods-list__name" ng-if="!item.AffiliateId">{{item.Name}}</span>
+                    </span>
+                    <div class="">
+                        <div class="shipping-switcher">
+                            <switch-on-off checked="item.Enabled" on-click="$ctrl.bindToAffiliate(item.Id, state)"></switch-on-off>
+                        </div>
+                    </div>
+                </div>
+                <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                    <div class="links-edit" ng-if="item.Id != null">
+                        <ui-modal-trigger
+                            data-controller="'ModalAddEditBookingCategoryCtrl'"
+                            controller-as="ctrl"
+                            backdrop="static"
+                            template-url="../areas/admin/content/src/bookingCategories/modals/addEditCategory/addEditCategoryBooking.html"
+                            data-resolve="{params: {'id': item.Id}}"
+                            data-on-close="$ctrl.fetch()"
+                            data-e2e-booking="BookingCategory"
+                            data-e2e-booking-booking-category-id="{{item.Id}}">
+                            <a class="btn btn-sm btn-success flex center-xs middle-xs" style="height: 100%">Редактировать</a>
+                        </ui-modal-trigger>
+                    </div>
+                    <button class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" ng-click="$ctrl.deleteItem(item.Id)">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

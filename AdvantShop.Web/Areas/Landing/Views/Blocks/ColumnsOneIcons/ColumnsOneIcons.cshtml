@@ -1,0 +1,74 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @Html.BlockHeader(Model)
+
+
+                @if (items != null)
+                {
+                    <div class="lp-block-columns-one-icons__list">
+                        @for (var i = 0; i < items.Count; i++)
+                        {
+                            <div class="lp-block-columns-one-icons__item">
+
+                                @if (items[i].Picture != null)
+                                {
+                                    <div class="lp-block-columns-one-icons__picture">
+                                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                   {
+                                       LandingPageId = Model.Block.LandingId,
+                                       BlockId = Model.Block.Id,
+                                       OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                       OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                       Current = items[i].Picture.Src,
+                                       Type = items[i].Picture.Type,
+                                       DeletePicture = true,
+                                       GalleryIconsEnabled = true,
+                                       LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                       LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                       MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                       MaxHeightPicture = PictureLoaderImageSize.XSmallHeight,
+                                       WidthPicture = items[i].Picture.Width,
+                                       HeightPicture = items[i].Picture.Height
+                                   })
+                                    </div>
+                                }
+                                <div class="lp-block-columns-one-icons__text">
+                                    <div class="lp-h3 lp-h3--color lp-h3--margin-none" @(Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title"))>
+                                        @Html.Raw(items[i].Title)
+                                    </div>
+                                    <div class="m-t-sm lp-font-size--middle" @(Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text"))>
+                                        @Html.Raw(items[i].Text)
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                }
+
+
+                @if (Model.Block.TryGetSetting("show_button") == true)
+                {
+                    <div class="lp-block-columns-button">
+                        <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ColumnsBtnRow">
+                            <div class="col-xs-12">
+                                @Html.Button(Model.Block, "button")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

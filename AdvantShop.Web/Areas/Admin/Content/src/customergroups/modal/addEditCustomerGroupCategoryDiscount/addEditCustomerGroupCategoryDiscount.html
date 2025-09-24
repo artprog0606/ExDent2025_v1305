@@ -1,0 +1,48 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.ModalAddEditCustomerGroupCategoryDiscount.CategoryDiscount'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-3 setting--m-b-sm">
+                <div
+                    data-js-tree
+                    data-tree-search="{ajax: {url: 'catalog/categoriesTreeBySearchRequest'}}"
+                    data-show-root
+                    data-tree-ajax="catalog/categoriestree"
+                    tree-plugins="search"
+                    data-tree-core=""
+                    data-tree-events="select_node:ctrl.selectCategory"
+                    data-tree-ajax-data=" { categoryIdSelected: 0 }"></div>
+            </div>
+            <div class="col-xs-12 col-md-9">
+                <ui-grid-custom
+                    grid-unique-id="gridCustomerGroupCategoryDiscounts"
+                    grid-on-init="ctrl.gridOnInit(grid)"
+                    grid-extend-ctrl="ctrl"
+                    grid-options="ctrl.gridOptions"
+                    grid-url="'customerGroups/getCustomerGroupCategoryDiscounts'"
+                    grid-inplace-url="'customerGroups/inplaceCustomerGroupCategoryDiscount'"
+                    grid-swipe-line="true"
+                    grid-selection-enabled="false">
+                    <ui-grid-custom-override-header-control>
+                        <span class="ui-grid-custom-override-header__cell">Категория</span>
+                        <span class="ui-grid-custom-override-header__cell">Скидка (%) для категории</span>
+                    </ui-grid-custom-override-header-control>
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div ng-click="grid.appScope.$ctrl.gridExtendCtrl.openMobileModal(row.entity)" class="card card--gap-row-sm card--p-18">
+                            <div class="flex middle-xs between-xs">
+                                <div class="">{{row.entity.Name}}</div>
+                                <div class="">{{row.entity.Discount}}</div>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.Cancel'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,132 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Crm.Leads.LeadsListViewModel
+@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+}
+@{
+    Html.AddAsset("leads");
+}
+
+@{
+    string salesFunnelName = !string.IsNullOrEmpty(Model.SalesFunneName) ? Model.SalesFunneName : T("Admin.Leads.Index.Title").ToString();
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Title = "<span ng-bind=\"leads.salesFunnelName\" ng-init=\"leads.salesFunnelName = '" + salesFunnelName + "'\">" + salesFunnelName + "</span>";
+
+    headerModel.Controls = new List<IButton>();
+
+    headerModel.Controls.Add(new ButtonModel()
+    {
+        ColorType = eColorType.Secondary,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.OnlyIcon
+        },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "plus-alt",
+            Attributes = new {width = 16, height = 16}
+        },
+        Attributes = new[] {"data-e2e=\"btnAdd\""},
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddLeadCtrl'\" controller-as=\"ctrl\" size=\"lg\" backdrop=\"static\" data-resolve=\"{params: {'salesFunnelId':" + Model.SalesFunnelId + "}}\" data-close=\"leads.modalAddLeadClose()\" template-url=\"" + Html.GetAssetPath("addLead.html") + "\">",
+        WrapEnd = "</ui-modal-trigger>"
+    });
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Attributes = new string[] {"popover-class=\"more-button-popover\" uib-popover-template=\"'leadsList'\" popover-append-to-body=\"true\""},
+        Text = T("Сменить список лидов")
+    });
+
+    if (Model.SalesFunnelId > 0 && Model.IsFullAccess)
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Text = T("Редактировать текущий список"),
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditSalesFunnelCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditSalesFunnel.html") + "\" data-on-close=\"leads.updateSalesFunnel(result)\" data-resolve=\"{'Id': " + Model.SalesFunnelId + "}\">",
+            WrapEnd = "</ui-modal-trigger>"
+        });
+    }
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Text = T("Admin.Leads.CrmNavMenu.AddFunnel"),
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditSalesFunnelCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditSalesFunnel.html") + "\">",
+        WrapEnd = "</ui-modal-trigger>"
+    });
+
+    if (Model.SalesFunnelId > 0 && Model.IsFullAccess)
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Attributes = new string[] {"ng-click=\"leads.export()\""},
+            Text = T("Admin.Leads.Index.Export")
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Index", "SettingsCrm") + "?crmTab=importLeads",
+            Text = T("Admin.Leads.Index.Import")
+        });
+    }
+
+    if (Model.IsFullAccess)
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Index", "SettingsCrm"),
+            Text = T("Настройки")
+        });
+    }
+
+    headerModel.Controls.Add(moreButton);
+}
+
+@Html.Header(headerModel)
+
+<script type="text/ng-template" id="leadsList">
+@Html.Action("SalesFunnelsMenu", "Leads", new {excludeLeadListId = Model.SalesFunnelId})
+</script>
+
+<div ng-init="leads.changeSalesFunnel(@Model.SalesFunnelId); leads.init(false, @CustomerContext.CurrentCustomer.IsAdmin.ToString().ToLower())">
+    @RenderBody()
+</div>

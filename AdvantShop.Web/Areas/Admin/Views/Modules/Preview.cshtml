@@ -1,0 +1,72 @@
+﻿@model AdvantShop.Web.Admin.Models.Modules.PreviewModuleModel
+@{
+    var showLeftAndRight = !string.IsNullOrEmpty(Model.PreviewLeftText) && !string.IsNullOrEmpty(Model.PreviewRightText);
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("modules");
+    
+}
+
+@{
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Controls = new List<IButton>();
+    headerModel.DefaultTitle = Model.ModuleName;
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Text = T("Отключить канал"),
+        WrapStart = "<sweetalert sweet-options=\"{title : '" + @T("Удаление") + "', text: '" + @T("Вы уверены, что хотите отключить канал?") + "', type: 'warning', showCancelButton: true}\" sweet-on-confirm=\"modules.uninstallModule(modules.module, true)\">",
+        WrapEnd = "</sweetalert>",
+        Icon = new ButtonIcon()
+        {
+            SvgName = "on",
+            Attributes = new { width = 24, height = 24 }
+        }
+    });
+    
+
+    headerModel.Controls.Add(moreButton);
+}
+@if (isMobile)
+{
+    @Html.Header(headerModel)
+}
+
+<div ng-init="modules.module = {StringId:'@Model.ModuleStringId', Id:'@Model.ModuleId', Version:'@Model.ModuleVersion'}; modules.previewPage = true;"
+     class="flex middle-xs @(!isMobile ? "m-l-lg": "")" 
+     style="height: 100%">
+    <div class="row">
+        <div class="col-xs-12 col-md-@(showLeftAndRight ? "6" : "12")">
+            @Html.Raw(Model.PreviewLeftText)
+            <div class="m-t-lg">
+                <div class="m-t m-b-xs bold-title bold f-s-18">@Model.PriceString</div>
+                @if (Model.ShowInstalledAndPreview)
+                {
+                    <a href="" class="btn btn-success btn-md" ng-click="modules.installModule(modules.module)">@Model.PreviewButtonText</a>
+                }
+                else
+                {
+                    <a href="" class="btn btn-success btn-md" ng-click="modules.setPreviewShowed(modules.module)">@Model.PreviewButtonText</a>
+                }
+            </div>
+        </div>
+        @if (showLeftAndRight)
+        {
+            <div class="col-xs-12 col-md-6 first-xs last-sm">
+                @Html.Raw(Model.PreviewRightText)
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,131 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Settings.FilesViewModel
+
+@{
+    Html.AddAsset("files");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings")
+    };
+    headerModel.DefaultTitle = T("Admin.Files.Index.Title").ToString();
+
+    headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Add,
+             WrapStart = "<span ng-click=\"files.addFileMobile()\">",
+             WrapEnd = "</span>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 },
+             }
+         }
+     );
+}
+
+@Html.Header(headerModel)
+
+@if (!isMobile)
+{
+    <div class="sticky-page-name p-b-xs" sticky sticky-top="0">
+        @Html.Back("Настройки", Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="page-name-block sticky-page-name-inner m-t-xs">
+            <div class="page-name-block-item-main">
+                <div>
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @T("Admin.Files.Index.Title")
+                    </h1>
+                    <span>@T("Admin.Files.Index.AvailableFileExtensions") </span> <b>@Model.Extensions</b>
+                </div>
+            </div>
+            <div class="page-name-block-item-additional">
+                <file-uploader class="picture-uploader-middle"
+                               accept="@Model.Extensions"
+                               upload-url="/files/uploadFile"
+                               on-update="files.fetchData()"
+                               show-result=false
+                               go-to-first-step-after-succes=true>
+                </file-uploader>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="sticky-page-name  m-t-n-xs" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <div class="m-b-md"><span>@T("Admin.Files.Index.AvailableFileExtensions")<b>@Model.Extensions</b></span></div>
+            </div>
+            <div class="page-name-block-item-additional m-b-md" style="display:none;">
+                <file-uploader class="picture-uploader-middle"
+                               accept="@Model.Extensions"
+                               upload-url="/files/uploadFile"
+                               on-update="files.fetchData()"
+                               show-result=false
+                               go-to-first-step-after-succes=true>
+                </file-uploader>
+            </div>
+        </div>
+    </div>
+}
+
+
+@if (Model.ShowWarning)
+{
+    <div class="container-fluid">
+        <div class="form-group row">
+            <div class="adv-panel-warn adv-panel-warn--show">
+                <div>@T("Admin.Files.Index.Warning")</div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="files.gridOnInit(grid)"
+                        grid-options="files.gridOptions"
+                        grid-url="'files/getfiles'"
+                        grid-inplace-url="'files/renamefile'"
+                        grid-search-placeholder="'@T("Admin.Files.Index.Search")'"
+                        grid-extend-ctrl="files"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+                    <div class="flex between-xs">
+                        <div class="flex-grow card__col m-r-xs card--p-18" style="align-self: center;">
+                            <div class="m-b-xs" style="word-break: break-all;">{{row.entity.Name}}</div>
+                            <div style="opacity:0.6;" class="fs-xs">
+                                <span>{{row.entity.FileSizeString}}</span>
+                            </div>
+                        </div>
+                        <div class="card__col card__col--end setting--align-center">
+                            <a ng-href="{{row.entity.Path}}" download class="setting__link-icon-download">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.55884 0.18095C7.06391 0.395553 6.66914 0.752411 6.41289 1.21698C6.25017 1.51184 6.21143 2.09737 6.16223 4.99725L6.10407 8.42857L4.41889 8.48673C2.89131 8.53942 2.72974 8.56524 2.69206 8.76217C2.64134 9.02702 9.18087 15.6173 9.68079 15.805C9.89505 15.8855 10.1009 15.8871 10.3042 15.8098C10.6056 15.6952 16.5624 9.91788 17.0701 9.24767C17.5579 8.60386 17.4552 8.5514 15.5824 8.48673L13.8972 8.42857L13.8391 4.99725C13.7765 1.30828 13.7602 1.20814 13.1215 0.611901C12.5511 0.0792895 12.1195 -0.00469076 9.9753 0.000194512C8.44424 0.00368399 7.86836 0.046721 7.55884 0.18095ZM0.0800646 14.7239C0.0347014 14.7694 -0.0013566 15.5699 3.91969e-05 16.5029C0.00283078 18.3414 0.12822 18.8504 0.71073 19.3858C1.39583 20.0156 1.19251 20.0023 10.026 19.9995C17.7057 19.997 18.2294 19.984 18.671 19.7833C19.2406 19.5247 19.7211 18.9787 19.8909 18.3974C19.9635 18.149 20.0017 17.277 19.9812 16.3381L19.9457 14.7096H19.2478H18.5499L18.4917 16.3778C18.4367 17.956 18.4188 18.0579 18.159 18.268C17.8948 18.4814 17.5849 18.4899 10.0007 18.4899C2.41639 18.4899 2.10652 18.4814 1.84237 18.268C1.58252 18.0579 1.56461 17.956 1.50959 16.3778L1.45143 14.7096L0.80704 14.6754C0.452625 14.6567 0.125544 14.6785 0.0800646 14.7239Z" fill="black" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="files.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

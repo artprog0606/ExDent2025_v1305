@@ -1,0 +1,237 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings;
+@model AdvantShop.Web.Admin.Models.Settings.CheckoutSettings.CheckoutSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="setting-title m-t-none">
+    <h3 class="setting__subtitle">@T("Admin.Settings.Checkout.ThankYouPageTitle")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-10">
+        <div class="">
+            <p class="setting--m-none">
+                @T("Admin.Settings.Checkout.ThankYouPageTitleInfo")
+            </p>
+            <p>
+                @T("Admin.Settings.Checkout.ThankYouPageTitleAbout")
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Checkout.ThankYouPageAction")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 relative">
+        @Html.DropDownListFor(x => x.TYPageAction, Model.TYPageActions, new { @class = "form-control input-alt", ng_model = "settingsCheckout.TYPageAction" })
+    </div>
+</div>
+
+<div class="ng-hide" ng-show="settingsCheckout.TYPageAction == '@EThankYouPageActionType.JoinGroup.ToString()'">
+    <input type="text" id="TYSocialNetworksSerialized" name="TYSocialNetworksSerialized" value="{{settingsCheckout.TYSocialNetworks}}" hidden ng-init="settingsCheckout.TYSocialNetworks = @Model.TYSocialNetworksSerialized" />
+    @for (int i = 0; i < Model.TYSocialNetworks.Count; i++)
+    {
+        var nw = Model.TYSocialNetworks[i];
+        if (isMobile)
+        {
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 flex middle-xs setting-label-wrap">
+                    <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls m-r-sm">
+                        @Html.CheckBoxFor(x => nw.Enabled, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYSocialNetworks[" + i + "].Enabled" , @id= "nw_Enabled_" + i + "" })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                    <label for="nw_Enabled_@i" class="setting-label-wrap setting__label setting--m-none">
+                        @nw.Type.Localize()
+                    </label>
+                </div>
+                <div class="col-xs-12">
+                    <label class="flex middle-xs">
+                        @Html.TextBoxFor(x => nw.Link, new { @class = "form-control input-alt", ng_model = "settingsCheckout.TYSocialNetworks[" + i + "].Link", placeholder = ((ESocialNetworkUrlPlaceholder)i).Localize() })
+                    </label>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group row">
+                <div class="col-xs-12 col-md-2 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @nw.Type.Localize()
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-5">
+                    <div class="flex middle-xs between-xs">
+                        <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls">
+                            @Html.CheckBoxFor(x => nw.Enabled, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYSocialNetworks[" + i + "].Enabled" })
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                        <label class="flex middle-xs col-xs">
+                            @Html.TextBoxFor(x => nw.Link, new { @class = "form-control", ng_model = "settingsCheckout.TYSocialNetworks[" + i + "].Link", placeholder = ((ESocialNetworkUrlPlaceholder)i).Localize() })
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<div class="ng-hide" ng-show="settingsCheckout.TYPageAction == '@EThankYouPageActionType.ShowProducts.ToString()'">
+    @*<div class="form-group row">
+            <div class="col-xs-10">
+                <div class="setting-label-wrap">
+                    Товары выводятся с учетом приоритета: если нет товаров по первому активному условию - выводятся из второго и т.д.
+                </div>
+            </div>
+        </div>*@
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-2">
+            <div class="setting-label-wrap setting__label">
+                Название блока с товарами
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 relative">
+            @Html.TextBoxFor(x => x.TYNameOfBlockProducts, new { @class = "form-control input-small input-alt", ng_model = "settingsCheckout.TYNameOfBlockProducts" })
+        </div>
+    </div>
+    @if (isMobile)
+    {
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs setting-label-wrap">
+                <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls m-r-sm">
+                    @Html.CheckBoxFor(x => x.TYShowReletedProducts, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowReletedProducts" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <label for="TYShowReletedProducts" class="setting-label-wrap setting__label setting--m-none">
+                    1. Выводить сопутствующие товары
+                </label>
+            </div>
+            <div class="col-xs-12">
+                <label class="flex middle-xs">
+                    @Html.DropDownListFor(x => x.TYReletedProductsType, Model.TYReletedProductsTypes, new { @class = "form-control input-alt", ng_model = "settingsCheckout.TYReletedProductsType" })
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs setting-label-wrap">
+                <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls m-r-sm">
+                    @Html.CheckBoxFor(x => x.TYShowProductsList, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowProductsList" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <label for="TYShowProductsList" class="setting-label-wrap setting__label setting--m-none">
+                    2. Выводить товары из списка товаров на главной
+                </label>
+            </div>
+            <div class="col-xs-12 col-md-5">
+                <label class="flex middle-xs">
+                    @Html.DropDownListFor(x => x.TYProductsList, Model.TYProductsLists, new { @class = "form-control input-alt", ng_model = "settingsCheckout.TYProductsList" })
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs">
+                <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls m-r-sm">
+                    @Html.CheckBoxFor(x => x.TYShowSelectedProducts, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowSelectedProducts" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <label for="TYShowSelectedProducts" class="setting-label-wrap setting__label setting--m-none">
+                    3. Выводить выбранные товары
+                </label>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-2 col-wl-2">
+                <div class="setting-label-wrap">
+                    1. Выводить сопутствующие товары
+                </div>
+            </div>
+            <div class="col-xs-5">
+                <div class="flex middle-xs between-xs">
+                    <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls">
+                        @Html.CheckBoxFor(x => x.TYShowReletedProducts, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowReletedProducts" })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                    <label class="flex middle-xs col-xs">
+                        @Html.DropDownListFor(x => x.TYReletedProductsType, Model.TYReletedProductsTypes, new { @class = "form-control", ng_model = "settingsCheckout.TYReletedProductsType" })
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-2 col-wl-2">
+                <div class="setting-label-wrap">
+                    2. Выводить товары из списка товаров на главной
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-5">
+                <div class="flex middle-xs between-xs">
+                    <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls">
+                        @Html.CheckBoxFor(x => x.TYShowProductsList, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowProductsList" })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                    <label class="flex middle-xs col-xs">
+                        @Html.DropDownListFor(x => x.TYProductsList, Model.TYProductsLists, new { @class = "form-control", ng_model = "settingsCheckout.TYProductsList" })
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-2 col-wl-2">
+                <div class="setting-label-wrap">
+                    3. Выводить выбранные товары
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-5">
+                <div class="flex middle-xs between-xs">
+                    <label class="adv-checkbox-label flex middle-xs col-fixed-size-ls">
+                        @Html.CheckBoxFor(x => x.TYShowSelectedProducts, new { @class = "adv-checkbox-input", ng_model = "settingsCheckout.TYShowSelectedProducts" })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12">
+            <thank-you-page-products></thank-you-page-products>
+        </div>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.Settings.Checkout.ThankYouPageExceptions")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-10">
+        <div class="setting-label-wrap">
+            <p class="setting--m-none">
+                @T("Admin.Settings.Checkout.ThankYouPageExceptionsInfo")
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-6 relative" ng-init="settingsCheckout.ExcludedPaymentIds = @Model.TYExcludedPaymentIdsSerialized">
+        @foreach (var item in Model.TYPaymentMethods)
+        {
+            <div class="setting--m-b-sm">
+                <label class="adv-checkbox-label form-label-block @(item.Disabled ? "method-notactive" : string.Empty)">
+                    <input type="checkbox" checklist-model="settingsCheckout.ExcludedPaymentIds" checklist-value="@item.Value" class="adv-checkbox-input" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span class="setting__label setting--m-l-xs">@item.Text</span>
+                </label>
+            </div>
+        }
+        <input type="hidden" name="TYExcludedPaymentIdsSerialized" value="{{settingsCheckout.ExcludedPaymentIds}}" />
+    </div>
+</div>

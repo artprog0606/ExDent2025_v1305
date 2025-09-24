@@ -1,0 +1,101 @@
+﻿<div>
+    <div data-tabs class="tabs tabs-horizontal tabs-lp--minimalistic">
+        <ul class="tabs-headers row center-xs start-sm">
+            <li
+                id="tabCharacteristicsFront"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Внешний вид
+                </span>
+            </li>
+            <li
+                id="tabCharacteristicsItems"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Характеристики
+                </span>
+            </li>
+        </ul>
+        <div class="tabs-content">
+            <div class="tab-content" data-tab-content="tabCharacteristicsFront" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="blocks-constructor-settings-col">
+                            <div ng-include="$ctrl.modalData.generalOptionsTemplateUrl"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="blocks-constructor-settings-col--alt">
+                            <div ng-include="$ctrl.modalData.generalRightOptionsTemplateUrl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" data-tab-content="tabCharacteristicsItems" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <lp-grid
+                            class="lp-grid-theme--dark lp-grid--as-sidebar"
+                            data-e2e="gridHeader"
+                            lp-id="$ctrl.modalData.landingpageId"
+                            block-id="$ctrl.modalData.blockId"
+                            source="$ctrl.modalData.settings.items"
+                            show-header="false"
+                            edit-mode="demand"
+                            selection="true"
+                            selection-start-index="0"
+                            on-delete="$ctrl.activeGroup = null"
+                            add-button-text="'Добавить группу'"
+                            ng-init="$ctrl.activeGroup = $ctrl.modalData.settings.items[0].content_items">
+                            <lp-grid-column
+                                main="Введите заголовок"
+                                type="text"
+                                field="header"
+                                placeholder="'Введите заголовок'"
+                                classes="'col-xs pointer'"
+                                on-click="lpGridRow.entity.content_items = lpGridRow.entity.content_items || []; $ctrl.activeGroup = lpGridRow.entity.content_items"></lp-grid-column>
+                        </lp-grid>
+                    </div>
+                    <div class="col-xs-12 col-sm-8" ng-switch="$ctrl.activeGroup != null">
+                        <div class="blocks-constructor-settings-col--alt" ng-switch-when="true">
+                            <lp-grid
+                                lp-id="$ctrl.modalData.landingpageId"
+                                block-id="$ctrl.modalData.blockId"
+                                source="$ctrl.activeGroup"
+                                data-e2e="gridSubHeader">
+                                <lp-grid-column
+                                    type="textarea"
+                                    field="name"
+                                    placeholder="'Название параметра'"
+                                    classes="'col-xs'"
+                                    title="Наименование"></lp-grid-column>
+                                <lp-grid-column
+                                    type="text"
+                                    field="value"
+                                    placeholder="'Значение параметра'"
+                                    classes="'col-xs'"
+                                    title="Значение"></lp-grid-column>
+                            </lp-grid>
+                        </div>
+                        <div ng-switch-when="false">
+                            <div ng-switch="$ctrl.modalData.settings.items.length > 0" class="p-t-lg text-center bold">
+                                <div ng-switch-when="true">Выберите группу</div>
+                                <div ng-switch-when="false">Добавьте группу</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteModel
+
+<form name="settingsForm" novalidate>
+    <div class="flex between-xs middle-xs m-t-n-xs m-b-sm" style="padding-bottom:3px;">
+        <div class="funnel-site__settings">
+            <div class="flex middle-xs">
+                <h2 class="m-r-md">@T("Admin.Views.Funnels.SiteSettings.Settings")</h2>
+                <div class="flex-grow">
+                    <ul class="nav nav-tabs" ng-init="landingSite.settingsForm = settingsForm">
+                        <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'common'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('common')">@T("Admin.Views.Funnels.SiteSettings.General")</a>
+                        </li>
+                        <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'domains'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('domains')">@T("Admin.Views.Funnels.SiteSettings.Domains")</a>
+                        </li>
+                        <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'counters'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('counters')">@T("Admin.Views.Funnels.SiteSettings.Counters")</a>
+                        </li>
+                        <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'css'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('css')">@T("Admin.Views.Funnels.SiteSettings.CSSStyles")</a>
+                        </li>
+                        <li class="nav-item ng-tab ng-cloak" ng-class="{'active': landingSite.settingsTab == 'seo'}" ng-show="landingSite.domain != null && landingSite.domain.length > 0">
+                            <a href="" ng-click="landingSite.changeSettingsTab('seo')">@T("Admin.Views.Funnels.SiteSettings.SitemapRobots")</a>
+                        </li>
+                        @if (Model.Site.Template == AdvantShop.Core.Services.Landing.LpFunnelType.ProductCrossSellDownSell.ToString())
+                        {
+                            <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'additionalSales'}">
+                                <a href="" ng-click="landingSite.changeSettingsTab('additionalSales')">@T("Admin.Views.Funnels.SiteSettings.Upselling")</a>
+                            </li>
+                        }
+                        <li class="nav-item ng-tab" ng-class="{'active': landingSite.settingsTab == 'auth'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('auth')">@T("Admin.Views.Funnels.SiteSettings.Access")</a>
+                        </li>
+                        <li class="nav-item ng-tab hidden" ng-class="{'active': landingSite.settingsTab == 'mobileApp'}">
+                            <a href="" ng-click="landingSite.changeSettingsTab('mobileApp')">@T("Admin.Views.Funnels.SiteSettings.MobileApp")</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="m-t-xs" style="padding-right:0.625rem;">
+            <button type="button" class="btn btn-sm btn-success " data-e2e="funnelSettingSave"
+                    data-button-validation data-button-validation-success="landingSite.saveSettings()"
+                    disabled ng-disabled="!settingsForm.modified">
+                @T("Admin.Settings.Save")
+            </button>
+        </div>
+    </div>
+    <div class="tab-content" style="padding-right:0.625rem;">
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'common'}">
+            @Html.Partial("Settings/_Common", Model.Settings)
+        </div>
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'domains'}">
+            @Html.Partial("Settings/_Domains", Model.Settings)
+        </div>
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'counters'}">
+            @Html.Partial("Settings/_SeoCounters", Model.Settings)
+        </div>
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'css'}">
+            @Html.Partial("Settings/_CssStyles", Model.Settings)
+        </div>
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'seo'}" ng-show="landingSite.domain != null && landingSite.domain.length > 0">
+            @Html.Partial("Settings/_SeoSitemapAndRobots", Model.Settings)
+        </div>
+        @if (Model.Site.Template == AdvantShop.Core.Services.Landing.LpFunnelType.ProductCrossSellDownSell.ToString())
+        {
+            <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'additionalSales'}" ng-if="landingSite.settingsTab == 'additionalSales'">
+                @Html.Partial("Settings/_AdditionalSales", Model.Settings)
+            </div>
+        }
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'auth'}">
+            @Html.Partial("Settings/_Auth", Model.Settings)
+        </div>
+        <div class="tab-pane" ng-class="{'active': landingSite.settingsTab == 'mobileApp'}">
+            @Html.Partial("Settings/_MobileApp", Model.Settings)
+        </div>
+    </div>
+</form>

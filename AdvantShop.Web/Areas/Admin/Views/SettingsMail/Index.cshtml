@@ -1,0 +1,210 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.SettingsMail.MailSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsMail");
+}
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsMail", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Settingsmail").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "mailSettings.onSelectaTab(null)"
+    };
+
+    headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                  {
+                        eButtonModificators.OnlyIcon
+                  },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             Attributes = new[] { "ng-if=\"mailSettings.tabActiveIndex == 'notifications' || mailSettings.tabActiveIndex == 'emailsettings' || mailSettings.tabActiveIndex == 'sms'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\""},
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "done",
+                 Attributes = new { width = 25, height = 25 }
+             }
+         }
+    );
+
+    headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"mailSettings.tabActiveIndex === 'formats'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"mailSettings.tabActiveIndex === 'formats'\" data-controller=\"'ModalAddEditMailFormatCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/mailSettings/modal/addEditMailFormat/addEditMailFormat.html\" data-on-close=\"mailSettings.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            }
+      );
+
+    headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"mailSettings.tabActiveIndex === 'templates'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"mailSettings.tabActiveIndex === 'templates'\" data-controller=\"'ModalAddEditMailAnswerTemplateCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/mailSettings/modal/addEditMailAnswerTemplate/AddEditMailAnswerTemplate.html\" data-on-close=\"mailSettings.gridTemplates.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            }
+      );
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+           {
+                eButtonModificators.OnlyIcon
+           },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Add,
+               // Attributes = new[] { "ng-if=\"mailSettings.tabActiveIndex === 'smstemplates'\"" },
+               WrapStart = " <ui-modal-trigger ng-if=\"mailSettings.tabActiveIndex === 'smstemplates'\" data-controller=\"'ModalAddEditSmsAnswerTemplateCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/mailSettings/modal/addEditSmsAnswerTemplate/AddEditSmsAnswerTemplate.html\" data-on-close=\"mailSettings.gridSmsAnswerTemplates.fetchData()\">",
+               WrapEnd = "</ui-modal-trigger>",
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "plus-alt",
+                   Attributes = new { width = 16, height = 16 },
+               }
+           }
+     );
+
+    @Html.Header(headerModel)
+
+    if (!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+    }
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.Commonpage.Settingsmail.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.Settingsmail")</h1>
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="BtnSaveMailSettings" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset  uid="notifyTab"
+                on-select-batch="mailSettings.onSelectaTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'notifications'" heading="@T("Admin.Settings.NotifyEMails.Notifications")" classes="ng-tab">
+            @Html.Partial("_Notifications", Model)
+        </uib-tab>
+        <uib-tab index="'emailsettings'" classes="ng-tab" heading="@T("Admin.Settings.NotifyEMails.EmailSettings")">
+            <uib-tab-heading ng-class="{'tab-warning' : emailSettingsForm.$invalid && emailSettingsForm.$dirty}">
+                @T("Admin.Settings.NotifyEMails.EmailSettings")
+                <span ng-if="emailSettingsForm.$invalid && emailSettingsForm.$dirty" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!emailSettingsForm.$invalid && emailSettingsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="emailSettingsForm" validation-tab-index="'emailsettings'">
+                @Html.Partial("_EmailSettings", Model)
+            </ng-form>
+        </uib-tab>
+        <uib-tab index="'formats'" heading="@T("Admin.Settings.NotifyEMails.MailFormats")" classes="ng-tab" removable="true">
+            <uib-tab-heading ng-class="{'tab-warning' : mailFormatsForm.$invalid && mailFormatsForm.$dirty}">
+                @T("Admin.Settings.NotifyEMails.MailFormats")
+                <span ng-if="mailFormatsForm.$invalid && mailFormatsForm.$dirty" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!mailFormatsForm.$invalid && mailFormatsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="mailFormatsForm" validation-tab-index="'mailFormatsForm'">
+                @Html.Partial("_MailFormats", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'templates'" heading="@T("Admin.Settings.NotifyEMails.MailAnswerTemplates")" classes="ng-tab" removable="true">
+            <uib-tab-heading ng-class="{'tab-warning' : mailAnswerTemplatesForm.$invalid && mailAnswerTemplatesForm.$dirty}">
+                @T("Admin.Settings.NotifyEMails.MailAnswerTemplates")
+                <span ng-if="mailAnswerTemplatesForm.$invalid && mailAnswerTemplatesForm.$dirty" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!mailAnswerTemplatesForm.$invalid && mailAnswerTemplatesForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="mailAnswerTemplatesForm" validation-tab-index="'mailAnswerTemplatesForm'">
+                @Html.Partial("_MailAnswerTemplates", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'sms'" heading="@T("Admin.Settings.NotifyEMails.SMSNotifications")" classes="ng-tab">
+            <uib-tab-heading ng-class="{'tab-warning' : smsForm.$invalid && smsForm.$dirty}">
+                @T("Admin.Settings.NotifyEMails.SMSNotifications")
+                <span ng-if="smsForm.$invalid && smsForm.$dirty" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!smsForm.$invalid && smsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="smsForm" validation-tab-index="'smsForm'">
+                @Html.Partial("_Sms", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'smstemplates'" heading="@T("Admin.Settings.NotifyEMails.SmsAnswerTemplates")" classes="ng-tab" removable="true">
+            <uib-tab-heading ng-class="{'tab-warning' : smsForm.$invalid && smsForm.$dirty}">
+                @T("Admin.Settings.NotifyEMails.SmsAnswerTemplates")
+                <span ng-if="smsForm.$invalid && smsForm.$dirty" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!smsForm.$invalid && smsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="smsAnswerTemplatesForm" validation-tab-index="'smsAnswerTemplatesForm'">
+                @Html.Partial("_SmsAnswerTemplates", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'authcall'" heading="@T("Admin.Settings.NotifyEMails.AuthCall")" classes="ng-tab">
+            @Html.Partial("_AuthCallSettings", Model)
+        </uib-tab>
+
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="BtnSaveMailSettings" />
+            </div>
+        }
+    </uib-tabset>
+}
+
+

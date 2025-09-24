@@ -1,0 +1,108 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Partners/_PartnersLayout.cshtml";
+    }
+
+    Html.AddAsset("partners");
+}
+
+@*@if (AdminAreaTemplate.IsAdminv3())
+{
+    @Html.Back("Партнеры", Url.AbsoluteActionUrl("Index", "Partners"))
+}*@
+
+<form id="GetPartnersReport" action="@Url.AbsoluteActionUrl("GetPartnersReport")" method="POST" novalidate>
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner p-b-xs">
+                <div class="page-name-block-item-main">
+                    <h2 class="m-t-none m-b-none sticky-page-name-text" style="margin-top:0;">
+                        Отчет по партнерам
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <button class="btn btn-sm btn-success" type="submit" data-button-validation>
+                        Сформировать отчет
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = "<span class=\"float-header-page ng-cloak\" >Отчет по партнерам</span>";
+        headerModel.ShowOnlySticky = true;
+
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "PartnersProgramm")
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+
+        @Html.Header(headerModel);
+    }
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-2 @(isMobile ? "p-b-xs" : "")">
+                            <span>Период</span>
+                        </label>
+                        <div class="col-xs-12 col-md @(isMobile ? "flex middle-xs p-t-xs p-b-xs" : "")">
+                            @if(isMobile)
+                            {
+                                <span style="width:20px;" class="m-r-sm">С</span>
+                            }
+                            <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                                <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                                    <input name="from" type="text" class="form-control input-alt" ng-flatpickr-input ng-model="partnersReport.dateFrom" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                        @if (!isMobile)
+                        {
+                            <label class="col-xs-slim control-label">
+                                <span>–</span>
+                            </label>
+                        }
+                    <div class="col-xs-12 col-md @(isMobile ? "flex middle-xs p-t-xs p-b-xs" : "")">
+                        @if (isMobile)
+                        {
+                            <span style="width:20px;" class="m-r-sm">До</span>
+                        }
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                            <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                                <input name="to" type="text" class="form-control input-alt" ng-flatpickr-input ng-model="partnersReport.dateTo" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="m-t-md">
+                        <button class="btn btn-sm btn-success" type="submit" data-button-validation>
+                            Сформировать отчет
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

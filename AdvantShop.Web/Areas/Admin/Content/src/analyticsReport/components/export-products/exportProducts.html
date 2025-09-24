@@ -1,0 +1,248 @@
+<div class="wrapper" is-mobile>
+    <div class="sticky-page-name" sticky sticky-top="0" ng-if="!isMobile.value">
+        <div class="page-name-block m-b-md sticky-page-name-inner top-xs">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text m-b-xs">{{'Admin.Js.ExportProducts.Title'|translate}}</h1>
+                {{'Admin.Js.ExportProducts.SubTitle'|translate}}
+            </div>
+            <div class="page-name-block-item-additional">
+                <button class="btn btn-sm btn-success" data-e2e="Export" type="button" ng-click="$ctrl.exportProducts()">
+                    {{'Admin.Js.ProgressData.Export'|translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="isMobile.value" class="m-b-md">{{'Admin.Js.ExportProducts.SubTitle'|translate}}</div>
+
+    <div ng-if="!$ctrl.isStartExport">
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap control-label">{{'Admin.Js.ExportProducts.DateSpan'|translate}}</div>
+            </div>
+            <div class="col-xs-12 col-md-4 col-wl-4">
+                <div class="form-horizontal">
+                    <div class="m-b-md row bottom-xs top-sm">
+                        <label
+                            style="white-space: nowrap"
+                            class="col-xs-slim col-md-1 ui-grid-filter-text"
+                            ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                            for="export-products-date-from">
+                            {{'Admin.Js.ExportProducts.DateSpanFrom'|translate}}
+                        </label>
+
+                        <div class="col-xs col-md-11">
+                            <div
+                                class="input-group"
+                                ng-flatpickr
+                                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                    <input
+                                        data-e2e="datetimeFilterFrom"
+                                        id="export-products-date-from"
+                                        type="text"
+                                        class="form-control input-alt-mobile input-alt"
+                                        ng-flatpickr-input
+                                        ng-model="$ctrl.exportProductsSettings.DateFrom" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bottom-xs top-sm" ng-class="{'m-b-md' : !isMobile.value}">
+                        <label
+                            style="white-space: nowrap"
+                            class="col-xs-slim col-md-1 ui-grid-filter-text"
+                            ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                            for="export-products-date-to">
+                            {{'Admin.Js.ExportProducts.DateSpanTo'|translate}}
+                        </label>
+                        <div class="col-xs col-md-11">
+                            <div
+                                class="input-group"
+                                ng-flatpickr
+                                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                    <input
+                                        data-e2e="gridFilterDateTo"
+                                        id="export-products-date-to"
+                                        type="text"
+                                        class="form-control input-alt-mobile input-alt"
+                                        ng-flatpickr-input
+                                        ng-model="$ctrl.exportProductsSettings.DateTo" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <label for="export-products-separators" class="setting-label-wrap control-label">
+                    {{'Admin.Js.ExportProducts.ColumnSeparator'|translate}}
+                </label>
+            </div>
+            <div class="col-xs-12 col-md-4 col-wl-4">
+                <select
+                    id="export-products-separators"
+                    ng-model="$ctrl.exportProductsSettings.ColumnSeparator"
+                    class="form-control input-alt-mobile"
+                    disabled-autobind>
+                    <option ng-repeat="(key, value) in $ctrl.exportProductsSettings.Separators" value="{{key}}">{{value}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <label for="export-products-encoding" class="setting-label-wrap control-label">
+                    {{'Admin.Js.ExportProducts.FileEncoding'|translate}}
+                </label>
+            </div>
+            <div class="col-xs-12 col-md-4 col-wl-4">
+                <select
+                    id="export-products-encoding"
+                    ng-model="$ctrl.exportProductsSettings.Encoding"
+                    class="form-control input-alt-mobile"
+                    disabled-autobind>
+                    <option ng-repeat="(key, value) in $ctrl.exportProductsSettings.Encodings" value="{{key}}">{{value}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" ng-class="{'form-group' : !isMobile.value, 'm-b-xs' : isMobile.value}">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap control-label">{{'Admin.Js.ExportProducts.Unload'|translate}}</div>
+            </div>
+            <div class="col-xs-12 col-md-9 col-wl-4">
+                <div class="block-additional-parameters-value adv-radio-group" data-ng-class="{'adv-radio-group--horizontal': !isMobile.value}">
+                    <label class="adv-radio-label" data-ng-class="{'m-b-sm': isMobile.value}">
+                        <input
+                            type="radio"
+                            class="adv-radio-input"
+                            ng-click="$ctrl.exportProductsSettings.ExportProductsType='AllProducts'"
+                            ng-checked="$ctrl.exportProductsSettings.ExportProductsType=='AllProducts'" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.ExportProducts.AllProducts'|translate}}</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label" data-ng-class="{'m-b-sm': isMobile.value}">
+                        <input
+                            type="radio"
+                            class="adv-radio-input"
+                            ng-click="$ctrl.exportProductsSettings.ExportProductsType='Categories'"
+                            ng-checked="$ctrl.exportProductsSettings.ExportProductsType=='Categories'" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.ExportProducts.Categories'|translate}}</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label" data-ng-class="{'m-b-sm': isMobile.value}">
+                        <input
+                            type="radio"
+                            class="adv-radio-input"
+                            ng-click="$ctrl.exportProductsSettings.ExportProductsType='OneProduct'"
+                            ng-checked="$ctrl.exportProductsSettings.ExportProductsType=='OneProduct'" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.ExportProducts.OneProduct'|translate}}</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" ng-if="$ctrl.exportProductsSettings.ExportProductsType=='OneProduct'">
+            <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap control-label"></div>
+            </div>
+
+            <div class="col-xs-12 col-md-4 relative">
+                <span>
+                    {{$ctrl.exportProductsSettings.OfferId == 0 || $ctrl.exportProductsSettings.OfferId == null ? 'Товар не выбран ' : 'Товар
+                    выбран'}}
+                </span>
+                <ui-modal-trigger
+                    size="xs-12"
+                    data-controller="'ModalOffersSelectvizrCtrl'"
+                    data-controller-as="ctrl"
+                    resolve="{ multiSelect: false }"
+                    on-close="$ctrl.selectProduct(result)"
+                    template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+                    <a ng-bind="'Admin.Js.Analytics.ExportProducts.SelectProduct'|translate"></a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+
+        <div class="form-group row" ng-if="$ctrl.exportProductsSettings.ExportProductsType=='Categories'">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap"></div>
+            </div>
+
+            <div class="col-xs-12 col-md-4 col-wl-6">
+                <div
+                    js-tree
+                    tree-ajax="catalog/categoriestree?{{$ctrl.exportProductsSettings.SelectedCategories != null ? '&selectedIds=' + $ctrl.exportProductsSettings.SelectedCategories : ''}}"
+                    tree-events="check_node:$ctrl.treeCallbacks.check_node;select_node:$ctrl.treeCallbacks.select_node;deselect_node:$ctrl.treeCallbacks.deselect_node; "
+                    tree-plugins="checkbox"
+                    tie-selection="false"></div>
+            </div>
+        </div>
+        <div class="row" ng-if="isMobile.value">
+            <div class="col-md-offset-3 col-wl-offset-2">
+                <button class="btn btn-sm btn-success" data-e2e="Export" type="button" ng-click="$ctrl.exportProducts()">
+                    {{'Admin.Js.ProgressData.Export'|translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ibox" ng-init="$ctrl.initProgress()" ng-if="$ctrl.isStartExport">
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-xs-12">
+                <uib-progressbar max="$ctrl.progressTotal" class="m-b-md" value="$ctrl.progressValue"
+                    ><span style="color: white; white-space: nowrap"
+                        ><span ng-bind="$ctrl.progressValue"></span> / <span ng-bind="$ctrl.progressTotal"></span></span
+                ></uib-progressbar>
+            </div>
+        </div>
+
+        <div>
+            <div class="form-group row">
+                <div class="col-xs-12 col-md-2">
+                    <div class="setting-label-wrap control-label">{{'Admin.Js.ProgressData.CurrentProcess'|translate}}</div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <label class="adv-checkbox-label">
+                        <a class="link-decoration-none" ng-href="{{$ctrl.progressCurrentProcess}}" ng-bind="$ctrl.progressCurrentProcessName"></a>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div ng-if="!$ctrl.IsRun">
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <div class="setting-label-wrap control-label">{{'Admin.Js.ProgressData.DataExportedSuccessfully'|translate}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="!$ctrl.IsRun">
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <a ng-href="{{$ctrl.FileName}}" class="btn btn-sm btn-default" download>{{'Admin.Js.ProgressData.DownloadFile'|translate}}</a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <a class="link-decoration-none" href="" ng-click="$ctrl.isStartExport = false"
+                        >{{'Admin.Js.ProgressData.ReturnToExport'|translate}}</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

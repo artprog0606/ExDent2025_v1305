@@ -1,0 +1,155 @@
+﻿@using AdvantShop.Core.Services.Admin
+
+@model AdvantShop.Web.Admin.ViewModels.Partners.PartnersListViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Partners/_PartnersLayout.cshtml";
+    }
+
+    Html.AddAsset("partners");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = T("Admin.Partners.Index.Title").ToString();
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "PartnersProgramm")
+    };
+
+    headerModel.Controls.Add(
+  new ButtonModel()
+  {
+      Modificators = new List<eButtonModificators>()
+ {
+                eButtonModificators.OnlyIcon
+                     },
+      ColorType = eColorType.Secondary,
+      Type = eButtonType.Add,
+      WrapStart = " <partner-info-trigger><button type=\"button\" style=\"display:none;\" disabled ng-disabled=\"partners.couponTplExists === false\">",
+      WrapEnd = "</button></partner-info-trigger>",
+      Icon = new ButtonIcon()
+      {
+          SvgName = "plus-alt",
+          Attributes = new { width = 16, height = 16 },
+      }
+  }
+);
+
+    @Html.Header(headerModel)
+}
+
+@if (AdminAreaTemplate.Current == null && !isMobile)
+{
+    //adminv2
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text m-b-xs">
+                    @T("Admin.Partners.Index.Title")
+                </h1>
+            </div>
+            <div class="page-name-block-item-additional">
+                <partner-info-trigger class="pull-right">
+                    <button data-e2e="AddNewPartner" class="btn btn-sm btn-success" type="button" disabled ng-disabled="partners.couponTplExists === false">
+                        <span class="fa fa-plus"></span> @T("Admin.Partners.Index.AddPartner")
+                    </button>
+                </partner-info-trigger>
+                @*<div class="pull-right">
+                        <div class="flex middle-xs">
+                            <div class="dropdown m-r-sm">
+                                <button class="btn btn-sm btn-success dropdown-toggle" id="reportsDropdown" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Отчеты
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="reportsDropdown">
+                                    <li>
+                                        <ui-modal-trigger data-controller="'ModalPartnersReportCtrl'" controller-as="ctrl" size="small"
+                                                          template-url="@Html.GetAssetPath("partnersReport.html")"
+                                                          data-resolve="{params: {dateFrom: '@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")', dateTo: '@DateTime.Now.ToString("yyyy-MM-dd")'}}">
+                                            <a href="">Отчет по партнерам</a>
+                                        </ui-modal-trigger>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.AbsoluteActionUrl("PayoutReports", "PartnersReport")">Отчеты по выплатам партнерам</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+}
+@if (isMobile)
+{
+    <div class="m-b-sm">
+        <a href="https://www.advantshop.net/help/pages/partners-programm" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                        </svg>
+            <span>Инструкция. Партнерская программа</span>
+        </a>
+    </div>
+}
+
+<div class="ibox static-notify ng-cloak" style="@(isMobile ? "" : "padding-top:2px;")" ng-show="partners.couponTplExists === false">
+    <div class="ibox-content @(isMobile ? "m-b-md" : "p-xs-x2")">
+        <span class="label label-notice @(isMobile ? "" : "m-r")">
+            @if (isMobile)
+            {
+                <span>Внимание!</span>
+            }
+            else
+            {
+                <span>Внимание</span>
+            }
+        </span>
+        <span class="">Для регистрации партнеров необходимо настроить шаблон партнерского купона.</span>
+        <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                          template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                          data-resolve="{couponMode: @AdvantShop.Catalog.CouponMode.PartnersTemplate.ConvertIntString()}"
+                          data-on-close="partners.checkPartnerCouponTpl()">
+            <a href="">Настроить шаблон</a>
+        </ui-modal-trigger>
+    </div>
+</div>
+
+<div class="ibox">
+    <div class="ibox-content no-top-border">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="partners.gridOnInit(grid)"
+                        grid-options="partners.gridOptions"
+                        grid-url="'partners/getPartners'"
+                        grid-extend-ctrl="partners"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm">
+
+                    <div>
+                        <div class="m-b-xs setting__label">{{row.entity.Name}}</div>
+                        <div class="m-b-xs fs-xs">{{row.entity.Email}}</div>
+                        <div class="m-b-xs fs-xs">{{row.entity.Phone}}</div>
+                        <div class="m-b-xs fs-xs">{{row.entity.TypeFormatted}}</div>
+                        <div class="fs-xs flex middle-xs between-xs">
+                            <div>
+                                <span>{{row.entity.Balance}}</span>
+                                <span ng-if="row.entity.Type == 2">руб.</span>
+                            </div>
+                            <div>{{row.entity.DateCreatedFormatted}}</div>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="partners.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

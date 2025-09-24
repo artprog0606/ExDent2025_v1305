@@ -1,0 +1,246 @@
+﻿<div is-mobile class="product-photos--mobile">
+    <div class="product-photos__head" ng-class="{'container-fluid': !isMobile.value, 'text-right': isMobile.value}">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="inline product-setting-title content-header" ng-if="isMobile.value === false">
+                    {{'Admin.Js.ProductPhotos.Title' | translate}}
+                </h2>
+                <ui-modal-trigger
+                    data-controller="'ModalPictureUploaderCtrl'"
+                    on-close="$ctrl.uploadByLink(result)"
+                    controller-as="ctrl"
+                    data-resolve="{options: {allowExts: ['jpg','gif','png','jpeg','webp'] }}"
+                    template-url="../areas/admin/content/src/_shared/picture-uploader/modal/pictureUploaderModal.html">
+                    <span ng-click="$ctrl.open()">
+                        <a data-e2e="imgByHref" href="" class="picture-uploader-buttons-add word-spacing"
+                            >{{'Admin.Js.ProductPhotos.AddImageByHref' | translate}}</a
+                        >
+                    </span>
+                </ui-modal-trigger>
+                <a
+                    href=""
+                    accept="image/*"
+                    multiple
+                    ngf-max-size="15MB"
+                    ngf-select=""
+                    ngf-change="$ctrl.upload($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                    class="picture-uploader-buttons-add word-spacing"
+                    ng-if="isMobile.value === false">
+                    {{'Admin.Js.ProductPhotos.AddImage' | translate}}
+                </a>
+                <span ng-if="$ctrl.showGoogleImageSearch" class="word-spacing" ng-class="{'m-t-xs block': isMobile.value}">
+                    <google-image-search
+                        uploadbylink-url="product/uploadpicturesbylink"
+                        uploadbylink-params="{'type': 'product', 'objId': $ctrl.productId }"
+                        on-apply="$ctrl.updateListPhotos(result)"
+                        select-mode="multiple"></google-image-search>
+                </span>
+                <span ng-if="$ctrl.showImageSearch && isMobile.value === false" class="word-spacing">
+                    <image-search
+                        uploadbylink-url="product/uploadpicturesbylink"
+                        uploadbylink-params="{'type': 'product', 'objId': $ctrl.productId }"
+                        on-apply="$ctrl.updateListPhotos(result)"
+                        select-mode="multiple"></image-search>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="product-photos__filter" ng-class="{'container-fluid': !isMobile.value}">
+        <div class="form-group middle-xs row">
+            <div class="col-xs-12">
+                <div class="inline-block p-r-sm" ng-if="isMobile.value === false">
+                    <div class="btn-group">
+                        <label class="btn btn-sm btn-default">
+                            <div class="adv-checkbox-label">
+                                <input
+                                    class="adv-checkbox-input"
+                                    type="checkbox"
+                                    ng-model="$ctrl.selectAll"
+                                    ng-change="$ctrl.toggleSelectedAll($ctrl.selectAll)" />
+                                <span class="adv-checkbox-emul"></span>
+                            </div>
+                            <ng-pluralize
+                                class="categories-block-checkbox-text"
+                                count="$ctrl.selectedPhotos.length"
+                                when="{'0': 'Выбрать все фотографии', 'one': '{} фотография выбрана', 'few': '{} фотографии выбрано', 'many': '{} фотографий выбрано', 'other': '{} фотографии выбрано'}">
+                            </ng-pluralize>
+                        </label>
+                        <input
+                            type="button"
+                            class="btn btn-sm btn-default"
+                            value="{{'Admin.Js.Partials.CategoriesBlock.Delete'|translate}}"
+                            ng-if="$ctrl.selectedPhotos.length > 0"
+                            ng-click="$ctrl.deletePhotos($ctrl.selectedPhotos)" />
+                    </div>
+                </div>
+                <div class="vertical-middle" ng-class="{'inline-block': !isMobile.value}">
+                    <label for="filterByColor" ng-class="{'form-control-title block': isMobile.value}"
+                        >{{'Admin.Js.ProductPhotos.FilterByColor' | translate}}</label
+                    >
+                    <select
+                        id="filterByColor"
+                        class="form-control inline-block input-alt"
+                        style="{{isMobile.value ? '' : 'width: 200px;'}}"
+                        ng-class="{'m-l-xs': !isMobile.value}"
+                        ng-model="$ctrl.filterColorId"
+                        ng-options="s.value as s.label for s in $ctrl.allPhotoColors"
+                        ng-change="$ctrl.filterPhotos()"
+                        data-e2e="PhotoFilterColor"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="product-photos__body" ng-class="{'container-fluid': !isMobile.value}">
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <div class="product-pic-list" id="productPhotosSortable">
+                    <div class="sortable-row items-list" as-sortable="$ctrl.sortableOptions" ng-model="$ctrl.photos">
+                        <div
+                            class="product-pic-list-item item-block"
+                            ng-class="{'product-pic-list-item-main': item.Main}"
+                            data-ng-repeat="item in $ctrl.photos"
+                            data-as-sortable-item
+                            data-e2e="PhotoImg">
+                            <div class="product-block product-block--center" as-sortable-item-handle>
+                                <div class="product-block-content">
+                                    <figure class="product-block-figure">
+                                        <div class="product-block-figure-link">
+                                            <img
+                                                ng-src="{{item.ImageSrc}}"
+                                                class="product-block-figure-img"
+                                                alt="{{item.Description}}"
+                                                title="{{item.Description}}"
+                                                style="max-width: 130px; max-height: 130px" />
+                                        </div>
+                                    </figure>
+                                </div>
+                                <div class="clearfix" no-drag ng-class="{'product-block-state': isMobile.value === false}">
+                                    <div class="pull-left" ng-if="isMobile.value === false">
+                                        <div class="product-block-main-state">
+                                            <label class="adv-checkbox-label">
+                                                <input
+                                                    class="adv-checkbox-input"
+                                                    type="checkbox"
+                                                    ng-model="item.Main"
+                                                    ng-disabled="item.Main"
+                                                    ng-click="$ctrl.changeMainPhoto(item.PhotoId)"
+                                                    hidden
+                                                    data-e2e="MainPhotoInput" />
+                                                <span
+                                                    class="adv-checkbox-emul adv-checkbox-emul--white adv-checkbox-emul--hover-check"
+                                                    data-e2e="MainPhoto"></span>
+                                                <span class="italic hover-padding-left pointer"
+                                                    >{{'Admin.Js.ProductPhotos.MainPhoto' | translate}}</span
+                                                >
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right picture-hover-effect">
+                                        <ui-modal-trigger
+                                            data-controller="'ModalEditPhotoCtrl'"
+                                            controller-as="ctrl"
+                                            data-resolve="{'PhotoId': item.PhotoId}"
+                                            template-url="../areas/admin/content/src/product/components/productPhotos/modal/editPhoto.html"
+                                            data-e2e="PhotoItemEdit">
+                                            <a
+                                                class="link-invert link-decoration-none pic-hover-color fas fa-pencil-alt categories-block-icon"
+                                                href=""></a>
+                                        </ui-modal-trigger>
+
+                                        <a
+                                            ng-click="$ctrl.deletePhoto(item.PhotoId)"
+                                            class="link-invert link-decoration-none picture-icon-edit pic-hover-color fas fa-times categories-block-icon"
+                                            href=""
+                                            data-e2e="PhotoItemDelete"></a>
+                                    </div>
+                                </div>
+                                <div class="product-pic-list-item-overlay"></div>
+                            </div>
+                            <div class="product-photo-bottom">
+                                <div class="product-photo-bottom__check" ng-if="isMobile.value === false">
+                                    <label class="adv-checkbox-label">
+                                        <input
+                                            class="adv-checkbox-input"
+                                            type="checkbox"
+                                            checklist-model="$ctrl.selectedPhotos"
+                                            checklist-value="item.PhotoId" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                                <div class="product-block-state" ng-if="isMobile.value === true">
+                                    <label class="adv-checkbox-label">
+                                        <input
+                                            class="adv-checkbox-input"
+                                            type="checkbox"
+                                            ng-model="item.Main"
+                                            ng-disabled="item.Main"
+                                            ng-click="$ctrl.changeMainPhoto(item.PhotoId)"
+                                            data-e2e="MainPhotoInput" />
+                                        <span
+                                            class="adv-checkbox-emul adv-checkbox-emul--white adv-checkbox-emul--hover-check"
+                                            data-e2e="MainPhoto"></span>
+                                        <span class="italic hover-padding-left pointer">{{'Admin.Js.ProductPhotos.MainPhoto' | translate}}</span>
+                                    </label>
+                                </div>
+                                <div class="product-photo-bottom__color product-color-select-wrap">
+                                    <select
+                                        class="form-control"
+                                        ng-model="item.ColorId"
+                                        ng-options="s.value as s.label for s in $ctrl.photoColors"
+                                        ng-change="$ctrl.changePhotoColor(item.PhotoId, item.ColorId)"
+                                        data-e2e="PhotoColor"></select>
+                                </div>
+                            </div>
+                            <div ng-if="$ctrl.photoCategories && $ctrl.photoCategories.length > 0" class="product-photo-bottom" style="top: -2px">
+                                <div class="product-photo-bottom__color product-color-select-wrap">
+                                    <select
+                                        class="form-control"
+                                        ng-model="item.PhotoCategoryId"
+                                        ng-options="s.value as s.label for s in $ctrl.photoCategories"
+                                        ng-change="$ctrl.changePhotoCategory(item.PhotoId, item.PhotoCategoryId)"
+                                        data-e2e="PhotoCategory">
+                                        <option value="">{{'Admin.Js.PhotoCategories.NotSelected' | translate}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="product-pic-list-item product-pic-list-item--loading item-block"
+                            data-ng-repeat="photoLoading in $ctrl.photosLoadingList">
+                            <div class="product-pic-list-placeholder progress-overlay">
+                                <img ngf-src="photoLoading" alt="" />
+                            </div>
+                        </div>
+                        <div
+                            class="product-pic-list-item item-block card card--middle"
+                            no-drag
+                            ng-if="$ctrl.photosLoadingList == null || $ctrl.photosLoadingList.length === 0">
+                            <a
+                                href=""
+                                class="product-block__new-trigger"
+                                accept="image/*"
+                                multiple
+                                ngf-max-size="15MB"
+                                ngf-select=""
+                                ngf-change="$ctrl.upload($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                                <div class="product-block product-photos__add-new">
+                                    <div class="product-block-content product-block-content--max-height">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 42 42"
+                                            style="enable-background: new 0 0 42 42"
+                                            xml:space="preserve"
+                                            width="61px"
+                                            height="61px">
+                                            <polygon points="42,19 23,19 23,0 19,0 19,19 0,19 0,23 19,23 19,42 23,42 23,23 42,23 " fill="#eaeced" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

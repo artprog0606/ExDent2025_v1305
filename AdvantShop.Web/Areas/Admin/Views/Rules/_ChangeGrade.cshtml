@@ -1,0 +1,40 @@
+﻿@model AdvantShop.Web.Admin.Models.Bonuses.Rules.ChangeGradeRuleModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-xs-12 col-md-3">
+            @T("Admin.Rules.ChangeGrade.UseSalesForWholePeriod")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex middle-xs" : "")">
+            @Html.CheckBoxFor(x => x.AllPeriod, new { @class = "adv-checkbox-input", ng_model = "rule.Rule.AllPeriod" })
+            <span class="adv-checkbox-emul" data-e2e="AllPeriod"></span>
+            @if (isMobile)
+            {
+                <span class="flex-grow setting__label m-l-sm">
+                    @T("Admin.Rules.ChangeGrade.UseSalesForWholePeriod")
+                </span>
+            }
+        </label>
+
+        @*<help-trigger class="ng-cloak help-trigger-icon-abs" data-title="Срок доставки">
+                Срок доставки, как отрезок времени, в который данный метод доставки сможет доставить товар.<br><br>
+                Например: 1-2 дня.
+            </help-trigger>*@
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="!rule.Rule.AllPeriod">
+    <div class="flex-grow-n col-xs-12 col-md-3">
+        <span class="text-required setting__label">@T("Admin.Rules.ChangeGrade.AccountingForLastMonth")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.Period, new { @class = "form-control input-alt", ng_model = "rule.Rule.Period", required = "required", validation_input_text = T("Admin.Rules.ChangeGrade.AccountingForLastMonth").ToString() })
+    </div>
+</div>

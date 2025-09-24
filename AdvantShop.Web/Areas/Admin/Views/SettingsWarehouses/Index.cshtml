@@ -1,0 +1,146 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.WarehouseSettings.WarehouseSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsWarehouses");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsWarehouses", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Warehouses").ToString();
+        headerModel.ShowOnlySticky = true;
+
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "Settings"),
+            NgBackTriggerCallback = "settingsWarehouses.onSelectTab(null)"
+        };
+
+        headerModel.Controls = new List<IButton>()
+        {
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsWarehouses.tabActiveIndex === 'warehouses'\"" },
+                Link = Url.AbsoluteActionUrl("Add", "Warehouse"),
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsWarehouses.tabActiveIndex === 'types'\"", "ng-click=\"settingsWarehouses.warehouseTypes.showType()\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsWarehouses.tabActiveIndex === 'stock-label'\"", "ng-click=\"settingsWarehouses.stockLabelList.showStockLabel()\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsWarehouses.tabActiveIndex === 'domains'\"", "ng-controller=\"DomainGeoLocationListCtrl as domainGeoLocationList\"", "ng-click=\"domainGeoLocationList.showModal()\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "ng-if=\"settingsWarehouses.tabActiveIndex === 'warehouses'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+        };
+
+        @Html.Header(headerModel)
+    }
+
+    if (!isMobile)
+    {
+        @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.Warehouses")</h1>
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset uid="warehousesTab" on-select-batch="settingsWarehouses.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'warehouses'" heading="@T("Admin.Settings.Warehouses.Title")" classes="ng-tab" removable="true">
+            @Html.Partial("_Warehouses", Model)
+        </uib-tab>
+        <uib-tab index="'types'" heading="@T("Admin.Settings.WarehousesTypes.Title")" classes="ng-tab" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_Types", Model)
+            </div>
+        </uib-tab>
+        <uib-tab index="'stock-label'" heading="@T("Admin.Settings.WarehousesStockLabel.Title")" classes="ng-tab" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_StockLabel", Model)
+            </div>
+        </uib-tab>
+        <uib-tab index="'domains'" heading="@T("Admin.Settings.WarehousesDomains.Title")" classes="ng-tab" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_Domains", Model)
+            </div>
+        </uib-tab>
+    </uib-tabset>
+}

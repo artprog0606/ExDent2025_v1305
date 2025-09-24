@@ -1,0 +1,126 @@
+﻿@using AdvantShop.Core.Services.Partners
+@model AdvantShop.Web.Admin.Models.Partners.PartnerEditModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox category-block block-additional-parameters">
+    <div class="ibox-content category-content block-additional-parameters-content border_none @(isMobile ? "" : " p-r-lg ")">
+        <div class="block-additional-parameters-row row @(isMobile ? "setting__form-group" : "")">
+            <div class="col-xs-6 @(isMobile ? "setting__label" : "")">
+                @T("Admin.Partners.Partner.Enabled")
+            </div>
+            <div class="col-xs-6 @(isMobile ? "flex adv-checkbox-label--switch-on-off-wrapper" : "")">
+                <switch-on-off checked="partner.instance.partner.enabled" data-id="PartnerEnabled"
+                               ng-init="partner.instance.partner.enabled=@Model.Partner.Enabled.ToLowerString()"
+                               on-change="partner.changeEnabled(checked)"></switch-on-off>
+            </div>
+        </div>
+        <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name">
+                Процент вознаграждения
+            </div>
+            <div class="block-additional-parameters-value">
+                @Html.TextBoxFor(x => x.Partner.RewardPercent, new { @class = "form-control input-alt", ng_model = "partner.instance.partner.rewardPercent" })
+            </div>
+        </div>
+        @if (!Model.IsEditMode)
+        {
+            <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+                <div class="block-additional-parameters-name">
+                    Код купона (для реферальной ссылки)
+                </div>
+                <div class="block-additional-parameters-value">
+                    @Html.TextBoxFor(x => x.CouponCode, new { @class = "form-control input-alt", ng_model = "partner.instance.couponCode" })
+                </div>
+            </div>
+        }
+        <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name @(isMobile ? "setting--m-none" : "")">
+                @T("Admin.Partners.Partner.SendMessages")
+            </div>
+            @foreach (EPartnerMessageType messageType in Enum.GetValues(typeof(EPartnerMessageType)).Cast<EPartnerMessageType>().Where(x => x != EPartnerMessageType.None))
+            {
+                <div class="block-additional-parameters-value @(isMobile ? "setting--m-t-sm" : "")">
+                    <label class="adv-checkbox-label form-label-block">
+                        @Html.CheckBoxFor(x => x.SendMessages[messageType.ToString()], new
+                        {
+                            ng_model = "partner.instance.SendMessages['" + messageType + "']",
+                            ng_init = "partner.instance.SendMessages['" + messageType + "'] = " + Model.SendMessages[messageType.ToString()].ToLowerString(),
+                            @class = "adv-checkbox-input"
+                        })
+                        <span class="adv-checkbox-emul"></span>
+                        <span class="@(isMobile ? "m-l-sm" : "")">@messageType.Localize()</span>
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name">
+                @T("Admin.Partners.Partner.AdminComment")
+            </div>
+            <div class="block-additional-parameters-value">
+                @Html.TextAreaFor(x => x.Partner.AdminComment, new { @class = "form-control input-alt", @style = "height:85px", ng_model = "partner.instance.partner.adminComment", ng_init = "partner.instance.partner.adminComment=" + (Model.Partner != null ? "'" + Model.Partner.AdminComment + "'" : "null") })
+            </div>
+        </div>
+
+        @if (Model.IsEditMode)
+    {
+        <div class="block-additional-parameters-row row @(isMobile ? "setting__form-group" : "")">
+            <div class="col-xs-6">
+                @T("Admin.Partners.Partner.DateCreated")
+            </div>
+            <div class="col-xs-6">
+                @Model.Partner.DateCreated
+            </div>
+        </div>
+        <div class="@(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-value">
+                <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-resolve="{params: {partnerId: partner.instance.partner.id}}"
+                                  data-controller="'ModalChangePartnerPasswordCtrl'" data-controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("changePasswordPartner.html")">
+                    <a href="">@T("Admin.Partners.Partner.ChangePassword")</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+}
+
+    </div>
+</div>
+<div class="ibox category-block block-additional-parameters">
+    <div class="ibox-content category-content block-additional-parameters-content border_none @(isMobile ? "" : "p-r-lg")">
+        <h3 class="category-title @(isMobile ? "setting__subtitle" : "")">Договор</h3>
+        <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name @(isMobile ? "setting--m-none" : "")">
+                <label class="adv-checkbox-label form-label-block">
+                    @Html.CheckBoxFor(x => x.Partner.ContractConcluded, new { ng_model = "partner.instance.partner.contractConcluded", @class = "adv-checkbox-input" })
+                    <span class="adv-checkbox-emul"></span>
+                    <span class="@(isMobile ? "m-l-sm setting__label" : "")">Договор заключен</span>
+                </label>
+            </div>
+        </div>
+        <div class="block-additional-parameters-row @(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name">
+                Номер
+            </div>
+            <div class="block-additional-parameters-value">
+                @Html.TextBoxFor(x => x.Partner.ContractNumber, new { @class = "form-control input-alt", ng_model = "partner.instance.partner.contractNumber" })
+            </div>
+        </div>
+        <div class="@(isMobile ? "setting__form-group" : "")">
+            <div class="block-additional-parameters-name">
+                Дата
+            </div>
+            <div class="block-additional-parameters-value">
+                <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                    <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                        @Html.TextBoxFor(x => x.Partner.ContractDate, new { @class = "form-control input-alt", ng_model = "partner.instance.partner.contractDate", ng_flatpickr_input = "" })
+                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

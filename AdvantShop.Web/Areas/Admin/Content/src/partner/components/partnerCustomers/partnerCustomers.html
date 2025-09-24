@@ -1,0 +1,40 @@
+﻿<div is-mobile>
+    <h2 is-mobile class="m-b-md clearfix" ng-if="!isMobile.value">
+        {{'Admin.Js.PartnerCustomers.Customers'|translate}}
+        <customer-info-trigger partner-id="$ctrl.partnerId">
+            <a class="pull-right btn btn-sm btn-action btn--margin-left" href="">{{'Admin.Js.PartnerCustomers.CreateCustomer'|translate}}</a>
+        </customer-info-trigger>
+        <ui-modal-trigger
+            data-controller="'ModalSelectCustomerCtrl'"
+            controller-as="ctrl"
+            size="middle"
+            template-url="../areas/admin/content/src/_shared/modal/selectCustomer/selectCustomer.html"
+            data-on-close="$ctrl.bindCustomer(result)">
+            <a href="" class="pull-right btn btn-sm btn-action">{{'Admin.Js.PartnerCustomers.BindCustomer'|translate}}</a>
+        </ui-modal-trigger>
+    </h2>
+    <div class="m-b-lg">
+        <div class="row">
+            <div class="col-xs-12">
+                <ui-grid-custom
+                    grid-unique-id="gridPartnerCustomers"
+                    grid-on-init="$ctrl.gridPartnerCustomers = grid"
+                    grid-filter-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{partnerId: $ctrl.partnerId}"
+                    grid-extend-ctrl="$ctrl"
+                    grid-options="$ctrl.gridOptions"
+                    grid-url="'partners/getBindedCustomers'"
+                    grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <a ng-href="customers/view/{{row.entity.CustomerId}}" class="card card--gap-row-sm grid g-xs">
+                            <div class="card__title g-col-12" ng-bind="row.entity.FullName"></div>
+                            <div class="card__text g-col-12 m-t-xs" ng-if="row.entity.Phone" ng-bind="row.entity.Phone"></div>
+                            <div class="card__text card__text--color-alt g-col-12" ng-if="row.entity.Email" ng-bind="row.entity.Email"></div>
+                        </a>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+</div>

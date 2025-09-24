@@ -1,0 +1,96 @@
+﻿@using AdvantShop.Models.Checkout
+@model AdvantShop.ViewModel.Checkout.BillingViewModel
+@{
+    Layout = null;
+    Html.AddAsset("billing");
+}
+<!DOCTYPE HTML>
+<html data-ng-strict-di data-ng-app="app" lang="ru" @Html.GetNgController()>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="format-detection" content="telePhone=no">
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl()" />
+    <meta name="Description" content="@Html.GetPageDescription()" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Html.GetPageKeywords(asMetaLink: true)
+    <meta name="robots" content="noindex" />
+    <meta name="robots" content="nofollow" />
+    @Html.Partial("_Head")
+</head>
+<body class="cs-t-1 text-floating checkout-billing">
+    <div id="layout">
+        <div class="site-body-cell mobile-content-padding" style="max-width: 900px; margin:10px auto;">
+            @if (!Model.IsMobileApp)
+            {
+                <div class="col-xs-3 site-head-logo-block site-head-logo">
+                    @Html.Action("Logo", "Common")
+                </div>
+            }
+            <div class="page-title-row checkout-title-row">
+                <div class="checkout-title page-title">
+                    <h1>@Model.Header</h1>
+                </div>
+            </div>
+            @if (!(Model.Order.Payed || Model.Order.OrderStatus.IsCanceled))
+            {
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-p-v" data-ng-init="checkout.setOrderId(@Model.Order.OrderID); checkout.fillAddress(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Order.OrderCustomer))">
+                            <ng-form action="/checkout/indexpost" class="billing-form" method="post" name="checkoutForm">
+                                  @if (SettingsCheckout.ManagerConfirmed && !Model.Order.ManagerConfirmed)
+                                  {
+                                      <div class="checkout-not-confirmed">
+                                          @T("Checkout.Billing.NotConfirmed")
+                                      </div>
+                                  }
+                                  else
+                                  {
+                                      @Html.AntiForgeryToken()
+                                      @Html.Partial("CheckoutPayment")
+                                      <div class="checkout-result">
+                                          @T("Checkout.CheckoutSummary.SumText"): <span class="checkout-result-price" data-ng-bind="checkout.Cart.Result"></span>
+                                      </div>
+  
+                                      if (SettingsCheckout.IsShowUserAgreementText)
+                                      {
+                                          <div class="checkout-agree">
+                                              <label>
+                                                  <input class="custom-input-native" type="checkbox" id="agree" name="agree" data-ng-model="checkout.agree" required ng-true-value="true" ng-false-value="false" data-ng-init="checkout.agree = @SettingsCheckout.AgreementDefaultChecked.ToLowerString()"/>
+                                                  <span class="custom-input-checkbox"></span>
+                                                  <span class="custom-input-text">@Html.Raw(SettingsCheckout.UserAgreementText)</span>
+                                              </label>
+                                          </div>
+                                      }
+                                  }
+  
+                                  <div class="billing-form">
+                                      <div @Html.Raw(SettingsCheckout.IsShowUserAgreementText ? "ng-class=\"{'checkout-success-btn-disabled' : checkout.agree !== true}\"" : "") class="ng-cloak" ng-click="checkoutForm.agree.$dirty = true">
+                                          <div class="js-checkout-success" order-pay order-code="'@Model.Order.Code'" payment-method-id="checkout.PaymentId" page-with-payment-button="orderconfirmation">
+                                          </div>
+                                      </div>
+                                  </div>
+                            </ng-form>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 col-p-v" id="rightCell">
+                            @Html.Partial("CheckoutCart", new CheckoutModel(){ IsApi = Model.IsMobileApp })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.IsMobile)
+        {
+            // при выключенном IsMobileTemplate не находятся partial view, поэтому временно включаем
+            SettingsDesign.IsMobileTemplate = true;
+            @Html.Partial("~/Areas/Mobile/Views/Shared/_FooterMobileScripts.cshtml")
+            SettingsDesign.IsMobileTemplate = false;
+        }
+        else
+        {
+            @Html.Partial("_FooterScripts")
+        }
+    </div>
+</body>
+</html>

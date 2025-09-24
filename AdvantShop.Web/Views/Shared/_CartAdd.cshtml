@@ -1,0 +1,77 @@
+﻿@using AdvantShop.ViewCommon
+@using Quartz.Util
+@model CartAddViewModel
+
+@{
+    string partialName = Model.PartialName ?? "_CartAddText";
+}
+@if (Model.AllowAddProductToCart.HasValue && !Model.AllowAddProductToCart.Value)
+{
+    <a class="cart-add cart-add--simple @(Model.Classes) @(Model.Size != CardAddSize.None ? "btn-" + Model.Size.ToString().ToLower() : String.Empty)"
+       href="@Model.Href"
+       @(!Model.Title.IsNullOrWhiteSpace() ? "title=" + Model.Title : "")
+       @(!Model.NgHref.IsNullOrWhiteSpace() ? "ng-href=" + Model.NgHref : "")
+       @(!Model.NgBtnText.IsNullOrWhiteSpace() ? "ng-bind='" + Model.NgBtnText + "'" : "")>
+        @Html.Partial(partialName, new Dictionary<string, string>() { { "text", Model.BtnContent } })
+    </a>
+}
+else
+{
+    if (Model.CartAddType.HasValue == false || Model.CartAddType == SettingsDesign.eCartAddTypeButton.Classic)
+    {
+        <button type="button"
+                class="cart-add cart-add--simple @Model.Classes @(Model.Size != CardAddSize.None ? "btn-" + Model.Size.ToString().ToLower() : String.Empty)"
+                @Html.RenderCartAddAttributes(Model)
+                ng-click="cartAdd.addItem($event)"
+                @(!Model.Title.IsNullOrWhiteSpace() ? "title=" + Model.Title : "")
+                @Html.Raw(!Model.NgDisabled.IsNullOrWhiteSpace() ? "data-ng-disabled=\"" + Model.NgDisabled + "\"" : "")
+                @(!Model.NgBtnText.IsNullOrWhiteSpace() ? "ng-bind='" + Model.NgBtnText + "'" : "")>
+            @Html.Partial(partialName, new Dictionary<string, string>() { { "text", Model.BtnContent } })
+        </button>
+    }
+    else
+    {
+        
+        <div class="cart-add cart-add--with-spinbox cs-bg-1 full-width"
+             @Html.RenderCartAddAttributes(Model)
+             data-ng-init="product.addChangeSizeAndColorCallback(cartAdd.checkSizeAndColor)"
+             step-spinbox="@(Model.NgStepSpinbox ?? Model.StepSpinbox)"
+             max-step-spinbox="@(Model.NgMaxStepSpinbox ?? Model.MaxStepSpinbox)"
+             min-step-spinbox="@(Model.NgMinStepSpinbox ?? Model.MinStepSpinbox)">
+           
+            <div class="full-height  cart-add__inner" ng-switch="cartAdd.state" style="display: inline-flex">
+                <div ng-switch-when="update">
+                    <div class="cart-add__spinbox-block">
+                        <div data-spinbox=""
+                             data-value="cartAdd.productCartData.Amount"
+                             data-input-classes="'cart-add__spinbox-input lp-input'"
+                             data-input-class-size="'@(Model.Size != CardAddSize.None ? "input-" + Model.Size.ToString().ToLower() : String.Empty)'"
+                             data-proxy="cartAdd.productCartData.ShoppingCartItemId"
+                             data-update-fn="cartAdd.updateAmount(value, proxy)"
+                             data-step="cartAdd.productCartData.Multiplicity"
+                             data-max="cartAdd.productCartData.MaxAmount"
+                             data-debounce="false"
+                             data-min="0">
+                        </div>
+                    </div>
+                </div>
+                <div ng-switch-when="loading">
+                    <button data-ladda="0"
+                            class=" full-height full-width cart-add__button-add @(Model.Size != CardAddSize.None ? "btn-" + Model.Size.ToString().ToLower() : String.Empty) @Model.Classes">
+                        @* nbsp for height button  *@
+                        &nbsp;
+                    </button>
+                </div>
+                <div ng-switch-when="add">
+                    <button type="button"
+                            ng-click="cartAdd.addItem($event)"
+                            class="cart-add__button-add @(Model.Size != CardAddSize.None ? "btn-" + Model.Size.ToString().ToLower() : String.Empty) @Model.Classes"
+                            @Html.Raw(!Model.NgDisabled.IsNullOrWhiteSpace() ? "data-ng-disabled=\"" + Model.NgDisabled + "\"" : "")
+                            @(!Model.NgBtnText.IsNullOrWhiteSpace() ? "ng-bind='" + Model.NgBtnText + "'" : "")>
+                        @Html.Partial(partialName, new Dictionary<string, string>() { { "text", Model.BtnContent } })
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,86 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.BePaidPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Идентификатор магазина</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ShopId, new { ng_model = "paymentMethod.Parameters.ShopId", @class = "form-control input-alt", required = "required", validation_input_text = "Идентификатор магазина" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Идентификатор магазина">
+            <a href="https://docs.bepaid.by/ru/shop-id-key" target="_blank">Как найти ID и Secret Key магазина</a>
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Секретный ключ магазина</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = "Секретный ключ магазина" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Секретный ключ магазина">
+            <a href="https://docs.bepaid.by/ru/shop-id-key" target="_blank">Как найти ID и Secret Key магазина</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group setting--label-with-checkbox-reverse">
+    <label for="DemoMode" class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        Тестовый режим
+    </label>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.DemoMode, new { ng_model = "paymentMethod.Parameters.DemoMode", ng_init = "paymentMethod.Parameters.DemoMode=" + Model.DemoMode.ToLowerString(), @class = "adv-checkbox-input", validation_input_text = "Тестовый режим" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Доступные способы оплаты</span>
+    </div>
+    @{
+        var selectedPayments = Model.Payments.FindAll(x => x.Selected == true);
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")"
+         data-ng-init='paymentMethod.paymentsList = @JsonConvert.SerializeObject(Model.Payments); paymentMethod.activePayments = @JsonConvert.SerializeObject(selectedPayments)'>
+        <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="paymentMethod.activePayments"
+                       validation-input-text="Доступные способы оплаты"
+                       ng-required="true">
+                <ui-select-match placeholder="Способ оплаты">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="payment in paymentMethod.paymentsList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="payment.Disabled === true"
+                                   refresh-delay="0">
+                    {{payment.Text}}
+                </ui-select-choices>
+            </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="ActivePayments" id="ActivePayments" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="paymentMethod.activePayments" ng-repeat="option in paymentMethod.activePayments track by $index"></option>
+        </select>
+        <input type="hidden" name="ActivePayments" value="" ng-if="!paymentMethod.activePayments.length" />
+    </div>
+</div>
+
+<div class="form-group row setting__form-group" ng-if="paymentMethod.findChoseItem(paymentMethod.activePayments, 'erip') != null">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Код услуги ЕРИП
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.EripServiceNo, new { ng_model = "paymentMethod.Parameters.EripServiceNo", @class = "form-control input-alt", validation_input_text = "Код услуги ЕРИП", type = "number" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Код услуги ЕРИП">
+            Код услуги ЕРИП, присвоенный bePaid. Передается, если у вас к одному магазину подключено несколько ЕРИП услуг.
+        </help-trigger>
+    </div>
+</div>

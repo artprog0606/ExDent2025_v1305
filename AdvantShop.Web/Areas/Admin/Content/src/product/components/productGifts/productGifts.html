@@ -1,0 +1,93 @@
+﻿<div class="items-list" bs-modifiable="false" is-mobile>
+    <div class="item rel-product-item" data-ng-repeat="item in $ctrl.products track by $index">
+        <div class="item-block item-block-gift" ng-class="{'product-block' : isMobile.value}">
+            <div ng-if="!isMobile.value" class="item-block__inner">
+                <div class="clearfix">
+                    <div class="pull-right">
+                        <a
+                            href=""
+                            ng-click="$ctrl.deleteGift(item.GiftOfferId, item.OfferId)"
+                            class="link-invert link-decoration-none link-grey fas fa-times categories-block-icon"></a>
+                    </div>
+                </div>
+                <div class="item-block__content">
+                    <figure class="item-block__figure">
+                        <a href="{{item.Url}}" class="item-block__figure-link">
+                            <img ng-src="{{item.ImageSrc}}" alt="" style="max-width: 130px; max-height: 130px" />
+                        </a>
+                    </figure>
+                </div>
+            </div>
+            <div ng-if="isMobile.value">
+                <div class="product-block-content">
+                    <figure class="product-block-figure">
+                        <div class="product-block-figure-link">
+                            <div class="product-pic-list-item-controls">
+                                <button
+                                    class="link-invert link-decoration-none fas fa-times fa-m-n btn-invisible pull-right"
+                                    type="button"
+                                    ng-click="$ctrl.deleteGift(item.GiftOfferId, item.OfferId)"></button>
+                            </div>
+                            <img
+                                ng-src="{{item.ImageSrc}}"
+                                class="product-block-figure-img"
+                                alt="{{item.Name}}"
+                                style="max-width: 130px; max-height: 130px" />
+                        </div>
+                    </figure>
+                </div>
+            </div>
+            <div class="item-block__name" style="{{isMobile.value ? 'padding:10px 0;' : ''}}">
+                <a href="{{item.Url}}" class="item-block__name-link">{{item.ArtNo}} - {{item.Name}}</a>
+            </div>
+
+            <div class="m-b-xs" ng-if="item.Warning != null">
+                <span style="color: red">{{item.Warning}}</span>
+            </div>
+
+            <div class="row middle-xs m-b-sm">
+                <div class="col-md-12 col-xs-12">Применяется для:</div>
+                <div class="col-md-12 col-xs-12"></div>
+            </div>
+
+            <div class="form-group row middle-xs">
+                <div class="col-md-5 col-xs-12">
+                    <div class="form-control-title">Модификации</div>
+                </div>
+                <div class="col-md-7 col-xs-12">
+                    <select
+                        ng-model="item.OfferId"
+                        ng-options="s.value as s.label for s in item.Offers"
+                        ng-change="$ctrl.updateGiftOffer(item.GiftOfferId, item.OfferId, '{{item.OfferId}}', item.ProductCount)"
+                        ng-model-options="{debounce: 500}"
+                        class="form-control input-alt"></select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-5 col-xs-12">
+                    <div class="form-control-title">Количество основного товара</div>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    <input
+                        type="number"
+                        class="form-control"
+                        ng-model="item.ProductCount"
+                        ng-change="$ctrl.updateGift(item.GiftOfferId, item.OfferId, item.ProductCount)"
+                        ng-model-options="{debounce: 500}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ui-modal-trigger
+    class="header-subtext"
+    size="xs-11"
+    data-controller="'ModalOffersSelectvizrCtrl'"
+    data-controller-as="ctrl"
+    data-on-close="$ctrl.addGifts(result)"
+    data-opened-class="add-product-modal"
+    template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+    <a class="btn btn-sm btn-action" href=""> {{'Admin.Js.ProductGifts.AddProduct'|translate}} </a>
+</ui-modal-trigger>

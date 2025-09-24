@@ -1,0 +1,87 @@
+﻿@model AdvantShop.ViewModel.Home.CarouselViewModel
+
+@{
+    var isMultipleSlides = Model.Sliders.Count > 1;
+    var imageWidth = 0;
+    var imageHeight = 0;
+    if (SettingsDesign.MainPageMode == SettingsDesign.eMainPageMode.TwoColumns)
+    {
+        imageWidth = SettingsDesign.CarouselTwoColumnWidth;
+        imageHeight = SettingsDesign.CarouselTwoColumnHeight;
+    }
+    else if (SettingsDesign.MainPageMode == SettingsDesign.eMainPageMode.Default)
+    {
+        imageWidth = SettingsDesign.CarouselOneColumnWidth;
+        imageHeight = SettingsDesign.CarouselOneColumnHeight;
+    }
+}
+
+@helper CarouselImage(AdvantShop.Core.Services.CMS.Carousel slider, int i, int imageWidth, int imageHeight)
+{
+    <img width="@(imageWidth)" height="@(imageHeight)" @Html.Raw(i == 0 ? "src" : "src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" data-src")="@slider.Picture.ImageSrc()" class="@(i != 0 ? "carousel-placeholder" : "")" alt="@Html.Encode(slider.Picture.Description)" @Html.InplaceImageCarousel(slider.CarouselId, slider.CarouselId == 0 && !slider.Enabled) />
+
+}
+
+@helper Slide(AdvantShop.Core.Services.CMS.Carousel slider, int i, int imageWidth, int imageHeight)
+{
+    if (slider.Url.IsNotEmpty())
+    {
+        <a href="@(slider.Url)" class="carousel-main-link" @Html.Raw(slider.Blank ? "target=\"_blank\"" : string.Empty)>
+            @CarouselImage(slider, i, imageWidth, imageHeight)
+        </a>
+    }
+    else
+    {
+        <span class="carousel-main-link-noop">
+            @CarouselImage(slider, i, imageWidth, imageHeight)
+        </span>
+    }
+}
+
+<div class="carousel-main-wrap col-xs first-xs">
+    <div class="carousel carousel-main">
+        <div class="carousel-inner carousel-inner--min-height-@(SettingsDesign.MainPageMode.ToString().ToLower())">
+            <div class="carousel-main-list text-static @(isMultipleSlides ? "carousel-main-list--with-clones" : "" )"
+                 data-carousel
+                 data-stretch="false"
+                 data-dots="true"
+                 data-dots-class="carousel-main-dots"
+                 data-dots-item-class="cs-bg-i-1 carousel-main-dots-item"
+                 data-prev-class="carousel-main-prev icon-left-circle-after"
+                 data-next-class="carousel-main-next icon-right-circle-after"
+                 data-speed="@Model.Speed"
+                 data-auto="true"
+                 data-auto-pause="@Model.Pause"
+                 data-visible-max="1">
+                @{
+                    var i = 0;
+                }
+
+                @if (isMultipleSlides)
+                {
+                    <div class="carousel-item carousel-main-item js-carousel-clone">
+                        @Slide(Model.Sliders.Last(), Model.Sliders.Count - 1, imageWidth, imageHeight)
+                    </div>
+                }
+
+                @foreach (var slider in @Model.Sliders)
+                {
+                    <div class="carousel-item carousel-main-item">
+                        @Slide(slider, i, imageWidth, imageHeight)
+                    </div>
+                    i++;
+                }
+                @if (isMultipleSlides)
+                {
+                    <div class="carousel-item carousel-main-item js-carousel-clone">
+                        @Slide(Model.Sliders.First(), i, imageWidth, imageHeight)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="carousel-nav">
+            <button class="carousel-nav-prev"></button>
+            <button class="carousel-nav-next"></button>
+        </div>
+    </div>
+</div>

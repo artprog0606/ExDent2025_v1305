@@ -1,0 +1,35 @@
+﻿@using AdvantShop.Helpers
+@model AdvantShop.ViewModel.Common.InplaceViewModel
+
+
+@if (Model.Enabled)
+{
+    <script>
+        window.CKEDITOR_BASEPATH = '@UrlService.GetUrl()vendors/ckeditor/';
+        window.CKEDITOR_LANGUAGE = '@SettingsMain.Language.Split('-')[0].ToLower()';
+    </script>
+    <script src="vendors/ckeditor/ckeditor.js"></script>
+    <script>
+        //выключаем автоматическую инициализацию inline редактирования
+        CKEDITOR.disableAutoInline = true;
+        CKEDITOR.stylesSet.add('inplaceStyles', [
+            // Block-level styles
+            { name: 'Заголовок', element: 'h1', attributes: { 'class': 'h1' } },
+            { name: 'Подзаголовок 2 уровня', element: 'h2', attributes: { 'class': 'h2' } },
+            { name: 'Подзаголовок 3 уровня', element: 'h3', attributes: { 'class': 'h3' } },
+            { name: 'Подзаголовок 4 уровня', element: 'h4', attributes: { 'class': 'h4' } },
+            // Inline styles
+            { name: 'Крупный текст', element: 'span', attributes: { 'class': 'h1' } },
+            { name: 'Большой текст', element: 'span', attributes: { 'class': 'h2' } },
+            { name: 'Средний текст', element: 'span', attributes: { 'class': 'h3' } },
+        ]);
+    </script>
+}
+<div data-oc-lazy-load="[{serie:true, files: [ @Html.RenderAssetFilesList(Model.Enabled ? Model.InplaceMaxAsset : Model.InplaceMinAsset, @Model.AreaBundle) ]}]">
+    <div data-inplace-start></div>
+    <div data-inplace-progress></div>
+</div>
+
+
+
+

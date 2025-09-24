@@ -1,0 +1,205 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedSettingsCsvModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.CsvExportNoInCategory, T("Admin.ExportFeeed.SettingsCsv.CsvExportNoInCategory"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-slim relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label line-height" data-e2e="CsvExportNoInCategory">
+            @Html.CheckBoxFor(x => x.CsvExportNoInCategory, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.CsvExportNoInCategory=" + Model.CsvExportNoInCategory.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.CsvExportNoInCategory" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.CsvExportNoInCategory, T("Admin.ExportFeeed.SettingsCsv.CsvExportNoInCategory"), new { @class = "flex-grow m-l-sm setting__label" })
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvExportNoInCategory")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvExportNoInCategoryHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.CsvCategorySort, T("Admin.ExportFeeed.SettingsCsv.CsvCategorySort"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-slim relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label line-height" data-e2e="CsvCategorySort">
+            @Html.CheckBoxFor(x => x.CsvCategorySort, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.CsvCategorySort=" + Model.CsvCategorySort.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.CsvCategorySort" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.CsvCategorySort, T("Admin.ExportFeeed.SettingsCsv.CsvCategorySort"), new { @class = "flex-grow m-l-sm setting__label" })
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvCategorySort")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvCategorySortHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.AllOffersToMultiOfferColumn, T("Admin.ExportFeeed.SettingsCsv.AllOffersToMultiOfferColumn"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-slim relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label" data-e2e="AllOffersToMultiOfferColumn">
+            @Html.CheckBoxFor(x => x.AllOffersToMultiOfferColumn, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.AllOffersToMultiOfferColumn" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.AllOffersToMultiOfferColumn, T("Admin.ExportFeeed.SettingsCsv.AllOffersToMultiOfferColumn"), new { @class = "flex-grow m-l-sm setting__label" })
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.AllOffersToMultiOfferColumn")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.AllOffersToMultiOfferColumnHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.StocksFromWarehouses, T("Admin.ExportFeed.SettingsCsv.StocksFromWarehouses"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative  @(isMobile ? "flex middle-xs" : "")">
+        @Html.ListBoxFor(x => x.StocksFromWarehouses, Model.Warehouses, 
+            new { 
+                ng_model = "exportFeeds.AdvancedSettings.StocksFromWarehouses", 
+                ng_init = "exportFeeds.AdvancedSettings.StocksFromWarehouses='" + string.Join(",", Model.StocksFromWarehouses) + "'", 
+                @class = "form-control input-alt-mobile", 
+                size = 4 })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeed.SettingsCsv.StocksFromWarehouses")">
+            <div class="help-content">
+                Суммарное кол-во будет выгружаться с этих складов. Если ни один склад не выбран, то общее кол-во по позиции.
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.ExportFeeed.Settings.FormatSettings")</h3>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CsvEnconing, T("Admin.ExportFeeed.SettingsCsv.CsvEnconing"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative  @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.CsvEnconing, Model.CsvEnconingList, new
+        {
+            @class = "form-control input-alt-mobile",
+            ng_model = "exportFeeds.AdvancedSettings.CsvEnconing",
+            ng_init = "exportFeeds.AdvancedSettings.CsvEnconing='" + Model.CsvEnconing + "'"
+        })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvEnconing")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvEnconingHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CsvSeparator, T("Admin.ExportFeeed.SettingsCsv.CsvSeparator"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.CsvSeparator, Model.CsvSeparatorList, new
+        {
+            @class = "form-control input-alt-mobile",
+            ng_model = "exportFeeds.AdvancedSettings.CsvSeparator",
+            ng_init = "exportFeeds.AdvancedSettings.CsvSeparator='" + (Model.CsvSeparator == "\t" || Model.CsvSeparator == "\\t" ? "\\t" : Model.CsvSeparator) + "'"
+        })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvSeparator")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvSeparatorHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="exportFeeds.AdvancedSettings.CsvSeparator == 'Custom'">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            <span class="text-required text-required-abs relative">
+                @Html.LabelFor(x => x.CsvSeparatorCustom, T("Admin.ExportFeeed.SettingsCsv.CsvSeparatorCustom"))
+            </span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.CsvSeparatorCustom, new { @class = "form-control input-alt-mobile", required = "required", ng_model = "exportFeeds.AdvancedSettings.CsvSeparatorCustom", validation_input_text = T("Admin.ExportFeeed.SettingsCsv.CsvSeparatorCustom") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvSeparatorCustom")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvSeparatorCustomHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            <span class="text-required text-required-abs relative">
+                @Html.LabelFor(x => x.CsvColumSeparator, T("Admin.ExportFeeed.SettingsCsv.CsvColumSeparator"))
+            </span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.CsvColumSeparator, new { @class = "form-control input-alt-mobile", required = "required", ng_model = "exportFeeds.AdvancedSettings.CsvColumSeparator", validation_input_text = T("Admin.ExportFeeed.SettingsCsv.CsvColumSeparator") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvColumSeparator")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvColumSeparatorHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            <span class="text-required">
+                 @Html.LabelFor(x => x.CsvPropertySeparator, T("Admin.ExportFeeed.SettingsCsv.CsvPropertySeparator"))
+            </span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3 col-wl-2 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.CsvPropertySeparator, new { @class = "form-control input-alt-mobile", required = "required", ng_model = "exportFeeds.AdvancedSettings.CsvPropertySeparator", validation_input_text = T("Admin.ExportFeeed.SettingsCsv.CsvPropertySeparator") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsCsv.CsvPropertySeparator")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsCsv.CsvPropertySeparatorHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>

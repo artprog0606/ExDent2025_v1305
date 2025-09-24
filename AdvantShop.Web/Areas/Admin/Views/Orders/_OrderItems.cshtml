@@ -1,0 +1,120 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    var isPaied = order != null && order.Payed;
+    var hasCerticates = order != null && order.OrderCertificates != null && order.OrderCertificates.Count > 0;
+    var isDraft = !Model.IsEditMode || Model.Order == null || Model.Order.IsDraft;
+    var availableWarehouses = AdvantShop.Saas.SaasDataService.IsEnabledFeature(saas => saas.HasWarehouses);
+}
+
+<div class="order-items-content" ng-init="order.startGridOrderItems(@isPaied.ToLowerString(), @hasCerticates.ToLowerString(), @availableWarehouses.ToLowerString())">
+    <div class="row between-xs middle-xs m-b-md">
+        <div class="col-xs-slim">
+            <div class="bold fs-md">
+                @T("Admin.Orders.OrderItems.OrderContents")
+            </div>
+        </div>
+        <div class="col-xs-slim">
+            @* @if (!isPaied && !hasCerticates) *@
+            @* { *@
+            <ui-modal-trigger class="header-subtext pull-right ng-cloak" size="xs-11" data-controller="'ModalOffersSelectvizrCtrl'" data-controller-as="ctrl"
+                                  ng-show="!order.isPaied && !order.hasCerticates"
+                                  data-on-close="order.addOrderItems(result)"
+                                  template-url="@Html.GetAssetPath("offersSelectvizrModal.html")">
+                    <a class="btn btn-sm btn-success" href="">@T("Admin.Orders.OrderItems.AddGoods")</a>
+                </ui-modal-trigger>
+            @* } *@
+        </div>
+    </div>
+
+
+    <div ng-if="order.isShowGridOrderItem" class="m-b">
+        <div class="row">
+            <div class="col-xs-12">
+                @if (hasCerticates)
+                {
+                    <ui-grid-custom class="order-grid"
+                                    grid-unique-id="gridOrderCertificates"
+                                    grid-filter-enabled="false"
+                                    grid-pagination-enabled="false"
+                                    grid-selection-enabled="false"
+                                    grid-params="{OrderId: order.orderId}"
+                                    grid-options="order.gridOrderCertificatesOptions"
+                                    grid-url="'orders/getOrderCertificates'"
+                                    grid-prevent-state-in-hash="@(isDraft ? "true" : "false")"
+                                    grid-key-storage-prefix="'orderItemsCertificate'">
+                    </ui-grid-custom>
+                }
+                else
+                {
+                    <ui-grid-custom class="order-grid"
+                                    grid-unique-id="gridOrderItems"
+                                    grid-on-init="order.gridOrderItemsOnInit(grid)"
+                                    grid-filter-enabled="false"
+                                    grid-pagination-enabled="true"
+                                    grid-selection-enabled="false"
+                                    grid-params="{OrderId: order.orderId}"
+                                    grid-options="order.gridOrderItemsOptions"
+                                    grid-url="'orders/getOrderItems'"
+                                    grid-inplace-url="'orders/updateOrderItem'"
+                                    grid-on-inplace-apply="order.gridOrderItemUpdate()"
+                                    grid-on-delete="order.gridOrderItemDelete()"
+                                    grid-on-before-delete="order.gridOrderItemBeforeDelete()"
+                                    grid-extend-ctrl="order"
+                                    grid-empty-text="'@T("Admin.Orders.OrderItems.SelectGoods")'"
+                                    grid-selection-on-init="order.gridOrderItemsSelectionOnInit(selectionCustom)"
+                                    grid-on-inplace-before-apply="order.gridOnInplaceBeforeApply(rowEntity, colDef, newValue)"
+                                    grid-prevent-state-in-hash="@(isDraft ? "true" : "false")"
+                                    grid-on-fetch="order.gridOrderOnFetch()"
+                                    grid-key-storage-prefix="'orderItems'"
+                                    ng-style="{'counter-reset': 'ordernumber ' +  (order.gridOrderItemsOptions.paginationCurrentPage - 1 ) * (order.gridOrderItemsOptions.paginationPageSize)}">
+                    </ui-grid-custom>
+                }
+            </div>
+        </div>
+        <order-items-summary data-order-id="order.orderId"
+                             data-country="order.country"
+                             data-region="order.region"
+                             data-district="order.district"
+                             data-city="order.city"
+                             data-zip="order.zip"
+                             data-street="order.street"
+                             data-house="order.house"
+                             data-structure="order.structure"
+                             data-apartment="order.apartment"
+                             data-entrance="order.entrance"
+                             data-floor="order.floor"
+                             data-is-edit="!order.isPaied"
+                             data-track-number="order.trackNumber"
+                             ng-if="!(order.isDraft && (order.gridOrderItems.gridOptions.data == null || order.gridOrderItems.gridOptions.data.length == 0))"
+                             on-init="order.initOrderItemsSummary(orderItemsSummary)"
+                             on-stop-edit="order.checkStopEdit()"
+                             on-update-order-items="order.updateByOrderItemsSummary()"
+                             status-comment="@Model.Order.StatusComment"
+                             admin-comment="@Model.Order.AdminOrderComment"
+                             class="row">
+            <footer-left>
+                <ng-form novalidate="" name="orderCommentsForm" bs-modifiable="false">
+                    <div class="m-b-md">
+                        <div class="m-b-xs">@T("Admin.Orders.OrderItems.CommentForStatus")</div>
+                        <div>
+                            @Html.TextAreaFor(x => x.Order.StatusComment, new { @class = "form-control", @rows = 3, ng_model = "order.statusComment",
+                       ng_blur = "orderCommentsForm['Order.StatusComment'].$dirty === true && order.saveChanges(orderCommentsForm)"
+                   })
+                        </div>
+                    </div>
+                    <div>
+                        <div class="m-b-xs">@T("Admin.Orders.OrderItems.AdminCommentForOrder")</div>
+                        <div>
+                            @Html.TextAreaFor(x => x.Order.AdminOrderComment, new { @class = "form-control", @rows = 3, ng_model = "order.adminOrderComment",
+                           ng_blur = "orderCommentsForm['Order.AdminOrderComment'].$dirty === true && order.updateAdminComment(orderCommentsForm)"
+                       })
+                        </div>
+                    </div>
+                </ng-form>
+            </footer-left>
+        </order-items-summary>
+    </div>
+</div>
+
+@Html.RenderModules("admin_order_orderitems", new { orderId = Model.OrderId })

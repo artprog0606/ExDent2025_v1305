@@ -1,0 +1,64 @@
+﻿@using AdvantShop.Customers
+
+@{
+    Html.AddAsset("bonusPage");
+}
+
+@model AdvantShop.Models.BonusSystemModule.GetBonusCardViewModel
+
+<div class="site-body-cell">
+    <div class="col-p-v mobile-container-fluid">
+        <div class="page-title-row brands-title-row">
+            <div class="brands-title page-title">
+                <h1 class="main-title" @Html.InplaceMeta(Model.MetaId, AdvantShop.SEO.MetaType.BonusProgram)>@Html.GetPageH1()</h1>
+            </div>
+        </div>
+        @Html.Action("BreadCrumbs", "Common", new { breadCrumbs = Model.BreadCrumbs })
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-9">
+                <div class="site-body-cell-no-left">
+                    @if (!string.IsNullOrEmpty(Model.BonusTextBlock))
+                    {
+                        <div class="loyalty-txt">
+                            @Html.Raw(Model.BonusTextBlock)
+                        </div>
+                    }
+                    @if (!CustomerContext.CurrentCustomer.RegistredUser)
+                    {
+                        if (!SettingsMain.RegistrationIsProhibited)
+                        {
+                            <a href="registration" class="btn btn-big btn-submit">@T("Bonuses.GetBonusCard.RegisterAndGetBonusCard")</a>
+                        }
+                    }
+                    else
+                    {
+                        <a href="myaccount?tab=bonusTab" class="btn btn-big btn-submit">@T("Bonuses.GetBonusCard.GetBonusCard")</a>
+                    }
+                </div>
+                <div>
+                    @Html.StaticBlock("getbonuscard_bottom")
+                </div>
+            </div>
+            <div class="col-xs">
+                <div class="site-body-cell-no-right">
+                    <img src="images/giftcertificate/loyalty_gift.jpg" width="324" height="218" />
+                    @Html.Raw(Model.BonusRightTextBlock)
+                    @if (Model.Grades != null && Model.Grades.Count > 0)
+                    {
+                        <div>
+                            <div class="h2">@T("Module.BonusSystem.CardGrades")</div>
+                            @foreach (var grade in Model.Grades)
+                            {
+                                <div class="loyalty-row">@T("Module.BonusSystem.CardGradesFormat", grade.BonusPercent.ToString("0.##") + " %", grade.PurchaseBarrier.ToString("f0"), grade.Name)</div>
+                            }
+                        </div>
+                    }
+                    <div>
+                        @Html.StaticBlock("getbonuscard_right")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

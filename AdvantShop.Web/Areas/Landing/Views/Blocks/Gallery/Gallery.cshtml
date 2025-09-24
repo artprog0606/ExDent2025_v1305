@@ -1,0 +1,95 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<GalleryItemModel, OldGalleryItemModel>("items");
+    var blockImageHeight = Model.Block.TryGetSetting("block_image_height");
+
+    float width = 100 / (float)Model.Block.TryGetSetting("images_per_row");
+    var widthString = width.ToInvariantString() + "%";
+    var minWidth = 1159 / Model.Block.TryGetSetting("images_per_row");
+}
+
+    <style>
+    #block_@Model.Block.Id .lp-galley-item__inner{
+        height: auto; @*16 - paddings*@
+    }
+
+    @@media (min-width: 48em) {
+        #block_@Model.Block.Id .lp-galley-item__inner {
+            -webkit-flex-basis: 50%;
+            -ms-flex-preferred-size: 50%;
+            flex-basis: 50%;
+            max-width: 50%;
+
+        }
+        #block_@Model.Block.Id .lp-galley-item__inner img {
+            max-height: @(blockImageHeight + 16)px;
+        }
+    }
+
+    @@media (min-width: 64em) {
+        #block_@Model.Block.Id .lp-galley-item__inner {
+            -webkit-flex-basis: @(widthString);
+            -ms-flex-preferred-size: @(widthString);
+            flex-basis: @(widthString);
+            max-width: @(widthString);
+            @*min-width: @(minWidth)px;*@
+            /*flex-grow: 1;*/
+        }
+    }
+    </style>
+
+<div class="container-fluid">
+    <div class="lp-container">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center" data-e2e="galleryTitle">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center" data-e2e="gallerySubtitle">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+
+        <div class="row @(Model.Block.TryGetSetting("align_image") != null ? Model.Block.TryGetSetting("align_image") :"center-xs") middle-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\" ng-controller=\"SubBlockGalleryConstructorCtrl as gallery\"" : "data-adv-baguette-box")>
+            @for (var i = 0; i < items.Count; i++)
+            {
+                <div class="lp-galley-item__inner" data-e2e="galleryPicture">
+                    @if (!Model.Inplace)
+                    {
+                        @:<a href="@items[i].Picture.Src">
+                    }
+
+                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                    {
+                        LandingPageId = Model.Block.LandingId,
+                        BlockId = Model.Block.Id,
+                        OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                        OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                        OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                        OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                        Current = items[i].Picture.Src,
+                        Parameters = "[{ maxHeight: " + blockImageHeight + ", postfix: 'preview', maxWidth: '820'}]",
+                        DeletePicture = true,
+                        GalleryIconsEnabled = false,
+                        LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                        LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                        MaxWidthPicture = PictureLoaderImageSize.WallWidth,
+                        MaxHeightPicture = PictureLoaderImageSize.WallHeight,
+                        PictureShowType = "preview",
+                        WidthPicture = items[i].Picture.Width,
+                        HeightPicture = items[i].Picture.Height
+                    })
+
+                    @if (!Model.Inplace)
+                    {
+                        @:</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

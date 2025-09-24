@@ -1,0 +1,455 @@
+﻿<form novalidate name="addEditRuleForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.SettingsTasks.NewCondition' | translate) : ('Admin.Js.SettingsTasks.EditingCondition' | translate)}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.addEditRuleForm = addEditRuleForm">
+        <div class="form-group setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-2 control-label setting__label">
+                    <span class="text-required">{{'Admin.Js.SettingsTasks.Parameter' | translate}}</span>
+                </label>
+                <div class="col-xs-12 col-md-10">
+                    <select
+                        ng-model="ctrl.field"
+                        class="form-control input-alt"
+                        ng-change="ctrl.setParamValues(ctrl.field)"
+                        ng-options="s.name group by s.groupName for s in ctrl.fields"
+                        required
+                        validation-input-text="{{'Admin.Js.SettingsTasks.Parameter'|translate}}"
+                        data-e2e="BizRuleParam">
+                        <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group setting__form-group" ng-if="ctrl.fieldComparer != null && ctrl.fieldComparer.Type != 0">
+            <div class="row">
+                <label class="col-xs-12 col-md-2 control-label setting__label">
+                    <span ng-class="{'text-required': ctrl.field != null && ctrl.fieldComparer.Type != 3}"
+                        >{{'Admin.Js.SettingsTasks.Value' | translate}}</span
+                    >
+                </label>
+                <div class="col-xs-12 col-md-10">
+                    <div ng-if="!ctrl.paramValuesEmpty()">
+                        <select
+                            ng-model="ctrl.fieldComparer.Value"
+                            ng-options="s.value as s.label for s in ctrl.compareValues"
+                            class="form-control input-alt"
+                            ng-required="ctrl.field != null"
+                            validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"
+                            data-e2e="BizRuleParamValueSelect">
+                            <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                        </select>
+                    </div>
+                    <div ng-if="ctrl.paramValuesEmpty()" ng-switch="ctrl.fieldComparer.Type">
+                        <!-- equal -->
+                        <div class="row" ng-switch-when="1">
+                            <div class="col-xs-12" ng-switch="ctrl.field.fieldType">
+                                <div
+                                    class="input-group"
+                                    ng-switch-when="date"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'd.m.Y', wrap: true}">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                        <input
+                                            type="text"
+                                            class="form-control input-alt"
+                                            placeholder="{{'Admin.Js.SettingsTasks.DDMMYY'|translate}}"
+                                            ng-flatpickr-input
+                                            ng-model="ctrl.fieldComparer.Value"
+                                            ng-required="ctrl.field != null"
+                                            validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"
+                                            data-e2e="BizRuleParamValue" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+
+                                <input
+                                    ng-switch-when="number"
+                                    type="number"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.fieldComparer.Value"
+                                    ng-required="ctrl.field != null"
+                                    validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"
+                                    data-e2e="BizRuleParamValue" />
+
+                                <input
+                                    ng-switch-default
+                                    type="text"
+                                    class="123 form-control input-alt"
+                                    ng-model="ctrl.fieldComparer.Value"
+                                    ng-required="ctrl.field != null"
+                                    validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"
+                                    data-e2e="BizRuleParamValue" />
+
+                                <a
+                                    data-e2e="BizRuleRange"
+                                    ng-class="{'block m-t-sm' : isMobile.value}"
+                                    href=""
+                                    ng-click="ctrl.fieldComparer.Type = 2"
+                                    ng-if="ctrl.field.fieldType == 'number' || ctrl.field.fieldType == 'date'"
+                                    >{{'Admin.Js.SettingsTasks.SpecifyRange' | translate}}</a
+                                >
+                            </div>
+                        </div>
+                        <!-- range -->
+                        <div ng-switch-when="2" ng-switch="ctrl.field.fieldType">
+                            <div class="row" ng-switch-when="date">
+                                <span class="col-xs-12 col-md-1">{{'Admin.Js.SettingsTasks.FromWithCapital' | translate}}&nbsp;</span>
+                                <div class="col-xs-12 col-md-5" ng-class="{'m-t-sm m-b-md' : isMobile.value}">
+                                    <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'd.m.Y', wrap: true}">
+                                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                            <input
+                                                type="text"
+                                                class="form-control input-alt"
+                                                placeholder="{{'Admin.Js.SettingsTasks.DDMMYY'|translate}}"
+                                                ng-flatpickr-input
+                                                ng-model="ctrl.fieldComparer.DateFrom"
+                                                ng-required="ctrl.field != null && ctrl.fieldComparer.DateTo == null"
+                                                validation-input-text="{{'Admin.Js.SettingsTasks.Range'|translate}}"
+                                                data-e2e="BizRuleParamValue" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                </div>
+                                <span class="col-xs-12 col-md-1">{{'Admin.Js.SettingsTasks.ToWithCapital' | translate}}&nbsp;</span>
+                                <div class="col-xs-12 col-md-5" ng-class="{'m-t-sm' : isMobile.value}">
+                                    <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'd.m.Y', wrap: true}">
+                                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                            <input
+                                                type="text"
+                                                class="form-control input-alt"
+                                                placeholder="{{'Admin.Js.SettingsTasks.DDMMYY'|translate}}"
+                                                ng-flatpickr-input
+                                                ng-model="ctrl.fieldComparer.DateTo" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-switch-when="datetime">
+                                <div ng-if="!ctrl.showDatetimeRange">
+                                    <div class="row middle-xs">
+                                        <div class="col-xs-12 col-md-7">
+                                            <div
+                                                class="input-group"
+                                                ng-flatpickr
+                                                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'd.m.Y H:i', wrap: true, enableTime: true}">
+                                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                                    <input
+                                                        type="text"
+                                                        class="form-control input-alt"
+                                                        placeholder="{{'Admin.Js.SettingsTasks.DDMMYYHHMM'|translate}}"
+                                                        ng-flatpickr-input
+                                                        ng-model="ctrl.fieldComparer.DateTo"
+                                                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"
+                                                        ng-required="ctrl.field != null" />
+                                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                                </span>
+                                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-md-5" ng-class="{'setting__label m-t-md' : isMobile.value}">
+                                            {{ctrl.isLicense ? "Время сервера" : "Время Московское"}}
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-class="{'m-t-sm' : isMobile.value}">
+                                        <div class="col-xs-12">
+                                            <a href="" ng-click="ctrl.showDatetimeRange=true"
+                                                >{{'Admin.Js.SettingsTasks.SpecifyRange' | translate}}</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-if="ctrl.showDatetimeRange || (ctrl.fieldComparer.DateFrom != null && ctrl.fieldComparer.DateFrom != '')">
+                                    <div class="row middle-xs">
+                                        <span class="col-xs-12 col-md-1">{{'Admin.Js.SettingsTasks.FromWithCapital' | translate}}&nbsp;</span>
+                                        <div class="col-xs-12 col-md-4" ng-class="{'m-b-md m-t-sm' : isMobile.value}">
+                                            <div
+                                                class="input-group"
+                                                ng-flatpickr
+                                                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'd.m.Y H:i', wrap: true, enableTime: true}">
+                                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                                    <input
+                                                        type="text"
+                                                        class="form-control input-alt"
+                                                        placeholder="{{'Admin.Js.SettingsTasks.DDMMYYHHMM'|translate}}"
+                                                        ng-flatpickr-input
+                                                        ng-model="ctrl.fieldComparer.DateFrom"
+                                                        validation-input-text="{{'Admin.Js.SettingsTasks.Range'|translate}}"
+                                                        ng-required="ctrl.field != null && ctrl.fieldComparer.DateTo == null" />
+                                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                                </span>
+                                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                            </div>
+                                        </div>
+                                        <div ng-if="isMobile.value" class="col-xs-12"></div>
+                                        <span class="col-xs-12 col-md-1">{{'Admin.Js.SettingsTasks.ToWithCapital' | translate}}&nbsp;</span>
+                                        <div class="col-xs-12 col-md-4" ng-class="{'m-t-sm' : isMobile.value}">
+                                            <div
+                                                class="input-group"
+                                                ng-flatpickr
+                                                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'd.m.Y H:i', wrap: true, enableTime: true}">
+                                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                                    <input
+                                                        type="text"
+                                                        class="form-control input-alt"
+                                                        placeholder="{{'Admin.Js.SettingsTasks.DDMMYYHHMM'|translate}}"
+                                                        ng-flatpickr-input
+                                                        ng-model="ctrl.fieldComparer.DateTo" />
+                                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                                </span>
+                                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2" ng-class="{'m-t-sm control-label' : isMobile.value && !ctrl.isLicense}">
+                                            {{ctrl.isLicense ? "" : "МСК"}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div ng-class="{'setting__label m-t-md m-b-sm' : isMobile.value && ctrl.isLicense}" class="col-xs-12">
+                                            {{ctrl.isLicense ? "Время сервера" : ""}}
+                                        </div>
+                                    </div>
+                                    <a href="" ng-click="ctrl.showDatetimeRange=false">{{'Admin.Js.SettingsTasks.SpecifyExactValue' | translate}}</a>
+                                </div>
+                            </div>
+
+                            <div class="row middle-xs" ng-switch-when="time">
+                                <span class="col-xs-12 col-md-1" ng-class="{'m-b-sm' : isMobile.value}"
+                                    >{{'Admin.Js.SettingsTasks.FromWithCapital' | translate}}&nbsp;</span
+                                >
+                                <div class="col-xs-12 col-md-5" ng-class="{'m-b-md' : isMobile.value}">
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.fieldComparer.DateFrom"
+                                        ng-required="ctrl.field != null && ctrl.fieldComparer.DateTo == null"
+                                        validation-input-text="{{'Admin.Js.SettingsTasks.Range'|translate}}"
+                                        data-mask-control
+                                        data-mask-control-preset="time"
+                                        placeholder="{{'Admin.Js.SettingsTasks.HHMM'|translate}}" />
+                                </div>
+                                <span class="col-xs-12 col-md-1" ng-class="{'m-b-sm' : isMobile.value}"
+                                    >{{'Admin.Js.SettingsTasks.ToWithCapital' | translate}}&nbsp;</span
+                                >
+                                <div class="col-xs-12 col-md-5">
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.fieldComparer.DateTo"
+                                        data-mask-control
+                                        data-mask-control-preset="time"
+                                        placeholder="{{'Admin.Js.SettingsTasks.HHMM'|translate}}" />
+                                </div>
+                            </div>
+
+                            <div class="row" ng-switch-default>
+                                <span class="col-xs-12 col-md-1" ng-class="{'m-b-sm' : isMobile.value}"
+                                    >{{'Admin.Js.SettingsTasks.FromWithCapital' | translate}}&nbsp;</span
+                                >
+                                <div class="col-xs-12 col-md-5" ng-class="{'m-b-md' : isMobile.value}">
+                                    <input
+                                        type="number"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.fieldComparer.From"
+                                        data-e2e="BizRuleParamValueFrom"
+                                        ng-required="ctrl.field != null && ctrl.fieldComparer.To == null"
+                                        validation-input-text="{{'Admin.Js.SettingsTasks.Range'|translate}}" />
+                                </div>
+                                <span class="col-xs-12 col-md-1" ng-class="{'m-b-sm' : isMobile.value}"
+                                    >{{'Admin.Js.SettingsTasks.ToWithCapital' | translate}}&nbsp;</span
+                                >
+                                <div class="col-xs-12 col-md-5">
+                                    <input
+                                        type="number"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.fieldComparer.To"
+                                        data-e2e="BizRuleParamValueTo" />
+                                </div>
+                            </div>
+
+                            <a
+                                href=""
+                                ng-click="ctrl.fieldComparer.Type = 1"
+                                ng-class="{'inline-block m-t-sm' : isMobile.value}"
+                                ng-if="ctrl.field.fieldType != 'datetime' && ctrl.field.fieldType != 'time'"
+                                >{{'Admin.Js.SettingsTasks.SpecifyExactValue' | translate}}</a
+                            >
+                        </div>
+                        <!-- flag -->
+                        <div ng-switch-when="3">
+                            <label class="adv-checkbox-label" ng-class="{'col-xs-12' : isMobile.value}">
+                                <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.fieldComparer.Flag" />
+                                <span class="adv-checkbox-emul"></span>
+                            </label>
+                        </div>
+                        <!-- contains -->
+                        <div class="row" ng-switch-when="4">
+                            <div class="col-xs-2">{{'Admin.Js.SettingsTasks.ContainsWithCapital' | translate}}</div>
+                            <div class="col-xs-10">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.fieldComparer.Value"
+                                    ng-required="ctrl.field != null"
+                                    validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}" />
+                            </div>
+                        </div>
+
+                        <!-- product chooser -->
+                        <div class="row" ng-switch-when="5">
+                            <div class="col-xs-12">
+                                <div
+                                    ng-repeat="item in ctrl.fieldComparer.Products track by $index"
+                                    class="m-b-xs"
+                                    ng-class="{'m-b-sm' : isMobile.value}">
+                                    <a href="product/edit/{{item.Id}}" target="_blank">{{item.Name}}</a>
+                                    <a ng-click="ctrl.removeProduct($index)" href="" class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                </div>
+                                <span ng-if="ctrl.fieldComparer.Products == null || ctrl.fieldComparer.Products.length == 0" class="m-r-sm"
+                                    >Нет товаров</span
+                                >
+                                <ui-modal-trigger
+                                    class=""
+                                    size="xs-11"
+                                    data-controller="'ModalProductsSelectvizrCtrl'"
+                                    data-controller-as="ctrl"
+                                    data-on-close="ctrl.chooseProducts(result)"
+                                    template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html">
+                                    <a class="btn btn-sm btn-success" href="">Добавить товар</a>
+                                </ui-modal-trigger>
+                            </div>
+                        </div>
+                        <!-- category chooser -->
+                        <div class="row" ng-switch-when="6">
+                            <div class="col-xs-12">
+                                <div
+                                    ng-repeat="item in ctrl.fieldComparer.Categories track by $index"
+                                    class="m-b-xs"
+                                    ng-class="{'m-b-sm' : isMobile.value}">
+                                    <a href="category/edit/{{item.Id}}" target="_blank">{{item.Name}}</a>
+                                    <a ng-click="ctrl.removeCategory($index)" href="" class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                </div>
+                                <span ng-if="ctrl.fieldComparer.Categories == null || ctrl.fieldComparer.Categories.length == 0" class="m-r-sm"
+                                    >Нет категорий</span
+                                >
+
+                                <ui-modal-trigger
+                                    data-controller="'ModalSelectCategoriesCtrl'"
+                                    controller-as="ctrl"
+                                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                                    data-resolve="{params: { selectedIds: ctrl.categoryIds }, treeCheckbox: {three_state: true}}"
+                                    data-on-close="ctrl.chooseCategories(result)">
+                                    <a class="btn btn-sm btn-success" href="">Добавить категорию</a>
+                                </ui-modal-trigger>
+                            </div>
+                        </div>
+                        <div class="row" ng-switch-when="8|9|10" ng-switch-when-separator="|">
+                            <span class="col-xs-12 col-md-1 setting--align-item-center"
+                                >{{'Admin.Js.SettingsTasks.FromWithCapital' | translate}}&nbsp;</span
+                            >
+                            <div class="col-xs-12 col-md-5" ng-class="{'m-b-md m-t-sm' : isMobile.value}">
+                                <input
+                                    type="number"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.fieldComparer.From"
+                                    ng-required="ctrl.field != null && ctrl.fieldComparer.To == null"
+                                    validation-input-text="{{'Admin.Js.SettingsTasks.Range'|translate}}" />
+                            </div>
+                            <div ng-if="isMobile.value" class="col-xs-12"></div>
+                            <span class="col-xs-12 col-md-1 setting--align-item-center"
+                                >{{'Admin.Js.SettingsTasks.ToWithCapital' | translate}}&nbsp;</span
+                            >
+                            <div class="col-xs-12 col-md-5" ng-class="{'m-t-sm' : isMobile.value}">
+                                <input type="number" class="form-control input-alt" ng-model="ctrl.fieldComparer.To" />
+                            </div>
+                        </div>
+
+                        <!-- openleadsalesfunnels -->
+                        <div ng-switch-when="11">
+                            <div class="row m-b-sm">
+                                <div class="col-xs-12">
+                                    <select
+                                        ng-model="ctrl.fieldComparer.SalesFunnelId"
+                                        convert-to-number
+                                        ng-options="s.value as s.label for s in ctrl.salesFunnels"
+                                        ng-change="ctrl.changeSalesFunnel(ctrl.fieldComparer.SalesFunnelId)"
+                                        class="form-control input-alt"
+                                        ng-required="ctrl.field != null"
+                                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}">
+                                        <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="m-b-xs">Статус</div>
+                                    <select
+                                        ng-model="ctrl.fieldComparer.DealStatusId"
+                                        ng-options="s.value as s.label for s in ctrl.dealStatuses"
+                                        class="form-control input-alt">
+                                        <option value="">Любой</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- dealstatus -->
+                        <div ng-switch-when="12">
+                            <div class="row m-b-sm">
+                                <div class="col-xs-12">
+                                    <select
+                                        ng-model="ctrl.fieldComparer.SalesFunnelId"
+                                        convert-to-number
+                                        ng-options="s.value as s.label for s in ctrl.salesFunnels"
+                                        ng-change="ctrl.changeSalesFunnel(ctrl.fieldComparer.SalesFunnelId)"
+                                        class="form-control input-alt"
+                                        ng-required="ctrl.field != null"
+                                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}">
+                                        <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="m-b-xs">Статус</div>
+                                    <select
+                                        ng-model="ctrl.fieldComparer.DealStatusId"
+                                        convert-to-number
+                                        ng-options="s.value as s.label for s in ctrl.dealStatuses"
+                                        class="form-control input-alt"
+                                        ng-required="ctrl.field != null"
+                                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.apply()"
+            data-button-validation
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !addEditRuleForm.modified)"
+            data-e2e="BizRuleParamValueOk">
+            {{'Admin.Js.SettingsTasks.Apply' | translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()" data-e2e="BizRuleParamValueCancel">
+            {{'Admin.Js.SettingsTasks.Cancel' | translate}}
+        </button>
+    </div>
+</form>

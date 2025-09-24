@@ -1,0 +1,64 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.NavMenuModel
+@{
+    var selectedAffiliate = Model.SelectedAffiliate != null ? Model.Affiliates.FirstOrDefault(x => x.Id == Model.SelectedAffiliate.Id) : null;
+    var selectedAffiliateCountNewBooking = selectedAffiliate != null ? selectedAffiliate.CountNewBooking : 0;
+}
+
+@helper GetClassForSubmenu(string action, string controller)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = /*currentAction == action &&*/ currentController == controller ? "chip--active" : "";
+
+    @cssClass
+}
+
+@if (Model.SelectedAffiliate != null)
+{
+    <ul class="nav nav-tabs nav-collapse-tab chips-list">
+
+        <li class="nav-item ng-tab chips-list__item" data-scroll-into-view="@((UrlService.GetCurrentUrl() == "/adminv3/booking").ToLowerString())">
+            <a href="@Url.AbsoluteActionUrl("Index")" class="chip @GetClassForSubmenu("index", "booking")">
+                @T("Admin.Booking.NavMenu.JournalOfBooking")
+            </a>
+        </li>
+
+        @if (Model.AccessToEditing)
+        {
+            <li class="nav-item ng-tab chips-list__item">
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingCategory")" data-scroll-into-view="@((UrlService.GetCurrentUrl() == "/adminv3/bookingcategory").ToLowerString())"
+                   class="chip @GetClassForSubmenu("index", "bookingcategory")">
+                    @T("Admin.Booking.NavMenu.Services")
+                </a>
+            </li>
+        }
+
+        <li class="nav-item ng-tab chips-list__item">
+            <a href="@Url.AbsoluteActionUrl("Index", "BookingResources")"  data-scroll-into-view="@((UrlService.GetCurrentUrl() == "/adminv3/bookingresources").ToLowerString())"
+               class="chip @GetClassForSubmenu("index", "bookingresources")">
+                @T("Admin.Booking.NavMenu.Employees")
+            </a>
+        </li>
+
+        @if (Model.AccessToAnalytic)
+        {
+            <li class="nav-item ng-tab chips-list__item" data-scroll-into-view="@((UrlService.GetCurrentUrl() == "/adminv3/bookinganalytics").ToLowerString())">
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingAnalytics")" class="chip  @GetClassForSubmenu("index", "bookinganalytics")">
+                    @T("Admin.Booking.NavMenu.Reports")
+                </a>
+            </li>
+        }
+
+
+        @if (Model.AccessToEditing)
+        {
+
+            <li class="nav-item ng-tab chips-list__item" data-scroll-into-view="@((UrlService.GetCurrentUrl() == "/adminv3/bookingaffiliate/settings").ToLowerString())">
+                <a href="@Url.AbsoluteActionUrl("Settings", "BookingAffiliate")" class="chip @GetClassForSubmenu("settings", "bookingaffiliate")">
+                    Настройки филиала
+                </a>
+            </li>
+        }
+    </ul>
+
+}

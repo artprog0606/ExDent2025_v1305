@@ -1,0 +1,28 @@
+﻿@model AdvantShop.Web.Admin.Models.Crm.Leads.CrmNavMenuModel
+@{
+    var buttonDonor = new ButtonModel();
+    buttonDonor.Type = eButtonType.Simple;
+    buttonDonor.Size = eButtonSize.Default;
+    buttonDonor.ColorType = eColorType.Link;
+    buttonDonor.CssClass = "more-button-popover__btn";
+    buttonDonor.Modificators = new List<eButtonModificators>()
+    {
+        eButtonModificators.HorizontalPaddingZero
+    };
+}
+
+<div class="more-button-popover__inner">
+    @foreach (var salesFunnel in Model.SaleFunnels)
+    {
+        <div class="more-button-popover__item">
+            @Html.Button(T(salesFunnel.Name), buttonDonor.Type, buttonDonor.Size, buttonDonor.ColorType,
+                Url.AbsoluteActionUrl("Index", "Leads", new {salesFunnelId = salesFunnel.Id}), 
+                buttonDonor.CssClass, modificators: buttonDonor.Modificators)
+        </div>
+    }
+    <div class="more-button-popover__item">
+        @Html.Button(T("Admin.Leads.CrmNavMenu.ControlLeads"), buttonDonor.Type, buttonDonor.Size, buttonDonor.ColorType,
+            Url.AbsoluteActionUrl("Index", "Leads", new {salesFunnelId = -1, useKanban = false}),  
+            buttonDonor.CssClass, modificators: buttonDonor.Modificators)
+    </div>
+</div>

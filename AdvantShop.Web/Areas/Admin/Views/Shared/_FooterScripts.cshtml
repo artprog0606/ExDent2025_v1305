@@ -1,0 +1,33 @@
+﻿@using AdvantShop.Core
+@{
+    var languageKey = SettingsMain.LanguageWithFallback(new List<string>
+    {
+        "en-us",
+        "ru-ru"
+    }).ToLower();
+
+    var languageKeyShort = languageKey.Split('-')[0];
+}
+<script>
+    window.CKEDITOR_BASEPATH = '@UrlService.GetUrl("vendors/ckeditor/")';
+    window.CKEDITOR_LANGUAGE = '@languageKeyShort';
+    window.baseUrl = '@UrlService.GetUrl()';
+    window.applicationName = '@AdvantShop.Helpers.CommonHelper.GetParentDomain(UrlService.GetUrl()).RemoveSymvolsExt("")'; @* for iwc *@
+</script>
+
+
+<script src="@UrlService.GetAbsoluteLink("vendors/jquery/jquery.min.js?v=3.7.1")"></script>
+
+@Html.RenderAssetFilesAsHtml("common", AdvantShop.Core.AssetsTool.AssetFileType.Script)
+@Html.Partial("_FooterStylesTemplate")
+@Html.RenderAssets(AssetsTool.AssetFileType.Script)
+@Html.RenderAssetFilesAsHtml("runtime", AdvantShop.Core.AssetsTool.AssetFileType.Script)
+
+<script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("vendors/angular/i18n/angular-locale_" + languageKey + ".js")"></script>
+<script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("userfiles/" + SettingsMain.Language + ".js", true)"></script>
+<script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("userfiles/admin_" + SettingsMain.Language + ".js", true)"></script>
+<script src="@UrlService.GetUrl("vendors/signalr/signalr-hubs.js")"></script>
+@Html.RenderModuleCssBundles("admin_modules.css")
+@Html.RenderModuleJsBundles("admin_modules.js")
+
+@Html.Partial("_GridTemplates")

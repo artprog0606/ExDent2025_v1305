@@ -1,0 +1,128 @@
+﻿@using System.Linq;
+@using AdvantShop.App.Landing.Domain.Booking
+@using AdvantShop.Configuration
+@model BlockModel
+@{
+    var bookingIsActive = SettingsMain.BookingActive;
+
+    var items = Model.Block.TryGetSettingAsList<ReservationResourceModel>("resources") ?? new List<ReservationResourceModel>();
+    var resources = LpReservationResourceService.GetByIds(items.Select(x => x.Id).ToList());
+    var noPhoto = "areas/landing/frontend/blocks/booking/images/nophoto.jpg";
+    var roundPhoto = (bool?)Model.Block.TryGetSetting("round_photo") ?? false;
+    var bookingByDays = (bool?)Model.Block.TryGetSetting("booking_by_days") ?? false;
+    var showServiceLink = (bool?)Model.Block.TryGetSetting("show_service_link") ?? false;
+    var nameServiceLink = (string)Model.Block.TryGetSetting("name_service_link") ?? "Показать услуги";
+}
+@if (bookingIsActive)
+{
+
+    <div class="container-fluid">
+        <div class="lp-container">
+            @if (Model.Block.TryGetSetting("show_title") == true)
+            {
+                <div class="lp-h2 lp-h2--color text-center" data-e2e="BookingResourcesTitle">
+                    @Html.SubBlock(Model, "title")
+                </div>
+            }
+            @if (Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="lp-h3 lp-h3--color text-center" data-e2e="BookingResourcesSubtitle">
+                    @Html.SubBlock(Model, "subtitle")
+                </div>
+            }
+            @if (items.Any())
+            {
+                <div class="row around-xs center-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        var resource = resources.FirstOrDefault(x => x.Id == items[i].Id);
+                        if (resource == null)
+                        {
+                            continue;
+                        }
+
+                        <div class="col-xs-12 col-sm-4 lp-font-size--middle lp-block-booking-resources__row">
+                            <div class="lp-block-booking-resources__item">
+                                <div class="lp-block-booking-resources__picture @(roundPhoto ? "round-image" : "")" data-e2e="BookingResourcesPicture">
+                                    <img src="@(resource.Image.IsNullOrEmpty() ? noPhoto : resource.ImageSrc )" class="" alt="">
+
+                                </div>
+                                <div class="lp-block-booking-resources__content">
+                                    <div class="lp-font-size--large lp-block-booking-resources__header" data-e2e="BookingResourcesColTitle" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "resources[" + i + "].name")>
+                                        @Html.Raw(items[i].Name)
+                                    </div>
+                                    <div class="lp-h3--color lp-font-size--middle lp-block-booking-resources__text" data-e2e="BookingResourcesColText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "resources[" + i + "].description")>
+                                        @Html.Raw(items[i].Description)
+                                    </div>
+                                    @if (showServiceLink)
+                                    {
+                                        <div class="m-t-sm">
+                                            <modal-booking-services data-e2e="BookingResourcesColLink" data-block-id="@Model.Block.Id" data-resource-id="@items[i].Id" data-affiliate-id="@items[i].AffiliateId"
+                                                                    data-show-price="true" data-color-scheme="@(Model.Block.TryGetSetting("color_scheme"))">
+                                                <a href="javascript:void(0);">
+                                                    @nameServiceLink
+                                                </a>
+                                            </modal-booking-services>
+                                        </div>
+                                    }
+                                </div>
+                                @if (Model.Block.TryGetSetting("show_button") == true)
+                                {
+                                    var button = Model.Block.TryGetSetting<LpButton>("button");
+                                    if (button != null)
+                                    {
+                                        <modal-booking data-block-id="@Model.Block.Id" data-resource-id="@items[i].Id" data-affiliate-id="@items[i].AffiliateId"
+                                                       booking-by-days="@(bookingByDays.ToLowerString())" time-from="'@items[i].TimeFrom'" time-end="'@items[i].TimeEnd'" time-end-at-next-day="@(items[i].TimeEndAtNextDay.ToLowerString())"
+                                                       data-lp-id="@LpService.CurrentLanding.Id"
+                                                       data-color-scheme="@(Model.Block.TryGetSetting("color_scheme"))"
+                                                       @Html.Raw(LpService.EntityType == "lead" ? "data-lid=\"" + LpService.EntityId + "\"" : "")
+                                                       data-ya-metrika-event-name="@(Model.Form.YaMetrikaEventName)"
+                                                       data-ga-event-category="@(Model.Form.GaEventCategory)"
+                                                       data-ga-event-action="@(Model.Form.GaEventAction)">
+                                            <div class="flex flex-wrap @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="BookingBtnRow">
+                                                <div>
+                                                    <button type="button" class="lp-btn lp-btn--primary pointer" data-e2e="BookingResourcesBtn">
+                                                        @button.Text
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </modal-booking>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else if (Model.Inplace && !LpService.PreviewInAdmin)
+            {
+                <div class="ng-cloak lp-block-products-view__empty--admin">
+                    <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                                        data-block-id="@Model.Block.Id"
+                                        data-name="@Model.Block.Name"
+                                        data-type="@Model.Block.Type"
+                                        data-is-show-options="::true"
+                                        data-template-custom="true">
+                        <button type="button" class="lp-btn lp-btn--primary" data-e2e="BookingResourcesAddBtn" ng-click="blocksConstructor.showOptionsBlock('tabBooking')">Добавить ресурсы</button>
+                    </blocks-constructor>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    <div class="color-scheme--light block-padding-top--45 block-padding-bottom--45">
+        <div class="row center-xs">
+            <div class="col-xs-12">
+                <div class="lp-h2 lp-h2--color lp-products-view__title">
+                    Бронирование не включено
+                </div>
+            </div>
+        </div>
+        <div class="ng-cloak lp-block-products-view__empty--admin">
+            <a href="adminv3/settingsbooking" target="_blank" class="lp-btn lp-btn--primary" style="text-decoration: none;">Перейти к настройкам бронирования</a>
+        </div>
+    </div>
+}

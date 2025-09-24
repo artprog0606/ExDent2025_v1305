@@ -1,0 +1,106 @@
+﻿@using AdvantShop.Configuration;
+@model AdvantShop.Web.Admin.ViewModels.Settings.OtherSettings
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (Model.Settings != null && Model.Settings.Count > 0)
+{
+    var i = 0; 
+    var key = Model.Section != null ? Model.Section.StrName() : "other";
+
+    foreach (var settingsSection in Model.Settings)
+    {
+
+        <div class="setting-title @(i == 0 && settingsSection.Settings.Count > 0 ? "setting-title__m-t-md" : "m-t-none")">
+            <h3 class="setting__subtitle">@(Model.Section != null ? T("Admin.Settings.SettingsTemplate.Additional").ToString() : settingsSection.Name)</h3>
+        </div>
+
+        foreach (var setting in settingsSection.Settings)
+        {
+            @Html.Hidden("otherSettings[" + key + "][" + i + "].type", setting.Type.ToString())
+
+            string label = "otherSettings_" + key + i +"__value";
+
+            if (setting.Type == ETemplateSettingType.TextBox)
+            {
+                <div class="form-group row">
+                    <div class="col-xs-12 col-md-3 col-wl-2">
+                        <label for="@label" class="control-label">
+                            @T(setting.Title)
+                        </label>
+                    </div>
+                    <div class="col-xs-12 col-md-6 relative flex middle-xs">
+                        @Html.TextBox("otherSettings[" + key + "][" + i + "].value", setting.Value, new { @class = "form-control input-alt", ng_model = "settingsTemplate.otherSettings" + key + i })
+                    </div>
+                </div>
+            }
+            else if (setting.Type == ETemplateSettingType.Checkbox)
+            {
+                <div class="form-group">
+                    <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                        @if (!isMobile)
+                        {
+                            <label for="@label" class="col-xs-slim col-md-3 col-wl-2 flex-shrink-1">
+                                @T(setting.Title)
+                            </label>
+                        }
+                        <div class="relative @(isMobile ? "col-xs" : "col-xs-slim relative flex middle-xs first-xs last-md")">
+                            <label class="adv-checkbox-label">
+                                @Html.CheckBox("otherSettings[" + key + "][" + i + "].value", setting.Value.TryParseBool(), new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.otherSettings" + key + i })
+                                <span class="adv-checkbox-emul"></span>
+                                @if (isMobile)
+                                {
+                                    <span> @T(setting.Title)</span>
+                                }
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (setting.Type == ETemplateSettingType.StaticBlockCheckbox)
+            {
+
+                <div class="form-group">
+                    <div class="row middle-xs flex-nowrap  @(isMobile ? "" : "control-label")">
+                        @if (!isMobile)
+                        {
+                            <label for="@label" class="col-xs-slim col-md-3 col-wl-2 flex-shrink-1" style="@(isMobile ? "padding-left:0;" : "")">
+                                @T(setting.Title)
+                            </label>
+                        }
+                        <div class="relative @(isMobile ? "col-xs" : "col-xs-slim relative flex middle-xs first-xs last-md")">
+                            <label class="adv-checkbox-label">
+                                @Html.CheckBox("otherSettings[" + key + "][" + i + "].value", setting.Value.TryParseBool(), new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.otherSettings" + key + i })
+                                <span class="adv-checkbox-emul"></span>
+                                @if (isMobile)
+                                {
+                                    <span> @T(setting.Title)</span>
+                                }
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (setting.Type == ETemplateSettingType.DropDownList)
+            {
+                var items = setting.Options.Select(x => new SelectListItem() { Text = x.Title, Value = x.Value, Selected = x.Value == setting.Value }).ToList();
+
+                <div class="form-group row">
+                    <div class="col-xs-12 col-md-3 col-wl-2">
+                        <label for="@label" class="control-label">
+                            @setting.Title
+                        </label>
+                    </div>
+                    <div class="col-xs-12 col-md-4 flex middle-xs relative">
+                        @Html.DropDownList("otherSettings[" + key + "][" + i + "].value", items, new { @class = "form-control input-alt", ng_model = "settingsTemplate.otherSettings" + key + i })
+                    </div>
+                </div>
+            }
+            @Html.Hidden("otherSettings[" + key + "][" + i + "].name", setting.Name)
+
+            i++;
+        }
+    }
+}

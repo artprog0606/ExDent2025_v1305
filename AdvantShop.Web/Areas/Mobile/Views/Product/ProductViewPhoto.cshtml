@@ -1,0 +1,32 @@
+﻿@using AdvantShop.Catalog
+@model AdvantShop.Areas.Mobile.Models.Product.ProductPhotoMobileViewModel
+
+
+@{
+    var imgWrapStyle = "height:var(--product-view-photo-size," + Model.BlockProductPhotoHeight + "px)";
+    var imgStyle = "max-height:var(--product-view-photo-size," + Model.BlockProductPhotoHeight + "px)";
+}
+
+
+@helper GetImg(ProductPhoto photo,  string imgStyle, bool isLazy)
+{
+    <img loading="@(isLazy ? "lazy" : "eager")" src="@(photo.ImageSrc(Model.ProductImageType))"
+         data-product-view-image
+         data-photo-size="'@Model.ProductImageType'"
+         data-start-photo-json="@Model.StartPhotoJson"
+         alt="@(Html.AttributeEncode(photo.Alt))"
+         title="@(Html.AttributeEncode(photo.Title))"
+         onerror="this.src = '@PhotoService.GetNoPhotoPath(Model.ProductImageType)'"
+         class="mobile-product-view-item-image"
+         width="@Model.PhotoWidth"
+         height="@Model.PhotoHeight"
+         style="@Html.Raw(imgStyle)"/>
+}
+
+
+@foreach (var photo in Model.Photos.Take(Model.LimitPhotoCount))
+{
+    <span class="mobile-product-view-item-image-inner js-product-view-image-container" style="@Html.Raw(imgWrapStyle)">
+        @GetImg(photo,  imgStyle, Model.IsProductPhotoLazy)
+    </span>
+}

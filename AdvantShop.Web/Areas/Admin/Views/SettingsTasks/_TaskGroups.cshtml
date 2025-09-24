@@ -1,0 +1,66 @@
+﻿@{
+    var isAdmin = CustomerContext.CurrentCustomer.IsAdmin;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div data-ng-controller="TaskGroupsCtrl as taskgroups" @Html.Raw(isMobile ? "ng-init=\"settingsTasks.taskgroups = taskgroups;settingsTasks.taskgroups.init(" + @isAdmin.ToLowerString() + ")\"" : "ng-init=\"taskgroups.init(" + @isAdmin.ToLowerString() + ")\"")>
+
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main">
+                    <h2 class="sticky-page-name-text inline bottom-cell m-r-xs @(isMobile ? "m-t-none " : "")" data-e2e="TaskGroupTitle">
+                        @T("Admin.TaskGroups.Index.Title")
+                    </h2>
+                </div>
+            }
+            @if (isAdmin && !isMobile)
+            {
+                <div>
+                    <div class="flex">
+                        <div class="page-name-block-item-additional">
+                            <ui-modal-trigger data-controller="'ModalAddEditTaskGroupCtrl'" controller-as="ctrl" data-on-close="taskgroups.grid.fetchData()"
+                                              template-url="@Html.GetAssetPath("addEditTaskGroup.html")">
+                                <button class="btn btn-sm btn-success" data-e2e="AddTaskGroup" type="button">
+                                    <span class="fa fa-plus"></span>
+                                    @T("Admin.AddTaskGroup")
+                                </button>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div>
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="taskgroups.gridOnInit(grid)"
+                        grid-options="taskgroups.gridOptions"
+                        grid-url="'taskgroups/gettaskgroups'"
+                        grid-inplace-url="'taskgroups/inplacetaskgroup'"
+                        grid-selection-enabled="@isAdmin.ToLowerString()"
+                        grid-extend-ctrl="taskgroups"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-header-control>
+                <span class="ui-grid-custom-override-header__cell">Проект</span>
+                <span class="ui-grid-custom-override-header__cell">Активность</span>
+            </ui-grid-custom-override-header-control>
+            <ui-grid-custom-override-control class="ng-cloak">
+                    <div class="card card--gap-row-sm" style="padding:0;">
+                        <div class="flex middle-xs">
+                            <div class="card__col m-r-xs flex middle-xs flex-grow card--p-18" ng-click="grid.appScope.$ctrl.gridExtendCtrl.loadTaskGroup(row.entity.Id);">
+                                <span>{{row.entity.Name}}</span>
+                            </div>
+                            <div class="card__col card__col--end setting--align-center card--p-18">
+                                <ui-grid-custom-switch row="row" readonly="isAdmin"></ui-grid-custom-switch>
+                            </div>
+                        </div>
+                    </div>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="settingsTasks.taskgroups.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

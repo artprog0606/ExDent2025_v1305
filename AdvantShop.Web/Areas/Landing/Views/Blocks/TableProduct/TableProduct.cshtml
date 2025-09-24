@@ -1,0 +1,96 @@
+﻿@using AdvantShop.Core.Services.Crm
+@model BlockModel
+@{
+    var lead = Request["lid"] != null ? LeadService.GetLead(Request["lid"].TryParseInt()) : null;
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                <div class="lp-block-table-product__body text-left">
+                    <div class="row lp-table__row">
+                        <div class="col-xs-12 lp-table__cell lp-table__header lp-h2--color-bold lp-h2--color">
+                            <div>@Html.SubBlock(Model, "header")</div>
+                        </div>
+                    </div>
+                    <div class="row between-sm lp-table__row">
+                        <div class="col-sm-9 col-xs-7 lp-table__cell lp-font-size--middle">
+                            <div>@Html.SubBlock(Model, "columnName1")</div>
+                        </div>
+                        <div class="col-sm-3 col-xs-5 end-xs lp-table__cell lp-font-size--middle">
+                            <div>@Html.SubBlock(Model, "columnName2")</div>
+                        </div>
+                    </div>
+                    @if (lead != null && lead.LeadItems.Count(x => x.ArtNo != "lp_shipping") > 1)
+                    {
+                        foreach (var leadItem in lead.LeadItems.Where(x => x.ArtNo != "lp_shipping"))
+                        {
+                            <div class="row between-sm lp-table__row">
+                                <div class="col-sm-9 col-xs-7 lp-table__cell lp-font-size--middle">
+                                    <div>@leadItem.Name</div>
+                                </div>
+                                <div class="col-sm-3 col-xs-5 end-xs lp-table__cell lp-font-size--middle">
+                                    <div>@(leadItem.Price * leadItem.Amount) ₽</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="row between-sm lp-table__row">
+                            <div class="col-sm-9 col-xs-7 lp-table__cell lp-font-size--middle">
+                                <div>@Html.SubBlock(Model, "productName")</div>
+                            </div>
+                            <div class="col-sm-3 col-xs-5 end-xs lp-table__cell lp-font-size--middle">
+                                <div>@Html.SubBlock(Model, "price")</div>
+                            </div>
+                        </div>
+                    }
+                    <div class="row between-sm">
+                        <div class="col-sm-4 col-sm-offset-8 col-xs-12 lp-table__cell lp-font-size--middle lp-table__cell--border-none">
+                            <div class="row">
+                                <div class="col-xs-7">
+                                    <div>@Html.SubBlock(Model, "shippingCost")</div>
+                                </div>
+                                <div class="col-xs-5 end-xs">
+                                    @if (lead == null || lead.LeadItems.Count == 0)
+                                    {
+                                        <div>@Html.SubBlock(Model, "total")</div>
+                                    }
+                                    else
+                                    {
+                                        var shipping = lead.LeadItems.FirstOrDefault(x => x.ArtNo == "lp_shipping");
+                                        var shippingCost = (shipping != null ? shipping.Price : 0) + lead.ShippingCost;
+                                        var sum = lead.LeadItems.Sum(x => x.Price * x.Amount) + lead.ShippingCost;
+
+                                        <div><b>@shippingCost ₽</b></div><br><div><b>@sum ₽</b></div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                {
+                    <div class="lp-block-text-button text-center">
+                        <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")">
+                            <div class="col-xs-12">
+                                <div class="lp-btn-group @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TableBtnRow">
+                                    @if (Model.Block.TryGetSetting("show_button") == true)
+                                    {
+                                        <div class="lp-btn-group__item--indent">
+
+                                            @Html.Button(Model.Block, "button")
+
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

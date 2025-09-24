@@ -1,0 +1,86 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var tab = "default";
+    if (Request["generated"] != null)
+    {
+        tab = "generated";
+    }
+    else if (Request["partners"] != null)
+    {
+        tab = "partners";
+    }
+
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+}
+
+<div class="sticky-page-name" sticky sticky-top="0">
+    @if (isAdminv3)
+    {
+        <div class="sticky-hidden-content p-t-xs">
+            @Html.Back("Настройки", Url.AbsoluteActionUrl("Index", "Settings"))
+        </div>
+    }
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main">
+            <h1 class="page-name-block-text sticky-page-name-text p-n">
+                @T("Admin.Coupons.Index.Title")
+            </h1>
+        </div>
+        <div class="page-name-block-item-additional">
+            <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                              template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                              data-on-close="coupons.grid.fetchData()">
+                <button class="btn btn-sm btn-success btn--margin-left" data-e2e="btnAdd" type="button">
+                    <span class="fa fa-plus"></span>@T("Admin.Add")
+                </button>
+            </ui-modal-trigger>
+        </div>
+    </div>
+    @*<div class="sticky-hidden-content">
+        @T("Admin.Coupons.Index.Hint")
+    </div>*@
+</div>
+
+
+<div class="ibox m-n">
+    <div class="row">
+        <div class="col-xs-12 tasks-navbar">
+            <ul class="nav nav-tabs">
+                <li class="ng-tab nav-item@(tab == "default" ? " active" : "")">
+                    <a href="@Url.AbsoluteActionUrl("Index")" class="nav-link">
+                        Купоны
+                    </a>
+                </li>
+                <li class="ng-tab nav-item@(tab == "generated" ? " active" : "")">
+                    <a href="@(Url.AbsoluteActionUrl("Index") + "?generated=1")" class="nav-link">
+                        Сгенерированные купоны
+                    </a>
+                </li>
+                @if (SettingsMain.PartnersActive)
+                {
+                    <li class="ng-tab nav-item@(tab == "partners" ? " active" : "")">
+                        <a href="@(Url.AbsoluteActionUrl("Index") + "?partners=1")" class="nav-link">
+                            Купоны партнеров
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="ibox">
+    <div class="ibox-content no-top-border">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-row-identificator="'CouponId'"
+                        grid-on-init="coupons.gridOnInit(grid)"
+                        grid-options="coupons.gridOptions"
+                        grid-url="'coupons/getCoupons'"
+                        grid-params="{withTrigger: '@((tab == "generated").ToLowerString())', partnerCoupons: '@((tab == "partners").ToLowerString())'}"
+                        grid-inplace-url="'coupons/inplaceCoupon'"
+                        grid-extend-ctrl="coupons">
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="coupons.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

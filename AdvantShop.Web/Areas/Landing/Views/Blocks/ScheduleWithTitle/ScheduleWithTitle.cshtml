@@ -1,0 +1,67 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<ScheduleModel>("items");
+}
+<div class="container-fluid">
+    <div class="lp-container">
+
+        <div class="row">
+            <div class="col-xs-12 col-md-3">
+                @Html.BlockHeader(Model)
+                <div class="lp-font-size--middle" data-e2e="scheduleTextUnderTitle">
+                    @Html.SubBlock(Model, "text")
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-9">
+                @if (items != null)
+                {
+                    <div class="lp-block-schedule-with-title__item-wrap" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                        @for (var i = 0; i < items.Count; i++)
+                        {
+                            <div class="row middle-xs lp-block-schedule-with-title__item">
+                                <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                                    <div class="row text-align-left-md">
+                                        @if (items[i].Name.IsNotEmpty() || Model.Inplace)
+                                        {
+                                            <div class="lp-block-schedule-with-title__name col-xs-6 lp-font-size--large" data-e2e="scheduleName" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].name")>
+                                                @Html.Raw(items[i].Name)
+                                            </div>
+                                        }
+
+                                        <div class="@(items[i].Name.IsNotEmpty() ? "col-xs-6" : "col-xs-12")">
+
+                                            @if (items[i].Title.IsNotEmpty() || Model.Inplace)
+                                            {
+                                                <div class="lp-block-schedule-with-title__title lp-font-size--middle m-b-xs" data-e2e="scheduleTitle" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                                    @Html.Raw(items[i].Title)
+                                                </div>
+                                            }
+                                            @if (items[i].Text.IsNotEmpty() || Model.Inplace)
+                                            {
+                                                <div class="lp-block-schedule-with-title__text lp-font-size--middle" data-e2e="scheduleText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                    @Html.Raw(items[i].Text)
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lp-block-schedule-with-title__divider color-scheme__divider"></div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ScheduleBtnRow">
+                <div class="col-xs-12">
+                    <div class="lp-block-schedule-with-title__btn">
+                        @Html.Button(Model.Block, "button")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,166 @@
+﻿<article class="catalog-filter">
+    <div
+        data-ng-if="!catalogFilter.isRenderBlock && catalogFilter.isMobile === true"
+        class="catalog-filter-progress-after catalog-filter-progress"></div>
+    <div data-ng-if="catalogFilter.isRenderBlock">
+        <form name="catalogFilterForm" novalidate="novalidate">
+            <div class="catalog-filter-content" data-submenu-container="{'checkOrientation': true, 'type': 'classic', submenuDirection: 'below'}">
+                <div
+                    class="catalog-filter-block"
+                    data-ng-repeat="item in catalogFilter.catalogFilterData track by $index"
+                    data-ng-init="indexItem = $index"
+                    data-submenu-parent>
+                    <div class="catalog-filter-submenu" data-submenu data-ng-show="submenu.isSubmenuVisible">
+                        <div
+                            class="catalog-filter-block-content color-scheme__bg color-scheme__divider--border"
+                            data-ng-if="submenu.isSubmenuVisible">
+                            <div class="catalog-filter-block-content__inner" data-ng-class="catalogFilter.getCssClassForContent(item.Control)">
+                                <div data-ng-if="item.Control == 'select' || item.Control == 'selectSearch'">
+                                    <button
+                                        class="catalog-filter-block-btn lp-btn lp-btn--expand lp-btn--secondary catalog-filter-row pointer catalog-filter-block-title"
+                                        data-ng-click="catalogFilter.clickSelect($event, indexItem, item, -1)">
+                                        {{ (item.Control == 'select' ? 'Js.CatalogFilter.NotSelected' : 'Js.CatalogFilter.AllCategories') | translate
+                                        }}
+                                    </button>
+                                </div>
+                                <div
+                                    class="js-color-viewer"
+                                    data-ng-if="item.Control == 'color'"
+                                    data-ng-class="{'catalog-filter-block-content-checkbox': item.Values[0].ColorsViewMode !== 'icon'}">
+                                    <div
+                                        class="colors-viewer--in-filter"
+                                        data-colors-viewer
+                                        data-is-enable-slider="false"
+                                        data-multiselect="true"
+                                        data-colors="item.Values"
+                                        data-color-width="item.Values[0].ImageWidth"
+                                        data-color-height="item.Values[0].ImageHeight"
+                                        data-change-color="catalogFilter.changeColor(event, indexItem)"
+                                        data-image-type="Catalog"
+                                        data-view-mode="{{::item.Values[0].ColorsViewMode}}"
+                                        data-count-visible-items="catalogFilter.itemsOptions[indexItem].countVisibleItems">
+                                        <colors-viewer-item-before data-ng-if="::item.Values[0].ColorsViewMode !== 'icon'">
+                                            <input
+                                                class="custom-input-native"
+                                                type="checkbox"
+                                                data-ng-checked="$itemScope.color.Selected"
+                                                data-ng-disabled="!$itemScope.color.Available" />
+                                            <span class="custom-input-checkbox"></span>
+                                        </colors-viewer-item-before>
+                                    </div>
+                                </div>
+                                <div
+                                    data-ng-if="item.Control !== 'color'"
+                                    data-ng-switch="item.Control"
+                                    data-ng-repeat="child in item.Values | limitTo:catalogFilter.itemsOptions[indexItem].countVisibleItems track by $index">
+                                    <div data-ng-switch-when="select|selectSearch" data-ng-switch-when-separator="|">
+                                        <button
+                                            type="button"
+                                            class="catalog-filter-block-btn lp-btn lp-btn--expand catalog-filter-row pointer catalog-filter-block-title"
+                                            data-ng-click="catalogFilter.clickSelect($event, indexItem, item, $index)"
+                                            data-ng-class="{'lp-btn--secondary': !catalogFilter.catalogFilterData[indexItem].Values[$index].Selected,'lp-btn--primary': catalogFilter.catalogFilterData[indexItem].Values[$index].Selected }"
+                                            data-ng-bind="child.Text"></button>
+                                    </div>
+                                    <!-- For search page -->
+                                    <div data-ng-switch-when="input">
+                                        <input
+                                            class="input-middle"
+                                            data-ng-model="item.Text"
+                                            data-ng-init="item.Text = child.Text"
+                                            type="text"
+                                            data-ng-value="child.Text"
+                                            data-ng-keypress="catalogFilter.inputKeypress($event, indexItem)" />
+                                    </div>
+                                    <!-- For search page end -->
+                                    <div data-ng-switch-when="checkbox">
+                                        <div class="catalog-filter-row">
+                                            <label class="block pointer">
+                                                <input
+                                                    class="custom-input-native"
+                                                    type="checkbox"
+                                                    data-ng-value="child.Id"
+                                                    data-ng-checked="child.Selected"
+                                                    data-ng-disabled="!child.Available"
+                                                    data-ng-model="child.Selected"
+                                                    data-ng-on-change="catalogFilter.clickCheckbox($event, indexItem)" />
+                                                <span class="custom-input-checkbox"></span>
+                                                <span class="custom-input-text" data-ng-bind-html="child.Text"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div data-ng-switch-when="range" class="js-range-slider-block">
+                                        <span
+                                            range-slider
+                                            min="child.Min"
+                                            max="child.Max"
+                                            data-show-values="true"
+                                            data-show-inputs="true"
+                                            model-min="child.CurrentMin"
+                                            model-max="child.CurrentMax"
+                                            step="child.Step"
+                                            decimal-places="child.DecimalPlaces"
+                                            on-handle-down="catalogFilter.clickRangeDown(event, originalEvent, indexItem);"
+                                            on-handle-up="catalogFilter.clickRange(event, indexItem); catalogFilterForm.$setDirty()"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="catalog-filter-more color-scheme__bg"
+                                data-ng-if="(item.Values.length > catalogFilter.countVisibleCollapse && item.Control != 'selectSearch' && item.Control != 'search')">
+                                <a href="javascript:void(0)" data-ng-click="catalogFilter.toggleVisible(item.Values.length, indexItem)">
+                                    <span data-ng-switch="catalogFilter.itemsOptions[indexItem].collapsed">
+                                        <span data-ng-switch-when="true"> {{ ::'Js.CatalogFilter.More' | translate }} </span>
+                                        <span data-ng-switch-when="false"> {{ ::'Js.CatalogFilter.Hide' | translate }} </span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        class="catalog-filter-block-header catalog-filter-block-header-open lp-btn lp-btn--expand"
+                        data-ng-class="{'lp-btn--secondary': catalogFilter.getSelectedCount($index) < 1, 'lp-btn--primary': catalogFilter.getSelectedCount($index) > 0 }">
+                        <span class="catalog-filter-block-title" data-ng-bind="item.Title"></span>
+                        <span class="catalog-filter-questian-description" data-ng-if="item.Subtitle.length > 0"> ({{item.Subtitle}}) </span>
+                        <span
+                            class="catalog-filter-block-title catalog-filter-count"
+                            data-ng-bind-html="catalogFilter.getCountString(indexItem)"></span>
+                    </button>
+                </div>
+                <div class="catalog-filter-block" data-submenu-parent>
+                    <div class="catalog-filter-submenu" data-submenu data-ng-show="submenu.isSubmenuVisible">
+                        <div
+                            class="catalog-filter-block-content color-scheme__bg color-scheme__divider--border"
+                            data-ng-if="submenu.isSubmenuVisible">
+                            <div class="catalog-filter-block-selected-items">
+                                <div data-ng-repeat="(index, count) in catalogFilter.storageSelectedItems track by index">
+                                    <button
+                                        data-ng-click="catalogFilter.reset(index)"
+                                        class="lp-btn lp-btn--primary lp-btn--sm pointer catalog-filter-reset-btn"
+                                        type="button">
+                                        <span data-ng-bind="catalogFilter.catalogFilterData[index].Title"></span>
+                                        <span data-ng-bind="'(' + count + ')'"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div data-ng-if="!catalogFilter.hasSelectedItems()" class="catalog-filter-reset-empty catalog-filter-block-title">
+                                Пусто
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="lp-btn--secondary catalog-filter-block-header catalog-filter-block-header-remove lp-btn lp-btn--expand">
+                        <span class="catalog-filter-block-title" data-ng-bind=" ::'Js.CatalogFilter.Reset' | translate"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div
+        class="catalog-filter-empty"
+        data-ng-if="catalogFilter.isRenderBlock === false && catalogFilter.isMobile === true && catalogFilter.isLoaded === true">
+        {{::'Js.CatalogFilter.Empty' | translate}}
+    </div>
+</article>

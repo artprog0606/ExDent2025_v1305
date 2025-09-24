@@ -1,0 +1,252 @@
+﻿@using AdvantShop.Customers
+@using AdvantShop.ViewModel.Common;
+@model AdvantShop.Models.MyAccount.UserInfoModel
+@{ 
+    var useFullNameSuggestions = Model.SuggestionsModule != null && Model.SuggestionsModule.SuggestFullNameInClient;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<form name="commonInfoForm" class="myaccount-common-info">
+        <div class="h2 myaccount-subtitle">@T("MyAccount.CommonInfo.Header")</div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">Email</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle" data-ng-init="myaccount.user.email = '@Model.Email'">@Model.Email</span>
+                        </span>
+                    </label>
+                }
+                @if (!string.IsNullOrEmpty(Model.Organization))
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.Organization")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle">@Model.Organization</span>
+                        </span>
+                    </label>
+                }
+                @if (Model.IsEnabledBothTypesOfCustomers)
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.CustomerTypeEntity")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle">@Model.CustomerTypeEntity.Localize()</span>
+                        </span>
+                    </label>
+                }
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-sm-4">
+                        <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.RegistrationDate")</span>
+                    </span>
+                    <span class="col-xs-12 col-sm-8">
+                        <span class="form-field-input vertical-interval-middle">@Model.RegistrationDate</span>
+                    </span>
+                </label>
+
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-sm-4">
+                        <span class="form-field-name vertical-interval-middle input-required">@T("MyAccount.CommonInfo.Name")</span>
+                    </span>
+                    <span class="col-xs-12 col-sm-8">
+                        <span class="autocompleter-block form-field-input vertical-interval-middle"
+                              data-field="Value" data-autocompleter data-min-length="1"
+                              data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                              data-template-path="scripts/_common/autocompleter/templates/common.html"
+                              data-params="{part: 'FirstName', lastname: myaccount.user.lastname, patronymic: myaccount.user.patronymic}">
+                            @Html.TextBoxFor(m => m.FirstName, new
+                            {
+                                @class = "input-small",
+                                required = "required",
+                                data_ng_model = "myaccount.user.firstname",
+                                maxlength = "70",
+                                autocomplete = useFullNameSuggestions ? "new-password" : "given-name",
+                                data_autocompleter_input = "",
+                                data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                data_autocomplete_debounce = "400"
+                            })
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-sm-4">
+                        <span class="form-field-name vertical-interval-middle @(SettingsCheckout.IsRequiredLastName ? "input-required": "")">@T("MyAccount.CommonInfo.LastName")</span>
+                    </span>
+                    <span class="col-xs-12 col-sm-8">
+                        <span class="autocompleter-block form-field-input vertical-interval-middle"
+                              data-field="Value" data-autocompleter data-min-length="1"
+                              data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                              data-template-path="scripts/_common/autocompleter/templates/common.html"
+                              data-params="{part: 'LastName', firstname: myaccount.user.firstname, patronymic: myaccount.user.patronymic}">
+                            @Html.TextBoxFor(m => m.LastName, new
+                            {
+                                @class = "input-small",
+                                data_ng_required = SettingsCheckout.IsRequiredLastName.ToLowerString(),
+                                data_ng_model = "myaccount.user.lastname",
+                                maxlength = "70",
+                                autocomplete = useFullNameSuggestions ? "new-password" : "family-name",
+                                data_autocompleter_input = "",
+                                data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                data_autocomplete_debounce = "400"
+                            })
+                        </span>
+
+                    </span>
+                </label>
+
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-sm-4">
+                        <span class="form-field-name vertical-interval-middle @(SettingsCheckout.IsRequiredPatronymic ? "input-required" : "")">@T("MyAccount.CommonInfo.Patronymic")</span>
+                    </span>
+                    <span class="col-xs-12 col-sm-8">
+                        <span class="autocompleter-block form-field-input vertical-interval-middle"
+                              data-field="Value" data-autocompleter data-min-length="1"
+                              data-request-url="@(Model.SuggestionsModule != null ? Model.SuggestionsModule.SuggestFullNameUrl : null)"
+                              data-template-path="scripts/_common/autocompleter/templates/common.html"
+                              data-params="{part: 'Patronymic', firstname: myaccount.user.firstname, lastname: myaccount.user.lastname}">
+                            @Html.TextBoxFor(m => m.Patronymic, new
+                            {
+                                @class = "input-small",
+                                data_ng_model = "myaccount.user.patronymic",
+                                data_ng_required = SettingsCheckout.IsRequiredPatronymic.ToLowerString(),
+                                maxlength = "70",
+                                autocomplete = useFullNameSuggestions ? "new-password" : "additional-name",
+                                data_autocompleter_input = "",
+                                data_autocompleter_disabled = (!useFullNameSuggestions).ToLowerString(),
+                                data_autocomplete_debounce = "400"
+                            })
+                        </span>
+                    </span>
+                </label>
+
+                @if (!SettingsOAuth.AuthByCodeActive)
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle @(SettingsCheckout.IsRequiredPhone ? "input-required" : "")">@T("MyAccount.CommonInfo.Phone")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle">
+                                @Html.TextBoxFor(m => m.Phone,
+                                  new
+                                  {
+                                      placeholder = T("Js.Phone.PhonePlaceholder"),
+                                      data_mask_control = SettingsMain.EnablePhoneMask.ToLowerString(),
+                                      data_mask_control_preset = "phone",
+                                      @class = "input-small",
+                                      data_ng_required = SettingsCheckout.IsRequiredPhone.ToLowerString(),
+                                      data_ng_model = "myaccount.user.phone",
+                                      autocomplete = "tel",
+                                      maxlength = 70
+                                  })
+                            </span>
+                        </span>
+                    </label>
+                }
+                else
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.Phone")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle" data-ng-init="myaccount.user.phone = '@Model.Phone'">@Model.Phone</span>
+                        </span>
+                    </label>
+                }
+
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-sm-4">
+                        <span class="form-field-name vertical-interval-middle @(SettingsCheckout.IsRequiredBirthDay ? "input-required" : "")">@((SettingsCheckout.BirthDayFieldName ?? "").TrimEnd(':'))</span>
+                    </span>
+                    <span class="col-xs-12 col-sm-8">
+                        <span class="form-field-input vertical-interval-middle">
+                            @if (!SettingsCheckout.IsDisableEditingBirthDay || Model.BirthDay == null)
+                            {
+                                <span class="flatpickr-custom" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false}">
+                                    <input type="text" id="birthday" name="birthday" class="input-small flatpickr-custom__input" @Html.Raw(Model.BirthDay != null ? "value=\"" + Model.BirthDay.Value.ToString("dd.MM.yyyy") + "\"" : "") data-ng-required="@SettingsCheckout.IsRequiredBirthDay.ToLowerString()" ng-flatpickr-input ng-model="myaccount.user.birthday" data-mask-control data-mask-control-preset="date">
+                                    <span class="flatpickr-custom__toggle" data-toggle>
+                                        <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path></svg>
+                                    </span>
+                                </span>
+                            }
+                            else
+                            {
+                                @Model.BirthDay.Value.ToString("dd.MM.yyyy")
+                                <input name="birthday" ng-model="myaccount.user.birthday" type="hidden" value="@Model.BirthDay.Value.ToString("dd.MM.yyyy")" />
+                            }
+                        </span>
+                    </span>
+                </label>
+
+                @Html.Partial("_CustomerFields", new CustomerFieldsViewModel(Model.CustomerFields, ngModelName: "myaccount.user", cssParamName: "col-xs-12 col-sm-4", cssParamValue: "col-xs-12 col-sm-8", showMode: CustomerFieldShowMode.MyAccount, suggestions: Model.SuggestionsModule, verticalIntervalCss: "vertical-interval-middle"))
+
+                @if (Model.ShowCustomerRole)
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.CustomerType")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle">@Model.CustomerType</span>
+                        </span>
+                    </label>
+                }
+
+                @if (Model.ShowCustomerGroup)
+                {
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.CustomerGroup")</span>
+                        </span>
+                        <span class="col-xs-12 col-sm-8">
+                            <span class="form-field-input vertical-interval-middle">@Model.CustomerGroup</span>
+                        </span>
+                    </label>
+                }
+
+                @if (SettingsDesign.ShowUserAgreementForPromotionalNewsletter)
+                {
+                <label class="row middle-xs">
+                    @if (!isMobile)
+                    {
+                        <span class="col-xs-12 col-sm-4">
+                            <span class="form-field-name vertical-interval-middle">@T("MyAccount.CommonInfo.UserAgreementForPromotionalNewsletter")</span>
+                        </span>
+                    }
+
+                    <span class="col-xs-12 col-sm-8 @(isMobile ? "flex form-field-input vertical-interval-middle" : "")">
+                        <span class="@(isMobile ? "" : "form-field-input vertical-interval-middle")">
+                            @Html.CheckBoxFor(m => m.IsAgreeForPromotionalNewsletter, new { @class = "custom-input-native", data_ng_model = "myaccount.user.isAgreeForPromotionalNewsletter" })
+                            <span class="custom-input-checkbox" style="@(isMobile ? "top:0;" : "")"></span>
+                        </span>
+                        @if (isMobile)
+                        {
+                            <span>@T("MyAccount.CommonInfo.UserAgreementForPromotionalNewsletter")</span>
+                        }
+                    </span>
+                </label>
+                }
+
+                <div class="row middle-xs">
+                    <span class="col-xs-12 col-sm-8 col-sm-offset-4">
+                        <span class="form-field-input vertical-interval-middle">
+                            <button data-button-validation data-button-validation-success="myaccount.saveUser()" type="button" class="btn btn-middle btn-confirm">
+                                @T("MyAccount.CommonInfo.Change")
+                            </button>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form>

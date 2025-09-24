@@ -1,0 +1,45 @@
+﻿@using AdvantShop.Core.Services.Catalog
+@model AdvantShop.ViewModel.Checkout.CheckoutBonusViewModel
+
+<article class="checkout-block">
+    <div class="checkout-block-title h2">
+        @T("Checkout.CheckoutBonus.Bonuses")
+    </div>
+    <div class="checkout-block-content">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                @if (!Model.HasCard)
+                {
+                    <label class="form-field-input vertical-interval-xsmall">
+                        @Html.CheckBoxFor(m => m.WantBonusCard, new { @class = "custom-input-native", id = "WantBonusCard", data_ng_model = "checkout.wantBonusCard", data_ng_change = "checkout.saveWantBonusCard()" })
+                        <span class="custom-input-checkbox"></span>
+                        @T("Checkout.CheckoutBonus.WantToGetBonusCard")
+                        @if (Model.BonusPlus > 0)
+                        {
+                            <span class="bonus-card-plus-amount">
+                                <span class="bonus-card-plus-price">+@Model.BonusPlus.FormatPriceInvariant() @Strings.Numerals((float)Model.BonusPlus, T("Bonuses.Bonuses0"), T("Bonuses.Bonuses1"), T("Bonuses.Bonuses2"), T("Bonuses.Bonuses5"))</span> @T("Checkout.CheckoutBonus.ToBonusCart")
+                            </span>
+                        }
+                    </label>
+                }
+                else
+                {
+                    <div data-bonus-what-to-do
+                         data-page="checkout"
+                         data-autorize-bonus="checkout.autorizeBonus(cardNumber)"
+                         data-change-bonus="checkout.changeBonus(appliedBonuses)"
+                         data-email="checkout.email"
+                         data-city="checkout.city"
+                         data-outside-name="checkout.newCustomer.firstname"
+                         data-outside-surname="checkout.newCustomer.lastname"
+                         data-outside-phone="checkout.newCustomer.phone"
+                         data-is-show-patronymic="@SettingsCheckout.IsShowPatronymic.ToLowerString()"
+                         data-applied-bonuses="@Model.AppliedBonuses.ToInvariantString()"
+                         data-bonus-plus="@Model.BonusPlus.ToInvariantString()"
+                         data-allow-specify-bonus-amount="@Model.AllowSpecifyBonusAmount.ToLowerString()"
+                         data-prohibit-accrual-and-substract="@Model.ProhibitAccrualAndSubstractBonuses.ToLowerString()"></div>
+                }
+            </div>
+        </div>
+    </div>
+</article>

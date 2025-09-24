@@ -1,0 +1,38 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+<div class="container-fluid">
+    <div class="lp-container" data-e2e="@(Model.Config.Name)_container">
+        @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            @:<div class="lp-block-form__header text-center">
+            }
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color" data-e2e="FormTitleBlock">@Html.SubBlock(Model, "title")</div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color" data-e2e="FormSubTitleBlock">@Html.SubBlock(Model, "subtitle")</div>
+        }
+
+        @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+        @:</div>
+    }
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 lp-block-form-with-picture__col text-center" data-e2e="FormPicture">
+                @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                {
+                    DeletePicture = false,
+                    GalleryIconsEnabled = false,
+                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                    MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                    MaxHeightPicture = PictureLoaderImageSize.SmallHeight
+                }, Model.Inplace)
+            </div>
+            <div class="col-xs-12 col-sm-6 lp-block-form-with-picture__col lp-block-form-with-picture-invert__col--form">
+                @Html.Form(Model.Form, true)
+            </div>
+        </div>
+    </div>
+</div>

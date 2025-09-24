@@ -1,0 +1,37 @@
+﻿@model AdvantShop.ViewModel.Shipping.ShippingZonesPageViewModel
+@{
+    Html.AddAsset("shippings");
+}
+
+<div class="col-p-v shippings-zones m-b-lg mobile-container-fluid">
+    <div class="page-title-row shippings-zones__row">
+        <div class="shippings-zones__title page-title">
+            <h1>@T("Common.ShippingsPage.Header")</h1>
+        </div>
+    </div>
+    @if (Model.ShippingZonesIframe.IsNullOrEmpty() && Model.Description.IsNullOrEmpty())
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                @T("Common.ShippingsPage.DeliveryZonesNotAvailable")
+            </div>
+        </div>      
+    }
+    else
+    {
+        <div class="row">
+            @if (Model.ShippingZonesIframe.IsNotEmpty())
+            {
+                <div class="col-xs-12 shippings-zones__map-wrap @(Model.Description.IsNotEmpty() ? "col-sm-8" : string.Empty)">
+                    @Html.Raw(Model.ShippingZonesIframe)
+                </div>
+            }
+            @if (Model.Description.IsNotEmpty())
+            {
+                <div class="col-xs-12 @(Model.ShippingZonesIframe.IsNotEmpty() ? "col-sm-4" : string.Empty)">
+                    @Html.Raw(Model.Description)
+                </div>
+            }
+        </div>
+    }
+</div>

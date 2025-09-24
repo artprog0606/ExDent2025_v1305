@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html class="is-mobile mobile-version" lang="@SettingsMain.Language.Split('-')[0].ToLower()" data-ng-app="app"  @Html.GetNgController()>
+<head>
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl()" />
+    <meta charset="utf-8">
+    <meta content="Dynamic" name="document-state">
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <meta name="Description" content="@Html.GetPageDescription()" />
+    @Html.GetPageKeywords(asMetaLink: true)
+    @Html.GetNoFollowTag()
+    @Html.GetCanonicalTag()
+    @Html.Action("Favicon", "Common", new {area = ""})
+    @Html.Partial("_HeadScripts", new { area = "Mobile" })
+</head>
+<body class="cs-t-1 text-floating">
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    @Html.GoggleTagManagerCounter()
+    <div hidden>@Html.StaticBlock("LiveCounter")</div>
+    @Html.Action("GoogleAnalytics", "Common", new { area = "" })
+    @Html.RenderModules("mobile_body_start")
+    <div id="layout">
+        @RenderBody()
+    </div>
+    @Html.Partial("_FooterMobileScripts", new { area = "Mobile" })
+    @Html.GetNotifyMessages()
+    @Html.RenderModules("mobile_body_end")
+    @Html.StaticBlock("body_end")
+    @Html.Action("MobileScript", "SocialWidget", new { area = "" })
+</body>
+</html>

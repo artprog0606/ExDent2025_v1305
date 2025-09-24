@@ -1,0 +1,28 @@
+﻿@using AdvantShop.Payment
+@model AdvantShop.ViewModel.Checkout.OrderPay.MokkaPayModel
+
+@{
+    var classType =
+        Model.PageWithPaymentButton == PageWithPaymentButton.myaccount
+            ? "btn-confirm"
+            : "btn-submit";
+    var classSize =
+        Model.PageWithPaymentButton == PageWithPaymentButton.myaccount
+            ? "btn-small"
+            : "btn-middle";
+    
+    var payUrl = @UrlService.GetUrl("checkout/payredirectformokka") + "?code=" + Model.Order.Code;
+}
+
+<div data-oc-lazy-load="[@Html.RenderAssetFilesList("mokka")]">
+    <span class="btn-c">
+        <a class="btn btn--pay @classType @classSize"
+           href="@(Model.ButtonHref ?? "javascript:void(0);")"
+           onclick="@Model.ButtonOnClick"
+           data-mokka-order-pay
+           data-mokka-order-code="'@Model.Order.Code'"
+           data-mokka-pay-url="'@payUrl'">
+            @Model.PaymentMethod.ButtonText
+        </a>
+    </span>
+</div>

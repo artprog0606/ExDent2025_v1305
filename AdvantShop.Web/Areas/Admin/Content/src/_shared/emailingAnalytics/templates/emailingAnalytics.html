@@ -1,0 +1,90 @@
+﻿<div class="ibox" is-mobile>
+    <div class="ibox-content">
+        <div class="row middle-xs" ng-if="$ctrl.hideFlatpickr != true">
+            <div class="col-xs-6">
+                <h3>Письмо: <span ng-bind="$ctrl.emailSubject"></span></h3>
+                <a ng-href="{{$ctrl.emailComeBackUrl}}" ng-click="$ctrl.emailComeBackClick()">Вернуться к списку</a>
+            </div>
+            <div class="row col-xs end-xs" style="margin-right: 0">
+                <div class="row middle-xs">
+                    <label class="col-xs-4" style="text-align: right">
+                        <span>Дата от:</span>
+                    </label>
+                    <div class="col-xs" style="display: inline-block; width: 200px; position: relative; vertical-align: middle; min-height: 34px">
+                        <div
+                            class="input-group"
+                            ng-flatpickr
+                            fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}"
+                            fp-on-change="$ctrl.fetch()">
+                            <span class="flatpickr-custom-wrap">
+                                <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="$ctrl.emailDateFrom" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row middle-xs">
+                    <label class="col-xs-3" style="text-align: right">
+                        <span>до:</span>
+                    </label>
+                    <div class="col-xs" style="display: inline-block; width: 200px; position: relative; vertical-align: middle; min-height: 34px">
+                        <div
+                            class="input-group"
+                            ng-flatpickr
+                            fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}"
+                            fp-on-change="$ctrl.fetch()">
+                            <span class="flatpickr-custom-wrap">
+                                <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="$ctrl.emailDateTo" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="$ctrl.hideComeBackLink != true && $ctrl.hideFlatpickr === true" class="m-b-sm">
+            <a ng-href="{{$ctrl.emailComeBackUrl}}" ng-click="$ctrl.emailComeBackClick()">Вернуться к списку</a>
+        </div>
+        <div ng-if="$ctrl.sendTime">Время отсылки: <span ng-bind="$ctrl.sendTime"></span></div>
+
+        <div ng-if="!$ctrl.dataLoaded" class="ng-cloak">Загрузка..</div>
+        <div ng-if="$ctrl.dataLoaded" class="cloak">
+            <div ng-if="!$ctrl.statusesData" class="m-t ng-cloak">Нет данных</div>
+            <div ng-if="$ctrl.statusesData">
+                <div class="emailing-chart" ng-if="$ctrl.chartData">
+                    <canvas
+                        class="chart chart-line"
+                        chart-data="$ctrl.chartData.Data"
+                        chart-labels="$ctrl.chartData.Labels"
+                        chart-series="$ctrl.chartData.Series"
+                        chart-colors="$ctrl.chartData.Colors"
+                        chart-options="{maintainAspectRatio:false}"></canvas>
+                </div>
+                <div class="emailing-stats" ng-class="{'m-t-md' : isMobile.value}">
+                    <div class="emailing-stats-inner">
+                        <div class="emailing-stats-content" ng-repeat="statusData in $ctrl.statusesData">
+                            <a
+                                ng-href="{{$ctrl.emailLogUrl != null && $ctrl.emailLogUrl.length > 0 ? $ctrl.emailLogUrl + $ctrl.getStatusUrlParams(statusData.Status) : ''}}"
+                                ng-click="$ctrl.emailLogClick({logGridParams: $ctrl.getStatusUrlParamsForMVC(statusData.Status)})"
+                                style="text-decoration: none; color: unset"
+                                ng-class="{'flex middle-xs m-b-sm' : isMobile.value}">
+                                <div ng-class="{'m-r-sm' : isMobile.value}" class="emailing-stats-content-header" ng-bind="statusData.Count"></div>
+                                <div ng-class="{'m-r-sm flex-grow' : isMobile.value}" ng-bind="statusData.StatusName"></div>
+                                <div>{{statusData.Percent}}%</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-t" ng-class="{'m-b-md' : isMobile.value}">
+                    <a
+                        ng-href="{{$ctrl.emailLogUrl != null && $ctrl.emailLogUrl.length > 0 ? $ctrl.emailLogUrl + $ctrl.getStatusUrlParams() : ''}}"
+                        ng-click="$ctrl.emailLogClick({logGridParams: $ctrl.getStatusUrlParamsForMVC()})"
+                        >Таблица рассылки</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

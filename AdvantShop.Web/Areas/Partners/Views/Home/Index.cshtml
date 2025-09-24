@@ -1,0 +1,182 @@
+﻿@using AdvantShop.Catalog
+@using AdvantShop.Core.Services.Catalog
+@model AdvantShop.Areas.Partners.ViewModels.Home.HomeViewModel
+@{
+    var coupon = Model.Coupon;
+    var referralQuery = coupon != null ? string.Format("?{0}={1}", Model.ReferralRequestParam, coupon.Code) : string.Empty;
+    var referralLink = SettingsMain.SiteUrl + referralQuery;
+}
+
+@if (coupon != null)
+{
+    <div class="ibox">
+        <div class="ibox-content">
+            <div>
+                <div class="h3 h-inline">Ваш купон: <strong>@coupon.Code</strong></div>
+                <a href="javascript:void(0)" class="horizontal-interval-big" data-modal-open="modalCouponInfo">Подробнее о купоне</a>
+            </div>
+            <div>
+                <div class="h3 h-inline no-margin">Ваша реферальная ссылка: <a href="@referralLink" target="_blank">@referralLink</a></div>
+                <a href="javascript:void(0)" class="horizontal-interval-big" data-modal-open="modalReferralLinkInfo">Подробнее о реферальной ссылке</a>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-xs-3">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Текущий баланс</h5>
+            </div>
+            <div class="ibox-content">
+                <h2 class="no-margin">@Model.Balance</h2>
+                <div>Процент вознаграждения: @Model.RewardPercent%</div>
+            </div>
+                <div class="ibox-content" ng-if="@Model.AllowPayoutRewards.ToLowerString()">
+                    <div><a href="javascript:void(0)" ng-click="home.sendMailPayoutRewards()">Вывести вознаграждение</a></div>
+                </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Клиенты</h5>
+            </div>
+            <div class="ibox-content">
+                <h2 class="no-margin">@Model.CustomersCount</h2>
+                <div><a href="@Url.Action("Index", "Customers")">Все клиенты</a></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Продажи</h5>
+            </div>
+            <div class="ibox-content">
+                <h2 class="no-margin">@Model.OrderItemsSum</h2>
+                <div>Всего</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Вознаграждения</h5>
+            </div>
+            <div class="ibox-content">
+                <h2 class="no-margin">@Model.RewardsSum</h2>
+                <div>Всего</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ibox" data-ng-init="home.initChart('@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")', '@DateTime.Now.ToString("yyyy-MM-dd")')">
+    <div class="ibox-content">
+        <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+            <div class="row middle-xs">
+                <div class="col-xs-4">
+                    <h2 data-ng-bind="home.accrualSum"></h2>
+                </div>
+                <div class="col-xs-8 row middle-xs">
+                    <div class="col-xs-3 col-xs-offset-3 text-align-right">
+                        <label class="vertical-interval-xsmall">
+                            <span>Начисления за период:</span>
+                        </label>
+                    </div>
+                    <div class="col-xs">
+                        <span class="vertical-interval-middle">
+                            <span class="input-group" data-ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                                <span class="flatpickr-custom-wrap">
+                                    <input type="text" class="input-small input-alt" data-ng-flatpickr-input data-ng-model="home.dateFrom" data-ng-change="home.fetchChartData()" model-view-value="true" readonly="readonly">
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col-xs-slim">
+                        <span class="vertical-interval-middle">–</span>
+                    </div>
+                    <div class="col-xs">
+                        <span class="vertical-interval-middle">
+                            <span class="input-group" data-ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                                <span class="flatpickr-custom-wrap">
+                                    <input type="text" class="input-small input-alt" data-ng-flatpickr-input data-ng-model="home.dateTo" data-ng-change="home.fetchChartData()" model-view-value="true" readonly="readonly">
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row middle-xs">
+                <div class="col-xs-12 col-p-v">
+                    <div class="chart-container" ng-if="home.chartData">
+                        <canvas class="chart chart-line"
+                                chart-data="home.chartData.Data"
+                                chart-labels="home.chartData.Labels"
+                                chart-series="home.chartData.Series"
+                                chart-colors="home.chartData.Colors"
+                                chart-options="home.chartOptions"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (coupon != null)
+{
+    <div class="ng-cloak">
+
+        <div id="modalCouponInfo" class="modal" data-modal-control data-modal-class="modal-info">
+            <div data-modal-header class="modal-header">
+                Ваш купон
+            </div>
+            <div class="modal-content">
+                <div class="vertical-interval-small no-top">
+                    <div class="row middle-xs">
+                        <div class="col-xs-3">Код купона:</div>
+                        <div class="col-xs-9">@coupon.Code</div>
+                    </div>
+                </div>
+                <div class="vertical-interval-small">
+                    <div class="row middle-xs">
+                        <div class="col-xs-3">Скидка для клиентов:</div>
+                        <div class="col-xs-9">
+                            @(coupon.Type == CouponType.Percent ? coupon.GetRate().FormatPriceInvariant() + "%" : ((decimal)coupon.GetRate()).FormatRoundPriceDefault(coupon.Currency.Rate))
+                        </div>
+                    </div>
+                </div>
+                @if (coupon.MinimalOrderPrice > 0)
+                {
+                    <div class="vertical-interval-small no-top">
+                        <div class="row middle-xs">
+                            <div class="col-xs-3">Минимальная сумма заказа:</div>
+                            <div class="col-xs-9">@(((decimal)coupon.MinimalOrderPrice).FormatRoundPriceDefault(coupon.Currency.Rate))</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="modalReferralLinkInfo" class="modal" data-modal-control data-modal-class="modal-info">
+            <div data-modal-header class="modal-header">
+                Реферальная ссылка
+            </div>
+            <div class="modal-content">
+                <div class="vertical-interval-small no-top">
+                    Это ваша реферальная ссылка. Вы можете указывать ее на ваших сайтах для привлечения клиентов по партнерской программе.
+                </div>
+                <div class="vertical-interval-small">
+                    @Html.TextBoxFor(m => referralLink, new { @class = "input-big", @readonly = "readonly" })
+                </div>
+                <div class="vertical-interval-small">
+                    Вы можете направлять клиента на любую страницу нашего сайта, просто добавьте к адресу страницы <strong>@referralQuery</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}

@@ -1,0 +1,62 @@
+﻿<ng-form name="shippingbyorderprice" is-mobile>
+    <div>
+        <div class="m-b-md">
+            <div ng-class="{'inline': !isMobile.value,'form-group': isMobile.value}">
+                <span>{{'Admin.Js.ShippingMethods.From'|translate}}</span>
+                <div
+                    ng-class="{'setting--m-t-sm flex middle-xs': isMobile.value}"
+                    class="input-group inline valign-middle setting__price-margin-in-numbers">
+                    <input
+                        type="text"
+                        validation-input-float
+                        ng-model="$ctrl.orderPrice"
+                        data-ng-required="$ctrl.required && $ctrl.ranges.length === 0"
+                        class="form-control inline"
+                        style="width: 110px"
+                        validation-input-text="{{'Admin.Js.ShippingMethods.From'|translate}}" />
+                    <div class="input-group-btn" ng-style="isMobile.value ? {'align-self':'stretch'} : {}">
+                        <span class="btn btn-default"><span>{{$ctrl.currencyLabel}}</span></span>
+                    </div>
+                </div>
+            </div>
+            <div ng-class="{'inline m-l-sm': !isMobile.value,'form-group': isMobile.value}">
+                <span>{{'Admin.Js.ShippingMethods.DeliveryCost'|translate}}</span>
+                <div
+                    ng-class="{'setting--m-t-sm flex middle-xs': isMobile.value}"
+                    class="input-group inline valign-middle setting__price-margin-in-numbers">
+                    <input
+                        type="text"
+                        validation-input-float
+                        ng-model="$ctrl.shippingPrice"
+                        data-ng-required="$ctrl.required && $ctrl.ranges.length === 0"
+                        class="form-control inline"
+                        style="width: 110px"
+                        validation-input-text="{{'Admin.Js.ShippingMethods.DeliveryCost'|translate}}" />
+                    <div class="input-group-btn" ng-style="isMobile.value ? {'align-self':'stretch'} : {}">
+                        <span class="btn btn-default"><span>{{$ctrl.currencyLabel}}</span></span>
+                    </div>
+                </div>
+            </div>
+            <div ng-class="{'inline m-l-sm': !isMobile.value,'': isMobile.value}">
+                <button
+                    type="button"
+                    ng-disabled="$ctrl.orderPrice == null || $ctrl.shippingPrice == null"
+                    class="btn btn-sm btn-action"
+                    ng-click="$ctrl.addRange()">
+                    {{'Admin.Js.ShippingMethods.Add'|translate}}
+                </button>
+            </div>
+        </div>
+
+        <div ng-class="{'m-b-md': !isMobile.value,'form-group': isMobile.value}">
+            <div class="m-b-xs" ng-repeat="item in $ctrl.ranges track by $index">
+                {{'Admin.Js.ShippingMethods.From'|translate}} {{item.orderPrice | number}} {{$ctrl.currencyLabel}} -
+                {{'Admin.Js.ShippingMethods.DeliveryCost'|translate}} {{item.shippingPrice | number}} {{$ctrl.currencyLabel}}
+                <a href="" ng-click="$ctrl.deleteRange($index)" class="link-invert link-decoration-none fas fa-times"></a>
+            </div>
+        </div>
+
+        <input type="hidden" name="priceRanges" value="{{$ctrl.priceRanges}}" />
+        <input type="hidden" ng-model="$ctrl.update" class="hidden" />
+    </div>
+</ng-form>

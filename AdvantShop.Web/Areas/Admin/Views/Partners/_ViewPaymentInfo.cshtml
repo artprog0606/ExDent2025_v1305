@@ -1,0 +1,74 @@
+﻿@using AdvantShop.Core.Services.Partners
+@model AdvantShop.Web.Admin.Models.Partners.PartnerViewModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="ibox">
+    <div class="ibox-content">
+        <div class="m-b-sm">
+            <h3 class="category-title setting__subtitle">
+                Выплаты
+            </h3>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-6 col-sm-4 setting__lite-gray-label">Баланс</div>
+                <div class="col-xs-6 col-sm-8 ng-cloak">
+                    {{partnerView.instance.BalanceFormatted}}
+                    @if (!isMobile)
+                    {
+                        <ui-modal-trigger data-controller="'ModalAddPartnerMoneyCtrl'" controller-as="ctrl" size="md" data-resolve="{params: {partnerId:partnerView.partnerId}}"
+                                          template-url="@Html.GetAssetPath("addPartnerMoney.html")"
+                                          data-on-close="partnerView.onMoneyProcessed()">
+                            <a href="" class="m-l-xs">Пополнить</a>
+                        </ui-modal-trigger>
+                        <ui-modal-trigger data-controller="'ModalSubtractPartnerMoneyCtrl'" controller-as="ctrl" size="md" data-resolve="{params: {partnerId:partnerView.partnerId}}"
+                                          template-url="@Html.GetAssetPath("subtractPartnerMoney.html")"
+                                          data-on-close="partnerView.onMoneyProcessed()">
+                            <a href="" class="m-l-xs">Списать</a>
+                        </ui-modal-trigger>
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-6 col-sm-4 setting__lite-gray-label">Процент вознаграждения</div>
+                <div class="col-xs-6 col-sm-8 ng-cloak">{{partnerView.instance.Partner.RewardPercent}}%</div>
+            </div>
+        </div>
+        <div ng-if="partnerView.instance.Partner.NaturalPerson != null">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4 setting__lite-gray-label">Способ выплаты</div>
+                    <div class="col-xs-6 col-sm-8 ng-cloak">{{partnerView.instance.PaymentTypeName || 'Не указан'}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4 setting__lite-gray-label">№ счета</div>
+                    <div class="col-xs-6 col-sm-8 ng-cloak">{{partnerView.instance.Partner.NaturalPerson.PaymentAccountNumber || 'Не указан'}}</div>
+                </div>
+            </div>
+        </div>
+        @if (!isMobile)
+        {
+            <div class="">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ui-modal-trigger data-controller="'ModalPartnerRewardPayoutCtrl'" controller-as="ctrl" size="md" data-resolve="{params: {partnerId:partnerView.partnerId}}"
+                                          template-url="@Html.GetAssetPath("partnerRewardPayout.html")"
+                                          data-on-close="partnerView.onMoneyProcessed()">
+                            <button class="btn btn-sm btn-success" type="button">
+                                Выплатить вознаграждение
+                            </button>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

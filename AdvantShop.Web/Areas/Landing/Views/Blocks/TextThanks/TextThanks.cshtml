@@ -1,0 +1,34 @@
+﻿@model BlockModel
+
+@{ 
+    string bgAlt = Model.Block.TryGetSetting("background_color_alt");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses() text-left">
+                <div class="text-center">
+                    @Html.BlockHeader(Model)
+                </div>
+                <article class="lp-block-text-thanks__content" style="background-color:@bgAlt">
+                    <header class="lp-block-text-thanks__header">@Html.SubBlock(Model, "header")</header>
+                    <div class="lp-font-size--middle lp-h3--color">
+                        @Html.SubBlock(Model, "content")
+
+                        @if (Model.Block.TryGetSetting("show_button") == true)
+                        {
+                            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TextBtnRow">
+                                <div class="col-xs-12">
+                                    <div class="lp-block-text-button">
+                                        @Html.Button(Model.Block, "button")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

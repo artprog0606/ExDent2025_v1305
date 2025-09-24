@@ -1,0 +1,48 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox view-partner">
+    <div class="ibox-content ng-cloak">
+        <div class="view-partner__header">
+            <h3 class="category-title view-partner__title">Партнерская программа</h3>
+
+            <div ng-if="customerView.instance.PartnerInfo == null">
+                <ui-modal-trigger data-controller="'ModalSelectPartnerCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                                  template-url="@Html.GetAssetPath("selectPartner.html")"
+                                  data-on-close="customerView.bindToPartner(result)">
+                    <a data-e2e="AddCard" @Html.Raw(!isMobile ? "class=\"btn btn-sm btn-success\"" : "") href="">
+                        Привязать к партнеру
+                    </a>
+                </ui-modal-trigger>
+            </div>
+            @if (isMobile)
+            {
+                <a ng-if="customerView.instance.PartnerInfo != null" ng-click="customerView.unbindFromPartner()" href="" ng-click="customerView.unbindFromPartner()">Отвязать</a>
+            }
+        </div>
+
+        <div ng-if="customerView.instance.PartnerInfo != null">
+            <div class="form-group row">
+                <div class="col-xs-6 col-sm-4 view-partner__text view-partner__text--alt">Партнер</div>
+                <div class="col-xs-6 col-sm-8 view-partner__text">
+                    <a href="" ng-href="partners/view/{{customerView.instance.PartnerInfo.PartnerId}}" target="_blank">
+                        {{customerView.instance.PartnerInfo.PartnerName}}
+                    </a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-6 col-sm-4 view-partner__text view-partner__text--alt">Дата привязки</div>
+                <div class="col-xs-6 col-sm-8 view-partner__text">
+                    {{customerView.instance.PartnerInfo.DateBindedFormatted}}
+                </div>
+            </div>
+            @if (!isMobile)
+            {
+                <button type="button" class="btn btn-sm btn-action" ng-click="customerView.unbindFromPartner()">Отвязать</button>
+            }
+        </div>
+
+    </div>
+</div>

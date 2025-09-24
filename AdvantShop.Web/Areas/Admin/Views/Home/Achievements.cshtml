@@ -1,0 +1,169 @@
+﻿@using AdvantShop.Trial
+
+@{
+    Html.AddAsset("home");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">Настройка магазина</span>";
+    headerModel.ShowOnlySticky = true;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Shared/_Layout.cshtml";
+    }
+}
+
+@Html.Header(headerModel)
+
+<div class="dashboard-content">
+    <div class="dashboard-content__container">
+        <div class="dashboard-content__list ng-cloak">
+            @if (TrialService.IsTrialEnabled)
+            {
+                <div class="dashboard-content__item dashboard-content__item--black-bg dashboard-content__item--p-md dashboard-content__item--shadow @(isMobile ? "" : "dashboard-content__item--flex")" style="margin-bottom:16px;">
+                    <div class="dashboard-content__item-about">
+                        <p class="dashboard-content__text" style="@(isMobile ? "" : "color:#fff;")">@T("Admin.CongratulationsDashboardv2.TrialPeriod")</p>
+                    </div>
+                    <div class="dashboard-content__btn-blue-wrap">
+                        <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Tariffs", "Service")">@T("Admin.CongratulationsDashboardv2.SelectTariff")</a>
+                    </div>
+                </div>
+            }
+
+            <div class="dashboard-content__progress-bar-wrapper">
+                <h3 class="dashboard-content__title dashboard-content__title--sub dashboard-content__title--m-b-sm" style="margin-top:16px;">@T("Admin.CongratulationsDashboardv2.MyAchievements")</h3>
+                <p class="dashboard-content__text dashboard-content__text--sub text_indent" style="font-size: 16px">@T("Admin.Home.CongratulationsDashboardv2.FirstSteps")</p>
+                <p class="dashboard-content__text dashboard-content__text--sub text_indent" style="font-size: 16px">@T("Admin.Home.CongratulationsDashboardv2.SimpleQuests")</p>
+            </div>
+
+            <div class="ibox congratulationsDashboard">
+                <uib-tabset active uid="tabsOnCongratulationsDashboard">
+                    <uib-tab index="group.Id" heading="{{ group.DisplayName }}" classes="ng-tab" ng-repeat="group in achievements.steps" ng-show="false" ng-init="selectedTab = selectedTab || (group.Id === 8 ? group.Id : selectedTab)">
+                        <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex" ng-if="group.Id == 8" style="padding-right: 12px;">
+                            <div class="dashboard-content__item-about">
+                                <h3 class="dashboard-content__title">@T("Admin.Home.CongratulationsDashboardv2.CreateProgect")</h3>
+                                <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboardv2.ProgectCreated")</p>
+                            </div>
+                            <div class="dashboard-content__item-right-content">
+                                <div class="svg_icon">
+                                    <svg width="64" height="64" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--twemoji" preserveAspectRatio="xMidYMid meet">
+                                        <path fill="#77B255" d="M36 32a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v28z"></path><path fill="#FFF" d="M29.28 6.362a2.502 2.502 0 0 0-3.458.736L14.936 23.877l-5.029-4.65a2.5 2.5 0 1 0-3.394 3.671l7.209 6.666c.48.445 1.09.665 1.696.665c.673 0 1.534-.282 2.099-1.139c.332-.506 12.5-19.27 12.5-19.27a2.5 2.5 0 0 0-.737-3.458z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-repeat="step in group.Achievements">
+                            <div ng-if="step.Complete == false">
+                                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex" style="padding-right: 12px;">
+                                    <div class="dashboard-content__item-about">
+                                        <h3 class="dashboard-content__title">{{ step.DisplayName }}</h3>
+                                        <p class="dashboard-content__text">{{ step.Content }}</p>
+                                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md" ng-if="step.ActionButtonLink && step.Id != 34">
+                                            <a class="btn btn-sm btn-success" href="{{step.ActionButtonLink}}">
+                                                {{ step.ActionButtonName }}
+                                            </a>
+                                        </div>
+                                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md" ng-if="step.ActionButtonLink && step.Id == 34">
+                                            <a class="btn btn-sm btn-success"
+                                               ng-click="achievements.goSupportCenterAndRedirect(step.ActionButtonLink);">
+                                                {{ step.ActionButtonName }}
+                                            </a>
+                                        </div>
+                                        <div class="dashboard-content" style="margin-top: 25px" ng-if="step.HelpLink">
+                                            <help-trigger style="margin: 0" class="ng-cloak m-l-xs" data-title="@T("Admin.CongratulationsDashboardv2.InstructionsForTheTask")">
+                                                @T("Admin.Home.CongratulationsDashboardv2.HelpLink")
+                                            </help-trigger>
+                                            <a href="{{step.HelpLink}}" ng-click="achievements.openLink(step.HelpLink);" ng-mousedown="achievements.openLink(step.HelpLink);"
+                                               ng-bind="step.HelpLinkDescription">{{ step.HelpLinkDescription }}</a>
+                                        </div>
+                                        <div class="dashboard-content__social-links-wrap" ng-if="step.Id == 33">
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://vk.com/advantshop');">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M16.0218 0C7.15962 0 0 7.15962 0 16.0218C0 24.8404 7.15962 32.0437 16.0218 32.0437C24.884 32.0437 32.0437 24.884 32.0437 16.0218C32 7.15962 24.8404 0 16.0218 0ZM24.1419 17.7244C24.884 18.4666 25.6698 19.1214 26.3683 19.9509C26.6739 20.3001 26.9359 20.693 27.1542 21.0859C27.4598 21.6971 27.1978 22.3083 26.6739 22.352H23.3997C22.5703 22.4393 21.8718 22.09 21.3042 21.5225C20.8677 21.0423 20.4311 20.5621 19.9945 20.0819C19.8199 19.9072 19.6453 19.6889 19.3834 19.558C18.9468 19.2524 18.5539 19.3397 18.292 19.8199C18.03 20.3001 17.9864 20.824 17.9427 21.3479C17.899 22.1337 17.6808 22.3083 16.895 22.352C15.236 22.4393 13.6644 22.1774 12.2237 21.3479C10.9141 20.6057 9.95361 19.558 9.08049 18.3793C7.3779 16.0655 6.06821 13.5771 4.93315 10.9577C4.67121 10.3902 4.84584 10.0409 5.50068 10.0409C6.59209 10.0409 7.63984 10.0409 8.73124 10.0409C9.1678 10.0409 9.4734 10.3029 9.60437 10.6958C10.1719 12.1364 10.8704 13.4898 11.7872 14.7121C12.0055 15.0614 12.2674 15.367 12.6166 15.6289C13.0095 15.8909 13.2715 15.8035 13.4461 15.367C13.5771 15.105 13.6207 14.7995 13.6207 14.5375C13.708 13.5334 13.708 12.573 13.5771 11.5689C13.4898 10.9577 13.1405 10.5648 12.5293 10.4338C12.2237 10.3902 12.2674 10.2592 12.3984 10.0846C12.6603 9.77899 12.9222 9.60437 13.4025 9.60437H17.1132C17.6808 9.73533 17.8117 9.99727 17.899 10.5648V14.6685C17.899 14.8868 18.03 15.5853 18.4229 15.7162C18.7722 15.8035 18.9468 15.5416 19.1651 15.367C20.0382 14.4065 20.693 13.3151 21.2606 12.1801C21.5225 11.6562 21.7408 11.1323 21.9154 10.6085C22.09 10.2156 22.3083 10.0409 22.7449 10.0409H26.3247C26.412 10.0409 26.543 10.0409 26.6303 10.0409C27.2415 10.1282 27.4161 10.3902 27.1978 11.0014C26.8922 11.9181 26.3247 12.704 25.8008 13.4461C25.1896 14.2756 24.5784 15.0614 23.9673 15.8909C23.3997 16.6767 23.4434 17.0696 24.1419 17.7244Z" fill="#0077FF" />
+                                                </svg>
+                                            </a>
+
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://www.youtube.com/advantshop');">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M14.0068 18.9971L19.2114 15.9995L14.0068 13.002V18.9971Z" fill="#FF0000" />
+                                                    <path d="M16 0C7.16479 0 0 7.16479 0 16C0 24.8352 7.16479 32 16 32C24.8352 32 32 24.8352 32 16C32 7.16479 24.8352 0 16 0ZM25.9976 16.0164C25.9976 16.0164 25.9976 19.2612 25.5859 20.8259C25.3552 21.6824 24.6799 22.3577 23.8235 22.5881C22.2588 23 16 23 16 23C16 23 9.75757 23 8.17651 22.5718C7.32007 22.3413 6.64478 21.6658 6.41406 20.8093C6.0022 19.2612 6.0022 16 6.0022 16C6.0022 16 6.0022 12.7554 6.41406 11.1907C6.64453 10.3342 7.33643 9.64233 8.17651 9.41187C9.74121 9 16 9 16 9C16 9 22.2588 9 23.8235 9.42822C24.6799 9.65869 25.3552 10.3342 25.5859 11.1907C26.0142 12.7554 25.9976 16.0164 25.9976 16.0164Z" fill="#FF0000" />
+                                                </svg>
+                                            </a>
+
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://t.me/advantshop');">
+                                                <svg width="32" height="32" id="Livello_1" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240"><defs><linearGradient id="linear-gradient" x1="120" y1="240" x2="120" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1d93d2" /><stop offset="1" stop-color="#38b0e3" /></linearGradient></defs><circle cx="120" cy="120" r="120" fill="url(#linear-gradient)" /><path d="M81.229,128.772l14.237,39.406s1.78,3.687,3.686,3.687,30.255-29.492,30.255-29.492l31.525-60.89L81.737,118.6Z" fill="#c8daea" /><path d="M100.106,138.878l-2.733,29.046s-1.144,8.9,7.754,0,17.415-15.763,17.415-15.763" fill="#a9c6d8" /><path d="M81.486,130.178,52.2,120.636s-3.5-1.42-2.373-4.64c.232-.664.7-1.229,2.1-2.2,6.489-4.523,120.106-45.36,120.106-45.36s3.208-1.081,5.1-.362a2.766,2.766,0,0,1,1.885,2.055,9.357,9.357,0,0,1,.254,2.585c-.009.752-.1,1.449-.169,2.542-.692,11.165-21.4,94.493-21.4,94.493s-1.239,4.876-5.678,5.043A8.13,8.13,0,0,1,146.1,172.5c-8.711-7.493-38.819-27.727-45.472-32.177a1.27,1.27,0,0,1-.546-.9c-.093-.469.417-1.05.417-1.05s52.426-46.6,53.821-51.492c.108-.379-.3-.566-.848-.4-3.482,1.281-63.844,39.4-70.506,43.607A3.21,3.21,0,0,1,81.486,130.178Z" fill="#fff" /></svg>
+                                            </a>
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://ok.ru/group/53126028329100');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 109" width="32" height="32">
+                                                    <defs></defs>
+                                                    <circle fill="#f7931e" cx="54.5" cy="54.5" r="54.5" />
+                                                    <path fill="#fff" d="M54.45,24.9A16.35,16.35,0,1,0,70.8,41.25,16.36,16.36,0,0,0,54.45,24.9Zm0,23.11a6.76,6.76,0,1,1,6.76-6.76A6.75,6.75,0,0,1,54.45,48Z" />
+                                                    <path fill="#fff" d="M60.22,70.61A26.41,26.41,0,0,0,70.89,66a4.44,4.44,0,1,0-5.56-6.93,19.3,19.3,0,0,1-11.11,3.24A19.76,19.76,0,0,1,43,59.08,4.45,4.45,0,1,0,37.46,66a27.28,27.28,0,0,0,11,4.66l-9.38,9.8a4.44,4.44,0,1,0,6.4,6.17l8.71-9.28,9.6,9.34a4.44,4.44,0,1,0,6.28-6.29Z" />
+                                                    <path fill="#fff" d="M54.22,62.32Z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="dashboard-content__item-right-content">
+                                        <div ng-bind-html="step.Svg | sanitize"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="step.Complete == true">
+                                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex" style="padding-right: 12px;">
+                                    <div class="dashboard-content__item-about">
+                                        <h3 class="dashboard-content__title">{{ step.DisplayName }}</h3>
+                                        <p class="dashboard-content__text">{{ step.ContentEnable }}</p>
+                                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md" ng-if="step.ActionButtonLink && step.Id == 34">
+                                            <a class="btn btn-sm btn-success"
+                                               ng-click="achievements.goSupportCenterAndRedirect(step.ActionButtonLink);">
+                                                {{ step.ActionButtonName }}
+                                            </a>
+                                        </div>
+                                        <div class="dashboard-content__social-links-wrap" ng-if="step.Id == 33">
+                                            <a class="dashboard-content__social-link" href="https://vk.com/advantshop" target="_blank" ng-click="achievements.subscribeAndRedirect('https://vk.com/advantshop');">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M16.0218 0C7.15962 0 0 7.15962 0 16.0218C0 24.8404 7.15962 32.0437 16.0218 32.0437C24.884 32.0437 32.0437 24.884 32.0437 16.0218C32 7.15962 24.8404 0 16.0218 0ZM24.1419 17.7244C24.884 18.4666 25.6698 19.1214 26.3683 19.9509C26.6739 20.3001 26.9359 20.693 27.1542 21.0859C27.4598 21.6971 27.1978 22.3083 26.6739 22.352H23.3997C22.5703 22.4393 21.8718 22.09 21.3042 21.5225C20.8677 21.0423 20.4311 20.5621 19.9945 20.0819C19.8199 19.9072 19.6453 19.6889 19.3834 19.558C18.9468 19.2524 18.5539 19.3397 18.292 19.8199C18.03 20.3001 17.9864 20.824 17.9427 21.3479C17.899 22.1337 17.6808 22.3083 16.895 22.352C15.236 22.4393 13.6644 22.1774 12.2237 21.3479C10.9141 20.6057 9.95361 19.558 9.08049 18.3793C7.3779 16.0655 6.06821 13.5771 4.93315 10.9577C4.67121 10.3902 4.84584 10.0409 5.50068 10.0409C6.59209 10.0409 7.63984 10.0409 8.73124 10.0409C9.1678 10.0409 9.4734 10.3029 9.60437 10.6958C10.1719 12.1364 10.8704 13.4898 11.7872 14.7121C12.0055 15.0614 12.2674 15.367 12.6166 15.6289C13.0095 15.8909 13.2715 15.8035 13.4461 15.367C13.5771 15.105 13.6207 14.7995 13.6207 14.5375C13.708 13.5334 13.708 12.573 13.5771 11.5689C13.4898 10.9577 13.1405 10.5648 12.5293 10.4338C12.2237 10.3902 12.2674 10.2592 12.3984 10.0846C12.6603 9.77899 12.9222 9.60437 13.4025 9.60437H17.1132C17.6808 9.73533 17.8117 9.99727 17.899 10.5648V14.6685C17.899 14.8868 18.03 15.5853 18.4229 15.7162C18.7722 15.8035 18.9468 15.5416 19.1651 15.367C20.0382 14.4065 20.693 13.3151 21.2606 12.1801C21.5225 11.6562 21.7408 11.1323 21.9154 10.6085C22.09 10.2156 22.3083 10.0409 22.7449 10.0409H26.3247C26.412 10.0409 26.543 10.0409 26.6303 10.0409C27.2415 10.1282 27.4161 10.3902 27.1978 11.0014C26.8922 11.9181 26.3247 12.704 25.8008 13.4461C25.1896 14.2756 24.5784 15.0614 23.9673 15.8909C23.3997 16.6767 23.4434 17.0696 24.1419 17.7244Z" fill="#0077FF" />
+                                                </svg>
+                                            </a>
+
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://www.youtube.com/advantshop');">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M14.0068 18.9971L19.2114 15.9995L14.0068 13.002V18.9971Z" fill="#FF0000" />
+                                                    <path d="M16 0C7.16479 0 0 7.16479 0 16C0 24.8352 7.16479 32 16 32C24.8352 32 32 24.8352 32 16C32 7.16479 24.8352 0 16 0ZM25.9976 16.0164C25.9976 16.0164 25.9976 19.2612 25.5859 20.8259C25.3552 21.6824 24.6799 22.3577 23.8235 22.5881C22.2588 23 16 23 16 23C16 23 9.75757 23 8.17651 22.5718C7.32007 22.3413 6.64478 21.6658 6.41406 20.8093C6.0022 19.2612 6.0022 16 6.0022 16C6.0022 16 6.0022 12.7554 6.41406 11.1907C6.64453 10.3342 7.33643 9.64233 8.17651 9.41187C9.74121 9 16 9 16 9C16 9 22.2588 9 23.8235 9.42822C24.6799 9.65869 25.3552 10.3342 25.5859 11.1907C26.0142 12.7554 25.9976 16.0164 25.9976 16.0164Z" fill="#FF0000" />
+                                                </svg>
+                                            </a>
+
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://t.me/advantshop');">
+                                                <svg width="32" height="32" id="Livello_1" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240"><defs><linearGradient id="linear-gradient" x1="120" y1="240" x2="120" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1d93d2" /><stop offset="1" stop-color="#38b0e3" /></linearGradient></defs><circle cx="120" cy="120" r="120" fill="url(#linear-gradient)" /><path d="M81.229,128.772l14.237,39.406s1.78,3.687,3.686,3.687,30.255-29.492,30.255-29.492l31.525-60.89L81.737,118.6Z" fill="#c8daea" /><path d="M100.106,138.878l-2.733,29.046s-1.144,8.9,7.754,0,17.415-15.763,17.415-15.763" fill="#a9c6d8" /><path d="M81.486,130.178,52.2,120.636s-3.5-1.42-2.373-4.64c.232-.664.7-1.229,2.1-2.2,6.489-4.523,120.106-45.36,120.106-45.36s3.208-1.081,5.1-.362a2.766,2.766,0,0,1,1.885,2.055,9.357,9.357,0,0,1,.254,2.585c-.009.752-.1,1.449-.169,2.542-.692,11.165-21.4,94.493-21.4,94.493s-1.239,4.876-5.678,5.043A8.13,8.13,0,0,1,146.1,172.5c-8.711-7.493-38.819-27.727-45.472-32.177a1.27,1.27,0,0,1-.546-.9c-.093-.469.417-1.05.417-1.05s52.426-46.6,53.821-51.492c.108-.379-.3-.566-.848-.4-3.482,1.281-63.844,39.4-70.506,43.607A3.21,3.21,0,0,1,81.486,130.178Z" fill="#fff" /></svg>
+                                            </a>
+                                            <a class="dashboard-content__social-link" href="" target="_blank" ng-click="achievements.subscribeAndRedirect('https://ok.ru/group/53126028329100');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 109" width="32" height="32">
+                                                    <defs></defs>
+                                                    <circle fill="#f7931e" cx="54.5" cy="54.5" r="54.5" />
+                                                    <path fill="#fff" d="M54.45,24.9A16.35,16.35,0,1,0,70.8,41.25,16.36,16.36,0,0,0,54.45,24.9Zm0,23.11a6.76,6.76,0,1,1,6.76-6.76A6.75,6.75,0,0,1,54.45,48Z" />
+                                                    <path fill="#fff" d="M60.22,70.61A26.41,26.41,0,0,0,70.89,66a4.44,4.44,0,1,0-5.56-6.93,19.3,19.3,0,0,1-11.11,3.24A19.76,19.76,0,0,1,43,59.08,4.45,4.45,0,1,0,37.46,66a27.28,27.28,0,0,0,11,4.66l-9.38,9.8a4.44,4.44,0,1,0,6.4,6.17l8.71-9.28,9.6,9.34a4.44,4.44,0,1,0,6.28-6.29Z" />
+                                                    <path fill="#fff" d="M54.22,62.32Z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="dashboard-content__item-right-content">
+                                        <div class="svg_icon">
+                                            <svg width="64" height="64" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--twemoji" preserveAspectRatio="xMidYMid meet">
+                                                <path fill="#77B255" d="M36 32a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v28z"></path><path fill="#FFF" d="M29.28 6.362a2.502 2.502 0 0 0-3.458.736L14.936 23.877l-5.029-4.65a2.5 2.5 0 1 0-3.394 3.671l7.209 6.666c.48.445 1.09.665 1.696.665c.673 0 1.534-.282 2.099-1.139c.332-.506 12.5-19.27 12.5-19.27a2.5 2.5 0 0 0-.737-3.458z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

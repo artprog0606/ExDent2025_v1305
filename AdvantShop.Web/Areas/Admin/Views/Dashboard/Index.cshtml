@@ -1,0 +1,405 @@
+﻿@using AdvantShop.Trial
+@model AdvantShop.Web.Admin.ViewModels.Shared.Dashboard.CommonDashboardInfoViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var ngHref = isMobile ? "{{site.EditUrl}}" : "{{site.ViewUrl}}";
+    var targetBlank = isMobile ? "" : "target=\"_blank\"";
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.ShowOnlySticky = !isMobile;
+    headerModel.Title = T("Admin.Dashboard.MyWebsites").ToString();
+    headerModel.Controls = new List<IButton>();
+    headerModel.Controls.Add(new ButtonModel()
+    {
+        ColorType = eColorType.Secondary,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.OnlyIcon
+        },
+        Link = Model.AddNewAllowed ? Url.AbsoluteActionUrl("CreateSite") : null,
+        Icon = new ButtonIcon()
+        {
+            SvgName = "plus-alt",
+            Attributes = new { width = 16, height = 16 }
+        },
+       Attributes = new string[] { !Model.AddNewAllowed ? "disabled" : null}
+    });
+}
+
+@Html.Header(headerModel)
+
+@if (!isMobile)
+{
+    <div class="balance__padding-page ng-cloack hidden-xs visible-md">
+        <div class="dashboard-balance__block m-b-md m-t-md">
+            <div class="flex middle-xs">
+
+                @* 338px - width MainProjectSite block;  139 - GoToTheSite block; 18 - padding*@
+                <div class="col-xs" data-ng-controller="ChangeAdminShopNameCtrl as changeAdminShopName" ng-style="{width: 'calc(100%' + (dashboardSites.data.Sites.length > 0 ? ' - 338px' : '0') + (dashboardSites.data.SelectedDomain != null ? ' - 139px - 18px' : '') + ')'}">
+
+                    @{
+                        string shopname = SettingsMain.AdminShopName.IsNotEmpty() ? SettingsMain.AdminShopName : (SettingsMain.AdminShopName = TrialService.IsTrialEnabled ? SettingsMain.ShopName : SettingsMain.SiteUrl.Replace("http://", "").Replace("https://", "").Replace("www.", ""));
+                    }
+                    <div class="flex middle-xs ng-cloak" shop-name shop-name-callback="changeAdminShopName.shopname = shopName">
+                        <h1 class="title-page__dashboard text-overflow" ng-bind="changeAdminShopName.shopname || shopName">@shopname</h1>
+                        <ui-modal-trigger data-controller="'ModalChangeAdminShopNameCtrl'"
+                                          template-url="@Html.GetAssetPath("ChangeAdminShopName.html")"
+                                          data-resolve="{data: {name: changeAdminShopName.shopname}}"
+                                          data-on-close="changeAdminShopName.decodeAndSetShopName(result.name)">
+                            <a href="" class="top-menu-shopname-edit fas fa-pencil-alt" title="@T("Admin.Common.TopMenu.Change")"></a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+
+                <div class="col-xs-slim ng-cloak" ng-if="dashboardSites.data.Sites != null && dashboardSites.data.Sites.length > 0">
+                    <div class="flex middle-xs between-xs">
+                        <div class="col-xs">
+                            <button class="flex middle-xs center-xs select-main-site relative" for="selectMainSite" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="col-xs-slim">
+                                    <div class="select-main-site__block">
+                                        <span class="full-width select-main-site__title">@T("Admin.Dashboard.MainProjectSite")</span>
+                                        <span class="full-width select-main-site__text" ng-if="dashboardSites.data.SelectedDomain != null">
+                                            <span ng-bind="dashboardSites.data.SelectedDomain.TypeStr + ':&nbsp'"></span>
+                                            <span class="select-main-site__select-domain-name" ng-bind="dashboardSites.data.SelectedDomain.Name"></span>
+                                        </span>
+                                        <svg class="select-main-site__icon absolute" width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1.42259 0.577411C1.09715 0.251975 0.569515 0.251975 0.244078 0.577411C-0.0813592 0.902848 -0.0813592 1.43049 0.244078 1.75592L5.24408 6.75592C5.56952 7.08136 6.09715 7.08136 6.42259 6.75592L11.4226 1.75592C11.748 1.43049 11.748 0.902848 11.4226 0.577411C11.0972 0.251975 10.5695 0.251975 10.2441 0.577411L5.83333 4.98816L1.42259 0.577411Z" fill="#2D9CEE" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </button>
+                            <div class="dashoboard-dropdown__block dropdown-menu">
+                                <div class="dashoboard-dropdown__item-wrap" ng-repeat="item in dashboardSites.data.Domains">
+                                    <button class="dashoboard-dropdown__item text-left" ng-click="dashboardSites.changeMainUrl(item)">
+                                        <span>{{item.TypeStr}}:&nbsp;</span>
+                                        <span>{{item.Name}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-slim p-r-none" ng-if="dashboardSites.data.SelectedDomain != null">
+                            <a href="{{dashboardSites.data.SelectedDomain.Url}}" class="link-alternative" target="_blank">
+                                @T("Admin.Dashboard.GoToTheSite")
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-l-sm">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3.707 0V2.001H8.292L0 10.293L1.414 11.707L9.706 3.415V8H11.707V0H3.707Z" fill="currentColor" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="balance__padding-page--bg-white balance__padding-page balance__padding-page--m-t-n" style="height: 100%;">
+    <div class="dashboard-balance__block @(isMobile ? "" : "p-t-xl")">
+        @if (!isMobile)
+        {
+            <div class="sticky-page-name">
+                <div class="sticky-page-name-inner flex ">
+                    <div class="col-xs-12 col-md-9 dashboard-col-custom-9 ng-cloak">
+                        <div class="row middle-xs dashboard-current-site__name-wrap">
+                            <div class="flex align-center">
+                                <div class="page-name-block-item-main">
+                                    <h1 class="dashboard-current-site__name page-head__name sticky-page-name-text inline bottom-cell m-r-xs">
+                                        @T("Admin.Dashboard.MyWebsites")
+                                    </h1>
+                                </div>
+                                <div class="flex">
+                                    <div>
+                                        @if (Model.AddNewAllowed)
+                                        {
+                                            <a class="btn-minimalist fs-md" href="@Url.AbsoluteActionUrl("CreateSite")">
+                                                @T("Admin.Dashboard.MyWebsitesLink")
+                                            </a>
+                                        } else {
+                                            <span class="btn-minimalist fs-md btn btn--disabled">
+                                                @T("Admin.Dashboard.MyWebsitesLink")
+                                            </span>
+                                        }
+                                    </div>
+                                    @*<div class="m-l">
+                                            <a class="dashboard-page__link link-alternative fs-md" href="" ng-click="dashboardSites.createScreenShots()">
+                                                Сделать скриншоты
+                                            </a>
+                                        </div>*@
+                                </div>
+                            </div>
+                            @if(Model.IsSaas)
+                            {
+                                <div class="flex font-size-md color-gray @(!Model.AddNewAllowed ? "text-danger" : "")">
+                                    @T("Admin.Dashboard.TotalSites") @Model.CurrentSitesCount/@Model.AllowedSitesCount
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }else{
+              if(Model.IsSaas)
+              {
+                  <div class="dashboard-total-sites--mobile @(!Model.AddNewAllowed ? "text-danger" : "")">
+                      @T("Admin.Dashboard.TotalSites") @Model.CurrentSitesCount/@Model.AllowedSitesCount
+                  </div>
+              }    
+        }
+        <div class="row m-t-sm start-xs dashboard__list-sites" ng-class="{'progress-overlay' : !dashboardSites.isLoadedDashboard}">
+            <div class="col-xs-12 col-md-9 dashboard-col-custom-9 ng-cloak">
+                <div class="ibox dashboard-site container-fluid" ng-repeat="site in dashboardSites.data.Sites track by site.Id">
+                    <div class="ibox-content dashboard-site__block row">
+                        <div class="col-xs-12 col-md-4 col-md-slim">
+                            <a ng-href="@ngHref" @targetBlank class="landing-link-iframe">
+                                @*href="{{site.ViewUrl}}"*@
+                                <span ng-if="site.ScreenShot != null && site.ScreenShot.length > 0" @Html.Raw(isMobile ? "class=\"flex start-xs top-xs\"" : null)>
+                                    <img height="200"
+                                         width="233"
+                                         ng-src="{{site.ScreenShot}}" />
+                                </span>
+                                <span ng-if="site.ScreenShot == null">
+                                    <iframe sandbox="allow-same-origin allow-scripts" onload="this.src != null && this.src.length > 0 ? this.nextElementSibling.classList.add('ng-hide') : null;" scrolling="no" frameborder="0"
+                                            lozad-adv="dashboardSites.scrollToActiveElement(site.Id, site.PreviewIframeUrl)"
+                                            ng-src="{{dashboardSites.getUrl(dashboardSites.siteIframes[site.Id])}}"
+                                            ng-style="dashboardSites.initScaleIframe[site.Id]"
+                                            ng-init="dashboardSites.initScaleIframe[site.Id] = dashboardSites.scaleIframeDashboardSites()"
+                                            class="landing-block-preview">
+                                    </iframe>
+                                    <span class="landing-block-preview-loading"></span>
+                                </span>
+                            </a>
+                            @if (!isMobile)
+                            {
+                                <div class="dashboard-site-actions flex flex-wrap center-xs">
+                                    <div ng-if="site.Domain != null">
+                                        <a class="link-alternative link-gray link-decoration-invert inline-flex middle-xs" target="_blank" ng-href="{{site.ViewUrl}}">
+                                            {{site.Domain}}
+                                            <svg viewBox='0 0 512 512' height='15' width='15' fill='#a29393' style='color: #a29393; padding-left: 5px'>
+                                                <path d='M488.727,0H302.545c-12.853,0-23.273,10.42-23.273,23.273c0,12.853,10.42,23.273,23.273,23.273h129.997L192.999,286.09
+			                                    c-9.087,9.087-9.087,23.823,0,32.912c4.543,4.543,10.499,6.816,16.455,6.816c5.956,0,11.913-2.273,16.455-6.817L465.455,79.458
+			                                    v129.997c0,12.853,10.42,23.273,23.273,23.273c12.853,0,23.273-10.42,23.273-23.273V23.273C512,10.42,501.58,0,488.727,0z' />
+                                                <path d='M395.636,232.727c-12.853,0-23.273,10.42-23.273,23.273v209.455H46.545V139.636H256c12.853,0,23.273-10.42,23.273-23.273
+			                                    S268.853,93.091,256,93.091H23.273C10.42,93.091,0,103.511,0,116.364v372.364C0,501.58,10.42,512,23.273,512h372.364
+			                                    c12.853,0,23.273-10.42,23.273-23.273V256C418.909,243.147,408.489,232.727,395.636,232.727z' />
+                                            </svg>
+                                        </a>
+
+
+                                        <div>
+                                            <a ng-if="dashboardSites.data.UseDomainsManager"
+                                               href="@Url.AbsoluteActionUrl("Domains", "Store")" class="link-alternative link-decoration-invert">
+                                                @T("Admin.Dashboard.ChangeDomain")
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                    <div ng-if="site.Domain == null">
+                                        <div ng-if="site.Id == -1">@T("Admin.Dashboard.DomainNotConnected")</div>
+                                        <div ng-if="site.Id != -1">
+
+                                            <a href="{{site.Domain}}" class="link-alternative link-decoration-invert" target="_blank" title='@T("Admin.Dashboard.GoToTheSite")'>
+                                                <span>{{site.Domain}}</span>
+                                            </a>
+                                            <br />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-xs-12 col-md-8 col-md">
+                            <div class="dashboard-site-content">
+                                @if (isMobile)
+                                {
+                                    <a ng-href="@ngHref" class="dashboard-site__icon" ng-switch="site.Type === 0">
+                                        @Html.SvgSprite("cart", "", new { width = 20, height = 20, ng_switch_when = "true" })
+                                        @Html.SvgSprite("funnel", "", new { width = 20, height = 20, ng_switch_when = "false" })
+                                    </a>
+                                }
+                                <div class="dashboard-site-name @(isMobile ? "" : "flex between-xs start-md flex-wrap middle-xs m-b")">
+
+
+                                    @if (isMobile)
+                                    {
+                                        <a ng-href="@ngHref" class="text-decoration-none link-terna">
+                                            <span class="dashboard-site__name-text" ng-bind="site.Name"></span>
+                                            <span class="dashboard-site__type-text" ng-bind="site.TypeStr"></span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="dashboard-site__name-text m-r-sm" ng-bind="site.Name"></span>
+                                        <button ng-if="site.Id != -1"
+                                                ng-class="{'site__enabled-toggle--on': site.Published, 'site__enabled-toggle--off': !site.Published}"
+                                                data-ng-click="dashboardSites.changeEnabled(site)"
+                                                data-ng-bind="site.Published ? '@T("Admin.Dashboard.BtnPublished")' : '@T("Admin.Dashboard.BtnNotPublished")'"
+                                                class="btn site__enabled-toggle m-r-xs hidden-xs visible-md">
+                                        </button>
+                                        <button class="btn dashboard-btn-main__site" ng-if="site.IsMainSite" ng-class="{'dashboard-btn-main__site--active' : site.IsMainSite}">
+                                            @T("Admin.Dashboard.MainSite")
+                                        </button>
+                                    }
+                                </div>
+                                @if (isMobile)
+                                {
+                                    <div class="dashboard-site__more">
+                                        @{
+                                            var moreButtonModel = new MoreButtonModel();
+                                            moreButtonModel.ColorType = eColorType.Tertiary;
+                                            moreButtonModel.Size = eButtonSize.Default;
+                                            moreButtonModel.NgTemplateId = "moreButtonDashboard";
+                                            moreButtonModel.Text = T("Больше");
+                                            moreButtonModel.Icon = new ButtonIcon()
+                                            {
+                                                SvgName = "more",
+                                                Attributes = new { width = 24, height = 24 }
+                                            };
+                                            moreButtonModel.Modificators = new List<eButtonModificators>
+                                                                                                                                                            {
+                                                eButtonModificators.OnlyIcon
+                                            };
+                                            moreButtonModel.Items = new List<MoreButtonPopoverItem>();
+                                            moreButtonModel.Items.Add(new MoreButtonPopoverItem()
+                                            {
+                                                Text = T("Admin.Dashboard.GoToWebsite"),
+                                                ColorType = eColorType.Link,
+                                                Modificators = new List<eButtonModificators>()
+                                                                                                                                                                {
+                                                    eButtonModificators.HorizontalPaddingZero
+                                                },
+                                                Link = "{{site.Domain || site.ViewUrl}}",
+                                                Attributes = new string[] { "target=\"_blank\"" },
+                                                Icon = new ButtonIcon()
+                                                {
+                                                    SvgName = "go",
+                                                    CssClass = "link",
+                                                    Attributes = new { width = 24, height = 24 }
+                                                }
+                                            });
+
+                                            moreButtonModel.Items.Add(new MoreButtonPopoverItem()
+                                            {
+                                                Text = T("Admin.Dashboard.BtnEdit"),
+                                                ColorType = eColorType.Link,
+                                                Modificators = new List<eButtonModificators>()
+                                                                                                                                                                {
+                                                    eButtonModificators.HorizontalPaddingZero
+                                                },
+                                                Link = "{{site.EditUrl}}",
+                                                Icon = new ButtonIcon()
+                                                {
+                                                    SvgName = "edit2",
+                                                    CssClass = "link",
+                                                    Attributes = new { width = 24, height = 24 }
+                                                }
+                                            });
+
+                                            moreButtonModel.Items.Add(new MoreButtonPopoverItem()
+                                            {
+                                                Text = T("Admin.Dashboard.SetAsMain"),
+                                                ColorType = eColorType.Link,
+                                                Modificators = new List<eButtonModificators>()
+                                                                                                                                                                {
+                                                    eButtonModificators.HorizontalPaddingZero
+                                                },
+                                                RowAttributes = new { ng_if = "site.Domain != null" },
+                                                Attributes = new string[] { "ng-click=\"dashboardSites.changeMainUrl({Url: site.Domain})\"" },
+                                                Icon = new ButtonIcon()
+                                                {
+                                                    SvgName = "cog",
+                                                    CssClass = "link",
+                                                    Attributes = new { width = 24, height = 24, fill = "red" }
+                                                }
+                                            });
+
+
+                                            moreButtonModel.Items.Add(new MoreButtonPopoverItem()
+                                            {
+                                                Text = T("Admin.Dashboard.WebsiteQRCode"),
+                                                ColorType = eColorType.Link,
+                                                Modificators = new List<eButtonModificators>()
+                                                {
+                                                    eButtonModificators.HorizontalPaddingZero
+                                                },
+                                                WrapStart = "<ui-modal-trigger data-controller=\"'ModalQrCodeGeneratorCtrl'\" template-url=\"" + Html.GetAssetPath("qrCodeGenerator.html") + "\" data-resolve=\"{params: {text: (site.Domain || site.ViewUrl)}}\" >",
+                                                WrapEnd = "<ui-modal-trigger/>",
+                                                Icon = new ButtonIcon()
+                                                {
+                                                    SvgName = "qr-code",
+                                                    Attributes = new { width = 24, height = 24 }
+                                                }
+                                            });
+
+                                            moreButtonModel.Items.Add(new MoreButtonPopoverItem()
+                                            {
+                                                Text = T("Admin.Dashboard.Remove"),
+                                                Modificators = new List<eButtonModificators>()
+                                                                                                                                                                {
+                                                    eButtonModificators.HorizontalPaddingZero
+                                                },
+                                                Type = eButtonType.Link,
+                                                ColorType = eColorType.Danger,
+                                                Attributes = new string[] { "ng-click=\"dashboardSites.deleteSite(site)\"" },
+                                                Icon = new ButtonIcon()
+                                                {
+                                                    SvgName = "remove",
+                                                    Attributes = new { width = 24, height = 24 }
+                                                }
+                                            });
+                                        }
+                                        @Html.MoreButton(moreButtonModel)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="dashboard-site--secondary-text"><span class="hidden-xs visible-md">@T("Admin.Dashboard.TypeSite"): &nbsp;</span> {{site.TypeStr}}</span>
+
+                                    <div class="dashboard-btn__block">
+                                        <a href="{{site.ViewUrl}}" class="btn btn-submit flex-grow" target="_blank">
+                                            {{site.Type == 0 ? '@T("Admin.Common.TopMenu.ShopWindow")' : '@T("Admin.Dashboard.Index.ViewSite")'}}
+                                        </a>
+                                        <a href="{{site.EditUrl}}" class="btn btn-default dashboard-site-actions__button-edit">@T("Admin.Dashboard.BtnEdit")</a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (!isMobile)
+                        {
+                            <div ng-if="site.Domain || site.ViewUrl" class="qr-code-site-wrap" style="right: 58px;">
+                                <ui-modal-trigger data-controller="'ModalQrCodeGeneratorCtrl'"
+                                                  template-url="@Html.GetAssetPath("qrCodeGenerator.html")"
+                                                  data-resolve="{params: {text: (site.Domain || site.ViewUrl)}}">
+                                    <a href="" title="@T("Admin.Dashboard.Index.QRCode")">
+                                        <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="map" viewBox="0 0 250 250" width="28" height="28" data-dot="10"><rect x="0" y="0" height="250" width="250" fill="#ffffff"></rect><defs></defs><g fill="#b9b7b7"><rect x="40" y="180" width="30" height="30" transform="rotate(-90,55,195)"></rect><path clip-rule="evenodd" class="svgeye" d="M 20 160v 70h 70v -70zM 30 170h 50v 50h -50z" transform="rotate(-90,55,195)"></path><rect x="180" y="40" width="30" height="30" transform="rotate(90,195,55)"></rect><path clip-rule="evenodd" class="svgeye" d="M 160 20v 70h 70v -70zM 170 30h 50v 50h -50z" transform="rotate(90,195,55)"></path><rect x="40" y="40" width="30" height="30" transform="rotate(0,55,55)"></rect><path clip-rule="evenodd" class="svgeye" d="M 20 20v 70h 70v -70zM 30 30h 50v 50h -50z" transform="rotate(0,55,55)"></path><rect x="110" y="20" width="10" height="10" transform="rotate(0,115,25)"></rect><rect x="140" y="20" width="10" height="10" transform="rotate(0,145,25)"></rect><rect x="100" y="30" width="10" height="10" transform="rotate(0,105,35)"></rect><rect x="140" y="30" width="10" height="10" transform="rotate(0,145,35)"></rect><rect x="100" y="40" width="10" height="10" transform="rotate(0,105,45)"></rect><rect x="110" y="40" width="10" height="10" transform="rotate(0,115,45)"></rect><rect x="130" y="40" width="10" height="10" transform="rotate(0,135,45)"></rect><rect x="140" y="40" width="10" height="10" transform="rotate(0,145,45)"></rect><rect x="110" y="50" width="10" height="10" transform="rotate(0,115,55)"></rect><rect x="130" y="50" width="10" height="10" transform="rotate(0,135,55)"></rect><rect x="120" y="60" width="10" height="10" transform="rotate(0,125,65)"></rect><rect x="130" y="60" width="10" height="10" transform="rotate(0,135,65)"></rect><rect x="140" y="60" width="10" height="10" transform="rotate(0,145,65)"></rect><rect x="120" y="70" width="10" height="10" transform="rotate(0,125,75)"></rect><rect x="100" y="80" width="10" height="10" transform="rotate(0,105,85)"></rect><rect x="120" y="80" width="10" height="10" transform="rotate(0,125,85)"></rect><rect x="140" y="80" width="10" height="10" transform="rotate(0,145,85)"></rect><rect x="110" y="90" width="10" height="10" transform="rotate(0,115,95)"></rect><rect x="120" y="90" width="10" height="10" transform="rotate(0,125,95)"></rect><rect x="140" y="90" width="10" height="10" transform="rotate(0,145,95)"></rect><rect x="30" y="100" width="10" height="10" transform="rotate(0,35,105)"></rect><rect x="40" y="100" width="10" height="10" transform="rotate(0,45,105)"></rect><rect x="50" y="100" width="10" height="10" transform="rotate(0,55,105)"></rect><rect x="70" y="100" width="10" height="10" transform="rotate(0,75,105)"></rect><rect x="80" y="100" width="10" height="10" transform="rotate(0,85,105)"></rect><rect x="110" y="100" width="10" height="10" transform="rotate(0,115,105)"></rect><rect x="140" y="100" width="10" height="10" transform="rotate(0,145,105)"></rect><rect x="200" y="100" width="10" height="10" transform="rotate(0,205,105)"></rect><rect x="210" y="100" width="10" height="10" transform="rotate(0,215,105)"></rect><rect x="30" y="110" width="10" height="10" transform="rotate(0,35,115)"></rect><rect x="90" y="110" width="10" height="10" transform="rotate(0,95,115)"></rect><rect x="110" y="110" width="10" height="10" transform="rotate(0,115,115)"></rect><rect x="120" y="110" width="10" height="10" transform="rotate(0,125,115)"></rect><rect x="130" y="110" width="10" height="10" transform="rotate(0,135,115)"></rect><rect x="150" y="110" width="10" height="10" transform="rotate(0,155,115)"></rect><rect x="160" y="110" width="10" height="10" transform="rotate(0,165,115)"></rect><rect x="170" y="110" width="10" height="10" transform="rotate(0,175,115)"></rect><rect x="180" y="110" width="10" height="10" transform="rotate(0,185,115)"></rect><rect x="190" y="110" width="10" height="10" transform="rotate(0,195,115)"></rect><rect x="200" y="110" width="10" height="10" transform="rotate(0,205,115)"></rect><rect x="210" y="110" width="10" height="10" transform="rotate(0,215,115)"></rect><rect x="220" y="110" width="10" height="10" transform="rotate(0,225,115)"></rect><rect x="20" y="120" width="10" height="10" transform="rotate(0,25,125)"></rect><rect x="30" y="120" width="10" height="10" transform="rotate(0,35,125)"></rect><rect x="70" y="120" width="10" height="10" transform="rotate(0,75,125)"></rect><rect x="80" y="120" width="10" height="10" transform="rotate(0,85,125)"></rect><rect x="130" y="120" width="10" height="10" transform="rotate(0,135,125)"></rect><rect x="150" y="120" width="10" height="10" transform="rotate(0,155,125)"></rect><rect x="190" y="120" width="10" height="10" transform="rotate(0,195,125)"></rect><rect x="210" y="120" width="10" height="10" transform="rotate(0,215,125)"></rect><rect x="220" y="120" width="10" height="10" transform="rotate(0,225,125)"></rect><rect x="20" y="130" width="10" height="10" transform="rotate(0,25,135)"></rect><rect x="30" y="130" width="10" height="10" transform="rotate(0,35,135)"></rect><rect x="40" y="130" width="10" height="10" transform="rotate(0,45,135)"></rect><rect x="70" y="130" width="10" height="10" transform="rotate(0,75,135)"></rect><rect x="100" y="130" width="10" height="10" transform="rotate(0,105,135)"></rect><rect x="110" y="130" width="10" height="10" transform="rotate(0,115,135)"></rect><rect x="170" y="130" width="10" height="10" transform="rotate(0,175,135)"></rect><rect x="190" y="130" width="10" height="10" transform="rotate(0,195,135)"></rect><rect x="210" y="130" width="10" height="10" transform="rotate(0,215,135)"></rect><rect x="40" y="140" width="10" height="10" transform="rotate(0,45,145)"></rect><rect x="60" y="140" width="10" height="10" transform="rotate(0,65,145)"></rect><rect x="80" y="140" width="10" height="10" transform="rotate(0,85,145)"></rect><rect x="100" y="140" width="10" height="10" transform="rotate(0,105,145)"></rect><rect x="110" y="140" width="10" height="10" transform="rotate(0,115,145)"></rect><rect x="120" y="140" width="10" height="10" transform="rotate(0,125,145)"></rect><rect x="130" y="140" width="10" height="10" transform="rotate(0,135,145)"></rect><rect x="160" y="140" width="10" height="10" transform="rotate(0,165,145)"></rect><rect x="180" y="140" width="10" height="10" transform="rotate(0,185,145)"></rect><rect x="190" y="140" width="10" height="10" transform="rotate(0,195,145)"></rect><rect x="220" y="140" width="10" height="10" transform="rotate(0,225,145)"></rect><rect x="100" y="150" width="10" height="10" transform="rotate(0,105,155)"></rect><rect x="130" y="150" width="10" height="10" transform="rotate(0,135,155)"></rect><rect x="140" y="150" width="10" height="10" transform="rotate(0,145,155)"></rect><rect x="160" y="150" width="10" height="10" transform="rotate(0,165,155)"></rect><rect x="180" y="150" width="10" height="10" transform="rotate(0,185,155)"></rect><rect x="110" y="160" width="10" height="10" transform="rotate(0,115,165)"></rect><rect x="120" y="160" width="10" height="10" transform="rotate(0,125,165)"></rect><rect x="130" y="160" width="10" height="10" transform="rotate(0,135,165)"></rect><rect x="140" y="160" width="10" height="10" transform="rotate(0,145,165)"></rect><rect x="180" y="160" width="10" height="10" transform="rotate(0,185,165)"></rect><rect x="100" y="170" width="10" height="10" transform="rotate(0,105,175)"></rect><rect x="110" y="170" width="10" height="10" transform="rotate(0,115,175)"></rect><rect x="130" y="170" width="10" height="10" transform="rotate(0,135,175)"></rect><rect x="150" y="170" width="10" height="10" transform="rotate(0,155,175)"></rect><rect x="170" y="170" width="10" height="10" transform="rotate(0,175,175)"></rect><rect x="180" y="170" width="10" height="10" transform="rotate(0,185,175)"></rect><rect x="190" y="170" width="10" height="10" transform="rotate(0,195,175)"></rect><rect x="200" y="170" width="10" height="10" transform="rotate(0,205,175)"></rect><rect x="210" y="170" width="10" height="10" transform="rotate(0,215,175)"></rect><rect x="220" y="170" width="10" height="10" transform="rotate(0,225,175)"></rect><rect x="120" y="180" width="10" height="10" transform="rotate(0,125,185)"></rect><rect x="140" y="180" width="10" height="10" transform="rotate(0,145,185)"></rect><rect x="180" y="180" width="10" height="10" transform="rotate(0,185,185)"></rect><rect x="200" y="180" width="10" height="10" transform="rotate(0,205,185)"></rect><rect x="100" y="190" width="10" height="10" transform="rotate(0,105,195)"></rect><rect x="120" y="190" width="10" height="10" transform="rotate(0,125,195)"></rect><rect x="170" y="190" width="10" height="10" transform="rotate(0,175,195)"></rect><rect x="210" y="190" width="10" height="10" transform="rotate(0,215,195)"></rect><rect x="100" y="200" width="10" height="10" transform="rotate(0,105,205)"></rect><rect x="110" y="200" width="10" height="10" transform="rotate(0,115,205)"></rect><rect x="120" y="200" width="10" height="10" transform="rotate(0,125,205)"></rect><rect x="140" y="200" width="10" height="10" transform="rotate(0,145,205)"></rect><rect x="170" y="200" width="10" height="10" transform="rotate(0,175,205)"></rect><rect x="200" y="200" width="10" height="10" transform="rotate(0,205,205)"></rect><rect x="100" y="210" width="10" height="10" transform="rotate(0,105,215)"></rect><rect x="120" y="210" width="10" height="10" transform="rotate(0,125,215)"></rect><rect x="130" y="210" width="10" height="10" transform="rotate(0,135,215)"></rect><rect x="140" y="210" width="10" height="10" transform="rotate(0,145,215)"></rect><rect x="150" y="210" width="10" height="10" transform="rotate(0,155,215)"></rect><rect x="160" y="210" width="10" height="10" transform="rotate(0,165,215)"></rect><rect x="170" y="210" width="10" height="10" transform="rotate(0,175,215)"></rect><rect x="180" y="210" width="10" height="10" transform="rotate(0,185,215)"></rect><rect x="220" y="210" width="10" height="10" transform="rotate(0,225,215)"></rect><rect x="110" y="220" width="10" height="10" transform="rotate(0,115,225)"></rect><rect x="120" y="220" width="10" height="10" transform="rotate(0,125,225)"></rect><rect x="130" y="220" width="10" height="10" transform="rotate(0,135,225)"></rect><rect x="160" y="220" width="10" height="10" transform="rotate(0,165,225)"></rect><rect x="180" y="220" width="10" height="10" transform="rotate(0,185,225)"></rect><rect x="190" y="220" width="10" height="10" transform="rotate(0,195,225)"></rect><rect x="200" y="220" width="10" height="10" transform="rotate(0,205,225)"></rect></g></svg>
+                                    </a>
+                                </ui-modal-trigger>
+                            </div>
+                        }
+                        @if (!isMobile)
+                        {
+                            <div class="delete-site-wrap">
+                                <svg class="delete-site" ng-click="dashboardSites.deleteSite(site)" width="24" height="24" viewBox="0 0 416 513" fill="currentColor">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M144.819 1.09008C137.183 2.58808 126.676 8.29708 120.868 14.1051C111.166 23.8081 106.83 36.1651 106.783 54.2501L106.763 62.0001L76.5129 62.0201C42.4759 62.0421 34.9899 62.7811 25.9379 67.0101C17.8209 70.8021 8.17488 80.3641 4.45588 88.3031C-3.88912 106.121 -0.312122 126.73 13.5039 140.436C18.2779 145.172 29.5629 152 32.6169 152C33.4229 152 33.7989 194.154 33.9949 306.25L34.2629 460.5L36.9869 468.5C40.7609 479.58 46.1159 488.147 53.7789 495.364C61.6359 502.763 69.9969 507.374 80.3589 510.025C87.8399 511.938 91.8519 512 207.763 512C323.674 512 327.686 511.938 335.167 510.025C359.492 503.803 376.935 483.618 380.743 457.284C381.348 453.094 381.731 393.449 381.743 301.328L381.763 152.155L385.513 150.931C399.826 146.259 412.263 131.006 414.848 114.952C417.569 98.0591 409.126 79.2161 394.682 69.9481C383.783 62.9541 382.062 62.6941 343.662 62.2371L309.061 61.8261L308.432 50.1271C307.735 37.1651 305.684 29.6691 300.718 21.9291C294.028 11.5051 281.937 3.30908 269.872 1.02108C263.261 -0.232919 151.251 -0.170919 144.819 1.09008ZM271.284 26.1571C280.246 31.0741 283.824 37.9741 284.524 51.6901L285.05 62.0001H207.796H130.542L130.91 51.2501C131.238 41.7001 131.585 39.9771 134.025 35.8151C135.535 33.2391 138.18 30.1271 139.902 28.9011C146.753 24.0231 146.467 24.0421 209.263 24.2781C262.045 24.4771 268.581 24.6751 271.284 26.1571ZM379.263 88.6531C384.36 91.3961 387.238 94.4991 389.331 99.5081C393.182 108.724 390.011 119.771 381.872 125.491L377.591 128.5L209.927 128.794C92.8749 129 41.1449 128.766 38.5579 128.018C28.5979 125.138 22.2129 113.63 24.7369 103.107C26.6349 95.1951 33.0059 88.9581 41.2629 86.9281C42.9129 86.5221 118.738 86.2601 209.763 86.3451L375.263 86.5001L379.263 88.6531ZM357.534 300.5C357.718 400.792 357.466 449.724 356.739 454.5C354.634 468.328 347.498 478.543 335.982 484.213L329.306 487.5L210.387 487.77C81.3749 488.063 84.7799 488.192 76.0289 482.668C67.8409 477.499 61.0549 467.417 58.8869 457.201C58.0839 453.412 57.7629 409.297 57.7629 302.448V152.993L207.513 153.247L357.263 153.5L357.534 300.5ZM128.977 188.94C127.36 190.557 125.75 193.313 125.4 195.065C125.05 196.817 124.763 249.283 124.763 311.657C124.763 432.569 124.622 428.95 129.501 433.293C132.52 435.98 137.887 436.51 142.054 434.532C149.199 431.141 148.763 439.205 148.763 310.549C148.763 184.991 149.044 191.38 143.349 187.648C141.963 186.74 138.832 186 136.375 186C132.775 186 131.351 186.566 128.977 188.94ZM200.607 188.255C199.147 189.49 197.459 191.483 196.857 192.684C196.084 194.228 195.763 228.782 195.763 310.533C195.763 439.206 195.327 431.141 202.472 434.532C206.639 436.51 212.006 435.98 215.025 433.293C219.904 428.95 219.763 432.569 219.763 311.657C219.763 249.283 219.476 196.817 219.126 195.065C218.776 193.313 217.166 190.557 215.549 188.94C211.716 185.107 204.711 184.785 200.607 188.255ZM270.163 189.4L266.763 192.8V309.95C266.763 410.552 266.969 427.497 268.219 429.915C269.81 432.991 275.148 436 279.016 436C282.754 436 288.109 431.879 289.457 427.965C291.028 423.403 291.288 200.429 289.728 194.814C288.235 189.438 283.694 186 278.086 186C274.275 186 273.027 186.536 270.163 189.4Z" fill="currentColor" />
+                                </svg>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <a href="@Url.AbsoluteActionUrl("CreateSite")" class="text-decoration-none add-new-site-wrap ng-cloak" ng-if="dashboardSites.isLoadedDashboard && (dashboardSites.data.Sites == null || dashboardSites.data.Sites.length === 0)">
+                    <div class="ibox flex center-xs middle-xs flex-column add-new-site">
+                        <div class="flex center-xs middle-xs flex-column">
+                            <div class="dashboard__icon--plus"></div>
+                            <span class="landing-block-add-text">@T("Admin.Dashboard.CreateWebsite")</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xs-12 col-md-3 dashboard-col-custom-3" data-ng-if="dashboardSites.data.ActionText != null">
+                <div class="m-t-md m-b-md" ng-bind-html="dashboardSites.data.ActionText"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,393 @@
+﻿@using AdvantShop.ExportImport
+@using AdvantShop.Repository.Currencies
+@model  AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedModel
+@{ 
+    var rnd = new Random().NextDouble();
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+}
+<div class="@(isMobile ? "" : "container-fluid ")">
+    @if (!isMobile)
+    {
+        <div class="setting-title-top">
+            @*ng-init="exportFeeds.InitAdvancedSettings(@Model.ExportFeedSettings.AdvancedSettings)"*@
+            <h3>@T("Admin.ExportFeeds.Settings.ExportParameters")</h3>
+        </div>
+    }
+    <div class="form-group row middle-xs setting__form-group">
+        @if (Model.Type == EExportFeedType.Csv && isMobile)
+        {
+            <div class="m-b-md">
+                <div class="col-xs-12 col-md-6">
+                    <a href="https://www.advantshop.net/help/pages/export-csv-columns" target="_blank" class=" link-academy link-invert inline-flex middle-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" /></svg>
+                        <span>Инструкция.Экспорт товаров через файл CSV в формате 1.0</span>
+                    </a>
+                </div>
+            </div>
+        }
+        else if (Model.Type == EExportFeedType.CsvV2 && isMobile)
+        {
+            <div class="m-b-md">
+                <div class="col-xs-12 col-md-6">
+                    <a href="https://www.advantshop.net/help/pages/export-csv-v2" target="_blank" class=" link-academy link-invert inline-flex middle-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" /></svg>
+                        <span>Инструкция.Экспорт товаров через файл CSV в новом формате (2.0)</span>
+                    </a>
+                </div>
+            </div>
+        }
+        else if (Model.Type == EExportFeedType.YandexMarket && isMobile)
+        {
+            <div class="m-b-md">
+                <div class="col-xs-12 col-md-6">
+                    <a href="https://www.advantshop.net/help/pages/export-yandex-market" target="_blank" class=" link-academy link-invert inline-flex middle-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" /></svg>
+                        <span>Инструкция.Экспорт товаров через файл YML</span>
+                    </a>
+                </div>
+            </div>
+        }
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.Name, T("Admin.ExportFeeed.Settings.Name"))
+                <span class="text-required"></span>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4 relative @(isMobile ? "flex middle-xs" : "")">
+            @Html.TextBoxFor(x => Model.Name, new { @class = "form-control input-alt", required = "required", maxlength = "250", ng_model = "exportFeeds.CommonSettings.Name", validation_input_text = T("Admin.ExportFeeed.Settings.Name") })
+            @Html.ValidationMessageFor(model => model.Name)
+            <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.Settings.Name")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeed.Settings.NameHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.Description, T("Admin.ExportFeeed.Settings.Description"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4 relative @(isMobile ? "flex middle-xs" : "")">
+            @Html.TextAreaFor(x => Model.Description, new { @class = "form-control input-alt", maxlength = "250", ng_model = "exportFeeds.CommonSettings.Description" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.Settings.Description")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeed.Settings.DescriptionHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.ExportFeedSettings.FileName, T("Admin.ExportFeeed.Settings.FileName"))
+                <span class="text-required"></span>
+            </div>
+        </div>
+        @if (isMobile)
+        {
+            <div class="col-xs-12 flex middle-xs">
+                <div class="flex middle-xs flex-grow">
+                    <div class="flex-grow">
+                        @Html.TextBoxFor(x => Model.ExportFeedSettings.FileName, new { @class = "form-control input-alt", required = "required", maxlength = "100", ng_model = "exportFeeds.CommonSettings.FileName", validation_input_text = T("Admin.ExportFeeed.Settings.FileName") })
+                    </div>
+                    <div class="col-xs-5">
+                        @Html.DropDownList("ddlFileExtention", new SelectList(Model.ExportFeedSettings.FileExtentions, "Key", "Value", Model.ExportFeedSettings.FileExtention), new { @class = "form-control input-alt", ng_init = "exportFeeds.CommonSettings.FileExtention='" + Model.ExportFeedSettings.FileExtention + "'", ng_model = "exportFeeds.CommonSettings.FileExtention" })
+                    </div>
+                </div>
+                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs p-l-sm" data-title="@T("Admin.ExportFeeed.Settings.FileName")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.Settings.FileNameHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs-2 col-wl-2">
+                @Html.TextBoxFor(x => Model.ExportFeedSettings.FileName, new { @class = "form-control", required = "required", maxlength = "100", ng_model = "exportFeeds.CommonSettings.FileName", validation_input_text = T("Admin.ExportFeeed.Settings.FileName") })
+            </div>
+            <div class="col-xs-3 col-wl-2 relative">
+                @Html.DropDownList("ddlFileExtention", new SelectList(Model.ExportFeedSettings.FileExtentions, "Key", "Value", Model.ExportFeedSettings.FileExtention), new { @class = "form-control", ng_init = "exportFeeds.CommonSettings.FileExtention='" + Model.ExportFeedSettings.FileExtention + "'", ng_model = "exportFeeds.CommonSettings.FileExtention" })
+                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs" data-title="@T("Admin.ExportFeeed.Settings.FileName")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.Settings.FileNameHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        }
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.LastExportFileFullName, T("Admin.ExportFeeed.Settings.File"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4 relative">
+            @if (string.IsNullOrEmpty(Model.LastExportFileFullName))
+            {
+                <span>(@T("Admin.ExportFeeed.Settings.NotExistFile"))</span> }
+            else
+            {
+                <a href="@(SettingsMain.SiteUrl + '/' + Model.LastExportFileFullName + "?rnd="+rnd)" target="_blank">@Model.LastExportFileFullName</a>
+                <span> | </span>
+                <a ng-click="exportFeeds.deleteExportFile(@Model.Id,'@Model.LastExportFileFullName')">@T("Admin.ExportFeeed.Settings.DeleteFile")</a>
+            }
+
+        </div>
+    </div>
+
+    <div class="setting-title">
+        <h3>@T("Admin.ExportFeeed.Settings.AdvancedSettings")</h3>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.ExportFeedSettings.PriceMarginInPercents, T("Admin.ExportFeeed.Settings.PriceMargin"))
+                <span class="text-required"></span>
+            </div>
+        </div>
+        @if (isMobile)
+        {
+            <div class="col-xs-12 flex middle-xs">
+                <div class="flex middle-xs flex-grow">
+                    <div class="relative">
+                        <div class="input-group @(isMobile ? "setting__price-margin-in-numbers" : "")">
+                            @Html.TextBoxFor(x => Model.ExportFeedSettings.PriceMarginInPercents, new { @class = "form-control", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.PriceMarginInPercents", validation_input_text = T("Admin.ExportFeeed.Settings.PriceMargin") })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" value=""><span>%</span></button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 col-wl-1">
+                        <div style="text-align: center">+</div>
+                    </div>
+                    <div class="relative p-r-xs flex-grow">
+                        <div class="input-group @(isMobile ? "setting__price-margin-in-numbers" : "")">
+                            @Html.TextBoxFor(x => Model.ExportFeedSettings.PriceMarginInNumbers, new { @class = "form-control", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.PriceMarginInNumbers", validation_input_text = T("Admin.ExportFeeed.Settings.PriceMargin") })
+                            <span class="input-group-btn">
+                                @{
+                                    var baseCurrency = CurrencyService.BaseCurrency ?? CurrencyService.Currency(SettingsCatalog.DefaultCurrencyIso3);
+                                    var baseCurrencySymbol = baseCurrency != null
+                                        ? baseCurrency.Symbol
+                                        : "BaseCurrency";
+                                }
+                                <button class="btn btn-default" type="button" value="">
+                                    <span>@baseCurrencySymbol</span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs p-l-sm" data-title="@T("Admin.ExportFeeed.Settings.PriceMargin")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeed.Settings.PriceMarginHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs-2 col-wl-1 relative">
+                <div class="input-group">
+                    @Html.TextBoxFor(x => Model.ExportFeedSettings.PriceMarginInPercents, new { @class = "form-control", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.PriceMarginInPercents", validation_input_text = T("Admin.ExportFeeed.Settings.PriceMargin") })
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" value=""><span>%</span></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-xs-1 col-wl-1">
+                <div style="text-align: center">+</div>
+            </div>
+            <div class="col-xs-2 col-wl-1 relative">
+                <div class="input-group">
+                    @Html.TextBoxFor(x => Model.ExportFeedSettings.PriceMarginInNumbers, new { @class = "form-control", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.PriceMarginInNumbers", validation_input_text = T("Admin.ExportFeeed.Settings.PriceMargin") })
+                    <span class="input-group-btn">
+                        @{
+                            var baseCurrency = CurrencyService.BaseCurrency ?? CurrencyService.Currency(SettingsCatalog.DefaultCurrencyIso3);
+                            var baseCurrencySymbol = baseCurrency != null
+                                ? baseCurrency.Symbol
+                                : "BaseCurrency";
+                        }
+                        <button class="btn btn-default" type="button" value="">
+                            <span>@baseCurrencySymbol</span>
+                        </button>
+                    </span>
+                </div>
+
+                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs" data-title="@T("Admin.ExportFeeed.Settings.PriceMargin")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeed.Settings.PriceMarginHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        }
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        @if (!isMobile && !Model.ExportFeedSettings.NotAvailableJob)
+        {
+            <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => Model.ExportFeedSettings.Active, T("Admin.ExportFeeed.Settings.Active"))
+                </div>
+            </div>
+        }
+        <div class="col-xs-12 col-md-slim @(isMobile ? "flex middle-xs flex-wrap" : "")">
+             @if (!Model.ExportFeedSettings.NotAvailableJob)
+            {
+            <div class="flex">
+                <div class="relative @(isMobile ? "flex middle-xs flex-grow" : "")">
+                    <label class="adv-checkbox-label line-height">
+                        @Html.CheckBoxFor(x => Model.ExportFeedSettings.Active, new { @id = "ExportFeedSettings.Active", @class = "adv-checkbox-input", ng_init = "exportFeeds.CommonSettings.Active=" + Model.ExportFeedSettings.Active.ToString().ToLower(), ng_model = "exportFeeds.CommonSettings.Active", ng_disabled = Model.ExportFeedSettings.NotAvailableJob.ToLowerString() })
+                        <span class="adv-checkbox-emul" data-e2e="exportCommonSettingsActive"></span>
+                    </label>
+                    @if (isMobile)
+                    {
+                        <label for="ExportFeedSettings.Active" class="setting__label flex-grow m-l-sm">
+                            @T("Admin.ExportFeeed.Settings.Active")
+                        </label>
+                    }
+                    <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.Settings.Active")">
+                        <div class="help-content">
+                            @T("Admin.ExportFeeed.Settings.ActiveHelp")
+                        </div>
+                    </help-trigger>
+                </div>
+            </div>
+            }
+            else
+            {
+                 <div class="m-t-xs">@T("Admin.Settings.NotInTariff")</div>
+            }
+        </div>
+
+    </div>
+
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.ExportFeedSettings.Interval, T("Admin.ExportFeeed.Settings.Interval"))
+                <span class="text-required"></span>
+            </div>
+        </div>
+        <div class="col-xs-4 col-md-2 col-wl-2">
+            @Html.TextBoxFor(x => Model.ExportFeedSettings.Interval, new { @class = "form-control input-alt", required = "required", @pattern = "^[0-9][0-9]*$", ng_model = "exportFeeds.CommonSettings.Interval", validation_input_text = T("Admin.ExportFeeed.Settings.Interval"), ng_disabled = "!exportFeeds.CommonSettings.Active" })
+        </div>
+        <div class="col-xs-8 col-md-3 col-wl-2 relative">
+            @Html.DropDownList("ddlIntervalType", new SelectList(Model.ExportFeedSettings.IntervalTypeList, "Key", "Value", Model.ExportFeedSettings.IntervalType), new { @class = "form-control input-alt", ng_init = "exportFeeds.CommonSettings.IntervalType='" + Model.ExportFeedSettings.IntervalType + "'", ng_model = "exportFeeds.CommonSettings.IntervalType", validation_input_text = T("Admin.ExportFeeed.Settings.Interval"), ng_disabled = "!exportFeeds.CommonSettings.Active" })
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => Model.ExportFeedSettings.JobStartHour, T("Admin.ExportFeeed.Settings.JobTimeStart"))
+            </div>
+        </div>
+        <div class="col-xs-3 col-md-1 col-wl-1">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => Model.ExportFeedSettings.JobStartHour, T("Admin.ExportFeeed.Settings.JobTimeStartHour"))
+            </div>
+        </div>
+        <div class="col-xs-3 col-md-1 col-wl-1">
+            @Html.TextBoxFor(x => Model.ExportFeedSettings.JobStartHour, new { @class = "form-control input-alt", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.JobStartHour", validation_input_text = T("Admin.ExportFeeed.Settings.JobStartHour"), ng_disabled = "exportFeeds.CommonSettings.IntervalType != '" + AdvantShop.Core.Scheduler.TimeIntervalType.Days.ToString() + "' || !exportFeeds.CommonSettings.Active" })
+        </div>
+        <div class="col-xs-3 col-md-1 col-wl-1">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => Model.ExportFeedSettings.JobStartHour, T("Admin.ExportFeeed.Settings.JobTimeStartMinute"))
+            </div>
+        </div>
+        <div class="col-xs-3 col-md-1 col-wl-1 relative">
+            @Html.TextBoxFor(x => Model.ExportFeedSettings.JobStartMinute, new { @class = "form-control input-alt", required = "required", @type = "number", ng_model = "exportFeeds.CommonSettings.JobStartMinute", validation_input_text = T("Admin.ExportFeeed.Settings.JobStartMinute"), ng_disabled = "exportFeeds.CommonSettings.IntervalType != '" + AdvantShop.Core.Scheduler.TimeIntervalType.Days.ToString() + "' || !exportFeeds.CommonSettings.Active" })
+        </div>
+    </div>
+
+    @if (Model.Type == AdvantShop.ExportImport.EExportFeedType.YandexMarket || Model.Type == AdvantShop.ExportImport.EExportFeedType.GoogleMerchentCenter)
+    {
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => Model.ExportFeedSettings.AdditionalUrlTags, T("Admin.ExportFeed.Settings.AdditionalUrlTags"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-5 col-wl-4 relative @(isMobile ? "flex middle-xs" : "")">
+                @Html.TextBoxFor(x => Model.ExportFeedSettings.AdditionalUrlTags, new { @class = "form-control input-alt", ng_model = "exportFeeds.CommonSettings.AdditionalUrlTags", validation_input_text = T("Admin.ExportFeed.Settings.AdditionalUrlTags") })
+                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeed.Settings.AdditionalUrlTags")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeed.Settings.AvailableVariables")
+                        #STORE_NAME#, #STORE_URL#, #PRODUCT_NAME#, #PRODUCT_ID#, #PRODUCT_ARTNO#, #OFFER_ID#
+                    </div>
+                </help-trigger>
+            </div>
+        </div>
+    }
+    <div class="form-group row middle-xs setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => Model.ExportFeedSettings.DoNotExportAdult, T("Admin.ExportFeeed.Settings.DoNotExportAdult"))
+                </div>
+            </div>
+        }
+        <div class="col-xs-12 col-md-slim relative @(isMobile ? "flex middle-xs" : "")">
+            <label class="adv-checkbox-label line-height">
+                @Html.CheckBoxFor(x => Model.ExportFeedSettings.DoNotExportAdult, new { @id = "ExportFeedSettings.DoNotExportAdult", @class = "adv-checkbox-input", ng_init = "exportFeeds.CommonSettings.DoNotExportAdult=" + Model.ExportFeedSettings.DoNotExportAdult.ToString().ToLower(), ng_model = "exportFeeds.CommonSettings.DoNotExportAdult" })
+                <span class="adv-checkbox-emul" data-e2e="exportCommonSettingsDoNotExportAdult"></span>
+            </label>
+            @if (isMobile)
+            {
+                <label for="ExportFeedSettings.DoNotExportAdult" class="setting__label m-l-sm flex-grow">
+                    @T("Admin.ExportFeeed.Settings.DoNotExportAdult")
+                </label>
+            }
+            <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.Settings.DoNotExportAdult")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeed.Settings.DoNotExportAdultHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    @Html.Action("GetAdvansedSettings", "ExportFeeds", new { exportFeed = Model })
+    @if (Model.Type == EExportFeedType.Csv && !isMobile)
+    {
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-4">
+                <div class="adv-panel-info setting__mobile-adv-panel-info" >
+                    <a href="https://www.advantshop.net/help/pages/export-csv-columns" target="_blank">Инструкция.Экспорт товаров через файл CSV в формате 1.0</a>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Type == EExportFeedType.CsvV2 && !isMobile)
+    {
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-4">
+                <div class="adv-panel-info setting__mobile-adv-panel-info">
+                    <a href="https://www.advantshop.net/help/pages/export-csv-v2" target="_blank">Инструкция.Экспорт товаров через файл CSV в новом формате (2.0)</a>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Type == EExportFeedType.YandexMarket && !isMobile)
+    {
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-4">
+                <div class="adv-panel-info setting__mobile-adv-panel-info">
+                    <a href="https://www.advantshop.net/help/pages/export-yandex-market" target="_blank">Инструкция.Экспорт товаров через файл YML</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

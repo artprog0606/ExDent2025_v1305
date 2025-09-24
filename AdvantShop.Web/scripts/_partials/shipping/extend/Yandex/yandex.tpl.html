@@ -1,0 +1,29 @@
+<div class="shipping-control-select m-t-xs">
+    {{ ::'Js.ShippingTemplate.SelectInterval.SelectDate' | translate }}
+    <span class="select-custom cs-t-4 icon-down-open-after-abs">
+        <select
+            class="cs-bg-2"
+            required
+            data-ng-options="date for date in shippingYandex.datesOfDelivery track by date"
+            data-ng-model="shippingYandex.shipping.FormattedDateOfDelivery"
+            data-validation-input-text="{{ ::'Js.ShippingTemplate.SelectInterval.DateNotSelected' | translate }}"></select>
+    </span>
+    <shipping-item-error
+        data-ng-if="shippingYandex.shipping.DateOfDelivery == null"
+        error-text="::'Js.ShippingTemplate.SelectInterval.DateNotSelected' | translate"></shipping-item-error>
+</div>
+<div class="shipping-control-select m-t-xs" ng-if="shippingYandex.shipping.FormattedDateOfDelivery">
+    {{ ::'Js.ShippingTemplate.SelectInterval.SelectTime' | translate }}
+    <span class="select-custom cs-t-4 icon-down-open-after-abs">
+        <select
+            class="cs-bg-2"
+            required
+            data-ng-options="shippingYandex.getFormattedInerval(time.From, time.To) for time in shippingYandex.getTimesOfDelivery(shippingYandex.shipping.FormattedDateOfDelivery) track by time.From + time.To"
+            data-ng-model="shippingYandex.shipping.SelectedInterval"
+            data-ng-change="shippingYandex.changeInterval()"
+            data-validation-input-text="{{ ::'Js.ShippingTemplate.SelectInterval.TimeNotSelected' | translate }}"></select>
+    </span>
+    <shipping-item-error
+        data-ng-if="shippingYandex.shipping.TimeOfDelivery == null"
+        error-text="::'Js.ShippingTemplate.SelectInterval.TimeNotSelected' | translate"></shipping-item-error>
+</div>

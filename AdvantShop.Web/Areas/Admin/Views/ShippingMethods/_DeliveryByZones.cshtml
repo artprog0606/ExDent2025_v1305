@@ -1,0 +1,59 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.DeliveryByZonesShippingAdminModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var availableWarehouses = AdvantShop.Saas.SaasDataService.IsEnabledFeature(saas => saas.HasWarehouses);
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.DeliveryByZones.YaMapsApiKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = T("Admin.ShippingMethods.DeliveryByZones.YaMapsApiKey") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.DeliveryByZones.YaMapsApiKey")">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">@T("Admin.ShippingMethods.DeliveryByZones.YaMapsApiKeyHelp")</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>@T("Admin.ShippingMethods.DeliveryByZones.WithoutZoneMessage")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.WithoutZoneMessage, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.WithoutZoneMessage" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.DeliveryByZones.WithoutZoneMessage")">
+            @T("Admin.ShippingMethods.DeliveryByZones.WithoutZoneMessageHelp")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-sm-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <div>
+                @T("Admin.ShippingMethods.DeliveryByZones.InfoGeocoderLine1")<br/>
+                @T("Admin.ShippingMethods.DeliveryByZones.InfoGeocoderLine2") <a href="@Url.AbsoluteActionUrl("Market", "Modules", new {name = "DaData"})" target="_blank">@T("Admin.ShippingMethods.DeliveryByZones.InfoGeocoderLine2Dadata")</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.DeliveryByZones.Zones")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")" in-view="$inview ? shippingMethod.zonesShowed = true : null">
+        <delivery-by-zones-list style="@(isMobile ? "width:100%;" : "")" 
+                                method-id="@Model.ShippingMethodId" 
+                                zones="@Model.ZonesJson" 
+                                currency-label="@Model.CurrencySymbol"
+                                ya-maps-api-key="shippingMethod.Params.YaMapsApiKey"
+                                warehouses-active="@availableWarehouses.ToLowerString()"
+                                ng-if="shippingMethod.zonesShowed">
+        </delivery-by-zones-list>
+        <div ng-if="!shippingMethod.zonesShowed">
+            <input type="hidden" name="zonesjson" value="@Model.ZonesJson" class="shipping-extend-input-hidden" />
+        </div>
+    </div>
+</div>

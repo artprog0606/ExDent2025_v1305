@@ -1,0 +1,53 @@
+﻿@using AdvantShop.Saas
+@model AdvantShop.Web.Admin.Models.Catalog.Warehouses.WarehouseModel
+
+@{ 
+    var isEditMode = Model.Id > 0;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var isTagsVisible = !SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveTags;
+    var modifiedDate = Model.DateModified.IsNotDefault() ? Model.DateModified.ToString("dd.MM.yy HH:mm") : null;
+
+    string modifiedBy = Model.ModifiedBy;
+    Guid modifiedById;
+    if (!string.IsNullOrEmpty(Model.ModifiedBy) && Guid.TryParse(Model.ModifiedBy, out modifiedById))
+    {
+        var modifiedByCustomer = CustomerService.GetCustomer(modifiedById);
+        if (modifiedByCustomer != null)
+        {
+            modifiedBy = modifiedByCustomer.GetShortName();
+        }
+    }
+}
+
+<div class="@(isMobile ? "col-xs-12" : "block-additional-parameters-col flex-grow-n")">
+    <div class="ibox category-block block-additional-parameters category-page__ibox @(isMobile ? "form-group" : "")">
+        <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "block-additional-parameters-content--padding-mid" : "") border_none">
+            <h3 class="category-title category-page__title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.Display")</h3>
+            <div class="block-additional-parameters-row category-page__form-group">
+                <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex-grow" : "")">
+                    <span>@T("Admin.Warehouse.AddEdit.SortingOrder")</span>
+                </div>
+                <div class="block-additional-parameters-value flex middle-xs">
+                    @Html.TextBoxFor(x => x.SortOrder, new { @class = "form-control input-alt", required = "required", ng_model = "warehouse.sortOrder" })
+                    <help-trigger class="ng-cloak word-spacing m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Warehouse.AddEdit.SortingOrder")">
+                        @T("Admin.Warehouse.AddEdit.SortingOrder.About")
+                    </help-trigger>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(modifiedDate) || !string.IsNullOrEmpty(modifiedBy))
+            {
+                <div class="block-additional-parameters-row category-page__form-group @(isMobile ? "m-t-sm" : "")">
+                    <div class="@(isMobile ? "flex middle-xs between-xs" : "")">
+                        @T("Admin.Product.Edit.Changed")
+                        <div class="m-b-xs">
+                            @modifiedDate @modifiedBy
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    
+    @Html.Partial("_Contacts", Model)
+</div>

@@ -1,0 +1,333 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.CustomersSettingsModel
+@{
+    /**/
+
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.IsAdminv3();
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsCustomers");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsCustomers", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Customers").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settingsCustomers.onSelectTab(null)"
+    };
+
+    headerModel.Controls = new List<IButton>()
+    {
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCustomers.tabActiveIndex === 'customerGroups'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCustomers.tabActiveIndex === 'customerGroups'\" data-controller=\"'ModalAddCustomerGroupCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/customergroups/modal/addCustomerGroup/addCustomerGroup.html\" data-on-close=\"settingsCustomers.customergroups.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16  },
+                }
+            },
+
+             new ButtonModel()
+             {
+                 Modificators = new List<eButtonModificators>()
+                      {
+                            eButtonModificators.OnlyIcon
+                      },
+                 ColorType = eColorType.Secondary,
+                 Type = eButtonType.Save,
+                 Attributes = new[] { "ng-if=\"settingsCustomers.showSaveButton()\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\""},
+                 Icon = new ButtonIcon()
+                 {
+                     SvgName = "done",
+                     Attributes = new { width = 25, height = 25 }
+                 }
+             },
+
+             new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCustomers.tabActiveIndex === 'customerFields'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCustomers.tabActiveIndex === 'customerFields'\" data-controller=\"'ModalAddEditCustomerFieldCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsCustomers/modal/addEditCustomerField/AddEditCustomerField.html\" data-on-close=\"settingsCustomers.gridCustomerFields.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+
+              new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsCustomers.tabActiveIndex === 'customerSegments'\"" },
+                Link = Url.AbsoluteActionUrl("Add", "CustomerSegments"),
+                Icon =  new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width=16, height=16 }
+                }
+            },
+                new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCustomers.tabActiveIndex === 'customerTags'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCustomers.tabActiveIndex === 'customerTags'\" data-controller=\"'CustomerTagsModalCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"customertags/add\" data-on-close=\"settingsCustomers.customertags.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Attributes = new string[] { "ng-if = \"settingsCustomers.tabActiveIndex === 'customerSubscribers' || settingsCustomers.tabActiveIndex === 'exportCustomers'\"" };
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "document-export",
+            Attributes = new { width = 24, height = 24 }
+        },
+        Link = Url.AbsoluteActionUrl("Export", "Subscription"),
+        Text = T("Admin.Subscribe.Index.Export"),
+        RowAttributes = new { ng_if = "settingsCustomers.tabActiveIndex === 'customerSubscribers'" }
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        Text = T("Экспортировать"),
+        RowAttributes = new { ng_if = "settingsCustomers.tabActiveIndex === 'exportCustomers'" },
+        Attributes = new string[] { "ng-click=\"settingsCustomers.exportCustomersCtrl.exportCustomers()\"" }
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Text = T("Сбросить выбранные"),
+        RowAttributes = new { ng_if = "settingsCustomers.tabActiveIndex === 'exportCustomers' && !settingsCustomers.exportCustomersCtrl.isStartExport && settingsCustomers.exportCustomersCtrl.tab=='fields'" },
+        Attributes = new string[] { "ng-click=\"settingsCustomers.exportCustomersCtrl.setNoneExportFeedFields()\"" }
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Text = T("Установить по умолчанию"),
+        RowAttributes = new { ng_if = "settingsCustomers.tabActiveIndex === 'exportCustomers' && !settingsCustomers.exportCustomersCtrl.isStartExport && settingsCustomers.exportCustomersCtrl.tab=='fields'" },
+        Attributes = new string[] { "ng-click=\"settingsCustomers.exportCustomersCtrl.setDefaultExportFeedFields()\"" }
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "import",
+            Attributes = new { width = 22, height = 22 }
+        },
+        Text = T("Admin.Subscribe.Index.Import"),
+        RowAttributes = new { ng_if = "settingsCustomers.tabActiveIndex === 'customerSubscribers'" },
+        Attributes = new string[] { "ng-click=\"settingsCustomers.clickUploadBtn()\"" }
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text"> @T("Admin.Settings.Commonpage.Customers")</h1>
+                </div>
+                <div class="col-xs-6" ng-style="settingsCustomers.showSaveButton() ? {} : {'height':'32px'}">
+                    <div class="text-right" ng-if="settingsCustomers.showSaveButton()">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @Html.AntiForgeryToken()
+
+    <uib-tabset uid="tab" on-select-batch="settingsCustomers.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+
+        @if (isAdminv3)
+        {
+            <uib-tab index="'customerGroups'" heading="@T("Admin.CustomerGroups.Index.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_CustomerGroups")
+            </uib-tab>
+        }
+
+        <uib-tab index="'customerFields'" heading="@T("Admin.Settings.Customers.CustomerFields")" classes="ng-tab" removable="true">
+            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.CustomerAdditionFields)
+            {
+
+                @Html.Partial("_CustomerFields", Model)
+            }
+            else
+            {
+                @Html.Action("GetFeature", "Service", new { id = ESaasProperty.CustomerAdditionFields.ToString(), partial = true })
+            }
+        </uib-tab>
+        @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.CustomerTypes)
+        {
+            <uib-tab index="'typesofcustomers'" heading="@T("Admin.CustomerSegments.Index.BuyersTypes")" classes="ng-tab" removable="true">
+                @Html.Partial("_TypesOfCustomers", Model)
+            </uib-tab>
+        }
+        <uib-tab index="'customerSegments'" heading="@T("Admin.CustomerSegments.Index.Segments")" classes="ng-tab" removable="true">
+            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveCustomerSegmets)
+            {
+                <div ng-controller="CustomerSegmentsCtrl as customerSegments">
+                    <div class="sticky-page-name m-b-xs @(isMobile ? "" : " m-t-n-xs")" sticky sticky-top="0">
+                        <div class="page-name-block sticky-page-name-inner">
+                            <div class="page-name-block-item-main flex middle-xs setting--flex-column setting--m-b">
+                                 @if (!isMobile)
+                                 {
+                                <h2 class="sticky-page-name-text m-t-none setting--align-top" data-e2e="CustomerSegmentTitle">
+                                    @T("Admin.CustomerSegments.Index.Title")
+                                </h2>
+                                 }
+                                <a href="https://www.advantshop.net/help/pages/segmentatsiya-klientskoi-bazy-internet-magazina" target="_blank" class="setting--align-top setting--help-link p-l-sm link-academy link-invert inline-flex middle-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                    </svg>
+                                    <span>@T("Admin.CustomerSegments.Index.InstructionsSegmentationBase")</span>
+                                </a>
+                            </div>
+                            @if(!isMobile)
+                            {
+                                <div class="page-name-block-item-additional">
+                                    <a class="btn btn-sm btn-success" data-e2e="customerSegmentAdd" href="@Url.AbsoluteActionUrl("Add", "CustomerSegments")">
+                                        <span class="fa fa-plus"></span> @T("Admin.CustomerSegments.Index.Add")
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <ui-grid-custom grid-unique-id="gridSegments"
+                                    grid-row-identificator="'Id'"
+                                    grid-options="customerSegments.gridOptions"
+                                    grid-url="'customerSegments/getList'"
+                                    grid-on-init="customerSegments.gridOnInit(grid)"
+                                    grid-swipe-line="true">
+                        <ui-grid-custom-override-header-control>
+                            <span class="ui-grid-custom-override-header__cell">Название</span>
+                            <span class="ui-grid-custom-override-header__cell">Кол-во покупателей</span>
+                        </ui-grid-custom-override-header-control>
+                        <ui-grid-custom-override-control class="ng-cloak">
+                            <a href="customersegments/edit/{{row.entity.Id}}" class="card card--gap-row-sm card--p-18">
+                                <div class="flex between-xs center-xs">
+                                    <div class="card__col m-r-xs flex middle-xs m-b-xs">
+                                        {{row.entity.Name}}
+                                    </div>
+                                    <div class="card__col card__col--end setting--align-center">
+                                        {{row.entity.CustomersCount}}
+                                    </div>
+                                </div>
+                            </a>
+                        </ui-grid-custom-override-control>
+                    </ui-grid-custom>
+                    <div class="adv-panel-info m-t-md setting__mobile-adv-panel-info">
+                        <a href="https://www.advantshop.net/help/pages/segmentatsiya-klientskoi-bazy-internet-magazina" target="_blank" class="p-l-xs m-t-xs ">@T("Admin.CustomerSegments.Index.InstructionsSegmentationBase")</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.Action("GetFeature", "Service", new { id = ESaasProperty.HaveCustomerSegmets.ToString(), partial = true })
+            }
+        </uib-tab>
+
+        @if (isAdminv3)
+        {
+            <uib-tab index="'customerSubscribers'" heading="@T("Admin.Subscription.Index.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_Subscribers")
+            </uib-tab>
+
+            <uib-tab index="'exportCustomers'" heading="@T("Admin.Import.ExportCustomers.Title")" classes="ng-tab" removable="true">
+                <export-customers on-init="settingsCustomers.getExportCustomersCtrl(exportProducts)"></export-customers>
+            </uib-tab>
+
+            <uib-tab index="'importCustomers'" heading="@T("Admin.Import.ImportCustomers.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_ImportCustomers", Model.ImportCustomersModel)
+            </uib-tab>
+        }
+
+        <uib-tab index="'customerTags'" heading="@T("Admin.SettingsCustomer.Index.Tags")" classes="ng-tab" removable="true">
+            @Html.Partial("_CustomerTags")
+        </uib-tab>
+
+        @if (!isAdminv3)
+        {
+            <div ng-if="settingsCustomers.showSaveButton()" class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+}

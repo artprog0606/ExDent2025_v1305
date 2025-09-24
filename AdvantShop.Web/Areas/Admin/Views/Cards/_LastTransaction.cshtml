@@ -1,0 +1,116 @@
+﻿@using AdvantShop.Core.Services.Bonuses.Model.Enums
+@model List<AdvantShop.Core.Services.Bonuses.Model.Transaction>
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div>
+    <div class="m-b-sm" data-e2e="LinkToAllTransactions">
+        <h2 class="inline setting__subtitle setting--m-r-xs">@T("Admin.Cards.LastTransaction.TransactionHistory")</h2>
+        <a href="@Url.AbsoluteActionUrl("AllTransaction", new { CardId = ViewBag.CardId })" class="edit link-decoration-none">@T("Admin.Cards.LastTransaction.All")</a>
+    </div>
+    <div class="m-b">
+        <div class="row">
+            <div class="col-xs-12 setting__table-wrap">
+                <table id="viewTableTransaction" class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="@(isMobile ? "width: 30%;" : "width: 10%;")">
+                                @T("Admin.Cards.LastTransaction.DateAndTime")
+                            </th>
+                            <th colspan="3" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 50%; text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.Points")
+                            </th>
+                            <th rowspan="2" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 30%; text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.Comment")
+                            </th>
+                            <th rowspan="2" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 15%; text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.SaleNumber")
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.Spent")
+                            </th>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.Accrued")
+                            </th>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.LastTransaction.Balance")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-e2e="TransactionId-@item.Id">
+                                <td data-e2e="TransactionDate">
+                                    @item.CreateOn.ToString("dd.MM.yyyy HH:mm:ss")
+                                </td>
+                                <td data-e2e="TransactionBonusesUsed">
+                                    @if (item.OperationType == EOperationType.SubtractBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        @("-" + item.Amount.ToInvatiant())
+                                    }
+                                </td>
+                                <td data-e2e="TransactionBonusesAdded">
+                                    @if (item.OperationType == EOperationType.AddBonus ||
+                                         item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.AddMainBonus)
+                                    {
+                                        @("+" + item.Amount.ToInvatiant())
+                                    }
+                                </td>
+                                <td data-e2e="TransactionBonusesSaldo">
+                                    @if (item.OperationType == EOperationType.AddBonus ||
+                                         item.OperationType == EOperationType.SubtractBonus ||
+                                         item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus ||
+                                         item.OperationType == EOperationType.AddMainBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        @item.Balance.ToInvatiant()
+                                    }
+                                    @if (item.OperationType == EOperationType.AddMainBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        <span class="settings-list__item-descr">(@T("Admin.Cards.LastTransaction.MainPoints"))</span>
+                                    }
+                                    @if (item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus)
+                                    {
+                                        <span class="settings-list__item-descr">(@T("Admin.Cards.LastTransaction.AdditionPoints"))</span>
+                                    }
+                                    @if (item.OperationType == EOperationType.AddBonus &&
+                                         item.Bonus != null &&
+                                         item.Bonus.StartDate.HasValue &&
+                                         item.Bonus.StartDate.Value > item.CreateOnCut)
+                                    {
+                                        <span class="settings-list__item-descr">(с учетом новых @((item.Balance + item.Amount).ToInvatiant()))</span>
+                                    }
+                                </td>
+                                <td data-e2e="TransactionComment">
+                                    @item.Basis
+                                </td>
+                                <td data-e2e="PurchaseId">
+                                    @item.PurchaseId
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.Count < 1)
+                        {
+                            <tr>
+                                <td colspan="9">
+                                    @T("Admin.Cards.LastTransaction.NoRecordsFound")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

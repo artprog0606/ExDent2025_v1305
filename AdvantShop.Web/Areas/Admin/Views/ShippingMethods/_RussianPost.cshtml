@@ -1,0 +1,321 @@
+﻿@using AdvantShop.Shipping.RussianPost.Api
+@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.RussianPostShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (Model.IsLimitedExceeded)
+{
+    <div class="form-group row">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-danger" style="@(isMobile ? "display:flex;" : "")">
+                Достигнуто ограничение на кол-во обращений к API онлайн-сервиса «Отправка» (otpravka.pochta.ru). Функции расчета стоимости доаставки, передачи заказа и прочие функции связанные с этим сервисом будут недоступны. <a href="https://www.advantshop.net/help/pages/pochta-rossii-otpravka#7" target="_blank">Подробнее</a>.
+            </div>
+        </div>
+    </div>
+}
+
+@*<div class="form-group row">
+        <div class="col-xs-8">
+            <div class="adv-panel-info">
+                Не рекомендуется для договоров с малым кол-ом обращений к API otpravka.pochta.ru включать параметр "Отображать в карточке товара", т.к. это приведет к быстрому исчерпанию лимита обращений.
+            </div>
+        </div>
+    </div>*@
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+        <span class="text-required">Логин</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+        @Html.TextBoxFor(x => x.Login, new { ng_model = "shippingMethod.Params.Login", @class = "form-control input-alt", required = "required", validation_input_text = "Логин", ng_attr_type = "{{shippingMethod.inputTypeLogin}}" })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeLogin = 'password'" ng-click="shippingMethod.inputTypeLogin = shippingMethod.inputTypeLogin == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeLogin == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Логин">
+            Логин онлайн-сервиса «Отправка» (otpravka.pochta.ru)
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+        <span class="text-required">Пароль</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "shippingMethod.Params.Password", @class = "form-control input-alt", required = "required", validation_input_text = "Пароль", ng_attr_type = "{{shippingMethod.inputTypePassword}}" })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypePassword = 'password'" ng-click="shippingMethod.inputTypePassword = shippingMethod.inputTypePassword == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypePassword == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Пароль">
+            Пароль онлайн-сервиса «Отправка» (otpravka.pochta.ru)
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+        <span class="text-required">Токен авторизации</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+        @Html.TextBoxFor(x => x.Token, new { ng_model = "shippingMethod.Params.Token", @class = "form-control input-alt", required = "required", validation_input_text = "Токен авторизации", ng_attr_type = "{{shippingMethod.inputTypeToken}}" })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeToken = 'password'" ng-click="shippingMethod.inputTypeToken = shippingMethod.inputTypeToken == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeToken == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Токен авторизации">
+            После активации доступа к API токен высылается на электронную почту, указанную при регистрации на онлайн-сервисе «Отправка» (otpravka.pochta.ru).<br />
+            Также токен можно узнать в <a href="https://otpravka.pochta.ru/settings#/api-settings" target="_blank">настройках личного кабинета</a>.
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Hidden("ExistApi", Model.Token, new { ng_model = "shippingMethod.Params.ExistApi" })
+<div class="form-group row" ng-if="!shippingMethod.Params.ExistApi">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+        </div>
+    </div>
+</div>
+
+
+@if (!Model.IsLimitedExceeded)
+{
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+            Точка сдачи
+        </div>
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+            @Html.DropDownListFor(x => x.PointIndex, Model.PointsIndex, new { ng_model = "shippingMethod.Params.PointIndex", ng_init = "shippingMethod.Params.PointIndex='" + Model.PointIndex + "'", validation_input_text = "Точка сдачи", @class = "form-control input-alt" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Точка сдачи">
+                Выберите точку сдачи из которой будет расчитываться стоимость доставки
+            </help-trigger>
+        </div>
+    </div>
+
+    @Html.Hidden("ExistIndex", Model.PointIndex, new { ng_model = "shippingMethod.Params.ExistIndex" })
+    <div class="form-group row" ng-if="shippingMethod.Params.ExistApi && !shippingMethod.Params.ExistIndex">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+                После выбора точки сдачи, необходимо сохранить настройки после чего появятся выбор расчитываемых методов доставки
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistIndex">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+            Расчитывать методы доставки
+        </div>
+        @{
+            var selectedDeliveryTypes = Model.ListLocalDeliveryTypes.FindAll(x => x.Selected);
+        }
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")"
+             data-ng-init='shippingMethod.listLocalDeliveryTypes = @JsonConvert.SerializeObject(Model.ListLocalDeliveryTypes); shippingMethod.selectedLocalDeliveryTypes = @JsonConvert.SerializeObject(selectedDeliveryTypes); shippingMethod.transformData(shippingMethod.selectedLocalDeliveryTypes, shippingMethod.Params, "LocalDeliveryTypes")'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-init="@("shippingMethod.existsEmsOptimal=" + Model.LocalDeliveryTypes.Count(x => x.StartsWith(EnMailType.EmsOptimal.Value + "\\")) + ";" +
+                                  "shippingMethod.existsEmsRT=" + Model.LocalDeliveryTypes.Count(x => x.StartsWith(EnMailType.EmsRT.Value + "\\")) + ";" +
+                                  "shippingMethod.existsEmsTender=" + Model.LocalDeliveryTypes.Count(x => x.StartsWith(EnMailType.EmsTender.Value + "\\")) + ";" +
+                                  "shippingMethod.existsEcom=" + Model.LocalDeliveryTypes.Count(x => x.StartsWith(EnMailType.ECOM.Value + "\\")) + ";" +
+                                  "shippingMethod.existsPochtamats=" + Model.LocalDeliveryTypes.Count(x => x.Contains("COMBINED_")) + ";" +
+                                  "shippingMethod.existsToOps=" + Model.LocalDeliveryTypes.Count(x => RussianPostAvailableOption.DeliveryToOpsAvailable.Any(ops => x.StartsWith(ops.Value + "\\"))) + ";")"
+                       on-select="shippingMethod.transformData(shippingMethod.selectedLocalDeliveryTypes, shippingMethod.Params, 'LocalDeliveryTypes'); shippingMethod.existsEmsOptimal=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsOptimal.Value').length; shippingMethod.existsEmsRT=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsRT.Value').length; shippingMethod.existsEmsTender=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsTender.Value').length; shippingMethod.existsEcom=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.ECOM.Value').length; shippingMethod.existsPochtamats=(shippingMethod.Params.LocalDeliveryTypes | filter: 'COMBINED_').length; shippingMethod.existsToOps=(@string.Join(" + ", RussianPostAvailableOption.DeliveryToOpsAvailable.Select(x => "(shippingMethod.Params.LocalDeliveryTypes | filter: '" + x.Value + "').length")));"
+                       on-remove="shippingMethod.transformData(shippingMethod.selectedLocalDeliveryTypes, shippingMethod.Params, 'LocalDeliveryTypes'); shippingMethod.existsEmsOptimal=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsOptimal.Value').length; shippingMethod.existsEmsRT=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsRT.Value').length; shippingMethod.existsEmsTender=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.EmsTender.Value').length; shippingMethod.existsEcom=(shippingMethod.Params.LocalDeliveryTypes | filter: '@EnMailType.ECOM.Value').length; shippingMethod.existsPochtamats=(shippingMethod.Params.LocalDeliveryTypes | filter: 'COMBINED_').length; shippingMethod.existsToOps=(@string.Join(" + ", RussianPostAvailableOption.DeliveryToOpsAvailable.Select(x => "(shippingMethod.Params.LocalDeliveryTypes | filter: '" + x.Value + "').length")));"
+                       ng-model="shippingMethod.selectedLocalDeliveryTypes"
+                       validation-input-text="Рассчитывать методы доставки">
+                <ui-select-match placeholder="Выберите необходимые тарифы для расчета">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="deliveryType in shippingMethod.listLocalDeliveryTypes | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="deliveryType.Disabled === true"
+                                   refresh-delay="0">
+                    {{deliveryType.Text}}
+                </ui-select-choices>
+            </ui-select>
+            <input type="hidden" name="LocalDeliveryTypes" value="" ng-if="!shippingMethod.Params.LocalDeliveryTypes.length" />
+            @* select для отправки данных через обычный post *@
+            <select name="LocalDeliveryTypes" id="LocalDeliveryTypes" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedLocalDeliveryTypes" ng-repeat="option in shippingMethod.selectedLocalDeliveryTypes track by $index"></option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistIndex">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+            Расчитывать международные методы доставки
+        </div>
+        @{
+            var selectedInternationalDeliveryTypes = Model.ListInternationalDeliveryTypes.FindAll(x => x.Selected);
+        }
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")"
+             data-ng-init='shippingMethod.listInternationalDeliveryTypes = @JsonConvert.SerializeObject(Model.ListInternationalDeliveryTypes); shippingMethod.selectedInternationalDeliveryTypes = @JsonConvert.SerializeObject(selectedInternationalDeliveryTypes)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       on-select="shippingMethod.transformData(shippingMethod.selectedInternationalDeliveryTypes, shippingMethod.Params, 'InternationalDeliveryTypes');"
+                       on-remove="shippingMethod.transformData(shippingMethod.selectedInternationalDeliveryTypes, shippingMethod.Params, 'InternationalDeliveryTypes');"
+                       ng-model="shippingMethod.selectedInternationalDeliveryTypes"
+                       validation-input-text="Расчитывать международные методы доставки">
+                <ui-select-match placeholder="Выберите необходимые тарифы для расчета">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="deliveryType in shippingMethod.listInternationalDeliveryTypes | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="deliveryType.Disabled === true"
+                                   refresh-delay="0">
+                    {{deliveryType.Text}}
+                </ui-select-choices>
+            </ui-select>
+
+
+            @* @Html.ListBoxFor(x => x.InternationalDeliveryTypes, Model.ListInternationalDeliveryTypes, new { ng_model = "shippingMethod.Params.InternationalDeliveryTypes", ng_init = "shippingMethod.Params.InternationalDeliveryTypes='" + string.Join(",", Model.InternationalDeliveryTypes) + "'", @class = "form-control input-alt", validation_input_text = "Расчитывать международные методы доставки", size = 4 }) *@
+            <input type="hidden" name="InternationalDeliveryTypes" value="" ng-if="!shippingMethod.Params.InternationalDeliveryTypes.length" />
+            @* select для отправки данных через обычный post *@
+            <select name="InternationalDeliveryTypes" id="InternationalDeliveryTypes" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedInternationalDeliveryTypes" ng-repeat="option in shippingMethod.selectedInternationalDeliveryTypes track by $index"></option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistIndex && shippingMethod.Params.LocalDeliveryTypes && (shippingMethod.existsToOps)">
+        @if (!isMobile)
+        {
+            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                Рассчитывать "До востребования"
+            </div>
+        }
+
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.DeliveryToOps, new { ng_model = "shippingMethod.Params.DeliveryToOps", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+                @if (isMobile)
+                {
+                    <span>Рассчитывать "До востребования"</span>
+                }
+            </label>
+            <help-trigger class="ng-cloak m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+                Доступно для видов РПО: @EnMailType.PostalParcel.Localize(), @EnMailType.ParcelClass1.Localize(), @EnMailType.OnlineParcel.Localize()
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistIndex && shippingMethod.Params.LocalDeliveryTypes && (shippingMethod.existsEmsOptimal || shippingMethod.existsEmsRT || shippingMethod.existsEmsTender)">
+        @if (!isMobile)
+        {
+            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                Доставка курьером
+            </div>
+        }
+        <div class="col-xs-12 col-md-6 relative">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.Courier, new { ng_model = "shippingMethod.Params.Courier", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+                @if (isMobile)
+                {
+                    <span>Доставка курьером</span>
+                }
+            </label>
+            <help-trigger class="ng-cloak m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+                @Model.HelpCourier
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistIndex && shippingMethod.Params.LocalDeliveryTypes && (shippingMethod.existsEcom || shippingMethod.existsPochtamats || (shippingMethod.existsToOps && shippingMethod.Params.DeliveryToOps))">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">API-ключ яндекс.карт</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+            @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+                <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+            </help-trigger>
+        </div>
+    </div>
+}
+else
+{
+    //Чтобы не слетали настройки, когда API не доступен
+    @Html.HiddenFor(x => x.PointIndex, new { ng_model = "shippingMethod.Params.PointIndex", ng_init = "shippingMethod.Params.PointIndex='" + Model.PointIndex + "'" })
+    @Html.HiddenFor(x => x.LocalDeliveryTypes, new { ng_model = "shippingMethod.Params.LocalDeliveryTypes", ng_init = "shippingMethod.Params.LocalDeliveryTypes='" + string.Join(",", Model.LocalDeliveryTypes) + "'" })
+    @Html.HiddenFor(x => x.InternationalDeliveryTypes, new { ng_model = "shippingMethod.Params.InternationalDeliveryTypes", ng_init = "shippingMethod.Params.InternationalDeliveryTypes='" + string.Join(",", Model.InternationalDeliveryTypes) + "'" })
+    @Html.HiddenFor(x => x.Courier, new { ng_model = "shippingMethod.Params.Courier", ng_init = "shippingMethod.Params.Courier='" + Model.Courier.ToLowerString() + "'" })
+    @Html.HiddenFor(x => x.YaMapsApiKey, new { ng_model = "shippingMethod.Params.YaMapsApiKey" })
+}
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            С отметкой "Осторожно"
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.Fragile, new { ng_model = "shippingMethod.Params.Fragile", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>С отметкой "Осторожно"</span>
+            }
+        </label>
+        <help-trigger class="ng-cloak m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+            @Model.HelpFragile
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label " : "col-fixed-size-md")">
+        <span class="text-required">Тип уведомления о вручении</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+        @Html.DropDownListFor(x => x.TypeNotification, Model.TypeNotifications, new { ng_model = "shippingMethod.Params.TypeNotification", ng_init = "shippingMethod.Params.TypeNotification='" + Model.TypeNotification + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+            @Model.HelpTypeNotification
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            Рассчитывать и выгружать заказы с СМС-уведомлением
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SmsNotification, new { ng_model = "shippingMethod.Params.SmsNotification", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Рассчитывать и выгружать заказы с СМС-уведомлением</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            Отправлять с оплатой COD, вместо наложенного платежа
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.DeliveryWithCod, new { ng_model = "shippingMethod.Params.DeliveryWithCod", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отправлять с оплатой COD, вместо наложенного платежа</span>
+            }
+        </label>
+        <help-trigger class="ng-cloak m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+            @Model.HelpDeliveryWithCod
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Partial("_SyncStatuses", Model)

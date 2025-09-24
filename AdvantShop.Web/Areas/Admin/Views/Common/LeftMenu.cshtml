@@ -1,0 +1,213 @@
+﻿@using AdvantShop.Track;
+@model  AdvantShop.Web.Admin.ViewModels.Shared.Common.LeftMenuViewModel
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu" data-submenu-container="{'checkOrientation': true,'verticalOrientation': true, 'type': 'modern'}">
+            <li class="side-menu-item">
+                <person-avatar start-value="@Model.AvatarSrc" no-avatar-src="@Model.NoAvatarSrc" customer-id="@Model.CustomerId" class="person-avatar" show-logout="true" link=".">
+                    <img class="person-avatar-image" src="@Model.AvatarSrc" alt="" data-person-avatar-image />
+                </person-avatar>
+            </li>
+            @foreach (var groupItem in Model.MenuItems)
+            {
+                 foreach (var rootItem in groupItem.Menu)
+                 {
+                     if (!rootItem.IsAccessibleToUser())
+                     {
+                         continue;
+                     }
+
+                     <li class="side-menu-item  @(rootItem.Selected ? "active" : "")" data-submenu-parent>
+                         <a href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))" class="side-menu-link js-menu-link" @Html.Raw(rootItem.TrackEvent.HasValue ? "onclick=\"return advTrack('" + rootItem.TrackEvent.Value.ToString() + "');\"" : "")>
+                             <i class="@rootItem.Icon">
+                                 @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                 {
+                                     <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                 }
+                             </i>
+                             <span class="nav-label">@T(rootItem.Name)</span>
+                         </a>
+                         @if (rootItem.ChildMenuRoute != null)
+                         {
+                             if (rootItem.ChildMenuRoute.Route == null)
+                             {
+                                 rootItem.ChildMenuRoute.Route = new Dictionary<string, object>();
+                             }
+
+                             rootItem.ChildMenuRoute.Route.Add("IsOpen", rootItem.Selected);
+
+                             @Html.Action(rootItem.ChildMenuRoute.Action, rootItem.ChildMenuRoute.Controller, rootItem.ChildMenuRoute.RouteDictionary)
+                         }
+                         else if (rootItem.MenuItems != null && rootItem.MenuItems.Count > 0)
+                         {
+                             <ul role="menu" class="@rootItem.Class side-menu-submenu dropdown-menu submenu vertical-menu" data-submenu>
+                                 @foreach (var menuItem in rootItem.MenuItems.Where(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp))
+                                 {
+                                     if (!menuItem.IsAccessibleToUser())
+                                     {
+                                         continue;
+                                     }
+                                     <li class="dropdown-submenu" data-submenu-parent>
+                                         @{
+                                             var hasChild = (menuItem.MenuItems != null && menuItem.MenuItems.Any(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp)) || menuItem.ChildMenuRoute != null;
+                                         }
+                                         <a class="dropdown-menu-link js-menu-link" href="@(menuItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(menuItem.Action, menuItem.Controller, menuItem.RouteDictionary))" @Html.Raw(menuItem.TrackEvent.HasValue ? "onclick=\"return advTrack('" + menuItem.TrackEvent.Value.ToString() + "');\"" : "")>
+                                             @T(menuItem.Name)
+                                             @if (hasChild)
+                                             {
+                                                 <span class="fa fa-angle-right font-bold"></span>
+                                             }
+                                         </a>
+                                         @if (menuItem.ChildMenuRoute != null)
+                                         {
+                                             @Html.Action(menuItem.ChildMenuRoute.Action, menuItem.ChildMenuRoute.Controller, menuItem.ChildMenuRoute.RouteDictionary)
+                                         }
+                                         else if (hasChild && menuItem.MenuItems != null && menuItem.MenuItems.Any())
+                                         {
+                                             <ul role="menu" class="@menuItem.Class dropdown-menu dropdown-menu-submenu" data-submenu>
+                                                 @foreach (var subItem in menuItem.MenuItems.Where(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp))
+                                                 {
+                                                     if (!subItem.IsAccessibleToUser())
+                                                     {
+                                                         continue;
+                                                     }
+                                                     <li class="dropdown-submenu dropdown-submenu-last-item" data-submenu-parent>
+                                                         @{
+                                                             var subItemHasChild = subItem.MenuItems != null && subItem.MenuItems.Any(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp);
+                                                         }
+                                                         <a href="@(subItem.IsEmptyUrl() ? " #" : Url.AbsoluteActionUrl(subItem.Action, subItem.Controller, subItem.RouteDictionary))" class="js-menu-link" @Html.Raw(subItem.TrackEvent.HasValue ? "onclick=\"return advTrack('" + subItem.TrackEvent.Value.ToString() + "');\"" : "")>
+                                                             @T(subItem.Name)
+                                                             @if (subItemHasChild)
+                                                             {
+                                                                 <span class="fa fa-angle-right font-bold"></span>
+                                                             }
+                                                         </a>
+                                                         @if (subItemHasChild)
+                                                         {
+                                                             <ul role="menu" class="side-menu-last-submenu dropdown-menu side-menu__submenu" data-submenu>
+                                                                 @foreach (var item in subItem.MenuItems.Where(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp))
+                                                                 {
+                                                                     <li class="dropdown-submenu">
+                                                                         <a href="@(item.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(item.Action, item.Controller, item.RouteDictionary))" class="js-menu-link" @Html.Raw(item.TrackEvent.HasValue ? "onclick=\"return advTrack('" + item.TrackEvent.Value.ToString() + "');\"" : "")>
+                                                                             @T(item.Name)
+                                                                         </a>
+                                                                     </li>
+                                                                 }
+                                                             </ul>
+                                                         }
+                                                     </li>
+                                                 }
+                                             </ul>
+                                         }
+                                     </li>
+                                 }
+                             </ul>
+                         }
+                     </li>
+                 }
+            }
+            <li class="side-menu-item dropdown" data-submenu-parent @*ng-show="@Model.ShowAddMenu.ToLowerString()"*@>
+                <a href="" class="side-menu-link js-menu-link">
+                    <i class="fa fa-plus"></i> <span class="nav-label">@T("Admin.Common.LeftMenu.Add")</span>
+                </a>
+
+                <ul role="menu" class="dropdown-menu side-menu__submenu submenu" data-submenu data-submenu-offset-bottom="50">
+                    @if (Model.DisplayOrders)
+                    {
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Orders")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Order');">
+                                @T("Admin.Common.LeftMenu.Order")
+                            </a>
+                        </li>
+
+                        <li class="divider">
+                        </li>
+                    }
+                    @if (Model.DisplayCrm)
+                    {
+                        <li class="dropdown-submenu">
+                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddLeadCtrl'" controller-as="ctrl" size="lg" backdrop="static" template-url="@Html.GetAssetPath("addLead.html")">
+                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Lead');">
+                                    @T("Admin.Common.LeftMenu.Lead")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddTaskCtrl'" controller-as="ctrl" data-resolve="{redirectToTasks: true}" size="lg" backdrop="static" template-url="@Html.GetAssetPath("addTask.html")">
+                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Task');">
+                                    @T("Admin.Common.LeftMenu.Task")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                        <li class="divider">
+                        </li>
+                    }
+                    @if (Model.DisplayCustomers)
+                    {
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Customers")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Customer');">
+                                @T("Admin.Common.LeftMenu.Customer")
+                            </a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                    }
+
+                    @if (Model.DisplayCatalog)
+                    {
+                        <li class="dropdown-submenu">
+                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddProductCtrl'" data-controller-as="ctrl" template-url="@Html.GetAssetPath("AddProduct.html")">
+                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Product');">
+                                    @T("Admin.Common.LeftMenu.Goods")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Category", new { parentId = 0 })" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Category');">
+                                @T("Admin.Common.LeftMenu.Category")
+                            </a>
+                        </li>
+
+                        <li class="divider">
+                        </li>
+                        <li class="dropdown-submenu">
+                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddProductListCtrl'" template-url="@Html.GetAssetPath("addProductList.html")" size="xs-5">
+                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'ProductsList');">
+                                    @T("Admin.Common.LeftMenu.ListOfGoods")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddCategoryListCtrl'" template-url="@Html.GetAssetPath("addCategoryList.html")" size="xs-5">
+                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'CategoriesList');">
+                                    @T("Admin.Common.LeftMenu.ListOfCategories")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                        <li class="divider">
+                        </li>
+                    }
+                    @if (Model.DisplayCms)
+                    {
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "News")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'News');">
+                                @T("Admin.Common.LeftMenu.News")
+                            </a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                    }
+                    @if (Model.DisplaySettings)
+                    {
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-menu-link js-menu-link" href="@(Url.AbsoluteActionUrl("Index", "SettingsSystem") + "?systemTab=applications")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'ManageApplications');">
+                                @T("Admin.Common.LeftMenu.ApplicationManagement")
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

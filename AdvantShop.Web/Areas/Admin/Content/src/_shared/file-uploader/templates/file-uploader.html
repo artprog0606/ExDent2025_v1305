@@ -1,0 +1,47 @@
+﻿<div>
+    <div class="picture-uploader-buttons" ng-switch="$ctrl.step">
+        <div ng-switch-when="progressStep" ng-if="$ctrl.file != null">
+            <uib-progressbar max="100" value="$ctrl.progressPercentage" style="min-width: 200px"
+                ><span style="color: white; white-space: nowrap">{{ $ctrl.progressPercentage }} %</span></uib-progressbar
+            >
+            <div ng-if="$ctrl.showAfterUpload" style="text-align: center">
+                <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                <span>{{'Admin.Js.FileUploader.ProcessingTheFile'|translate}}</span>
+            </div>
+        </div>
+        <div ng-switch-when="uploadStep">
+            <div ng-if="$ctrl.notSendImmediately" class="m-b-xs">{{$ctrl.file.name}}</div>
+            <div>
+                <input
+                    type="button"
+                    ngf-accept="$ctrl.accept"
+                    data-e2e="imgAdd"
+                    ngf-max-size="2000MB"
+                    ngf-select=""
+                    ngf-change="$ctrl.upload($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                    class="btn btn-sm btn-success"
+                    ng-value="$ctrl.titleUploadButton==null || $ctrl.titleUploadButton == '' ? ('Admin.Js.FileUploader.AddTheFile'|translate) : $ctrl.titleUploadButton"
+                    ng-disabled="$ctrl.disabled" />
+            </div>
+            <div ng-if="$ctrl.uploadbylinkUrl != null">
+                <ui-modal-trigger
+                    data-controller="'ModalFileUploaderCtrl'"
+                    on-close="$ctrl.uploadByLink(result)"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/file-uploader/modal/fileUploaderModal.html">
+                    <a data-e2e="imgByHref" href="" class="picture-uploader-buttons-add btn btn-sm btn-success"
+                        >{{'Admin.Js.FileUploader.AddFileByLink'|translate}}</a
+                    >
+                </ui-modal-trigger>
+            </div>
+        </div>
+        <div ng-switch-when="resultStep">
+            <figure ng-if="$ctrl.file != null && $ctrl.showResult">{{'Admin.Js.FileUploader.FileName'|translate}} {{$ctrl.file.name}}</figure>
+            <div ng-if="$ctrl.deleteUrl != null">
+                <a data-e2e="imgDel" href="" class="picture-uploader-buttons-delete link-danger" ng-click="$ctrl.delete($ctrl.deleteParams)"
+                    >{{'Admin.Js.FileUploader.DeleteFile'|translate}}</a
+                >
+            </div>
+        </div>
+    </div>
+</div>

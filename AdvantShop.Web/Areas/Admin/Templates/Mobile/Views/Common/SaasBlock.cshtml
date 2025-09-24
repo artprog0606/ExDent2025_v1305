@@ -1,0 +1,96 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Trial
+
+@functions
+{
+    string GetCssClassState(int value)
+    {
+        return "top-panel-balance__value--" + (value <= 7 ? "danger" : (value <= 30 ? "warning" : "default"));
+    }
+}
+
+@if ((CustomerContext.CurrentCustomer.IsAdmin || CustomerContext.CurrentCustomer.IsVirtual) && (TrialService.IsTrialEnabled || SaasDataService.IsSaasEnabled))
+{
+    <div class="top-panel-balance">
+        <div>
+            @if (TrialService.IsTrialEnabled)
+            {
+                <span class="top-panel-balance__text">
+                    @T("Admin.Common.SaasBlock.Test")
+                </span>
+                <span class="top-panel-balance__value @GetCssClassState(TrialService.LeftDay)">@(TrialService.LeftDayString)</span>
+            }
+            @if (SaasDataService.IsSaasEnabled)
+            {
+                <span class="top-panel-balance__text">
+                    @T("Admin.Comon.SaasInformation.DaysLeft"):
+                </span>
+                <span class="top-panel-balance__value @GetCssClassState(SaasDataService.CurrentSaasData.LeftDay)">@(SaasDataService.CurrentSaasData.LeftDayString)</span>
+            }
+        </div>
+        
+        @if (TrialService.IsTrialEnabled || SaasDataService.IsSaasEnabled)
+        {
+            var moreButton = new MoreButtonModel();
+            moreButton.Text = T("Admin.Common.SaasBlock.TopUp");
+            moreButton.NgTemplateId = "saasMenu.html";
+            moreButton.Icon = null;
+            moreButton.ColorType = eColorType.Success;
+            moreButton.Items = new List<MoreButtonPopoverItem>();
+
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                Text = T("Admin.Common.SaasBlock.TopUpBalance"),
+                Link = "service/tariffs",
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+            });
+
+            if (!TrialService.IsTrialEnabled && !string.IsNullOrEmpty(SaasDataService.CurrentSaasData.Name))
+            {
+                moreButton.Items.Add(new MoreButtonPopoverItem()
+                {
+                    Text = T("Admin.Common.SaasBlock.TariffChange"),
+                    Link = "service/changetariff",
+                    ColorType = eColorType.Link,
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                });
+            }
+
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                Text = T("Admin.Common.SaasBlock.MyAccount"),
+                Link = SaasDataService.GetMyAccountLink(),
+                Attributes = new[] {"target=\"_blank\""},
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+            });
+
+            if (!TrialService.IsTrialEnabled)
+            {
+                moreButton.Items.Add(new MoreButtonPopoverItem()
+                {
+                    Text = T("Admin.Common.SaasBlock.RefreshData"),
+                    Link = "service/resetsaasfromadmin",
+                    Attributes = new[] {"target=\"_blank\""},
+                    ColorType = eColorType.Link,
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                });
+            }
+
+            @Html.MoreButton(moreButton)
+        }
+    </div>
+}

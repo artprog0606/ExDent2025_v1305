@@ -1,0 +1,101 @@
+﻿@model AdvantShop.Orders.CheckoutData
+
+@if (SettingsCheckout.IsShowUserComment || SettingsCheckout.IsShowDontCallBack || SettingsCheckout.AllowUploadFiles || SettingsCheckout.ShowCountDevices)
+{
+    <article class="checkout-block">
+        <div class="checkout-block-title h2">
+            @T("Checkout.CheckoutComment.Comments")
+        </div>
+        @if (SettingsCheckout.IsShowUserComment)
+        {
+            <div class="checkout-block-content">
+                <div class="row">
+                    <div class="col-xs-12 col-md-8">
+                        @Html.TextAreaFor(x => x.CustomerComment, new { @class = "textarea-small", data_ng_model = "checkout.comment", data_ng_blur = "checkout.commentSave(checkout.comment)", placeholder = T("Checkout.CheckoutComment.CommentPlaceholder") })
+                    </div>
+                </div>
+            </div>
+        }
+        @if (SettingsCheckout.AllowUploadFiles)
+        {
+            <div class="checkout-block-content">
+                <div class="row p-t-sm">
+                    <div class="col-xs-12 col-md-8" bs-modifiable="false" ng-init="checkout.getCheckoutAttachments()">
+                        <label class="control-label">@T("Checkout.CheckoutComment.Files")</label>
+                        <ol ng-if="checkout.attachments.length > 0">
+                            <li ng-repeat="attachment in checkout.attachments track by $index">
+                                <a href="@Url.Action("GetCheckoutFile", "Checkout")?attachmentId={{attachment.Id}}" target="_blank" ng-bind="attachment.FileName"></a>
+                                <a href=""
+                                   ng-click="checkout.deleteAttachment(attachment.Id, $index)"
+                                   class="icon-cancel-circled-before link-text-decoration-none cs-l-3"
+                                   title="@T("Checkout.CheckoutComment.DeleteFile")"></a>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col-xs-12 col-md-8" ng-class="{'p-t-xs' : checkout.attachments.length == 0}">
+                        <figure>
+                            <button class="btn btn-small btn-action"
+                                    ngf-change="checkout.selectedFiles($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                                    type="button"
+                                    ngf-drop
+                                    ngf-max-size="15MB"
+                                    ngf-select=""
+                                    ngf-keep="true"
+                                    ngf-pattern="checkout.allowedFileExtensions"
+                                    ngf-accept="checkout.allowedFileExtensions"
+                                    ngf-multiple="true"
+                                    ladda="checkout.loadingFiles">
+                                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">@T("Checkout.CheckoutComment.SelectFile")</span>
+                            </button>
+                            <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                <div class="help-content" ng-bind-html="checkout.filesHelpText"></div>
+                            </help-trigger>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (SettingsCheckout.IsShowDontCallBack)
+        {
+            <div class="checkout-block-content">
+                <div class="row p-t-sm">
+                    <div class="col-xs-12 col-md-8">
+                        <div class="row middle-xs form-field-control">
+                            <span class="col-xs-12 col-md-12">
+                                <label class="flex mobile-form-field-control-last">
+                                    @Html.CheckBoxFor(x => x.DontCallBack, new { @class = "custom-input-native", data_ng_model = "checkout.dontCallBack", data_ng_change = "checkout.saveDontCallBack()" })
+                                    <span class="custom-input-checkbox"></span>
+                                    <span class="custom-input-text">
+                                        @T("Checkout.CheckoutComment.DontCallBack")<br />
+                                        <span class="cs-t-3">
+                                            @T("Checkout.CheckoutComment.DontCallBack.Help")
+                                        </span>
+                                    </span>
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (SettingsCheckout.ShowCountDevices)
+        {
+            <div class="checkout-block-content">
+                <div class="row p-t-sm">
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="row form-field-control">
+                            <span class="col-xs-12 col-sm-4 form-field-name-wrap">
+                                <span class="form-field-name vertical-interval-xsmall">@T("Checkout.CheckoutComment.CountDevices")</span>
+                            </span>
+                            <span class="col-xs-12 col-sm-6 form-field-input-wrap">
+                                <span class="form-field-input vertical-interval-xsmall">
+                                    @Html.TextBoxFor(x => x.CountDevices, new { @class = "input-small", type = "number", data_ng_model = "checkout.countDevices", data_ng_blur = "checkout.saveCountDevices(checkout.countDevices)", placeholder = T("Checkout.CheckoutComment.CountDevicesPlaceholder"), min = "0", max = "1000" })
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </article>
+}

@@ -1,0 +1,204 @@
+﻿@{
+    var isMobile = "grid.appScope.$ctrl.isMobile";
+}
+
+<script type="text/ng-template" id="ui-grid/uiGridViewport">
+            <div role="rowgroup"
+                 class="ui-grid-viewport"
+                 ng-style="grid.appScope.$ctrl.isProcessing ? @isMobile === true ? {'height': grid.getViewportHeight()} : colContainer.getViewportStyle() : null">
+                <div class="ui-grid-canvas">
+                    <div data-e2e="gridRow"
+                         data-e2e-row-index="{{rowRenderIndex}}"
+                         class="ui-grid-row-wrap {{grid.appScope.$ctrl.gridOptions.uiGridCustom.rowClasses(row)}}"
+                         ng-class="{'ui-grid-tree-header-row': row.treeLevel > -1, 'ui-grid-tree-header-row--expanded' : row.treeNode.state === 'expanded', 'ui-grid-tree-children': row.treeNode.parentRow != null, 'ui-grid-tree-children-last': row.treeNode.parentRow && (row.treeNode.parentRow.treeNode.children[1].row === row.treeNode.row)}"
+                         ng-repeat="(rowRenderIndex, row) in rowContainer.renderedRows"
+                         ng-click="grid.appScope.$ctrl.clickRow($event, row, grid.appScope.$ctrl.gridOptions.uiGridCustom.rowClick, grid.appScope.$ctrl.gridOptions.uiGridCustom.rowUrl)"
+                         ng-style="@isMobile !== true ?  Viewport.rowStyle(rowRenderIndex) : null">
+                        <div class="ui-grid-row ui-grid-custom-group-header"
+                             ng-if="row.entity[grid.appScope.$ctrl.gridOptions.uiGridCustom.groupByField] != null && row.entity[grid.appScope.$ctrl.gridOptions.uiGridCustom.groupByField] !== (rowContainer.renderedRows[$index-1] != null ? rowContainer.renderedRows[$index-1].entity[grid.appScope.$ctrl.gridOptions.uiGridCustom.groupByField] : null)">
+                            <div class="ui-grid-custom-group-header-text" ng-bind="row.entity[grid.appScope.$ctrl.gridOptions.uiGridCustom.groupByFieldTitle || grid.appScope.$ctrl.gridOptions.uiGridCustom.groupByField]"></div>
+                        </div>
+                        <div class="ui-grid-custom-row"
+                            ng-if="@isMobile !== true"
+                            ng-class="{'ui-grid-custom-pointer': grid.appScope.$ctrl.gridOptions.uiGridCustom.rowClick != null || grid.appScope.$ctrl.gridOptions.uiGridCustom.rowUrl != null}">
+                            <div class="ui-grid-row"
+                                 role="row"
+                                 ui-grid-row="row"
+                                 row-render-index="rowRenderIndex">
+                            </div>
+                        </div>
+                        <div class="ui-grid-row"
+                              ng-if="@isMobile === true"
+                              role="row"
+                              ui-grid-row="row"
+                              row-render-index="rowRenderIndex">
+                        </div>
+                    </div>
+                </div>
+            </div>
+</script>
+
+<script type="text/ng-template" id="ui-grid/ui-grid-header">
+	<div role="rowgroup" class="ui-grid-header" ng-class="{'ui-grid-custom-selection--showed': grid.appScope.$ctrl.selectionCustom.storageSelectedRows.length > 0}">
+		<div class="ui-grid-top-panel">
+			<div class="ui-grid-header-viewport">
+				<div class="ui-grid-header-canvas">
+					<div ng-if="@isMobile !== true" class="ui-grid-header-cell-wrapper" ng-style="colContainer.headerCellWrapperStyle()">
+						<div role="row" class="ui-grid-header-cell-row">
+							<div class="ui-grid-header-cell ui-grid-clearfix" ng-class="{'ui-grid-custom-edit-enabled': col.colDef.enableCellEdit }" data-e2e="gridHeaderCell" data-e2e-col-index="{{col.isPinnedLeft() ? -1: $index}}" data-e2e-grid-cell="{{grid.appScope.$ctrl.gridUniqueId + '[-1][\'' + col.colDef.name + '\']' }}" ng-repeat="col in colContainer.renderedColumns track by col.uid" ui-grid-header-cell col="col" render-index="$index">
+                                    </div>
+							<ui-grid-custom-selection ng-if="grid.appScope.$ctrl.gridSelectionEnabled && ((grid.hasLeftContainer() && colContainer.getMargin('left') > 0) || !grid.hasLeftContainer())" ng-show="grid.appScope.$ctrl.selectionCustom.storageSelectedRows.length > 0" class="ui-grid-custom-selection-in-header" grid="grid.appScope.$ctrl" grid-menu-items="grid.appScope.$ctrl.gridOptions.uiGridCustom.selectionOptions" grid-api="grid.appScope.$ctrl.gridApi" grid-options="grid.appScope.$ctrl.gridOptions" grid-params="grid.appScope.$ctrl._params" grid-selection-on-init="grid.appScope.$ctrl.selectionOnInit(selectionCustom)" grid-selection-on-change="grid.appScope.$ctrl.selectionOnChange(rows)" grid-on-request-before="grid.appScope.$ctrl.selectionOnRequestBefore()" grid-on-action="grid.appScope.$ctrl.selectionUpdate(response)"/>
+						</div>
+					</div>
+					<div ng-if="@isMobile === true" class="ui-grid-custom-override-header" bind-html-compile="grid.appScope.$ctrl.overrideHeaderControl.html"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+<script type="text/ng-template" id="ui-grid/ui-grid-row">
+    <div ng-switch="grid.appScope.$ctrl.overrideControlExist === true" class="ui-grid-custom__row-inner">
+        <div ng-switch-when="true">
+            <ui-grid-custom-mobile item-template="grid.appScope.$ctrl.overrideControl.html" dynamic-template="grid.appScope.$ctrl.overrideControl.dynamicTemplate"></ui-grid-custom-mobile>
+        </div>
+        <div ng-switch-default
+             data-e2e="gridCell"
+             data-e2e-col-index="{{col.isPinnedLeft() ? -1: colRenderIndex}}"
+             data-e2e-grid-cell="{{grid.appScope.$ctrl.gridUniqueId + '['+ rowRenderIndex + '][\'' + col.colDef.name + '\']' }}"
+             ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid"
+             ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'"
+             class="ui-grid-cell ui-grid-cell-table"
+             ng-class="{ 'ui-grid-row-header-cell': col.isRowHeader, 'ui-grid-custom-edit-enabled': col.colDef.enableCellEdit }"
+             role="{{col.isRowHeader ? 'rowheader' : 'gridcell'}}"
+             data-is-mobile="@isMobile"
+             ui-grid-cell
+             ui-grid-cell-custom="grid.appScope.$ctrl" col="col" row="row" column-defs="grid.appScope.$ctrl.gridOptions.columnDefs">
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="ui-grid/uiGridHeaderCell">
+    <div role="columnheader"
+         ng-class="{ 'sortable': sortable, 'ui-grid-header-cell-last-col': isLastCol }"
+         ui-grid-one-bind-aria-labelledby-grid="col.uid + '-header-text ' + col.uid + '-sortdir-text'"
+         aria-sort="{{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending' : (!col.sort.direction ? 'none' : 'other'))}}">
+        <div role="button"
+             tabindex="0"
+             ng-keydown="handleKeyDown($event)"
+             class="ui-grid-cell-contents ui-grid-header-cell-primary-focus"
+             col-index="renderIndex"
+             title="TOOLTIP">
+            <span class="ui-grid-header-cell-label" ui-grid-one-bind-id-grid="col.uid + '-header-text'">{{ col.displayName CUSTOM_FILTERS }}</span>
+
+            <span ui-grid-one-bind-id-grid="col.uid + '-sortdir-text'"
+                  ui-grid-visible="col.sort.direction"
+                  aria-label="{{getSortDirectionAriaLabel()}}">
+                <i ng-class="{ 'ui-grid-icon-up-dir': col.sort.direction == asc, 'ui-grid-icon-down-dir': col.sort.direction == desc, 'ui-grid-icon-blank': !col.sort.direction }"
+                   title="{{isSortPriorityVisible() ? i18n.headerCell.priority + ' ' + ( col.sort.priority + 1 )  : null}}"
+                   aria-hidden="true">
+                </i>
+                <sub ui-grid-visible="isSortPriorityVisible()"
+                     class="ui-grid-sort-priority-number">
+                    {{col.sort.priority + 1}}
+                </sub>
+            </span>
+        </div>
+
+        <div role="button"
+             tabindex="0"
+             ui-grid-one-bind-id-grid="col.uid + '-menu-button'"
+             class="ui-grid-column-menu-button"
+             ng-if="grid.options.enableColumnMenus && !col.isRowHeader  && col.colDef.enableColumnMenu !== false"
+             ng-click="toggleMenu($event)"
+             ng-keydown="headerCellArrowKeyDown($event)"
+             ui-grid-one-bind-aria-label="i18n.headerCell.aria.columnMenuButtonLabel"
+             aria-expanded="{{col.menuShown}}"
+             aria-haspopup="true">
+            <i class="ui-grid-icon-angle-down"
+               aria-hidden="true">
+                &nbsp;
+            </i>
+        </div>
+
+        <div ui-grid-filter ng-hide="col.filterContainer === 'columnMenu'"></div>
+    </div>
+</script>
+<script type="text/ng-template" id="ui-grid/ui-grid">
+    <div ui-i18n="en" class="ui-grid">
+            <style ui-grid-style ng-if="!@isMobile">
+                .grid{{ grid.id }} .ui-grid-row:last-child .ui-grid-cell {
+                  border-bottom-width: {{ (((grid.getVisibleRowCount() * grid.options.rowHeight) < grid.getViewportHeight()) && '1') || '0' }}px;
+                }
+                {{ grid.customStyles }}
+            </style>
+
+        <div class="ui-grid-contents-wrapper" role="grid">
+            <div ui-grid-menu-button ng-if="grid.options.enableGridMenu"></div>
+
+            <div ng-if="grid.hasLeftContainer()" style="width: 0" ui-grid-pinned-container="'left'"></div>
+
+            <div ui-grid-render-container
+                 container-id="'body'"
+                 col-container-name="'body'"
+                 row-container-name="'body'"
+                 bind-scroll-horizontal="true"
+                 bind-scroll-vertical="true"
+                 enable-horizontal-scrollbar="grid.options.enableHorizontalScrollbar"
+                 enable-vertical-scrollbar="grid.options.enableVerticalScrollbar">
+            </div>
+
+            <div ng-if="grid.hasRightContainer()" style="width: 0" ui-grid-pinned-container="'right'"></div>
+
+
+            <div ui-grid-grid-footer ng-if="grid.options.showGridFooter"></div>
+
+            <div ui-grid-column-menu ng-if="grid.options.enableColumnMenus"></div>
+
+            <div ng-transclude></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="ui-grid/selectionSelectAllButtons">
+    <div class="ui-grid-selection-row-header-buttons ui-grid-custom-pinned-left">
+        <div class="adv-checkbox-label" data-e2e="gridHeaderCheckboxWrapSelectAll">
+            <input class="adv-checkbox-input" type="checkbox" ng-model="grid.selection.selectAll" data-e2e="gridHeaderCheckboxSelectAll" />
+            <span class="adv-checkbox-emul" ng-click="headerButtonClick($event)"></span>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="ui-grid/selectionRowHeaderButtons">
+    <div class="ui-grid-selection-row-header-buttons js-grid-not-clicked ui-grid-custom-pinned-left ui-grid-custom-checkbox" ng-click="selectButtonClick(row, $event)">
+        <span class="adv-checkbox-label" data-e2e="gridCheckboxWrapSelect">
+            <input class="adv-checkbox-input" type="checkbox" ng-model="row.isSelected" data-e2e="gridCheckboxSelect" />
+            <span class="adv-checkbox-emul"></span>
+        </span>
+    </div>
+</script>
+
+<script type="text/ng-template" id="ui-grid/treeBaseRowHeaderButtons">
+    <div ng-switch="@isMobile">
+        <div ng-switch-when="true">
+        <!--ng-bind="row.treeNode.state === 'expanded' ? '-': '+'"-->
+            <button type="button" class="btn btn--simple btn-link btn--with-icon js-open-children-el"
+                    ng-if="( grid.options.showTreeExpandNoChildren && row.treeLevel > -1 ) || ( row.treeNode.children && row.treeNode.children.length > 0 )"
+                    ng-click="treeButtonClick(row, $event)"
+                    ng-switch="row.treeNode.state === 'expanded'">
+                    @*pointer-events нужен чтоб событие клик не отслеживался в productGridItem.directive*@
+                    <svg ng-switch-default="" class="link pointer-events-none" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 9.143H9.143V16H6.857V9.143H0V6.857h6.857V0h2.286v6.857H16v2.286Z" fill="currentColor"/></svg>
+                    <svg ng-switch-when="true" class="link pointer-events-none" width="16" height="3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 0v2.4H0V0h16Z" fill="currentColor"/></svg>
+            </button>
+        </div>
+        <div ng-switch-default
+             class="ui-grid-tree-base-row-header-buttons js-open-children-el"
+             ng-class="{'ui-grid-tree-base-header': row.treeLevel > -1 }"
+             tabindex="0"
+             ng-keydown="treeButtonKeyDown(row, $event)"
+             ng-click="treeButtonClick(row, $event)">
+            <i ng-class="treeButtonClass(row)"
+               class="pointer-events-none"
+               ng-style="{'padding-left': grid.options.treeIndent * row.treeLevel + 'px'}">
+            </i>
+        </div>
+    </div>
+</script>

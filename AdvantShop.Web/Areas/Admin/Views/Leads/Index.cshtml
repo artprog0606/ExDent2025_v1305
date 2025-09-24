@@ -1,0 +1,122 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Core.Services.Crm.DealStatuses
+@model AdvantShop.Web.Admin.ViewModels.Crm.Leads.LeadsListViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Layout = "~/Areas/Admin/Views/Leads/_CrmLayout.cshtml";
+    int dealStatusId = 0;
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Leads/_CrmLayout.cshtml";
+        DealStatusWithCount dealStatus = Model.DealStatuses.FirstOrDefault();
+        dealStatusId = dealStatus != null ? dealStatus.Id : 0;
+    }
+    ViewBag.NavMenu = "leads";
+}
+
+<div ng-switch="leads.viewMode" class="ng-cloak" ng-init="leads.leadsParam['dealStatusId'] = @(dealStatusId != 0 ? dealStatusId.ToString(): "null")">
+    <div ng-switch-when="leads">
+        @if (!Model.UseKanban || isMobile)
+        {
+            <div class="ibox">
+                @if (Model.SalesFunnelId != 0)
+                {
+                    <div class="m-n">
+                        <div class="tasks-navbar">
+                            <ul class="nav nav-tabs nav-collapse-tab @(isMobile ? "chips-list" : "")" @(isMobile ? "" : "collapse-tab")>
+                                @if (isMobile == false)
+                                {
+                                    <li class="nav-item ng-tab" ng-class="{'active': leads.leadsParam['dealStatusId'] == null}">
+                                        <a href="" ng-click="leads.changeParam(null)">
+                                            <span class="fa"></span> @(T("Admin.Leads.Index.All"))
+                                        </a>
+                                    </li>
+                                }
+                                @foreach (var status in Model.DealStatuses)
+                                {
+                                    <li class="nav-item  ng-tab @(isMobile ? "chips-list__item" : "")" ng-class="{'active': leads.leadsParam['dealStatusId'] == @(status.Id)}" data-e2e="@status.Name" scroll-into-view="leads.leadsParam['dealStatusId'] == @(status.Id)">
+                                        <a href="" ng-click="leads.changeParam(@(status.Id))" class="@(isMobile ? "chip " : "")" ng-class="{'chip--active': leads.leadsParam['dealStatusId'] == @(status.Id)}">
+                                            <span class="fa"></span> @status.Name
+                                            <span class="leads-count-label">
+                                                @* ng-if глубже, чтобы нормально скрывались непомещающиеся названия табов *@
+                                                <span ng-if="leads.grid.gridOptions.LeadsCount['@status.Id']">
+                                                    @Html.Raw(isMobile ? " <span class=\"p-l-xs p-r-xs\">-</span> " : "")
+                                                    <span ng-bind="leads.grid.gridOptions.LeadsCount['@status.Id']" data-e2e="LeadsCount"></span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                <div class="ibox">
+                    <div class="ibox-content no-top-border">
+                        <ui-grid-custom grid-unique-id="grid"
+                                        grid-options="leads.gridOptions"
+                                        grid-on-init="leads.gridOnInit(grid)"
+                                        grid-on-filter-init="leads.gridOnFilterInit(filter)"
+                                        grid-url="'leads/getLeads'"
+                                        grid-params="{salesFunnelId: @Model.SalesFunnelId, dealStatusId: @(dealStatusId != 0 ? dealStatusId.ToString() : "null")}"
+                                        grid-extend-ctrl="leads"
+                                        grid-selection-enabled="true"
+                                        grid-swipe-line="true">
+                            <ui-grid-custom-override-control class="ng-cloak">
+                                <div class="card card--gap-row-sm card--border-info" ng-style="{'border-color': '#' + row.entity.DealStatusColor }">
+                                    <div class="card__row card__row--three">
+                                        <div class="card__col">
+                                            <span class="card__text--alt">#<span ng-bind="row.entity.Id"></span></span>
+                                        </div>
+                                        <div class="card__col">
+                                            <span class="card__text--color-alt" ng-bind="row.entity.FullName"></span>
+                                        </div>
+                                        <div class="card__col card__col--end">
+                                            <span class="card__text--alt" ng-bind="row.entity.SumFormatted"></span>
+                                        </div>
+                                    </div>
+                                    <div class="card__row m-b">
+                                        <div class="card__text--color-alt" ng-bind="row.entity.Description"></div>
+                                    </div>
+                                    <div class="card__row">
+                                        <div class="card__col">
+                                            <span class="card__text--color-alt" ng-bind="row.entity.CreatedDateFormatted"></span>
+                                        </div>
+                                        <div class="card__col card__col--end">
+                                            <span class="card__text--color-alt" ng-bind="row.entity.OrderSource"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui-grid-custom-override-control>
+                            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="leads.grid.gridOptions.TotalString">
+                            </ui-grid-custom-footer>
+                        </ui-grid-custom>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <kanban data-sort-options="leads.sortableOptions"
+                    fetch-url="'leads/getkanban'"
+                    fetch-column-url="'leads/getkanbancolumn'"
+                    kanban-on-init="leads.kanbanOnInit(kanban)"
+                    kanban-params="leads.leadsParam"
+                    extend-ctrl="leads"
+                    kanban-column-defs="leads.gridOptions.columnDefs"
+                    kanban-on-filter-init="leads.kanbanOnFilterInit(filter)"
+                    card-template-url="@Html.GetAssetPath("lead-card.html")"
+                    no-cards-template-url="@Html.GetAssetPath("no-leads.html")"
+                    kanban-column-classes="'leads-kanban-column'"
+                    kanban-column-wrap-classes="'leads-kanban-wrap'"
+                    kanban-scrollable="true"
+                    class="leads-kanban"
+                    uid="kanban"
+                    kanban-sticky-top="@(AdminAreaTemplate.Current != null ? "60" : "70")">
+            </kanban>
+        }
+    </div>
+    <div ng-switch-when="analytics">
+        @Html.Action("LeadsAnalyticsPartial", "Leads", new {leadsListId = Model.SalesFunnelId})
+    </div>
+</div>

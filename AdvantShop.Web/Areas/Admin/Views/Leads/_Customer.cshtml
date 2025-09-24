@@ -1,0 +1,288 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Common
+@model AdvantShop.Web.Admin.Models.Crm.Leads.LeadModel
+@{
+    ViewBag.CustomerFieldModelPrefix = "lead.instance";
+    ViewBag.CustomerFieldFormName = "leadForm";
+    ViewBag.CustomerFieldOnBlur = "lead.saveCustomerField()";
+}
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox">
+<div class="ibox-content block-additional-parameters-content">
+
+<div class="relative m-b-md flex between-xs middle-xs @(isMobile ? "container-fluid" : "")">
+    <h3 class="lead-customer-title m-t-none m-b-none setting__subtitle" style="@(isMobile ? "margin-bottom:0;" : "")">@T("Admin.Leads.Customer.ContactsData")</h3>
+    @if (Model.Lead.CustomerId != null)
+    {
+        <div class="">
+            <a href="@Url.AbsoluteActionUrl("View", "Customers", new {id = Model.Lead.CustomerId})" class="edit link-decoration-none" data-e2e="ClientData" target="_blank">
+                @T("Admin.Leads.Customer.ClientsCard")
+            </a>
+            <ui-modal-trigger data-controller="'ModalSelectCustomerCtrl'"
+                              controller-as="ctrl"
+                              size="middle"
+                              template-url="@Html.GetAssetPath("selectCustomer.html")"
+                              data-on-close="lead.changeCustomer(result)"
+                              class="lead-customer-edit-link">
+                <a class="link-invert link-decoration-none fas fa-pencil-alt m-l-xs" href="" title="Привязать лид к другому клиенту"></a>
+            </ui-modal-trigger>
+        </div>
+    }
+</div>
+@Html.HiddenFor(x => x.Lead.CustomerId, new {ng_init = "lead.instance.lead.customerId='" + Model.Lead.CustomerId + "'"})
+
+<div class="form-horizontal container-fluid" ng-init="lead.instance.lead.customer.customerId='@Model.Lead.CustomerId'">
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            @T("Admin.Leads.Customer.Lastname")
+        </div>
+        <div class="col-xs-12 col-md-8">
+            @Html.TextBoxFor(x => x.Lead.LastName, new {ng_model = "lead.instance.lead.lastName", @class = "form-control input-alt", ng_blur = "leadForm['Lead.LastName'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly", pattern = "^[a-zA-Zа-яА-ЯёЁ'][a-zA-Z-а-яА-ЯёЁ' ]+[a-zA-Zа-яА-ЯёЁ']?$" })
+            @*}*@
+        </div>
+    </div>
+
+</div>
+<div class="form-group setting__form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            @T("Admin.Leads.Customer.FirstName")
+        </div>
+        <div class="col-xs-12 col-md-8">
+            @Html.TextBoxFor(x => x.Lead.FirstName, new {ng_model = "lead.instance.lead.firstName", @class = "form-control input-alt", ng_blur = "leadForm['Lead.FirstName'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly", pattern = "^[a-zA-Zа-яА-ЯёЁ'][a-zA-Z-а-яА-ЯёЁ' ]+[a-zA-Zа-яА-ЯёЁ']?$" })
+        </div>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            @T("Admin.Leads.Customer.Patronymic")
+        </div>
+        <div class="col-xs-12 col-md-8">
+            @Html.TextBoxFor(x => x.Lead.Patronymic, new {ng_model = "lead.instance.lead.patronymic", @class = "form-control input-alt", ng_blur = "leadForm['Lead.Patronymic'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly", pattern = "^[a-zA-Zа-яА-ЯёЁ'][a-zA-Z-а-яА-ЯёЁ' ]+[a-zA-Zа-яА-ЯёЁ']?$" })
+        </div>
+    </div>
+</div>
+
+@if (Model.Lead != null && !string.IsNullOrEmpty(Model.Lead.Organization))
+{
+    <div class="form-group setting__form-group">
+        <div class="row">
+            <div class="col-xs-12 col-md-4 control-label">
+                @T("Admin.Leads.Customer.Organization")
+            </div>
+            <div class="col-xs-12 col-md-8">
+                @Html.Label(Model.Lead.Organization, new {@class = "form-control input-alt"})
+            </div>
+        </div>
+    </div>
+}
+
+@*@if (Model.VkUser != null)
+            {
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4 control-label">
+                            @T("Admin.Leads.Customer.Patronymic")
+                        </div>
+                        <div class="col-xs-12 col-md-8">
+                            @if (Model.Lead.CustomerId != null)
+                            {
+                                @Html.TextBoxFor(x => x.Lead.Customer.Patronymic, new { ng_model = "lead.instance.lead.customer.patronymic", @class = "form-control input-alt", ng_blur = "leadForm['Lead.Customer.Patronymic'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly" })
+                            }
+                            <i class="fab fa-vk vk-customer-icon" style=""></i> <a href="@vkLink" target="_blank" class="m-r-xs">@vkLink</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.InstagramUser != null)
+            {
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12 control-label">
+                            <i class="fa fa-instagram instagram-user-name" style=""></i>
+                            <a href="https://instagram.com/@(Model.InstagramUser.UserName)/" class="instagram-user-name m-r-xs" target="_blank">@Model.InstagramUser.UserName</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.FacebookUser != null)
+            {
+                <div class="m-b-md">
+                    <i class="fa fa-facebook-official vk-customer-icon" style=""></i>
+                    <a href="https://facebook.com/@(Model.FacebookUser.Id)/" target="_blank">@Model.FacebookUser.FirstName @Model.FacebookUser.LastName</a>
+                </div>
+            }*@
+<div class="form-group setting__form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            E-mail
+        </div>
+        <div class="col-xs-12 col-md-8">
+            @Html.TextBoxFor(x => x.Lead.Email, new {ng_model = "lead.instance.lead.email", @class = "form-control input-alt", ng_blur = "leadForm['Lead.Email'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly", pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)$" })
+            <div class="@(isMobile ? "m-t-xs" : "")" ng-if="lead.instance.lead.email != null && lead.instance.lead.email.length > 0">
+                <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'" controller-as="ctrl" size="lg"
+                                  template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                  data-resolve="{params: {@(Model.Lead.CustomerId != null ? "customerId: '" + Model.Lead.CustomerId + "'," : "") email: lead.instance.lead.email, firstName: lead.instance.lead.firstName, lastName: lead.instance.lead.lastName, patronymic: lead.instance.lead.patronymic, leadId: '@Model.Lead.Id', pageType: 'leads' }}"
+                                  on-close="lead.updateLeadEventsWithDelay()">
+                    <a href="" class="edit link-decoration-none">@T("Admin.Leads.Customer.SendEmail")</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 control-label">
+            @T("Admin.Leads.Customer.PhoneNumber")
+        </div>
+        <div class="col-xs-12 col-md-8">
+            @Html.TextBoxFor(x => x.Lead.Phone, new {
+               ng_model = "lead.instance.lead.phone",
+               @class = "form-control m-b-xs input-alt",
+               ng_blur = "leadForm['Lead.Phone'].modified && lead.saveLead(lead.instance)",
+               ng_readonly = "lead.readOnly",
+               data_mask_control = SettingsMain.EnablePhoneMask.ToLowerString(),
+               data_mask_control_preset = "phone",
+               maxlength = 70,
+               type = "tel",
+               placeholder = "{{ :: 'Js.Phone.PhonePlaceholder' | translate }}",
+           })
+
+            @if (Model.StandardPhone != null)
+            {
+                <div class="@(!isMobile ? "m-b-xs" : "m-t-sm") flex middle-xs flex-wrap">
+                    <a href="tel:+@Model.StandardPhone" class="edit link-decoration-none m-r-sm align-top">@T("Admin.Leads.Customer.Call")</a>
+                    <div>
+                        @if (Model.Lead.Customer != null)
+                        {
+                            <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl" size="middle"
+                                              data-resolve="{params: { customerId: '@Model.Lead.Customer.Id', leadId: '@Model.Lead.Id', phone: lead.instance.lead.phone}}"
+                                              on-close="lead.updateLeadEventsWithDelay()"
+                                              template-url="@Html.GetAssetPath("sendSms.html")">
+                                <a href="" class="edit link-decoration-none m-r-xs">@T("Admin.Leads.Customer.SendSMS")</a>
+                            </ui-modal-trigger>
+                        }
+
+                        <span ng-init="lead.ShowViberDesktopAppNotification = @Model.ShowViberDesktopAppNotification.ToLowerString()">
+                            <ui-modal-trigger ng-show="lead.ShowViberDesktopAppNotification" class=" ng-hide"
+                                              data-controller="'LeadModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                              data-resolve="{ params: { appName: 'Viber', link: 'https://viber.click/@Model.StandardPhone' }}"
+                                              data-on-close="lead.ShowViberDesktopAppNotification = result"
+                                              template-url="@Html.GetAssetPath("desktopAppNotificationLead.html")">
+                                <a href="" class="fas vertical-middle" data-e2e="ViberLink" title="Viber">
+                                    <svg width="18" height="18" class="link-viber-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                         viewBox="0 0 48 48">
+                                        <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+	                                                        c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+	                                                        c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+	                                                        c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+	                                                        C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+	                                                        c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+	                                                        c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+	                                                        c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+	                                                        c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+	                                                        c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+	                                                         M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+	                                                        C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+	                                                        c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+	                                                        c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" />
+                                    </svg>
+                                </a>
+                            </ui-modal-trigger>
+                            <a ng-show="!lead.ShowViberDesktopAppNotification" href="https://viber.click/@Model.StandardPhone" target="_blank" class="@(isMobile ? "m-l-sm" : "m-l-xs")" data-e2e="ViberLink" title="Viber">
+                                <svg width="18" height="18" class="link-viber-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                     viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+	                                                        c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+	                                                        c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+	                                                        c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+	                                                        C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+	                                                        c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+	                                                        c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+	                                                        c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+	                                                        c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+	                                                        c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+	                                                         M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+	                                                        C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+	                                                        c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+	                                                        c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" />
+                            </svg>
+                            </a>
+                        </span>
+                        <span ng-init="lead.ShowWhatsAppDesktopAppNotification = @Model.ShowWhatsAppDesktopAppNotification.ToLowerString()">
+                            <ui-modal-trigger ng-show="lead.ShowWhatsAppDesktopAppNotification" class="ng-hide"
+                                              data-controller="'LeadModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                              data-resolve="{ params: { appName: 'WhatsApp', link: 'https://wa.me/@Model.StandardPhone' }}"
+                                              data-on-close="lead.ShowWhatsAppDesktopAppNotification = result"
+                                              template-url="@Html.GetAssetPath("desktopAppNotificationLead.html")">
+                                <a href="" class="fas vertical-middle @(isMobile ? "m-l-sm" : "m-l-xs")" data-e2e="WhatsAppLink" title="WhatsApp">
+                                    <svg width="18" height="18" class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                    <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+	                                                            l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+	                                                            c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+	                                                            c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+	                                                            c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+	                                                            c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" />
+                                </svg>
+                                </a>
+                            </ui-modal-trigger>
+                            <a ng-show="lead.ShowWhatsAppDesktopAppNotification === false" href="https://wa.me/@Model.StandardPhone" target="_blank" class="@(isMobile ? "m-l-sm" : "m-l-xs")" data-e2e="WhatsAppLink" title="WhatsApp">
+                                <svg width="18" height="18" class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                     viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+	                                                            l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+	                                                            c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+	                                                            c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+	                                                            c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+	                                                            c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" />
+                            </svg>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="m-b-xs flex middle-xs">
+                    @Html.RenderModules("admin_lead_customer_info", new {customer = Model.Lead.Customer})
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@if (Model.ShowCustomerType)
+{
+    <div class="form-group setting__form-group">
+        <div class="row">
+            <div class="col-xs-12 col-md-4 control-label">
+                @T("Admin.Leads.Customer.CustomerType")
+            </div>
+            <div class="col-xs-12 col-md-8">
+                @Html.DropDownListFor(x => x.Lead.CustomerType, Model.CustomerTypes, new
+                {
+                    @class = "form-control input-alt",
+                    ng_model = "lead.instance.lead.customerType",
+                    ng_blur = "leadForm['Lead.CustomerType'].modified && lead.saveLead(lead.instance)",
+                    ng_readonly = "lead.readOnly"
+                })
+            </div>
+        </div>
+    </div>
+}
+else if (Model.Lead != null)
+{
+    <span ng-init="lead.instance.lead.customerType='@Model.Lead.CustomerType'"></span>
+}
+
+<div class="custom-fields-two-columns">
+    @Html.Partial("_CustomerFields", new CustomerFieldsViewModel(Model.CustomerFields, ngModelName: "lead.instance", onSelectFunc: "lead.processCompanyName($item)", ngVariableVisible: "lead.instance.lead.customerType"))
+</div>
+
+@Html.RenderModules("admin_lead_customer", new {leadId = Model.Lead.Id})
+</div>
+</div>
+</div>

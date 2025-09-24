@@ -1,0 +1,150 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures
+@model BlockModel
+
+@{
+    var items = Model.Block.TryGetSettingAsList<GalleryItemModel>("items");
+    var blockImageHeight = Model.Block.TryGetSetting("block_image_height");
+
+    float width = 100 / (float)Model.Block.TryGetSetting("images_per_row");
+    var widthString = width.ToInvariantString() + "%";
+    var minWidth = 1159 / Model.Block.TryGetSetting("images_per_row");
+
+    var colorText = Model.Block.TryGetSetting("color_text");
+    var bg = Model.Block.TryGetSetting("background_color_text");
+}
+
+    <style>
+
+        #block_@Model.Block.Id .lp-block-gallery-with-text__inner {
+            height: auto;
+        }
+
+    @@media (min-width: 48em) {
+        #block_@Model.Block.Id .lp-block-gallery-with-text__inner {
+            -webkit-flex-basis: 50%;
+            -ms-flex-preferred-size: 50%;
+            flex-basis: 50%;
+            max-width: 50%;
+            @*max-height: @(blockImageHeight)px;*@
+        }
+        #block_@Model.Block.Id .lp-block-gallery-with-text__inner img {
+            /*max-height: @(blockImageHeight + 16)px;*/
+            max-height: @(blockImageHeight)px;
+        }
+    }
+
+    @@media (min-width: 64em) {
+        #block_@Model.Block.Id .lp-block-gallery-with-text__inner {
+            -webkit-flex-basis: @(widthString);
+            -ms-flex-preferred-size: @(widthString);
+            flex-basis: @(widthString);
+            max-width: @(widthString);
+        }
+    }
+
+
+    @*@@media (min-width: 48em) {
+
+        #block_@Model.Block.Id .lp-block-gallery-with-text__image-wrap {
+            height:@(blockImageHeight)px;
+        }
+
+        #block_@Model.Block.Id .lp-block-gallery-with-text__inner {
+            -webkit-flex-basis: @(widthString);
+            -ms-flex-preferred-size: @(widthString);
+            flex-basis: @(widthString);
+            max-width: @(widthString);
+            min-width: @(minWidth)px;
+        }
+    }*@
+    </style>
+
+
+<div class="container-fluid">
+    <div class="lp-container">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+
+        <div class="row @(Model.Block.TryGetSetting("align_image") != null ? Model.Block.TryGetSetting("align_image") :"center-xs") middle-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "data-adv-baguette-box")>
+            @for (var i = 0; i < items.Count; i++)
+            {
+
+                <div class="lp-block-gallery-with-text__inner">
+                    @if (Model.Inplace)
+                    {
+                        <picture-loader-trigger data-lp-id="@(Model.Block.LandingId)"
+                                                data-block-id="@(Model.Block.Id)"
+                                                data-delete-picture="true"
+                                                gallery-icons-enabled="false"
+                                                data-current="'@items[i].Picture.Src'"
+                                                data-parameters="[{ maxHeight: @blockImageHeight, postfix: 'preview', maxWidth: 820}]",
+                                                data-max-width-picture="@(PictureLoaderImageSize.WallWidth)"
+                                                data-max-height-picture="@(PictureLoaderImageSize.WallHeight)"
+                                                data-on-delete="blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, @i)" ,
+                                                on-apply="blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, @i)"
+                                                on-lazy-load-change="blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result, @i)"
+                                                lazy-load-enabled="blocksConstructorContainer.data.Settings.items[@i].lazyLoadEnabled"
+                                                picture-show-type="'preview'">
+                            <div class="lp-block-gallery-with-text__image-wrap">
+                                <span picture-loader-replacement>
+                                    <span class="picture-loader-trigger-image-inner">
+                                        <img ng-src="@(items[i].Picture.Preview)" class="reviews-carousel__picture" alt="">
+                                    </span>
+                                </span>
+                                <i picture-loader-element-trigger class="subblock-inplace-image-trigger"></i>
+                                <div class="lp-block-gallery-with-text__text-block" style="background-color: @(bg); color: @(colorText);">
+                                    <div>
+                                        <div class="lp-block-gallery-with-text__subtitle">
+                                            @Html.Raw(items[i].Subtitle)
+                                        </div>
+                                        <div class="lp-block-gallery-with-text__text">
+                                            @Html.Raw(items[i].Text)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </picture-loader-trigger>
+                    }
+                    else
+                    {
+                        <div class="lp-block-gallery-with-text__image-wrap">
+                            <span>
+                                <span class="picture-loader-trigger-image-inner">
+                                    <img src="@(items[i].Picture.Preview)" @(items[i].Picture.LazyLoadEnabled ? "data-qazy" : "") class="reviews-carousel__picture" alt="">
+                                </span>
+                            </span>
+
+                            @*<a href="@items[i].Picture.Src" class="lp-block-gallery-with-text__text-block link-text-decoration-none" style="background-color: @(bg); color: @(colorText);">*@
+                            <div class="lp-block-gallery-with-text__text-block" style="background-color: @(bg); color: @(colorText);">
+                                <div>
+                                    @if (items[i].Subtitle.IsNotEmpty())
+                                    {
+                                        <div class="lp-block-gallery-with-text__subtitle">
+                                            @Html.Raw(items[i].Subtitle)
+                                        </div>
+                                    }
+                                    @if (items[i].Text.IsNotEmpty())
+                                    {
+                                        <div class="lp-block-gallery-with-text__text">
+                                            @Html.Raw(items[i].Text)
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

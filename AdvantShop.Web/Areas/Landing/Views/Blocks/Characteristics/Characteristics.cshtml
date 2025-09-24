@@ -1,0 +1,53 @@
+﻿@model BlockModel
+
+@{
+    var items = Model.Block.TryGetSettingAsList<Characteristics>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                @if (Model.Block.TryGetSetting("show_title") == true)
+                {
+                    <div class="lp-h2 lp-h2--color" data-e2e="TitleCharacteristics">
+                        @Html.SubBlock(Model, "title")
+                    </div>
+                }
+
+                @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    <div class="lp-h3 lp-h3--color" data-e2e="SubTitleCharacteristics">
+                        @Html.SubBlock(Model, "subtitle")
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row center-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                @if (items != null)
+                {
+                    for (var i = 0; i < items.Count; i++)
+                    {
+                        <div class="row center-xs lp-block-characteristics__block">
+                            <div class="col-xs-12">
+                                <div class="lp-block-characteristics__category lp-font-size--middle" data-e2e="CategoryCharacteristics" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>@Html.Raw(items[i].Header)</div>
+                            </div>
+                        </div>
+                        if (items[i].ContentItems != null)
+                        {
+                            for (var j = 0; j < items[i].ContentItems.Count; j++)
+                            {
+                                <div class="row start-xs lp-block-characteristics__cells-wrap flex-nowrap">
+                                    <div class="col-sm-slim col-xs-6 lp-block-characteristics__cell lp-font-size--small" data-e2e="CharacteristicsName" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].name")>@Html.Raw(items[i].ContentItems[j].Name)</div>
+                                    <div class="col-xs border-bottom-dashed color-scheme__divider--border hidden-xs visible-sm"></div>
+                                    <div class="col-xs-6 col-sm-3 lp-block-characteristics__cell lp-font-size--small" data-e2e="CharacteristicsValue" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].value")>@Html.Raw(items[i].ContentItems[j].Value)</div>
+                                </div>
+                            }
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

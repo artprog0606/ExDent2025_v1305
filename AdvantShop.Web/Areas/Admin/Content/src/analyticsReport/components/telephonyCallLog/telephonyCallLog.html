@@ -1,0 +1,37 @@
+﻿<div is-mobile>
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h2 class="page-name-block-text sticky-page-name-text reports-title">{{'Admin.Js.TelephonyCallLog.Title'|translate}}</h2>
+            </div>
+        </div>
+    </div>
+
+    <ui-grid-custom
+        grid-unique-id="grid"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-options="$ctrl.gridOptions"
+        grid-url="'calls/getcalls'"
+        grid-params="{CallDateFrom: $ctrl.dateFrom, CallDateTo: $ctrl.dateTo}"
+        grid-swipe-line="isMobile.value"
+        grid-extend-ctrl="$ctrl">
+        <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+            <div class="card">
+                <div
+                    class="card__text card__text--alt card__row card__row--full-width"
+                    ng-if="row.entity.CustomerName != null"
+                    ng-bind="row.entity.CustomerName"></div>
+                <div class="card__text card__row card__row--full-width" ng-bind="row.entity.DstNum"></div>
+                <call-record class="card__row card__row--full-width" call-id="row.entity.Id" operator-type="row.entity.OperatorType"></call-record>
+                <div class="card__text card__text--color-alt card__row card__row--full-width">
+                    <div>
+                        <span ng-bind="row.entity.TypeFormatted + ':'"></span>
+                        <span ng-bind="row.entity.DurationFormatted"></span>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.grid.gridOptions.TotalString"> </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>

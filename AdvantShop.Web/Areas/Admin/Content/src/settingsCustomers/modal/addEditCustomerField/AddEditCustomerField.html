@@ -1,0 +1,353 @@
+<form novalidate name="addEditCustomerFieldForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.AddEditCustomerField.Add'|translate) : ('Admin.Js.AddEditCustomerField.Edit'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.form = addEditCustomerFieldForm">
+        <div class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap">
+                <span class="text-required setting__label">{{'Admin.Js.AddEditCustomerField.Name'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <input
+                    data-e2e="customerFieldName"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditCustomerField.Name'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{'Admin.Js.AddEditCustomerField.Type'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <select
+                    ng-model="ctrl.fieldType"
+                    ng-options="s.label for s in ctrl.fieldTypes track by s.value"
+                    class="form-control input-alt"
+                    data-e2e="customerFieldType"></select>
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label"
+                >{{'Admin.Js.AddEditCustomerField.SortingOrder'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-8">
+                <input type="text" data-e2e="customerFieldSortOrder" ng-model="ctrl.sortOrder" class="form-control input-alt" />
+            </div>
+        </div>
+        <div ng-if="ctrl.isEnabledBothTypesOfCustomers" class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{'Admin.Js.AddEditCustomerField.CustomerType'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <select
+                    ng-model="ctrl.customerType"
+                    ng-options="s.label for s in ctrl.customerTypes track by s.value"
+                    class="form-control input-alt"
+                    data-e2e="customerTypes"
+                    required></select>
+            </div>
+        </div>
+        <div ng-if="ctrl.customerType.value != 0 && ctrl.fieldType.value != 6" class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{'Admin.Js.AddEditCustomerField.FieldAssignment'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <select
+                    ng-model="ctrl.fieldAssignment"
+                    ng-options="s.label for s in ctrl.fieldAssignments track by s.value"
+                    class="form-control input-alt"
+                    data-e2e="fieldAssignments"></select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-if="ctrl.fieldType.value == 0">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{'Admin.Js.AddEditCustomerField.FieldValues'|translate}}
+            </label>
+            <div ng-if="!isMobile.value" class="col-md-8">
+                <div class="sortable-row" ng-model="ctrl.fieldValues" as-sortable="ctrl.sortableFieldValues">
+                    <div class="row" ng-repeat="item in ctrl.fieldValues" as-sortable-item ng-cloak>
+                        <div class="col-xs-12">
+                            <div class="flex payment-row middle-xs between-xs">
+                                <div class="flex middle-xs col-xs">
+                                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                        <icon-move />
+                                    </div>
+                                    <span ng-if="item.Id == null">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="item.Value"
+                                            data-e2e="customerFieldValue"
+                                            ng-keypress="$event.keyCode === 13 && item.Value && ctrl.addFieldValue(item, item.Value)"
+                                            autofocus="ctrl.focusOnValue" />
+                                    </span>
+                                    <span class="payment-text" ng-if="item.Id != null">
+                                        <span class="payment-text-grey" ng-bind="item.Value"></span>
+                                    </span>
+                                </div>
+                                <div class="flex middle-xs col-fixed-size-sm" ng-if="item.Id == null">
+                                    <button
+                                        class="btn btn-sm btn-success btn--margin-left"
+                                        type="button"
+                                        ng-click="ctrl.addFieldValue(item, item.Value)"
+                                        data-e2e="customerFieldAddValue">
+                                        <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                                    </button>
+                                </div>
+                                <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                                    <a
+                                        href=""
+                                        class="fa fa-times link-invert link-decoration-none"
+                                        ng-click="ctrl.deleteFieldValue(item)"
+                                        data-e2e="customerFieldDeleteValue"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="isMobile.value" class="col-xs-12">
+                <div
+                    class="sortable-row settings-list settings-list--row-gap-3 form-group"
+                    ng-model="ctrl.fieldValues"
+                    as-sortable="ctrl.sortableFieldValues">
+                    <div ng-repeat="item in ctrl.fieldValues | filter:{Id: ''}" ng-cloak class="swipe-line" as-sortable-item>
+                        <div class="swipe-line__inner" data-swipe-line>
+                            <div class="navigation-item navigation-item--horizontal card card--middle swipe-line__content">
+                                <div as-sortable-item-handle class="as-sortable-item-handle navigation-item__icon">
+                                    <icon-move>
+                                        <svg
+                                            class="icon-move"
+                                            version="1.0"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="10.000000pt"
+                                            height="20.000000pt"
+                                            viewBox="0 0 10.000000 20.000000"
+                                            preserveAspectRatio="xMidYMid meet">
+                                            <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                                <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            </g>
+                                        </svg>
+                                    </icon-move>
+                                </div>
+                                <div class="navigation-item__text flex middle-xs">
+                                    <span class="" ng-bind="item.Value"></span>
+                                </div>
+                            </div>
+                            <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                                <button
+                                    class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                    ng-click="ctrl.deleteFieldValue(item)"
+                                    data-e2e="customerFieldDeleteValue">
+                                    Удалить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="ctrl.fieldValues[ctrl.fieldValues.length - 1].Id == null" class="m-t-sm">
+                    <div class="setting-label-wrap setting__label">Добавить значение поля</div>
+                    <div class="flex middle-xs">
+                        <input
+                            type="text"
+                            class="form-control flex-grow m-r-sm input-alt"
+                            ng-model="ctrl.fieldValues[ctrl.fieldValues.length - 1].Value"
+                            data-e2e="customerFieldValue"
+                            ng-keypress="$event.keyCode === 13 && ctrl.fieldValues[ctrl.fieldValues.length - 1].Value && ctrl.addFieldValue(ctrl.fieldValues[ctrl.fieldValues.length - 1], ctrl.fieldValues[ctrl.fieldValues.length - 1].Value)"
+                            autofocus="ctrl.focusOnValue" />
+                        <button
+                            class="btn btn-sm btn-success btn--margin-left"
+                            type="button"
+                            ng-click="ctrl.addFieldValue(ctrl.fieldValues[ctrl.fieldValues.length - 1], ctrl.fieldValues[ctrl.fieldValues.length - 1].Value)"
+                            data-e2e="customerFieldAddValue">
+                            <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="check1">
+                {{'Admin.Js.AddEditCustomerField.Required'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldRequired">
+                    <input id="check1" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.required" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="check2">
+                {{'Admin.Js.AddEditCustomerField.RequestInRegistration'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldShowInRegistration">
+                    <input id="check2" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.showInRegistration" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="check3">
+                {{'Admin.Js.AddEditCustomerField.RequestInCheckout'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldShowInCheckout">
+                    <input id="check3" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.showInCheckout" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="check4">
+                {{'Admin.Js.AddEditCustomerField.DisableCustomerEditing'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldDisableCustomerEditing">
+                    <input id="check4" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.disableCustomerEditing" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse" style="display: none">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="checkShowInUserEditing">
+                {{'Admin.Js.AddEditCustomerField.ShowInUserEditing'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldshowInUserEditing">
+                    <input
+                        id="checkShowInUserEditing"
+                        type="checkbox"
+                        class="adv-checkbox-input control-checkbox"
+                        ng-model="ctrl.showInUserEditing" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-4 control-label setting__label setting--m-none" for="check5">
+                {{'Admin.Js.AddEditCustomerField.Actively'|translate}}
+            </label>
+            <div class="col-xs-1 col-md-8">
+                <label class="adv-checkbox-label" data-e2e="customerFieldEnabled">
+                    <input id="check5" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.enabled" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <!--<div class="form-group row  setting__form-group" ng-if="ctrl.fieldType.value == 0">
+        <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+            {{'Admin.Js.AddEditCustomerField.FieldValues'|translate}}
+        </label>
+        <div ng-if="!isMobile.value" class="col-md-8">
+            <div class="sortable-row" ng-model="ctrl.fieldValues" as-sortable="ctrl.sortableFieldValues">
+                <div class="row" ng-repeat="item in ctrl.fieldValues" as-sortable-item ng-cloak>
+                    <div class="col-xs-12">
+                        <div class="flex payment-row middle-xs between-xs">
+                            <div class="flex middle-xs col-xs">
+                                <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                    <icon-move />
+                                </div>
+                                <span ng-if="item.Id == null">
+                                    <input type="text" class="form-control" ng-model="item.Value" data-e2e="customerFieldValue"
+                                           ng-keypress="$event.keyCode === 13 && item.Value && ctrl.addFieldValue(item, item.Value)"
+                                           autofocus="ctrl.focusOnValue" />
+                                </span>
+                                <span class="payment-text" ng-if="item.Id != null">
+                                    <span class="payment-text-grey" ng-bind="item.Value"></span>
+                                </span>
+                            </div>
+                            <div class="flex middle-xs col-fixed-size-sm" ng-if="item.Id == null">
+                                <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="ctrl.addFieldValue(item, item.Value)" data-e2e="customerFieldAddValue">
+                                    <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                                </button>
+                            </div>
+                            <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                                <a href="" class="fa fa-times link-invert link-decoration-none" ng-click="ctrl.deleteFieldValue(item)" data-e2e="customerFieldDeleteValue"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="isMobile.value" class="col-xs-12">
+            <div class="sortable-row settings-list settings-list--row-gap-3" ng-model="ctrl.fieldValues" as-sortable="ctrl.sortableFieldValues">
+                <div ng-repeat="item in ctrl.fieldValues | filter:{Id: ''}" ng-cloak class="swipe-line" as-sortable-item>
+                    <div class="swipe-line__inner" data-swipe-line>
+                        <div class="navigation-item navigation-item--horizontal card card--middle swipe-line__content">
+                            <div as-sortable-item-handle class="as-sortable-item-handle navigation-item__icon">
+                                <icon-move>
+                                    <svg class="icon-move" version="1.0" xmlns="http://www.w3.org/2000/svg" width="10.000000pt" height="20.000000pt" viewBox="0 0 10.000000 20.000000" preserveAspectRatio="xMidYMid meet">
+                                        <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                            <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        </g>
+                                    </svg>
+                                </icon-move>
+                            </div>
+                            <div class="navigation-item__text flex middle-xs">
+                                <span class="" ng-bind="item.Value"></span>
+                            </div>
+                        </div>
+                        <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                            <button class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" ng-click="ctrl.deleteFieldValue(item)" data-e2e="customerFieldDeleteValue">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="ctrl.fieldValues[ctrl.fieldValues.length - 1].Id == null" class="m-t-md">
+                <div class="setting-label-wrap setting__label">
+                    Добавить значение поля
+                </div>
+                <div class="flex middle-xs">
+                    <input type="text" class="form-control flex-grow m-r-sm input-alt" ng-model="ctrl.fieldValues[ctrl.fieldValues.length - 1].Value" data-e2e="customerFieldValue"
+                           ng-keypress="$event.keyCode === 13 && ctrl.fieldValues[ctrl.fieldValues.length - 1].Value && ctrl.addFieldValue(ctrl.fieldValues[ctrl.fieldValues.length - 1], ctrl.fieldValues[ctrl.fieldValues.length - 1].Value)"
+                           autofocus="ctrl.focusOnValue" />
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="ctrl.addFieldValue(ctrl.fieldValues[ctrl.fieldValues.length - 1], ctrl.fieldValues[ctrl.fieldValues.length - 1].Value)" data-e2e="customerFieldAddValue">
+                        <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-e2e="btnSave"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            ladda="ctrl.btnSleep"
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !addEditCustomerFieldForm.modified)"
+            ng-bind="ctrl.mode == 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

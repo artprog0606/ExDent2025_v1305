@@ -1,0 +1,224 @@
+﻿@using AdvantShop.Helpers;
+@using AdvantShop.Trial
+@{
+    var hash = SettingsGeneral.SiteVersion.GetHashCode();
+    //var cookieMenu = CommonHelper.GetCookie("adminSidebarMenu");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var metaForMobile = "<meta content=\"width=device-width,initial-scale=1\" name=\"viewport\">";
+}
+<!DOCTYPE html>
+<html class="@(isMobile ? "mobile-version" : "") first-time-create" data-ng-strict-di data-ng-app="app" lang="@SettingsMain.Language.Split('-')[0].ToLower()" @Html.GetNgController()>
+<head>
+    <meta charset="utf-8">
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetAdminUrl()"/>
+    <meta name="Description" content="@Html.GetPageDescription()"/>
+    <meta name="Keywords" content="@Html.GetPageKeywords()"/>
+    <meta name="robots" content="noindex,nofollow"/>
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <link rel="canonical" href="@UrlService.GetCanonicalUrlAdminArea()"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .ng-cloak, .x-ng-cloak, .ng-hide:not(.ng-hide-animate) {
+            display: none !important;
+        }
+
+        form {
+            display: block;
+        }
+    </style>
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+        console.time('htmlPerf');
+    </script>
+    @Html.Action("Favicon", "Common", new { area = "" })
+
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <link rel="dns-prefetch" href="//modules.advantshop.net">
+
+    <link rel="subresource" href="../combine/all_admin_new.js">
+
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-SemiBold.woff2" type="font/woff2" crossorigin/>
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-Regular.woff2" type="font/woff2" crossorigin/>
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-Bold.woff2" type="font/woff2" crossorigin/>
+
+    @Html.RenderAssetFilesAsHtml("firstTimeCreate");
+
+    @Html.Partial("~/Areas/Admin/Views/Shared/_HeaderScripts.cshtml")
+    @Html.RenderModules("admin_head")
+    @(isMobile ? Html.Raw(metaForMobile) : null)
+</head>
+<body class="gray-bg text-floating" @Html.Raw(isMobile ? "data-full-height-mobile" : "")>
+@* Конфигурация для маски телефона в админке  *@
+@*<div data-mask-config="{enablePhoneMask: @SettingsMain.EnablePhoneMask.ToLowerString()}"></div>*@
+@Html.DisableChromeAutoFill()
+<div id="wrapper">
+    @Html.AntiForgeryToken()
+    <div id="page-wrapper" class="page-wrapper--new-dasboard">
+        <div class="wrapper wrapper-content">
+            @*@Html.GetNotifications()*@
+            <div class="container-wrap">
+                <div class="container-stretch">
+                    <div class="content-column content-column--disable-transition">
+                        <div class="content-stretch">
+                            <div class="content-container ibox">
+
+                                @*@if (IsSectionDefined("TopContent"))
+                                    {
+                                        <div class="ibox">
+                                            <div class="ibox-content settings-block b-n">
+                                                @if (IsSectionDefined("TopContent"))
+                                                {
+                                                    @RenderSection("TopContent", false)
+                                                }
+
+                                                <div class="balance__padding-page balance__padding-page--m-t-n">
+                                                    <div class="balance-block balance-block--content balance-block--content-right">
+                                                        <div class="content-page">
+                                                            @if (IsSectionDefined("NavMenu"))
+                                                            {
+                                                                @RenderSection("NavMenu", false)
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.Action("NavMenu", "Common", new { area = "adminv3" })
+                                                            }
+                                                            <div>
+                                                                @RenderBody()
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {*@
+                                @if (IsSectionDefined("NavMenu"))
+                                {
+                                    @RenderSection("NavMenu", false)
+                                }
+                                else
+                                {
+                                    @Html.Action("NavMenu", "Common", new { area = "adminv3" })
+                                }
+
+                                @RenderBody()
+                                @*}*@
+                            </div>
+                            <div class="footer-container">
+                                @RenderSection("footer", false)
+                                <footer class="site-footer">
+                                    <div class="container-fluid">
+                                        <div class="row between-xs middle-xs">
+                                            <div style="display: none" class="site-footer__go-to-mobile" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("mobileOverlap")]}]">
+                                                <a data-ng-controller="mobileOverlapCtrl as mOverlap" data-ng-click="mOverlap.goToMobile('deviceMode', 'mobile')" href="javascript:void(0);">Перейти в мобильную версию</a>
+                                            </div>
+                                            <div class="col-xs site-footer__version">
+                                                @Html.Partial("~/Areas/Admin/Views/Shared/_Version.cshtml")
+                                            </div>
+                                            <div>
+                                                <a href="https://www.advantshop.net?utm_source=advantshop&utm_medium=site&utm_campaign=footer" target="_blank">AdvantShop</a> <span>&copy; @DateTime.Now.Year</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </footer>
+                                @Html.GetMiniProfiler()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (isMobile)
+            {
+                <div class="container-bottom-fixed">
+                    @Html.Action("LeftMenu", "Common", new { area = "adminv3" })
+                    <div class="flex middle-xs around-xs white-bg">
+                        @Html.Partial("~/Areas/Admin/Views/Common/SaasBlock.cshtml")
+                        @if (AdvantShop.Saas.SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled)
+                        {
+                            <a href="service/domains" target="_parent" class="showcase m-l-xs">@T("Admin.Common.TopMenu.DomainBinding")</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@{
+    var sb = AdvantShop.CMS.StaticBlockService.GetPagePartByKeyWithCache("admin_footer");
+}
+@Html.Raw(sb != null && sb.Enabled && sb.Content != null ? sb.Content.Replace("@customerId", CustomerContext.CustomerId.ToString()) : "")
+<script>
+        console.time('jsPerf');
+    </script>
+@Html.Partial("~/Areas/Admin/Views/Shared/_FooterScripts.cshtml")
+@Html.RenderModules("admin_body_end")
+@*@Html.GetNotifyMessages()*@
+@*<sidebar-user-container></sidebar-user-container>
+    <lead-info-container></lead-info-container>
+    <customer-info-container></customer-info-container>
+    <partner-info-container></partner-info-container>*@
+@Html.Action("Counter", "Common", new { area = "adminv2" })
+<script>
+        function getNg1Hooks(selector, injectorPlease, callback) {
+            function tryEl(el) {
+                try {
+                    if (!injectorPlease && angular.getTestability) {
+                        var $$testability = angular.getTestability(el);
+                        if ($$testability) {
+
+                            if (callback != null) {
+                                callback({ $$testability: $$testability });
+                            }
+
+                            return { $$testability: $$testability };
+                        }
+                    } else {
+                        var $injector = angular.element(el).injector();
+                        if ($injector) {
+                            return { $injector: $injector };
+                        }
+                    }
+                } catch (err) {
+                    setTimeout(function () { getNg1Hooks(selector, injectorPlease, callback) }, 100);
+                }
+            }
+            function trySelector(selector) {
+                var els = document.querySelectorAll(selector);
+                for (var i = 0; i < els.length; i++) {
+                    var elHooks = tryEl(els[i]);
+                    if (elHooks) {
+                        return elHooks;
+                    }
+                }
+            }
+
+            if (selector) {
+                return trySelector(selector);
+            } else if (window.__TESTABILITY__NG1_APP_ROOT_INJECTOR__) {
+                var $injector = window.__TESTABILITY__NG1_APP_ROOT_INJECTOR__;
+                var $$testability = null;
+                try {
+                    $$testability = $injector.get('$$testability');
+                } catch (e) { }
+                return { $injector: $injector, $$testability: $$testability };
+            } else {
+                return tryEl(document.body) ||
+                    trySelector('[ng-app]') || trySelector('[ng\\:app]') ||
+                    trySelector('[ng-controller]') || trySelector('[ng\\:controller]');
+            }
+        };
+
+        getNg1Hooks('html', undefined, function (hooks) {
+            hooks.$$testability.whenStable(function () {
+                console.timeEnd('jsPerf');
+            });
+        })
+    </script>
+<script>
+        console.timeEnd('htmlPerf');
+    </script>
+</body>
+</html>

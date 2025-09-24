@@ -1,0 +1,138 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    var isPaied = order != null && order.Payed;
+    var hasCerticates = order != null && order.OrderCertificates != null && order.OrderCertificates.Count > 0;
+    var isDraft = !Model.IsEditMode || Model.Order == null || Model.Order.IsDraft;
+    var availableWarehouses = AdvantShop.Saas.SaasDataService.IsEnabledFeature(saas => saas.HasWarehouses);
+}
+
+<div class="order-content" ng-init="order.startGridOrderItems(@isPaied.ToLowerString(), @hasCerticates.ToLowerString(), @availableWarehouses.ToLowerString())">
+    <div class="order-content__header m-t-sm">
+        <div class="order-content__title">
+            @T("Admin.Orders.OrderItems.OrderContents")
+        </div>
+        @* @if (!isPaied && !hasCerticates) *@
+        @* { *@
+            <ui-modal-trigger class="header-subtext pull-right ng-cloak" size="xs-11" data-controller="'ModalOffersSelectvizrCtrl'" data-controller-as="ctrl"
+                              ng-show="!order.isPaied && !order.hasCerticates"
+                              data-on-close="order.addOrderItems(result)"
+                              template-url="@Html.GetAssetPath("offersSelectvizrModal.html")">
+                <a href="" class="order-content__add-trigger">@T("Admin.Orders.OrderItems.AddGoods")</a>
+            </ui-modal-trigger>
+        @* } *@
+    </div>
+
+
+    <div ng-if="order.isShowGridOrderItem" class="m-b">
+        <div class="order-content__order-grid">
+
+            @if (hasCerticates)
+            {
+                <ui-grid-custom class="order-grid"
+                                grid-unique-id="gridOrderCertificates"
+                                grid-filter-enabled="false"
+                                grid-pagination-enabled="false"
+                                grid-selection-enabled="false"
+                                grid-params="{OrderId: order.orderId}"
+                                grid-options="order.gridOrderCertificatesOptions"
+                                grid-url="'orders/getOrderCertificates'"
+                                grid-prevent-state-in-hash="@(isDraft ? "true" : "false")">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        @Html.Partial("CertificateGridItemInOrder")
+                    </ui-grid-custom-override-control>
+                    <ui-grid-custom-footer class="ui-grid-custom-footer--mobile" ng-bind="orders.grid.gridOptions.TotalString"></ui-grid-custom-footer>
+                </ui-grid-custom>
+            }
+            else
+            {
+                <ui-grid-custom class="order-grid"
+                                grid-unique-id="gridOrderItems"
+                                grid-on-init="order.gridOrderItemsOnInit(grid)"
+                                grid-filter-enabled="false"
+                                grid-pagination-enabled="true"
+                                grid-selection-enabled="false"
+                                grid-params="{OrderId: order.orderId, enableHiding: {Stocks: true}}"
+                                grid-options="order.gridOrderItemsOptions"
+                                grid-url="'orders/getOrderItems'"
+                                grid-inplace-url="'orders/updateOrderItem'"
+                                grid-on-inplace-apply-all="order.gridOrderItemUpdate()"
+                                @* grid-on-inplace-apply="order.gridOrderItemUpdate()" *@
+                                grid-on-delete="order.gridOrderItemDelete()"
+                                grid-extend-ctrl="order"
+                                grid-empty-text="'@T("Admin.Orders.OrderItems.SelectGoods")'"
+                                grid-selection-on-init="order.gridOrderItemsSelectionOnInit(selectionCustom)"
+                                grid-on-inplace-before-apply="order.gridOnInplaceBeforeApply(rowEntity, colDef, newValue)"
+                                grid-prevent-state-in-hash="@(isDraft ? "true" : "false")"
+                                grid-on-fetch="order.gridOrderOnFetch()"
+                                grid-swipe-line="true"
+                                ng-style="{'counter-reset': 'ordernumber ' +  (order.gridOrderItemsOptions.paginationCurrentPage - 1 ) * (order.gridOrderItemsOptions.paginationPageSize)}">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div data-product-grid-item
+                             data-row="row"
+                             data-grid-scope="grid.appScope"
+                             data-ext-is-editable-param="!grid.appScope.$ctrl.gridExtendCtrl.isPaied"
+                             data-renderer-columns="colContainer.renderedColumns">
+                            <product-grid-item-info data-ng-if="row.entity.StocksText.length > 0">
+                                <div class="ui-grid-cell-contents" ng-init="grid.appScope.$ctrl.gridExtendCtrl.setLimitItemsStocks(row, 2)">
+                                    <div class="order-grid-stocks">
+                                        <div class="order-grid-stocks__header">@T("Admin.Js.Order.Stoks")</div>
+                                        <div class="order-grid-stocks__item" ng-repeat="stock in row.entity.StocksText | limitTo:row.gridColStocksLimitItems" ng-bind="stock"></div>
+                                        <div class="order-grid-stocks__button" data-ng-if="row.entity.StocksText.length > row.gridColStocksLimitItems">
+                                            <button class="btn-link p-0 js-open-children-el italic" ng-click="$event.stopPropagation();grid.appScope.$ctrl.gridExtendCtrl.setLimitItemsStocks(row, 2)" 
+                                                    type="button" 
+                                                    ng-bind="grid.appScope.$ctrl.gridExtendCtrl.getButtonTextMore(row)"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </product-grid-item-info>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            }
+        </div>
+        <order-items-summary data-order-id="order.orderId"
+                             data-country="order.country"
+                             data-region="order.region"
+                             data-city="order.city"
+                             data-zip="order.zip"
+                             data-is-edit="!order.isPaied"
+                             ng-if="!(order.isDraft && (order.gridOrderItems.gridOptions.data == null || order.gridOrderItems.gridOptions.data.length == 0))"
+                             on-init="order.initOrderItemsSummary(orderItemsSummary)"
+                             on-stop-edit="order.checkStopEdit()"
+                             status-comment="@Model.Order.StatusComment"
+                             admin-comment="@Model.Order.AdminOrderComment"
+                             class="order-content__items-summary order-items-summary row">
+            <footer-left>
+                <ng-form novalidate="" name="orderCommentsForm" bs-modifiable="false">
+                    <div class="card card--form-control">
+                        <label for="orderStatusComment" class="card__label">@T("Admin.Orders.OrderItems.CommentForStatus")</label>
+                        @Html.TextAreaFor(x => x.Order.StatusComment, new
+                        {
+                            @class = "card__input",
+                            @rows = 3,
+                            @id = "orderStatusComment",
+                            ng_model = "order.statusComment",
+                            ng_blur = "orderCommentsForm['Order.StatusComment'].$dirty === true && order.saveChanges(orderCommentsForm)"
+                        })
+
+                    </div>
+                    <div class="card card--form-control">
+                        <label for="adminOrderComment" class="card__label">@T("Admin.Orders.OrderItems.AdminCommentForOrder")</label>
+                        @Html.TextAreaFor(x => x.Order.AdminOrderComment, new
+                        {
+                            @class = "card__input",
+                            @rows = 3,
+                            @id = "adminOrderComment",
+                            ng_model = "order.adminOrderComment",
+                            ng_blur = "orderCommentsForm['Order.AdminOrderComment'].$dirty === true && order.updateAdminComment(orderCommentsForm)"
+                       })
+
+                    </div>
+                </ng-form>
+            </footer-left>
+        </order-items-summary>
+    </div>
+</div>
+
+@Html.RenderModules("admin_order_orderitems", new { orderId = Model.OrderId })

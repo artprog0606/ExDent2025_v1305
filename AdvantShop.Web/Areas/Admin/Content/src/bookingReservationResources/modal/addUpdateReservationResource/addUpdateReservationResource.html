@@ -1,0 +1,435 @@
+﻿<form novalidate is-mobile>
+    <div class="modal-header" ng-class="{'flex middle-xs between-xs' : isMobile.value && ctrl.ActiveTab === 'services'}">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddUpdateBookingEmployee.Add' | translate) : ('Admin.Js.AddUpdateBookingEmployee.Edit' | translate)}}
+        </h2>
+        <div ng-if="isMobile.value && ctrl.ActiveTab === 'services'">
+            <ui-modal-trigger
+                size="xs-11"
+                data-controller="'ModalBookingServicesSelectvizrCtrl'"
+                data-controller-as="ctrl"
+                data-resolve="{params:{affiliateId: ctrl.listOfReservationResourceServicesCtrl.affiliateId}}"
+                data-on-close="ctrl.listOfReservationResourceServicesCtrl.addServicesModal(result)"
+                template-url="../areas/admin/content/src/_shared/modal/bookingServicesSelectvizr/bookingServicesSelectvizr.html">
+                <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 9.143H9.143V16H6.857V9.143H0V6.857h6.857V0h2.286v6.857H16v2.286Z" fill="currentColor" />
+                </svg>
+            </ui-modal-trigger>
+        </div>
+    </div>
+    <div class="modal-body task-modal-content-new-item">
+        <div class="tabs-container tabs-default m-b">
+            <uib-tabset
+                class="{{isMobile.value ? 'nav-tabs-wrap nav-tabs-wrap--chips' : ''}}"
+                uid="addUpdateReservationResourceTabs"
+                on-select-batch="ctrl.ActiveTab = tab.index">
+                <uib-tab index="'common'" heading="Основное" removalable="true">
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="row p-b-xs" ng-class="{'m-b-md m-t-sm': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label">
+                                    <span class="text-required"> Название </span>
+                                </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.name"
+                                        required
+                                        validation-input-text="Название"
+                                        data-autofocus="!isMobile.value"
+                                        data-e2e="BookingReservationResourceName"
+                                        ng-disabled="!ctrl.canBeEditing" />
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddUpdateBookingEmployee.Employee' | translate}} </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <ui-select
+                                        class="input-alt"
+                                        data-e2e="newManager"
+                                        ng-model="ctrl.managerId"
+                                        convert-to-number
+                                        validation-input-text="{{'Admin.Js.AddUpdateBookingEmployee.Employee'|translate}}"
+                                        ng-disabled="!ctrl.canBeEditing">
+                                        <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                                        <ui-select-choices repeat="s.value as s in ctrl.managers | filter: $select.search">
+                                            <div>{{s.label}}</div>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label">Фото</label>
+                                <div class="col-xs-12 col-md-9">
+                                    <input type="hidden" ng-model="ctrl.image" /><!--to enable save button-->
+                                    <div ng-if="ctrl.image != null && ctrl.image != ''">
+                                        <img ng-src="{{ctrl.photoSrc}}" width="70" height="70" />
+                                        <div ng-class="{'m-t-sm': isMobile.value }">
+                                            <a
+                                                href=""
+                                                class="picture-uploader-buttons-delete link-danger"
+                                                ng-click="ctrl.deleteImage()"
+                                                ng-if="ctrl.canBeEditing"
+                                                >Удалить</a
+                                            >
+                                        </div>
+                                    </div>
+                                    <ui-modal-trigger
+                                        data-controller="'ModalCropImageCtrl'"
+                                        controller-as="ctrl"
+                                        template-url="../areas/admin/content/src/_shared/modal/cropImage/cropImage.html"
+                                        on-close="ctrl.updateImage(result)"
+                                        ng-if="ctrl.canBeEditing">
+                                        <a href="" ng-class="{'m-t-sm block': isMobile.value }">Загрузить фото</a>
+                                    </ui-modal-trigger>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label"> Описание </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <textarea
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.description"
+                                        validation-input-text="Описание"
+                                        data-e2e="BookingReservationResourceDescription"
+                                        rows="3"
+                                        ng-disabled="!ctrl.canBeEditing"></textarea>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3">
+                                    <label for="BookingReservationResourceActive">{{'Admin.Js.AddUpdateBookingEmployee.Active' | translate}}</label>
+                                </div>
+                                <div class="col-xs-12 col-md-9">
+                                    <label class="adv-checkbox-label" data-e2e="BookingReservationResourceEnabled">
+                                        <input
+                                            id="BookingReservationResourceActive"
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox"
+                                            ng-model="ctrl.active"
+                                            ng-disabled="!ctrl.canBeEditing" />
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span ng-if="isMobile.value">{{'Admin.Js.AddUpdateBookingEmployee.Active' | translate}}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label">Теги</label>
+                                <div class="col-xs-12 col-md-9">
+                                    <ui-select
+                                        class="input-alt"
+                                        multiple
+                                        ng-model="ctrl.selectedTags"
+                                        sortable="true"
+                                        tagging
+                                        tagging-label=""
+                                        ng-disabled="!ctrl.canBeEditing">
+                                        <ui-select-match placeholder="Выберите теги">{{$item}}</ui-select-match>
+                                        <ui-select-choices repeat="tag in ctrl.tags | filter:$select.search"> {{tag}} </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <label class="col-xs-12 col-md-3 control-label">Порядок сортировки</label>
+                                <div class="col-xs-12 col-md-9">
+                                    <input type="number" ng-model="ctrl.sortOrder" class="form-control input-alt" ng-disabled="!ctrl.canBeEditing" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab index="'timeofbooking'" heading="Время бронирования" removalable="true">
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="row p-b-xs" ng-class="{'m-b-md': isMobile.value }">
+                                <div class="col-xs-12 col-md-6">
+                                    <label class="control-label m-r-sm"> Интервал бронирования </label>
+                                    <label class="adv-checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox"
+                                            ng-model="ctrl.defaultBookingInterval"
+                                            ng-disabled="!ctrl.canBeEditing" />
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span>по умолчанию</span>
+                                    </label>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <select
+                                        class="form-control input-alt"
+                                        ng-if="!ctrl.defaultBookingInterval"
+                                        ng-model="ctrl.bookingIntervalMinutes"
+                                        ng-change="ctrl.onChangeBookingInterval()"
+                                        ng-options="item.Value as item.Text for item in ctrl.bookingIntervals"
+                                        ng-disabled="!ctrl.canBeEditing"
+                                        ng-class="{'m-t-sm': isMobile.value}"></select>
+                                    <input type="hidden" ng-model="ctrl.oldBookingIntervalMinutes" value="@Model.Affiliate.BookingIntervalMinutes" />
+                                </div>
+                            </div>
+
+                            <div ng-if="isMobile.value">
+                                <div class="m-b-md">
+                                    <div class="control-label">День недели</div>
+                                    <select
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.dayOfTheWeek"
+                                        ng-options="item for item in ctrl.daysOfTheWeek"></select>
+                                </div>
+                            </div>
+                            <div class="row p-b-xs" oc-lazy-load="['jqueryUiSelectable']">
+                                <div
+                                    class="col-xs"
+                                    ng-show="ctrl.dayOfTheWeek === 'понедельник' && ctrl.mondayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Monday' | translate}}
+                                    </div>
+
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.mondayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.mondayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.mondayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.mondayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs" ng-show="ctrl.dayOfTheWeek === 'вторник' && ctrl.tuesdayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Tuesday' | translate}}
+                                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                            <div class="help-content">
+                                                <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.tuesdayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.tuesdayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.tuesdayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.tuesdayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs" ng-show="ctrl.dayOfTheWeek === 'среда' && ctrl.wednesdayWorkTimes.length > 0  || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Wednesday' | translate}}
+                                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                            <div class="help-content">
+                                                <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.wednesdayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.wednesdayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.wednesdayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.wednesdayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs" ng-show="ctrl.dayOfTheWeek === 'четверг' && ctrl.thursdayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Thursday' | translate}}
+                                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                            <div class="help-content">
+                                                <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.thursdayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.thursdayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.thursdayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.thursdayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs" ng-show="ctrl.dayOfTheWeek === 'пятница' && ctrl.fridayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Friday' | translate}}
+                                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                            <div class="help-content">
+                                                <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.fridayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.fridayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.fridayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.fridayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs" ng-show="ctrl.dayOfTheWeek === 'суббота' && ctrl.saturdayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Saturday' | translate}}
+                                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                            <div class="help-content">
+                                                <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.saturdayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.saturdayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.saturdayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.saturdayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="col-xs"
+                                    ng-show="ctrl.dayOfTheWeek === 'воскресенье' && ctrl.sundayWorkTimes.length > 0 || !isMobile.value">
+                                    <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                                        {{'Admin.Js.AddUpdateBookingEmployee.Sunday' | translate}}
+                                    </div>
+                                    <div
+                                        selectable
+                                        selectable-list="ctrl.sundayWorkTimes"
+                                        selectable-options="{filter:'.update-reservation-resource-label'}"
+                                        selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.sundayTimes)'}">
+                                        <div
+                                            ng-repeat="time in ctrl.sundayWorkTimes track by $index"
+                                            ng-class="{'update-reservation-resource-label': ctrl.canBeEditing , 'm-t-xs' : isMobile.value}">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.sundayTimes"
+                                                    checklist-value="time"
+                                                    class="adv-checkbox-input"
+                                                    ng-disabled="!ctrl.canBeEditing" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span>{{time}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab
+                    index="'timeofbookingadditional'"
+                    heading="{{::'Admin.Js.BookingUsers.TimeExceptions'|translate}}"
+                    ng-if="ctrl.affiliateId && ctrl.mode !== 'add' && ctrl.isInit"
+                    removalable="true">
+                    <div class="panel-body">
+                        <list-reservation-resource-additional-time
+                            affiliate-id="ctrl.affiliateId"
+                            reservation-resource-id="ctrl.id"
+                            readonly="!ctrl.canBeEditing"></list-reservation-resource-additional-time>
+                    </div>
+                </uib-tab>
+                <uib-tab
+                    index="'services'"
+                    heading="{{::'Admin.Js.AddUpdateBookingEmployee.Services'|translate}}"
+                    ng-if="ctrl.affiliateId && ctrl.mode !== 'add' && ctrl.isInit"
+                    removable="true">
+                    <div class="panel-body">
+                        <list-of-reservation-resource-services
+                            affiliate-id="ctrl.affiliateId"
+                            reservation-resource-id="ctrl.id"
+                            on-init-component="ctrl.getComponentCtrl(item)"
+                            readonly="!ctrl.canBeEditing"></list-of-reservation-resource-services>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            data-e2e="ReservationResourceAdd"
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.addUpdateReservationResource(); ctrl.btnLoading = true"
+            ladda="ctrl.btnLoading"
+            ng-if="ctrl.canBeEditing">
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add' | translate) : ('Admin.Js.AddEdit.Save' | translate)}}
+        </button>
+        <button data-e2e="ReservationResourceCancel" class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddEdit.Cancel' | translate}}
+        </button>
+    </div>
+</form>

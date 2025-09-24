@@ -1,0 +1,43 @@
+﻿@model  AdvantShop.Web.Admin.Models.Landings.LandingsFilterResult
+
+@if (Model.DataItems != null)
+{
+    foreach (var item in Model.DataItems)
+    {
+        var url = !string.IsNullOrEmpty(item.DomainUrl) ? "http://" + item.DomainUrl : item.Url;
+
+        <div class="landing-block-wrap bg-cloak">
+            <div class="ibox">
+                <div class="ibox-content landing-block flex flex-column between-xs">
+                    <div class="relative">
+                        <div class="landing-block-content">
+                            <div class="landing-block-name m-b-sm">
+                                <a href="funnels/site/@item.Id" class="link-decoration-invert">@item.Name</a>
+                            </div>
+                            <a class="landing-link-iframe" href="funnels/site/@item.Id">
+                                <iframe sandbox="allow-same-origin" onload="this.src != null && this.src.length > 0 ? this.nextElementSibling.classList.add('ng-hide') : null;" scrolling="no" frameborder="0"
+                                        lozad-adv="landings.scrollToActiveElement(@item.Id, '@url?previewInAdmin=true')"
+                                        ng-src="{{landings.getUrl(landings.landingsIframe[@item.Id])}}" class="landing-block-preview"></iframe>
+                                <span class="landing-block-preview-loading"></span>
+                            </a>
+                        </div>
+                        <div class="landing-block-footer">
+                            <div class="landing-block-footer-link-block">
+                                @*@item.LandingsCountStr*@
+                                <a href="@url" target="_blank" class="landing-block-footer-link">@url</a>
+                            </div>
+                            <div class="landing-block-footer-settings-block">
+                                <a class="fas fa-pencil-alt landing-block-settings m-r-xs" href="funnels/site/@(item.Id)?landingAdminTab=settings"
+                                   aria-label="Редактировать"
+                                   onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Shop_Funnels_ClickFunnelSettings.ToString()');">
+                                </a>
+                                <button type="button" aria-label="Удалить" class="btn-icon fa fa-times landing-block-settings" ng-click="landings.deleteLanding(@item.Id)">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

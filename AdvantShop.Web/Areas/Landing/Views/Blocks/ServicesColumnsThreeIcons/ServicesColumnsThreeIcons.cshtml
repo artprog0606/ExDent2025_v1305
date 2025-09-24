@@ -1,0 +1,119 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<ServicesModel>("items");
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+    var minHeight = Model.Block.TryGetSetting("min_height");
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        @if (items != null)
+        {
+            float width = 100 / itemsCountInRow;
+            var widthString = width.ToInvariantString() + "%";
+            <style>
+                #block_@Model.Block.Id .services-columns-three-icons__item {
+                    min-width: 100%;
+                    -webkit-flex-basis: 100%;
+                    -ms-flex-preferred-size: 100%;
+                    flex-basis: 100%;
+                    max-width: 100%;
+                    min-height: @(minHeight != null ? minHeight : 0 )px;
+                }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .services-columns-three-icons__item {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: 50%;
+                                max-width: 50%;
+                                min-width: 50%;
+                            }
+                        }
+                        @@media (min-width: 64em) {
+                            #block_@Model.Block.Id .services-columns-three-icons__item {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width: @(widthString);
+                            }
+                        }
+            </style>
+
+            <div class="@(Model.Block.TryGetSetting("align_text") != null ? Model.Block.TryGetSetting("align_text") : "center-xs") services-columns-three-icons__row" data-e2e="ServicesContent" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="services-columns-three-icons__item" data-e2e="ServicesItem">
+                        @if (!Model.Inplace && items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                        {
+                            var linkAction = items[i].Button.Action;
+                            @:<a @( linkAction == LpButtonAction.Url.ToString() ? "href=" + Html.ButtonHref(items[i].Button) + "" : "" ) @(items[i].Button.Action == LpButtonAction.Section.ToString() ? "data-scroll-to-block=" + items[i].Button.ActionSection + "" : "")  class="pointer link-text-decoration-none" @Html.Raw(items[i].Button.TargetBlank && linkAction == LpButtonAction.Url.ToString() ? "target=\"_blank\"" : null)>
+                        }
+                                <div class="color-scheme__bg--alt services-columns-three-icons__inner">
+                                    <div>
+                                        <div class="services-columns-three-icons__picture" data-e2e="ServicesLoadPic">
+                                            @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                            {
+                                                LandingPageId = Model.Block.LandingId,
+                                                BlockId = Model.Block.Id,
+                                                OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                                OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                                OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                                OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                                Current = items[i].Picture.Src,
+                                                Type = items[i].Picture.Type,
+                                                DeletePicture = true,
+                                                GalleryIconsEnabled = true,
+                                                LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                                LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                                MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                                MaxHeightPicture = PictureLoaderImageSize.XSmallHeight,
+                                                WidthPicture = items[i].Picture.Width,
+                                                HeightPicture = items[i].Picture.Height
+                                            })
+                                        </div>
+                                        <div class="services-columns-three-icons__content">
+                                            <div class="lp-font-size--large services-columns-three-icons__header" data-e2e="ServicesItemHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>
+                                                @Html.Raw(items[i].Header)
+                                            </div>
+                                            @if (items[i].ShowText == true)
+                                            {
+                                                <div class="lp-h3--color lp-font-size--middle services-columns-three-icons__text m-t-md" data-e2e="ServicesItemText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                    @Html.Raw(items[i].Text)
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="services-columns-three-icons__footer">
+                                            @if (items[i].ShowPrice)
+                                            {
+                                                <div class="services-columns-three-icons__price" data-e2e="ServicesPrice" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].price")>
+                                                    @Html.Raw(items[i].Price)
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                        @if (!Model.Inplace && items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                        {
+                            @:</a>
+                        }
+
+                    </div>
+
+                }
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row center-xs m-t-wl">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

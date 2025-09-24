@@ -1,0 +1,149 @@
+﻿@using AdvantShop.Web.Admin.Models.Tasks;
+@using AdvantShop.Core.Common.Extensions;
+@using AdvantShop.Core.Services.Admin
+
+@model AdvantShop.Web.Admin.ViewModels.Tasks.TasksListViewModel
+@{
+    var sTaskGroupId = Model.TaskGroupId.HasValue ? Model.TaskGroupId.ToString() : "null";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    string tasksFilterFromUrl = Request.QueryString["filterby"];
+    var allTasksMode = Model.TaskGroupId != null && CustomerContext.CurrentCustomer.IsAdmin;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Tasks/_TasksLayout.cshtml";
+    } else
+    {
+        Layout = "~/Areas/Admin/Views/Tasks/_TasksLayout.cshtml";
+    }
+}
+
+<div ng-init="tasks.init(@Model.UseKanban.ToLowerString(), '@tasksFilterFromUrl', '@(Model.PreFilter != TasksPreFilterType.None ? Model.PreFilter.ToString().ToLower() : TasksPreFilterType.AssignedToMe.ToString().ToLower())', @sTaskGroupId, @CustomerContext.CurrentCustomer.IsAdmin.ToLowerString(), @Model.ShowAcceptedTasks.ToLowerString())">
+    @if (!Model.UseKanban || isMobile)
+    {
+        <div class="ibox m-n">
+            <div class="tasks-navbar">
+                <ul class="nav nav-tabs nav-collapse-tab @(isMobile ? "chips-list" : "")">
+                    @foreach (TasksPreFilterType item in Model.PreFilterTypes)
+                    {
+                        <li class="ng-tab nav-item  @(isMobile ? "chips-list__item" : "")" ng-class="{'active': tasks.prefilter === '@item.ToString().ToLower()' }">
+                            <a href="" class="@(isMobile ? "chip" : "nav-link")" ng-class="{'chip--active': tasks.prefilter === '@item.ToString().ToLower()'}" ng-click="tasks.goToTab($event, '@(item != TasksPreFilterType.None ? item.ToString().ToLower() : "")')">
+                                @item.Localize()
+                                <span class="leads-count-label" ng-if="tasks.grid.gridOptions.TasksCount['@item.ToString()']" ng-bind="tasks.grid.gridOptions.TasksCount['@item.ToString()']"></span>
+                            </a>
+                        </li>
+                    }
+                        <li class="ng-tab nav-item  @(isMobile ? "chips-list__item" : "")" ng-class="{'active': tasks.prefilter === '' }">
+                            <a href="" class="@(isMobile ? "chip" : "nav-link")" ng-class="{'chip--active': tasks.prefilter === ''}" ng-click="tasks.goToTab($event, '')">
+                                @T("Admin.Tasks.Index.All")
+                                <span class="leads-count-label" ng-if="tasks.grid.gridOptions.TasksCount['None']" ng-bind="tasks.grid.gridOptions.TasksCount['None']"></span>
+                            </a>
+                        </li>
+                </ul>
+            </div>
+        </div>
+        <div class="ibox">
+            <div class="ibox-content no-top-border">
+                <ui-grid-custom grid-unique-id="grid"
+                                grid-row-identificator="'Id'"
+                                grid-on-init="tasks.gridOnInit(grid)"
+                                grid-options="tasks.gridOptions"
+                                grid-params="tasks.gridParams"
+                                grid-url="'tasks/gettasks'"
+                                grid-inplace-url="'tasks/inplacetask'"
+                                grid-extend-ctrl="tasks"
+                                grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div class="card card--gap-row-sm card--border-info" ng-style="{'border-color': @allTasksMode.ToLowerString() ? '#' + row.entity.StatusColor : '#000' }">
+                            <div class="card__row card__row--three m-b-sm">
+                                <div class="card__col">
+                                    <span class="card__text--alt">#<span ng-bind="row.entity.Id"></span></span>
+                                </div>
+                                <div class="card__col text-break">
+                                    <span class="card__text--color-alt" ng-bind="row.entity.Name"></span>
+                                </div>
+                                <div class="card__col card__col--end">
+                                    <div class="task-mobile-avatar" ng-if="row.entity.AppointedCustomerAvatarSrc != null"><img ng-src="{{row.entity.AppointedCustomerAvatarSrc}}"/></div>
+                                </div>
+                            </div>
+                            <div class="card__row m-b middle-xs">
+                                <div class="card__col flex middle-xs">
+                                    <div class=" m-r-sm task-mobile-avatar" ng-if="manager.AvatarSrc" ng-repeat="manager in row.entity.Managers track by $index">
+                                        <img ng-src="{{manager.AvatarSrc}}" alt="{{manager.FullName}}" title="{{manager.FullName}}" />
+                                    </div>
+                                </div>
+                                <div class="card__col card__col--end">
+                                    <span class="card__text--alt" ng-bind="row.entity.PriorityFormatted"></span>
+                                </div>
+                            </div>
+                            <div class="card__row">
+                                <div class="card__col">
+                                    <span class="card__text--color-alt" ng-bind="row.entity.DateAppointedFormatted"></span>
+                                </div>
+                                <div class="card__col card__col--end">
+                                    <span class="card__text--color-alt" ng-bind="row.entity.StatusFormatted"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                    <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="tasks.grid.gridOptions.TotalString">
+                    </ui-grid-custom-footer>
+                </ui-grid-custom>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="ibox m-n">
+            <div class="ibox-content p-t-sm p-l-sm p-r-sm p-b-xs">
+                <div class="adv-radio-group @(!isMobile ? "adv-radio-group--horizontal" : "")">
+                    <label class="adv-radio-label">
+                        <input ng-model="tasks.selectTasks" ng-change="tasks.toggleViewTasks(tasks.selectTasks)" value="all" class="adv-radio-input" name="radioTask" type="radio">
+                        <span class="adv-radio-label-text">@T("Admin.Tasks.Index.All")</span>
+                        <span data-e2e="AllTasks" class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label">
+                        <input ng-model="tasks.selectTasks" ng-change="tasks.toggleViewTasks(tasks.selectTasks)" value="assignedtome" class="adv-radio-input" name="radioTask" type="radio">
+                        <span class="adv-radio-label-text">@T("Admin.Tasks.Index.MyTasks") <span ng-bind="'(' + tasks.kanban.kanbanObj.AssignedToMeTasksCount + ')'"></span></span>
+                        <span data-e2e="MyTasks" class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label">
+                        <input ng-model="tasks.selectTasks" value="appointedbyme" ng-change="tasks.toggleViewTasks(tasks.selectTasks)" class="adv-radio-input" name="radioTask" type="radio">
+                        <span class="adv-radio-label-text">@T("Admin.Tasks.Index.TasksAssignedByMe") <span ng-bind="'(' + tasks.kanban.kanbanObj.AppointedByMeTasksCount + ')'"></span></span>
+                        <span data-e2e="AppointedMe" class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label">
+                        <input ng-model="tasks.selectTasks" value="observedbyme" ng-change="tasks.toggleViewTasks(tasks.selectTasks)" class="adv-radio-input" name="radioTask" type="radio">
+                        <span class="adv-radio-label-text">@T("Admin.Tasks.Index.TasksObservedByMe") <span ng-bind="'(' + tasks.kanban.kanbanObj.ObservedByMeTasksCount + ')'"></span></span>
+                        <span data-e2e="AppointedMe" class="adv-radio-emul"></span>
+                    </label>
+                </div>
+                <div class="pull-right">
+                    <label class="adv-checkbox-label control-checkbox">
+                        <input type="checkbox" ng-model="tasks.showAcceptedTasks" class="adv-checkbox-input" ng-change="tasks.toggleAcceptedTasks(tasks.showAcceptedTasks)">
+                        <span class="adv-checkbox-emul"></span>
+                        <span class="pointer">@T("Admin.Tasks.Index.ShowAcceptedTasks")</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <kanban data-sort-options="tasks.sortableOptions"
+                fetch-url="'tasks/getkanban'"
+                fetch-column-url="'tasks/getkanbancolumn'"
+                kanban-on-init="tasks.kanbanOnInit(kanban)"
+                extend-ctrl="tasks"
+                kanban-column-defs="tasks.gridOptions.columnDefs"
+                kanban-on-filter-init="tasks.kanbanOnFilterInit(filter)"
+                kanban-params="tasks.gridParams"
+                modal-add-params="{'taskGroupId': @sTaskGroupId}"
+                card-template-url="@Html.GetAssetPath("task-card.html")"
+                no-cards-template-url="@Html.GetAssetPath("no-tasks.html")"
+                kanban-column-classes="'tasks-kanban-column'"
+                kanban-scrollable="true"
+                class="task-kanban"
+                uid="kanban"
+                kanban-sticky-top="@(AdminAreaTemplate.Current == null ? 70 : 60)">
+        </kanban>
+    }
+</div>

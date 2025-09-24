@@ -1,0 +1,35 @@
+﻿<div data-ng-if="!productAvailabilityMap.isLoadingData">
+    <div class="row product-availability-map">
+        <div class="col-xs-4" data-ng-if="!productAvailabilityMap.mobileMode">
+            <warehouses-list
+                data-warehouses="productAvailabilityMap.stockListData"
+                data-on-click-warehouse="productAvailabilityMap.runBalloon(warehouse, index)"
+                data-active-warehouse="productAvailabilityMap.activeBalloon"></warehouses-list>
+        </div>
+        <div class="relative" data-ng-class="{'col-xs-12': productAvailabilityMap.mobileMode, 'col-xs-8': !productAvailabilityMap.mobileMode}">
+            <div class="product-availability-map__spinner" data-ng-if="!productAvailabilityMap.isLoadedMap">
+                <div class="icon-spinner-before icon-animate-spin-before"></div>
+            </div>
+            <ya-map
+                data-ya-zoom="{{productAvailabilityMap.zoom}}"
+                class="product-availability-map__map"
+                data-ya-after-init="productAvailabilityMap.handleAfterInitMap($target)"
+                data-ya-map-key="productAvailabilityMap.apiKeyMap"
+                data-ya-options="{{productAvailabilityMap.mapOptions}}"
+                data-ya-controls="{{productAvailabilityMap.mapControls}}">
+                <ya-collection
+                    data-show-all="productAvailabilityMap.isShowAll"
+                    data-ya-options="{preset:'twirl#blueIcon'}"
+                    data-ya-after-init="productAvailabilityMap.setCollection($target)">
+                    <ya-geo-object
+                        data-ng-repeat="balloon in productAvailabilityMap.stockListData"
+                        data-ya-source="balloon"
+                        data-ya-event-click="productAvailabilityMap.showBalloonPlace($event, balloon)"></ya-geo-object>
+                </ya-collection>
+            </ya-map>
+        </div>
+    </div>
+</div>
+<div data-ng-if="productAvailabilityMap.isLoadingData" class="product-availability-map__spinner">
+    <div class="icon-spinner-before icon-animate-spin-before"></div>
+</div>

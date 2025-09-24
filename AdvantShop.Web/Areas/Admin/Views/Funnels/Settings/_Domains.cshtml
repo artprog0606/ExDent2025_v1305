@@ -1,0 +1,319 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteSettings
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var baseUrl = SettingsMain.SiteUrl + "/lp/";
+}
+
+<div class="row">
+    <div class="col-xs-12 col-md-11">
+        <div class="form-group row middle-xs">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+                    @T("Admin.Views.Funnels.Settings.Domains.FunnelInternalURL")
+                </div>
+            </div>
+            @if (isMobile)
+            {
+                <div class="col-xs-12 flex middle-xs">
+                    <div class="flex-grow @(isMobile ? "card card--form-control" : "")" style="margin-bottom:0;">
+                        <label for="SiteUrl" class="@(isMobile ? "card__label" : "input-group")">
+                            <span class="@(isMobile ? "m-b-xs block" : "input-group-addon")">@baseUrl</span>
+                        </label>
+                        @Html.TextBoxFor(x => x.SiteUrl, new { @class = "form-control card__input", ng_model = "landingSite.settings.SiteUrl" })
+                    </div>
+
+                    <div class=" relative">
+                        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-sm p-l-xs" data-title="@T("Admin.Views.Funnels.Settings.Domains.FunnelInternalURL")">
+                            <div class="help-content">
+                                @T("Admin.Views.Funnels.Settings.Domains.IfDomainNotLinked")
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+                @*<div class="col-xs-12 m-t-sm">
+                    <a href="@UrlService.GetUrl("lp/"){{landingSite.actualSiteUrl}}" target="blank" class="fas fa-external-link-alt text-decoration-none link-invert" title="Открыть">
+                       Открыть
+                    </a>
+                </div>*@
+            }
+            else
+            {
+                <div class="col-xs">
+                    <label class="input-group">
+                        <span class="input-group-addon">@baseUrl</span>
+                        @Html.TextBoxFor(x => x.SiteUrl, new { @class = "form-control", ng_model = "landingSite.settings.SiteUrl" })
+                    </label>
+                </div>
+                <div class="col-xs-slim relative">
+                    <a href="@UrlService.GetUrl("lp/"){{landingSite.actualSiteUrl}}" target="blank" class="fas fa-external-link-alt text-decoration-none link-invert" title="@T("Admin.Views.Funnels.Settings.Domains.Open")"></a>
+                    <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs" data-title="@T("Admin.Views.Funnels.Settings.Domains.FunnelInternalURL")">
+                        <div class="help-content">
+                            @T("Admin.Views.Funnels.Settings.Domains.IfDomainNotLinked")
+                        </div>
+                    </help-trigger>
+                </div>
+            }
+        </div>
+
+        <div class="row" bs-modifiable="false">
+            @if (!isMobile)
+            {
+                <div class="col-xs-12 col-md--3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Views.Funnels.Settings.Domains.FunnelDomainSubdomain")
+                    </div>
+                </div>
+            }
+            <div class="col-xs-12 col-md-9 relative">
+                <div>
+
+                    <div class="m-b" ng-if="landingSite.domain != null && landingSite.domain.length > 0" data-e2e="funnelAddedDomains">
+                        <div>
+                            @if (isMobile)
+                            {
+                                <h3 class="funnel__subtitle">@T("Admin.Views.Funnels.Settings.Domains.AddedDomains")</h3>
+                            }
+                            else
+                            {
+                                <h3><strong>@T("Admin.Views.Funnels.Settings.Domains.AddedDomains")</strong></h3>
+                            }
+
+                        </div>
+
+                        <div class="row m-b-sm">
+                            <div class="col-xs-6">
+                                <a href="http://{{landingSite.domain}}" target="_blank" class="link-invert link-decoration-none text-decoration-invert">
+                                    {{landingSite.domain}}
+                                </a>
+                                @if (!Model.UseDomainsManager)
+                                {
+                                    <a href="" class="link-invert link-decoration-none fas fa-times" ng-click="landingSite.removeDomain(landingSite.domain)"></a>
+                                }
+                                else
+                                {
+                                    <a href="http://{{landingSite.domain}}" class="link-invert link-decoration-none" target="_blank">
+                                        <svg viewBox="0 0 194.818 194.818" width="10px" height="10px" fill="#acadaa">
+                                            <path d="M185.818,2.161h-57.04c-4.971,0-9,4.029-9,9s4.029,9,9,9h35.312l-86.3,86.3c-3.515,3.515-3.515,9.213,0,12.728
+		                                            c1.758,1.757,4.061,2.636,6.364,2.636s4.606-0.879,6.364-2.636l86.3-86.3v35.313c0,4.971,4.029,9,9,9s9-4.029,9-9v-57.04
+		                                            C194.818,6.19,190.789,2.161,185.818,2.161z" />
+                                            <path d="M149,77.201c-4.971,0-9,4.029-9,9v88.456H18v-122h93.778c4.971,0,9-4.029,9-9s-4.029-9-9-9H9c-4.971,0-9,4.029-9,9v140
+		                                            c0,4.971,4.029,9,9,9h140c4.971,0,9-4.029,9-9V86.201C158,81.23,153.971,77.201,149,77.201z" />
+                                        </svg>
+                                    </a>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-b-sm"
+                         ng-if="landingSite.domains != null && landingSite.domains.length > 0"
+                         ng-repeat="domain in landingSite.domains track by $index">
+
+                        <div class="col-xs-6">
+                            <a href="http://{{domain.DomainUrl}}" target="_blank" class="link-invert link-decoration-none text-decoration-invert">{{domain.DomainUrl}}</a>
+                            @if (!Model.UseDomainsManager)
+                            {
+                                <a href="" class="link-invert link-decoration-none fas fa-times" ng-click="landingSite.removeDomain(domain.DomainUrl)"></a>
+                            }
+                            else
+                            {
+                                <a href="http://{{domain.DomainUrl}}" class="link-invert link-decoration-none" target="_blank">
+                                    <svg viewBox="0 0 194.818 194.818" width="10px" height="10px" fill="#acadaa">
+                                        <path d="M185.818,2.161h-57.04c-4.971,0-9,4.029-9,9s4.029,9,9,9h35.312l-86.3,86.3c-3.515,3.515-3.515,9.213,0,12.728
+		                                            c1.758,1.757,4.061,2.636,6.364,2.636s4.606-0.879,6.364-2.636l86.3-86.3v35.313c0,4.971,4.029,9,9,9s9-4.029,9-9v-57.04
+		                                            C194.818,6.19,190.789,2.161,185.818,2.161z" />
+                                        <path d="M149,77.201c-4.971,0-9,4.029-9,9v88.456H18v-122h93.778c4.971,0,9-4.029,9-9s-4.029-9-9-9H9c-4.971,0-9,4.029-9,9v140
+		                                            c0,4.971,4.029,9,9,9h140c4.971,0,9-4.029,9-9V86.201C158,81.23,153.971,77.201,149,77.201z" />
+                                    </svg>
+                                </a>
+                            }
+                        </div>
+                    </div>
+
+
+                    @if (Model.UseDomainsManager)
+                    {
+                        <div class="m-b" ng-if="landingSite.domains != null && landingSite.domains.length > 0">
+                            <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?openFunnel=@Model.Id">@T("Admin.Views.Funnels.Settings.Domains.ManageDomains")</a>
+                        </div>
+                    }
+
+                <div class="m-b-xs">
+                    @if (isMobile)
+                    {
+                        <h3 class="funnel__subtitle">@T("Admin.Views.Funnels.Settings.Domains.AddDomain")</h3>
+                    }
+                    else
+                    {
+                        <h3><strong>@T("Admin.Views.Funnels.Settings.Domains.AddDomain")</strong></h3>
+                    }
+
+                </div>
+
+                    @if (Model.UseDomainsManager)
+                    {
+                        <div class="m-b domain-block">
+                            <div class="m-b">
+                                <label class="adv-radio-label domain-label setting__label" data-e2e="funnelBydomain">
+                                    <input class="adv-radio-input" ng-model="landingSite.bydomain" type="radio" value="0" checked="checked" />
+                                    <span class="adv-radio-label-text">@T("Admin.Views.Funnels.Settings.Domains.BuyDomainCost")</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                                <div ng-if="landingSite.bydomain === '0'" class="m-t-sm">
+                                    <div class="domain-note italic m-b-sm">
+                                        @T("Admin.Views.Funnels.Settings.Domains.BuyDomainTextOne")<br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.BuyDomainTextTwo")<br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.BuyDomainTextThree") <b>@T("Admin.Views.Funnels.Settings.Domains.BuyDomainTextFour")</b> @T("Admin.Views.Funnels.Settings.Domains.BuyDomainTextFive")
+                                    </div>
+                                    <div class="domain-note">
+                                        <a href="@Url.AbsoluteActionUrl("DomainBuy", "Service", new {area = "adminv2", funnelId = Model.Id})" class="btn btn-sm btn-success" data-e2e="BuyDomain" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Shop_Funnels_ClickBuyDomain.ToString()');">
+                                            @T("Admin.Views.Funnels.Settings.Domains.BuyDomain")
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="m-b">
+                                <label class="adv-radio-label domain-label  setting__label" data-e2e="funnelHavedomain">
+                                    <input class="adv-radio-input" ng-model="landingSite.bydomain" type="radio" value="1"/>
+                                    <span class="adv-radio-label-text">@T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomain")</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                                <div ng-if="landingSite.bydomain === '1'" class="m-t-sm ng-cloak">
+                                    <div class="domain-note italic m-b-sm">
+                                        @T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextOne") <br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextTwo") <br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextThree") <b>@T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextFour")</b> @T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextFive")<br>
+                                        <a href="https://www.advantshop.net/help/search?name=ns" target="_blank">@T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextSix")</a><br><br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.HaveDomainSubdomainTextSeven")
+                                    </div>
+                                    <div class="domain-note">
+                                        <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?selectedValueDomainBinding=@Model.Id" class="btn btn-sm btn-success">@T("Admin.Views.Funnels.Settings.Domains.ConnectDomain")</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="m-b">
+                                <label class="adv-radio-label domain-label  setting__label" data-e2e="funnelHavedomain">
+                                    <input class="adv-radio-input" ng-model="landingSite.bydomain" type="radio" value="2" />
+                                    <span class="adv-radio-label-text">@T("Admin.Views.Funnels.Settings.Domains.UsePreviouslyDomain")</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                                <div ng-if="landingSite.bydomain === '2'" class="m-t-sm ng-cloak">
+                                    <div class="domain-note italic m-b-sm">
+                                        @T("Admin.Views.Funnels.Settings.Domains.UsePreviouslyDomainTextOne")<br>
+                                        @T("Admin.Views.Funnels.Settings.Domains.UsePreviouslyDomainTextTwo")
+                                    </div>
+                                    <div class="domain-note">
+                                        <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?selectedValueDomainBinding=@Model.Id&bindYourDomain=true" class="btn btn-sm btn-success">@T("Admin.Views.Funnels.Settings.Domains.ChangeBinding")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div ng-init="landingSite.addDomainMode='new'"
+                             class="@(isMobile ? "chips-list" : "flex")">
+                            <div ng-click="landingSite.addDomainMode='new'" class="funnel-domain-item @(isMobile ? "chips-list__item" : "")"
+                                 ng-class="{'funnel-domain-item-selected': landingSite.addDomainMode=='new'}">
+                                <span class="@(isMobile ? "chip" : "")" ng-class="{'chip--active': landingSite.addDomainMode=='new'}">@T("Admin.Views.Funnels.Settings.Domains.New")</span>
+                            </div>
+                            <div ng-click="landingSite.addDomainMode='reuse'" class="funnel-domain-item  @(isMobile ? "chips-list__item" : "")"
+                                 ng-class="{'funnel-domain-item-selected': landingSite.addDomainMode=='reuse'}">
+                                @*ng-if="landingSite.funnelDomains != null && landingSite.funnelDomains.length > 0"*@
+                                <span class="@(isMobile ? "chip" : "")"  ng-class="{'chip--active': landingSite.addDomainMode=='reuse'}">@T("Admin.Views.Funnels.Settings.Domains.UsePreviouslyAdded")</span>
+                            </div>
+                        </div>
+
+                        <div class="funnel-domains" ng-if="landingSite.addDomainMode=='new'">
+                            <div class="row @(isMobile ? "m-b-sm funnel__label" : "m-b-md")">
+                                <div class="col-xs-12">@T("Admin.Views.Funnels.Settings.Domains.EnterDomainNameSubdomain")</div>
+                            </div>
+                            @if (isMobile)
+                            {
+                                <div class="row middle-xs m-b-sm">
+                                    <div class="col-xs-slim  p-r-none">
+                                        <div class="">http://</div>
+                                    </div>
+                                    <div class="col-xs">
+                                        <input type="text" ng-model="landingSite.newdomain" class="form-control input-alt" style=""
+                                               placeholder="@T("Admin.Views.Funnels.Settings.Domains.EnterDomainNameSubdomain")" pattern="^(?!:\/\/)([a-zA-Zа-яА-Я0-9-_]+\.)*[a-zA-Zа-яА-Я0-9][a-zA-Zа-яА-Я0-9-_]+\.[a-zA-Zа-яА-Я]{2,11}?$" />
+                                    </div>
+                                </div>
+                                <div class="row middle-xs m-b">
+                                    <div class="col-xs-slim">
+                                        <a href="" class="btn btn-sm btn-success" ng-click="landingSite.addDomain(landingSite.domain != null && landingSite.domain.length > 0)">@T("Admin.Views.Funnels.Settings.Domains.Add")</a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                            <div class="row middle-xs m-b">
+                                <div class="col-xs-slim  p-r-none">
+                                    <div class="setting-label-wrap">http://</div>
+                                </div>
+                                <div class="col-xs-slim">
+                                    <input type="text" ng-model="landingSite.newdomain" class="form-control" style="@(!isMobile ? "min-width: 370px;" : "")"
+                                           placeholder="@T("Admin.Views.Funnels.Settings.Domains.EnterDomainNameSubdomain")" pattern="^(?!:\/\/)([a-zA-Zа-яА-Я0-9-_]+\.)*[a-zA-Zа-яА-Я0-9][a-zA-Zа-яА-Я0-9-_]+\.[a-zA-Zа-яА-Я]{2,11}?$" />
+                                </div>
+                                <div class="col-xs-slim">
+                                    <a href="" class="btn btn-sm btn-success" ng-click="landingSite.addDomain(landingSite.domain != null && landingSite.domain.length > 0)">@T("Admin.Views.Funnels.Settings.Domains.Add")</a>
+                                </div>
+                            </div>
+                            }
+                            <div class="m-b-xs @(isMobile ? "funnel__label" : "bold")">@T("Admin.Views.Funnels.Settings.Domains.PleaseNote")</div>
+                            <ol class="m-b-none @(isMobile ? "p-l-sm" : "")">
+                                <li class="m-b-xs">
+                                    @T("Admin.Views.Funnels.Settings.Domains.PleaseNoteTextOne")
+                                </li>
+                                <li class="m-b-xs">
+                                    @T("Admin.Views.Funnels.Settings.Domains.PleaseNoteTextTwo")
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="funnel-domains" ng-class="{'funnel-domains--empty text-center' : !(landingSite.funnelDomains != null && landingSite.funnelDomains.length > 0) }" ng-if="landingSite.addDomainMode=='reuse'">
+
+                            <div ng-if="landingSite.addDomainMode=='reuse' && landingSite.funnelDomains != null && landingSite.funnelDomains.length > 0">
+                                <div class="row m-b-md">
+                                    <div class="col-xs-12">@T("Admin.Views.Funnels.Settings.Domains.SelectDomainNameSubdomain")</div>
+                                </div>
+                                <div class="row m-b">
+                                    <div class="col-xs col-sm-5">
+                                        <select class="form-control input-alt"
+                                                ng-model="landingSite.reuseDomain"
+                                                ng-options="item.DomainUrl for item in landingSite.funnelDomains">
+                                        </select>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <a href="" class="btn btn-sm btn-success" ng-click="landingSite.addReuseDomain(landingSite.reuseDomain.DomainUrl)">@T("Admin.Views.Funnels.Settings.Domains.Toggle")</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="bold m-b-xs">@T("Admin.Views.Funnels.Settings.Domains.PleaseNote")</div>
+                                        <ol class="m-b-none">
+                                            <li class="m-b-xs">
+                                                @T("Admin.Views.Funnels.Settings.Domains.AfterChangingBinding")
+                                            </li>
+                                            <li class="m-b-xs">
+                                                @T("Admin.Views.Funnels.Settings.Domains.BindingChanges")
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <i ng-if="!(landingSite.funnelDomains != null && landingSite.funnelDomains.length > 0)">@T("Admin.Views.Funnels.Settings.Domains.NoConnectedDomains")</i>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

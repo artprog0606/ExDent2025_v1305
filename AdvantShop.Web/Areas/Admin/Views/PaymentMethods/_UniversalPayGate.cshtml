@@ -1,0 +1,78 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.UniversalPayGatePaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.UniversalPayGate.SellerLogin")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.MerchantLogin, new { ng_model = "paymentMethod.Parameters.MerchantLogin", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.UniversalPayGate.SellerLogin") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.UniversalPayGate.SellerLogin")">
+            @T("Admin.PaymentMethods.UniversalPayGate.EnterVendorLoginSpecifiedInPaySystem")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.UniversalPayGate.Password1")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "paymentMethod.Parameters.Password", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.UniversalPayGate.Password1") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.UniversalPayGate.Password1")">
+            @T("Admin.PaymentMethods.UniversalPayGate.Password1Used")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.UniversalPayGate.Password2")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.PasswordNotify, new { ng_model = "paymentMethod.Parameters.PasswordNotify", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.UniversalPayGate.Password2") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs  @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.UniversalPayGate.Password2")">
+            @T("Admin.PaymentMethods.UniversalPayGate.Password2UsedByPaymentNotification")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <label for="IsTest" class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.UniversalPayGate.TestMode")
+    </label>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.IsTest, new { ng_model = "paymentMethod.Parameters.IsTest", ng_init = "paymentMethod.Parameters.IsTest=" + Model.IsTest.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <label for="SendReceiptData" class="flex-grow-n setting__label @(isMobile ? "col-xs-11" : "col-fixed-size-md") setting--m-none">
+        @T("Admin.PaymentMethods.UniversalPayGate.SendDataForCheck")
+    </label>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.UniversalPayGate.Url")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Code, Model.UniversalPayGates.Select(x => new SelectListItem { Text = x.Name, Value = x.Code }), "Выберите", new { ng_model = "paymentMethod.Parameters.UniversalPayGates", ng_init = "paymentMethod.Parameters.UniversalPayGates='" + Model.UniversalPayGates + "'", @class = "form-control input-alt", disabled = "disabled" })
+        @Html.HiddenFor(x => x.Code)
+        @Html.HiddenFor(x => x.Url)
+        @Html.HiddenFor(x => x.UrlTest)
+    </div>
+</div>

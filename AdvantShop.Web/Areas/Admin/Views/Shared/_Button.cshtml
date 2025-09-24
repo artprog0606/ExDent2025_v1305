@@ -1,0 +1,73 @@
+﻿@model ButtonModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var e2eName = Model.Type == eButtonType.Save ? "btnSave" + Model.Name : Model.Type == eButtonType.Add ? "btnAdd" + Model.Name : "btn" + Model.Name;
+    List<String> cssClasses = new List<string>()
+{
+        "btn",
+        "btn--" + Model.Type.ToString().ToLower(),
+        Model.Size != eButtonSize.Default ? "btn-" + Model.SizeCssClass.ToString().ToLower() : null,
+        "btn-" + Model.ColorType.ToString().ToLower(),
+        Model.IsOutline ? "btn-outline" : null,
+        isMobile && Model.Icon != null ? "btn--with-icon" : "",
+        Model.Modificators != null && Model.Modificators.Count > 0 ? string.Join(" ", Model.Modificators.Select(s => s.StrName()).ToArray()) : null,
+        Model.CssClass
+    };
+    var classes = String.Join(" ", cssClasses.ToArray());
+}
+
+@helper RenderIcon(ButtonIcon icon)
+{
+    if (icon != null)
+    {
+        <span class="btn-icon">
+            @if (icon.FaName.IsNotEmpty())
+            {
+                @Html.Raw(String.Format("<span class=\"fa fa-{0} " + icon.CssClass + "\"></span>", icon.FaName));
+            }
+            else if (icon.SvgName.IsNotEmpty())
+            {
+                @Html.SvgSprite(icon.SvgName, icon.CssClass, icon.Attributes);
+            }
+            else if (icon.Source.IsNotEmpty())
+            {
+                @Html.Raw(icon.Source);
+            }
+        </span>
+    }
+}
+
+@if (Model.WrapStart.IsNotEmpty())
+{
+    @Html.Raw(Model.WrapStart)
+}
+
+@if (!Model.HtmlElement.IsNullOrEmpty())
+{
+    @Html.Raw(Model.HtmlElement)
+} else if (Model.Link.IsNullOrEmpty())
+{
+    <button class="@classes" data-e2e="@e2eName" @(Model.Validation ? "data-button-validation" : "") @Html.Raw(Model.AttibutesString) type="@(Model.Type == eButtonType.Save ? "submit": "button")">
+        @if (isMobile)
+        {
+            @RenderIcon(Model.Icon)
+        }
+        <span class="btn-text">@Model.Text</span>
+    </button>
+}
+else
+{
+    <a class="@classes" data-e2e="@e2eName" @(Model.Validation ? "data-button-validation" : "") @Html.Raw(Model.AttibutesString) href="@Model.Link">
+        @if (isMobile)
+        {
+            @RenderIcon(Model.Icon)
+        }
+        <span class="btn-text">@Model.Text</span>
+    </a>
+}
+
+@if (Model.WrapEnd.IsNotEmpty())
+{
+    @Html.Raw(Model.WrapEnd)
+}

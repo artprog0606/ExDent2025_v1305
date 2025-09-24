@@ -1,0 +1,555 @@
+﻿@using AdvantShop.Track
+@using eStep = AdvantShop.Configuration.ECongratulationsDashboardStep
+@model AdvantShop.Web.Admin.Models.Home.CongratulationsDashboardModel
+
+<div class="row congrat-block2" ng-init="congratulationsDashboard.init()">
+    <div class="col-xs-12">
+        <div class="col-xs-12">
+            <div class="congrat-title  ">
+                <h2 class="p-l-n">@T("Admin.Home.Congratulations.Congratulations")</h2>
+            </div>
+            <div class="congrat__subtitle-block p-b-lg container-limitation-tabs-content-custom">
+                <div class=" congrat-subtitle">
+                    Мастер быстрой настройки поможет Вам быстрее запустить свой магазин
+                </div>
+                <div class="text-right p-r-md ">
+                    <a class="text-decoration-none" ng-click="congratulationsDashboard.skipDashboard()">@T("Admin.Home.Congratulations.SkipWizard")</a>
+                </div>
+            </div>
+
+            @section TrialUserInfo
+            {
+                @Html.Action("UserInformation", "Home", new { NgOnClose = "congratulationsDashboard.showFirstVideo()" })
+            }
+        </div>
+        <div class="col-xs-12">
+            <div class="row ">
+                <div class="col-xs-3 container-limitation-tabs">
+                    <div class="aside-menu">
+                        @if (!eStep.StoreInfo.Ignore())
+                        {
+                            <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" href=""
+                               ng-class="{'selected':congratulationsDashboard.tab=='@eStep.StoreInfo', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.StoreInfo']}"
+                               ng-click="congratulationsDashboard.tab = '@eStep.StoreInfo'">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        Данные компании
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        @*<a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" href=""
+                            ng-class="{'selected':congratulationsDashboard.tab=='@eStep.Social', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.Social']}"
+                            ng-click="congratulationsDashboard.tab = '@eStep.Social'">
+                            <div class="aside-menu-inner">
+                                <div class="aside-menu-name">
+                                    Мессенджеры и соц. сети
+                                </div>
+                            </div>
+                        </a>*@
+                        @if (!eStep.Product.Ignore())
+                        {
+                            <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none " href=""
+                               ng-class="{'selected':congratulationsDashboard.tab == '@eStep.Product', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.Product']}"
+                               ng-click="congratulationsDashboard.tab = '@eStep.Product'">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        Добавление товаров
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        @if (!eStep.Design.Ignore())
+                        {
+                            <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none " href=""
+                               ng-class="{'selected':congratulationsDashboard.tab == '@eStep.Design', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.Design']}"
+                               ng-click="congratulationsDashboard.tab = '@eStep.Design'">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        Выберите дизайн
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        @* @if (!eStep.Logo.Ignore()) *@
+                        @* { *@
+                        @*     <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none " href="" *@
+                        @*        ng-class="{'selected':congratulationsDashboard.tab == '@eStep.Logo', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.Logo']}" *@
+                        @*        ng-click="congratulationsDashboard.tab = '@eStep.Logo'"> *@
+                        @*         <div class="aside-menu-inner"> *@
+                        @*             <div class="aside-menu-name"> *@
+                        @*                 Создайте логотип *@
+                        @*             </div> *@
+                        @*         </div> *@
+                        @*     </a> *@
+                        @* } *@
+                        @* @if (!eStep.ShippingPayment.Ignore()) *@
+                        @* { *@
+                        @*     <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none " href="" *@
+                        @*        ng-class="{'selected':congratulationsDashboard.tab == '@eStep.ShippingPayment', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.ShippingPayment']}" *@
+                        @*        ng-click="congratulationsDashboard.tab = '@eStep.ShippingPayment'"> *@
+                        @*         <div class="aside-menu-inner"> *@
+                        @*             <div class="aside-menu-name"> *@
+                        @*                 Оплата и доставка *@
+                        @*             </div> *@
+                        @*         </div> *@
+                        @*     </a> *@
+                        @* } *@
+                        @if (!eStep.Domain.Ignore())
+                        {
+                            <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none " href=""
+                               ng-class="{'selected':congratulationsDashboard.tab == '@eStep.Domain', 'aside-menu-row--bg':congratulationsDashboard.steps['@eStep.Domain']}"
+                               ng-click="congratulationsDashboard.tab = '@eStep.Domain'">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        Подключите домен
+                                    </div>
+                                </div>
+                            </a>
+                        }
+
+                        <div class="sidebar__item sidebar--compact-hidden " style="display: none;">
+                            <ui-modal-trigger template-url="actionModal.html" window-class="action-modal" size="md">
+                                <div class="sidebar-action">
+                                    <button type="button" class="sidebar-action__inner">
+                                        <div class="sidebar-action__text">
+                                            Пройдите все шаги, <br />чтобы получить <span class="sidebar-action__text-mark bold">подарок!</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                    @if (Model.ActionText.IsNotEmpty())
+                    {
+                        <div class="congrat-block2-action">
+                            @Html.Raw(Model.ActionText)
+                        </div>
+                    }
+                </div>
+                <div class="col-xs-9 container-limitation-tabs-content">
+                    <div class="congrat-tab-content tab-content">
+                        @if (!eStep.StoreInfo.Ignore())
+                        {
+                            <div class="congrat-tab-pane " ng-class="{'active':congratulationsDashboard.tab=='@eStep.StoreInfo'}" ng-show="congratulationsDashboard.tab=='@eStep.StoreInfo'">
+                                <div class="congrat-title  ">
+                                    <h2 class="p-l-n">Быстрая настройка</h2>
+                                </div>
+                                <div class="congrat__subtitle-block p-b-lg">
+                                    <div class=" congrat-subtitle">
+                                        Внесите данные о компании для отображения клиентам
+                                    </div>
+                                </div>
+                                <form>
+                                    <div class="row" ng-init="congratulationsDashboard.loadRegions('@(Model.RegionId != 0 ? Model.RegionId.ToString() : "")', @Model.CountryId)">
+                                        <div class="col-xs-12">
+                                            <h4>Название магазина</h4>
+                                            @Html.TextBoxFor(m => m.StoreName, new { @class = "form-control m-b-lg input_md", autofocus = "", ng_model = "congratulationsDashboard.storeName", required = "required", validation_input_text = "Название магазина" })
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <h4>Страна</h4>
+                                            @Html.DropDownListFor(m => m.CountryId, Model.Countries, new { @class = "form-control m-b-lg input_md", ng_model = "congratulationsDashboard.countryId", validation_input_text = "Страна", ng_change = "congratulationsDashboard.loadRegions()" })
+                                        </div>
+                                        <div class="col-xs-4" ng-show="congratulationsDashboard.hasRegions">
+                                            <h4>Регион</h4>
+                                            <select class="form-control m-b-lg input_md" ng-model="congratulationsDashboard.regionId">
+                                                <option ng-repeat="item in congratulationsDashboard.regions" value="{{item.Value}}">{{item.Text}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <h4>Город</h4>
+                                            @Html.TextBoxFor(m => m.City, new { @class = "form-control m-b-lg input_md", ng_model = "congratulationsDashboard.city", autocompleter = "", on_type = "city", required = "required", validation_input_text = "Город" })
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <h4>Телефон</h4>
+                                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control m-b-xs input_md", ng_model = "congratulationsDashboard.phone", required = "required", validation_input_text = "Телефон", mask_control = "",  mask_control_preset = "phone" })
+                                            <span class="m-b-lg subtext-input">Для отображения клиентам</span>
+                                        </div>
+                                    </div>
+                                    <div class="m-t-lg text-right">
+                                        <button type="submit" class="btn btn-submit" button-validation button-validation-success="congratulationsDashboard.saveInfo()">Далее</button>
+                                    </div>
+                                </form>
+                            </div>
+                        }
+
+                        @*<div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab=='@eStep.Social'}" ng-show="congratulationsDashboard.tab=='@eStep.Social'">
+                                <div class="congrat-title">
+                                    <h2 class="p-l-n">Быстрая настройка </h2>
+                                </div>
+                                <div class="congrat__subtitle-block p-b-lg">
+                                    <div class=" congrat-subtitle">
+                                        Внесите данные о компании для отображения клиентам
+                                    </div>
+                                </div>
+                                <div class="flex flex-column">
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40px" height="40px" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#25D366"></circle>
+                                                <path d="M33 19.6652C33 26.66 27.2861 32.3304 20.2363 32.3304C17.9983 32.3304 15.8958 31.7584 14.0665 30.7545L7 33L9.30389 26.2048C8.14169 24.2964 7.47233 22.058 7.47233 19.6652C7.47233 12.6703 13.1868 7 20.2363 7C27.2866 7 33 12.6703 33 19.6652ZM20.2363 9.01702C14.3187 9.01702 9.50524 13.7938 9.50524 19.6652C9.50524 21.9951 10.2647 24.1528 11.5494 25.9081L10.2087 29.8627L14.3326 28.552C16.0269 29.6645 18.0566 30.3133 20.2366 30.3133C26.1533 30.3133 30.9677 25.5371 30.9677 19.6658C30.9677 13.7944 26.1536 9.01702 20.2363 9.01702ZM26.6817 22.5821C26.6028 22.453 26.3946 22.375 26.082 22.2198C25.7688 22.0647 24.2302 21.3133 23.9442 21.2102C23.6573 21.1067 23.4482 21.0547 23.2399 21.3653C23.0316 21.6761 22.4319 22.375 22.249 22.5821C22.0664 22.7898 21.8841 22.8158 21.571 22.6604C21.2584 22.5052 20.2505 22.1771 19.0553 21.1197C18.1254 20.297 17.4974 19.2812 17.3148 18.9701C17.1325 18.6596 17.2957 18.4917 17.452 18.3372C17.593 18.1979 17.7652 17.9746 17.9214 17.7935C18.0783 17.612 18.1303 17.4829 18.234 17.2755C18.3389 17.0684 18.2866 16.8872 18.208 16.7315C18.13 16.5764 17.5037 15.0487 17.2431 14.427C16.9826 13.8059 16.7223 13.9094 16.5394 13.9094C16.3571 13.9094 16.1482 13.8834 15.9397 13.8834C15.7311 13.8834 15.3919 13.9611 15.1051 14.2716C14.8185 14.5825 14.0105 15.3336 14.0105 16.8609C14.0105 18.3886 15.1311 19.8645 15.2879 20.0714C15.4442 20.2782 17.4517 23.5149 20.6324 24.758C23.8133 26.0005 23.8133 25.586 24.3871 25.534C24.9602 25.4822 26.2377 24.7831 26.4994 24.0586C26.7594 23.3329 26.7594 22.7115 26.6817 22.5821Z" fill="white"></path>
+                                            </svg>
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                WhatsApp
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40px" height="40px" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#665CAC"></circle>
+                                                <path d="M30.0957 10.197C29.4223 9.59446 26.7288 7.60976 20.7039 7.60976C20.7039 7.60976 13.6156 7.18447 10.1424 10.3387C8.22861 12.2525 7.55524 15.0878 7.48435 18.561C7.41347 22.0697 7.30716 28.5908 13.6157 30.3628V33.0564C13.6157 33.0564 13.5802 34.155 14.289 34.3677C15.1751 34.6512 15.6712 33.8006 16.5218 32.9146C16.9825 32.4184 17.6205 31.7096 18.0812 31.1425C22.405 31.497 25.701 30.6818 26.0909 30.54C26.9769 30.2565 31.9032 29.6186 32.6829 23.062C33.5689 16.3991 32.3285 12.1108 30.0957 10.197ZM30.84 22.6367C30.1666 28.0946 26.1618 28.449 25.4175 28.6971C25.0985 28.8034 22.1924 29.5123 18.5065 29.2996C18.5065 29.2996 15.7775 32.5956 14.927 33.4462C14.7852 33.588 14.6434 33.6234 14.5371 33.6234C14.3954 33.588 14.3599 33.4108 14.3599 33.1627C14.3599 32.8083 14.3953 28.6617 14.3953 28.6617C9.04376 27.1732 9.36273 21.6089 9.43361 18.7028C9.50449 15.7966 10.0361 13.3866 11.6664 11.7918C14.608 9.13373 20.633 9.52358 20.633 9.52358C25.7365 9.55902 28.1465 11.083 28.7135 11.5791C30.5919 13.174 31.5488 17.0016 30.84 22.6367Z" fill="white"></path>
+                                                <path d="M23.1846 18.7737C23.0074 18.7737 22.8657 18.6319 22.8302 18.4547C22.7593 17.2851 22.2277 16.7181 21.129 16.6827C20.9518 16.6827 20.8101 16.5054 20.8101 16.3282C20.8101 16.151 20.9873 16.0093 21.1645 16.0093C22.6176 16.0802 23.4327 16.9307 23.5036 18.4192C23.539 18.5965 23.3973 18.7382 23.1846 18.7737C23.2201 18.7737 23.1846 18.7737 23.1846 18.7737Z" fill="white"></path>
+                                                <path d="M24.957 19.3406C24.957 19.3406 24.9216 19.3406 24.957 19.3406C24.7444 19.3406 24.6026 19.1634 24.6026 18.9862C24.638 17.8167 24.2836 16.8952 23.5748 16.1155C22.866 15.3358 21.9091 14.9105 20.5978 14.8396C20.4206 14.8396 20.2788 14.6624 20.2788 14.4852C20.2788 14.308 20.456 14.1663 20.6332 14.1663C22.0863 14.2726 23.2204 14.7688 24.0355 15.6902C24.8507 16.5762 25.276 17.7104 25.2405 19.0571C25.276 19.1989 25.1342 19.3406 24.957 19.3406Z" fill="white"></path>
+                                                <path d="M26.729 20.0495C26.5518 20.0495 26.3746 19.9078 26.3746 19.6951C26.3746 17.6041 25.7721 16.0093 24.5317 14.8397C23.3267 13.6702 21.8027 13.0677 20.0307 13.0677C19.8535 13.0677 19.6763 12.9259 19.6763 12.7133C19.6763 12.5361 19.818 12.3589 20.0307 12.3589C22.0154 12.3589 23.6811 13.0323 25.0278 14.3436C26.3746 15.6549 27.048 17.4269 27.048 19.6951C27.0834 19.8723 26.9062 20.0495 26.729 20.0495Z" fill="white"></path>
+                                                <path d="M21.2353 22.991C21.2353 22.991 21.696 23.0264 21.9796 22.7075L22.4757 22.0695C22.7238 21.7506 23.2909 21.5734 23.8579 21.8923C24.1769 22.0695 24.7439 22.4239 25.0983 22.672C25.4882 22.9555 26.2679 23.5935 26.2679 23.5935C26.6223 23.9124 26.7286 24.3732 26.4805 24.8339C26.2324 25.2946 25.878 25.7199 25.4527 26.1098C25.0983 26.3933 24.7439 26.5705 24.3895 26.6059C24.3541 26.6059 24.2832 26.6059 24.2478 26.6059C24.106 26.6059 23.9288 26.5705 23.787 26.5351C23.2554 26.3933 22.3694 26.0034 20.8809 25.1883C19.924 24.6567 19.1088 24.1251 18.4355 23.558C18.0811 23.2745 17.6912 22.9555 17.3368 22.5657L17.3014 22.5303L17.2659 22.4948L17.2305 22.4594L17.195 22.4239C16.8052 22.0341 16.4862 21.6797 16.2027 21.3253C15.6711 20.6519 15.104 19.8368 14.5724 18.8799C13.7573 17.3913 13.3674 16.5053 13.2257 15.9737C13.1902 15.832 13.1548 15.6902 13.1548 15.513C13.1548 15.4421 13.1548 15.4067 13.1548 15.3712C13.1902 15.0168 13.3674 14.6624 13.651 14.308C14.0408 13.8827 14.4661 13.5283 14.9268 13.2802C15.423 13.0321 15.8837 13.103 16.1673 13.4929C16.1673 13.4929 16.8052 14.2726 17.0887 14.6624C17.3368 15.0168 17.6912 15.5839 17.8684 15.9028C18.1874 16.4699 17.9747 17.0724 17.6912 17.285L17.0533 17.7812C16.7343 18.0293 16.7698 18.5255 16.7698 18.5255C16.7698 18.5255 17.7267 22.0695 21.2353 22.991Z" fill="white"></path>
+                                            </svg>
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                Viber
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="url(#paint0_radial)"></circle>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.5403 20.3553C14.5403 17.1502 17.1502 14.5403 20.3553 14.5403C23.5604 14.5403 26.1703 17.1502 26.1703 20.3553C26.1703 23.5604 23.5604 26.1703 20.3553 26.1703C17.1502 26.1703 14.5403 23.5604 14.5403 20.3553ZM26.3535 9H14.3571C11.4267 9 9 11.4267 9 14.3571V26.3535C9 29.2839 11.4267 31.7106 14.3571 31.7106H26.3535C29.3297 31.7106 31.7106 29.2839 31.7106 26.3535V14.3571C31.7106 11.4267 29.3297 9 26.3535 9ZM14.3571 10.3278H26.3535C28.5971 10.3278 30.3828 12.1136 30.3828 14.3571V26.3535C30.3828 28.5971 28.5971 30.3828 26.3535 30.3828H14.3571C12.1136 30.3828 10.3278 28.5971 10.3278 26.3535V14.3571C10.3278 12.1593 12.1593 10.3278 14.3571 10.3278ZM27.544 12.022C26.9029 12.022 26.3535 12.5714 26.3535 13.2125C26.3535 13.8535 26.9029 14.4029 27.544 14.4029C28.185 14.4029 28.7344 13.8535 28.7344 13.2125C28.7344 12.5714 28.185 12.022 27.544 12.022ZM27.6813 20.3553C27.6813 16.326 24.3846 13.0293 20.3553 13.0293C16.326 13.0293 13.0293 16.326 13.0293 20.3553C13.0293 24.4304 16.326 27.6813 20.3553 27.6813C24.3846 27.6813 27.6813 24.4304 27.6813 20.3553Z" fill="white"></path>
+                                                <path d="M32.2698 11.4872C31.9398 10.6339 31.4998 9.91117 30.7798 9.18839C30.0598 8.46561 29.3398 8.02391 28.4898 7.69263C27.6698 7.3714 26.7198 7.15055 25.3498 7.09032C23.9698 7.03009 23.5298 7.01001 20.0098 7.01001C16.4898 7.01001 16.0498 7.02005 14.6698 7.09032C13.2898 7.15055 12.3498 7.3714 11.5298 7.69263C10.6798 8.02391 9.95982 8.46561 9.23982 9.18839C8.51982 9.91117 8.07982 10.6339 7.74982 11.4872C7.42982 12.3104 7.20982 13.2641 7.14982 14.6394C7.08982 16.0247 7.06982 16.4664 7.06982 20C7.06982 23.5336 7.07982 23.9753 7.14982 25.3606C7.20982 26.7459 7.42982 27.6895 7.74982 28.5127C8.07982 29.366 8.51982 30.0888 9.23982 30.8116C9.95982 31.5343 10.6798 31.976 11.5298 32.3073C12.3498 32.6285 13.2998 32.8494 14.6698 32.9096C16.0498 32.9699 16.4898 32.9899 20.0098 32.9899C23.5298 32.9899 23.9698 32.9799 25.3498 32.9096C26.7298 32.8494 27.6698 32.6285 28.4898 32.3073C29.3398 31.976 30.0598 31.5343 30.7798 30.8116C31.4998 30.0888 31.9398 29.366 32.2698 28.5127C32.5898 27.6895 32.8098 26.7359 32.8698 25.3606C32.9298 23.9753 32.9498 23.5336 32.9498 20C32.9498 16.4664 32.9398 16.0247 32.8698 14.6394C32.8098 13.254 32.5898 12.3104 32.2698 11.4872ZM30.5398 25.2502C30.4798 26.515 30.2698 27.2077 30.0898 27.6594C29.8598 28.2617 29.5698 28.7034 29.1198 29.1552C28.6698 29.6069 28.2398 29.888 27.6298 30.1289C27.1698 30.3096 26.4898 30.5204 25.2298 30.5807C23.8598 30.6409 23.4598 30.661 19.9998 30.661C16.5398 30.661 16.1298 30.6509 14.7698 30.5807C13.5098 30.5204 12.8198 30.3096 12.3698 30.1289C11.7698 29.898 11.3298 29.6069 10.8798 29.1552C10.4298 28.7034 10.1498 28.2718 9.90983 27.6594C9.72983 27.1977 9.51983 26.515 9.45983 25.2502C9.39983 23.8749 9.37982 23.4633 9.37982 20C9.37982 16.5366 9.38983 16.115 9.45983 14.7498C9.51983 13.4849 9.72983 12.7922 9.90983 12.3405C10.1398 11.7382 10.4298 11.2965 10.8798 10.8448C11.3298 10.393 11.7598 10.1119 12.3698 9.87101C12.8298 9.69032 13.5098 9.47951 14.7698 9.41928C16.1398 9.35904 16.5498 9.33897 19.9998 9.33897C23.4498 9.33897 23.8698 9.34901 25.2298 9.41928C26.4898 9.47951 27.1798 9.69032 27.6298 9.87101C28.2298 10.1019 28.6698 10.393 29.1198 10.8448C29.5698 11.2965 29.8498 11.7282 30.0898 12.3405C30.2698 12.8023 30.4798 13.4849 30.5398 14.7498C30.5998 16.1251 30.6198 16.5366 30.6198 20C30.6198 23.4633 30.5998 23.8849 30.5398 25.2502Z" fill="white"></path>
+                                                <path d="M20.0001 13.3245C16.3301 13.3245 13.3501 16.316 13.3501 20.0001C13.3501 23.6843 16.3301 26.6758 20.0001 26.6758C23.6701 26.6758 26.6501 23.6843 26.6501 20.0001C26.6501 16.316 23.6701 13.3245 20.0001 13.3245ZM20.0001 24.3368C17.6201 24.3368 15.6801 22.3994 15.6801 20.0001C15.6801 17.6109 17.6101 15.6635 20.0001 15.6635C22.3901 15.6635 24.3201 17.6009 24.3201 20.0001C24.3201 22.3893 22.3801 24.3368 20.0001 24.3368Z" fill="white"></path>
+                                                <path d="M26.9099 14.6193C27.7659 14.6193 28.4599 13.9227 28.4599 13.0633C28.4599 12.204 27.7659 11.5073 26.9099 11.5073C26.0538 11.5073 25.3599 12.204 25.3599 13.0633C25.3599 13.9227 26.0538 14.6193 26.9099 14.6193Z" fill="white"></path>
+                                                <defs>
+                                                    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.6034 39.9164) scale(40.3568)">
+                                                        <stop stop-color="#FFD776"></stop>
+                                                        <stop offset="0.2463" stop-color="#F3A554"></stop>
+                                                        <stop offset="0.3793" stop-color="#F15C3C"></stop>
+                                                        <stop offset="0.5394" stop-color="#D94867"></stop>
+                                                        <stop offset="0.6995" stop-color="#C32F87"></stop>
+                                                        <stop offset="0.9122" stop-color="#7D63A7"></stop>
+                                                        <stop offset="0.9852" stop-color="#5C6CB3"></stop>
+                                                    </radialGradient>
+                                                </defs>
+                                            </svg>
+
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                Instagram
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#2298D6"></circle>
+                                                <path d="M8.38829 20.1103L13.4569 21.9869L15.4192 28.2454C15.5468 28.6469 16.0395 28.7953 16.3651 28.5291L19.1898 26.2465C19.4846 26.0065 19.907 25.9934 20.2194 26.216L25.3143 29.8864C25.6663 30.1396 26.1635 29.9475 26.2515 29.5285L29.9869 11.7133C30.0837 11.255 29.6261 10.8709 29.1861 11.0411L8.38389 19.0017C7.86911 19.1981 7.87351 19.9226 8.38829 20.1103ZM15.1024 20.9919L25.0107 14.9385C25.1867 14.8294 25.3715 15.0694 25.2175 15.2091L17.0427 22.7463C16.7567 23.0126 16.5719 23.3661 16.5191 23.7501L16.2419 25.797C16.2067 26.072 15.8196 26.0982 15.7404 25.8319L14.6712 22.1004C14.548 21.6771 14.724 21.2232 15.1024 20.9919Z" fill="white"></path>
+                                            </svg>
+
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                Telegram
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#FF0000"></circle>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M31.9396 15.6172C31.9396 15.6172 31.7106 13.9689 31.0238 13.2363C30.1538 12.2747 29.1465 12.2747 28.7344 12.2289C25.4835 12 20.63 12 20.63 12H20.5843C20.5843 12 15.7308 12 12.4799 12.2289C12.022 12.2747 11.0147 12.3205 10.1447 13.2363C9.45788 13.9689 9.22894 15.6172 9.22894 15.6172C9.22894 15.6172 9 17.5861 9 19.5092V19.7839V21.3864C9 23.3553 9.22894 25.2784 9.22894 25.2784C9.22894 25.2784 9.45788 26.9267 10.1447 27.7051C11.0147 28.6667 12.1593 28.6209 12.7088 28.7125C14.5403 28.8956 20.5843 28.9414 20.5843 28.9414C20.5843 28.9414 25.4377 28.8956 28.6886 28.7125C29.1465 28.6667 30.1081 28.6667 30.978 27.7051C31.6648 26.9725 31.8938 25.2784 31.8938 25.2784C31.8938 25.2784 32.1227 23.3553 32.1227 21.3864V19.8755V19.5092C32.1685 17.5861 31.9396 15.6172 31.9396 15.6172ZM24.4762 20.196L18.2033 23.5843V18.3645V16.7619L21.0421 18.3187L24.4762 20.196Z" fill="white"></path>
+                                            </svg>
+
+
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                YouTube
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#0074FF"></circle>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.5001 8C14.0212 8 9 12.7458 9 19.1554C9 22.5082 10.3745 25.4053 12.612 27.4068C12.7994 27.5757 12.9128 27.8094 12.9221 28.0616L12.9846 30.1071C13.0054 30.7596 13.6787 31.1831 14.2757 30.9216L16.5572 29.9151C16.7516 29.8295 16.9668 29.8133 17.1704 29.8688C18.2186 30.158 19.3362 30.3107 20.5001 30.3107C26.9791 30.3107 32.0003 25.5649 32.0003 19.1554C32.0003 12.7458 26.9791 8 20.5001 8ZM27.4049 16.5823L24.0266 21.9413C23.4897 22.7928 22.3374 23.0057 21.5322 22.4018L18.8457 20.3864C18.5981 20.2013 18.2603 20.2036 18.015 20.3887L14.3868 23.1422C13.9032 23.5102 13.2692 22.9294 13.5954 22.4157L16.9737 17.0567C17.5106 16.2051 18.6629 15.9923 19.4681 16.5962L22.1546 18.6116C22.4022 18.7967 22.74 18.7944 22.9853 18.6093L26.6135 15.8557C27.0971 15.4878 27.7311 16.0686 27.4049 16.5823Z" fill="white"></path>
+                                            </svg>
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                Facebook
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#597DA3"></circle>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8476 26.9457C20.8476 26.9457 21.2699 26.9 21.4862 26.6737C21.6842 26.4664 21.6773 26.0752 21.6773 26.0752C21.6773 26.0752 21.651 24.2485 22.522 23.9788C23.3803 23.7136 24.4825 25.7453 25.6522 26.5266C26.5357 27.1173 27.2064 26.988 27.2064 26.988L30.332 26.9457C30.332 26.9457 31.9663 26.8476 31.1915 25.596C31.1274 25.4934 30.7394 24.6698 28.8682 22.978C26.9077 21.207 27.1709 21.4935 29.5309 18.4296C30.9683 16.5639 31.5429 15.4249 31.3632 14.9379C31.1927 14.472 30.1351 14.5957 30.1351 14.5957L26.617 14.6169C26.617 14.6169 26.356 14.5823 26.1626 14.6949C25.9738 14.8052 25.8513 15.0627 25.8513 15.0627C25.8513 15.0627 25.2951 16.506 24.5523 17.7342C22.9855 20.3243 22.3594 20.4614 22.1031 20.3009C21.5068 19.9253 21.6556 18.7941 21.6556 17.9905C21.6556 15.4795 22.047 14.433 20.8945 14.1622C20.5122 14.0719 20.2307 14.0128 19.2521 14.0028C17.9966 13.9905 16.9345 14.0072 16.3325 14.2937C15.932 14.4843 15.623 14.91 15.8118 14.9345C16.0441 14.9646 16.5706 15.0727 16.8499 15.4427C17.2104 15.9209 17.1978 16.993 17.1978 16.993C17.1978 16.993 17.4049 19.9487 16.7137 20.3154C16.2398 20.5673 15.5898 20.0535 14.1923 17.703C13.477 16.4993 12.9368 15.1686 12.9368 15.1686C12.9368 15.1686 12.8327 14.92 12.6461 14.7863C12.4207 14.6247 12.1059 14.5745 12.1059 14.5745L8.76285 14.5957C8.76285 14.5957 8.26042 14.6091 8.07615 14.822C7.91249 15.0103 8.06356 15.4015 8.06356 15.4015C8.06356 15.4015 10.681 21.3653 13.6453 24.3711C16.3634 27.1262 19.449 26.9457 19.449 26.9457H20.8476Z" fill="white"></path>
+                                            </svg>
+
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                ВКонтакте
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                    <div class="tab-content-social-block m-b-sm flex">
+                                        <input id="checkbox-whats-app" type="checkbox" class="checkbox-custom">
+                                        <label for=" checkbox-whats-app" class="checkbox-custom-label"></label>
+                                        <div class="social-block-text flex middle-xs">
+                                            <svg width="40px" height="40px" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="20" cy="20" r="20" fill="#ED812B"></circle>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M26.8696 13.4939C26.8696 17.0804 23.9621 19.9879 20.3756 19.9879C16.791 19.9835 13.8861 17.0786 13.8817 13.494C13.8817 9.90743 16.7891 7 20.3756 7C23.9621 7 26.8696 9.90738 26.8696 13.4939ZM23.8724 13.494C23.8724 11.5627 22.3068 9.9972 20.3756 9.9972C18.4444 9.9972 16.8789 11.5627 16.8789 13.494C16.8789 15.4252 18.4444 16.9907 20.3756 16.9907C22.3068 16.9907 23.8724 15.4252 23.8724 13.494ZM27.8685 20.967C27.8675 21.8121 27.4422 22.6002 26.7365 23.065C25.8326 23.6661 24.848 24.136 23.8123 24.4607C23.6352 24.5147 23.453 24.5656 23.2658 24.6136L26.28 27.5628C26.2967 27.5788 26.313 27.5951 26.3291 27.6117C27.0969 28.4043 27.0767 29.6693 26.2841 30.4371C25.4915 31.2049 24.2265 31.1848 23.4587 30.3922L20.3756 27.2011L17.2984 30.3862C17.2825 30.4028 17.2663 30.419 17.2498 30.435C16.4577 31.2035 15.1928 31.1843 14.4243 30.3923C13.6559 29.6003 13.675 28.3353 14.467 27.5668L17.4862 24.6146C17.299 24.5679 17.1176 24.5173 16.9417 24.4627C15.9049 24.1367 14.9194 23.6658 14.0144 23.064C13.3091 22.5988 12.884 21.8109 12.8825 20.966C12.8737 20.2649 13.2697 19.6216 13.8995 19.3135C14.5474 18.9925 15.321 19.0653 15.8976 19.5014C18.5662 21.4469 22.1857 21.4469 24.8543 19.5014C25.4301 19.063 26.205 18.9901 26.8524 19.3135C27.4825 19.6216 27.8783 20.2656 27.8685 20.967Z" fill="white"></path>
+                                            </svg>
+
+                                            <div class="p-l-sm social-text p-r-sm">
+                                                Одноклассники
+                                            </div>
+                                        </div>
+                                        <input class="form-control input_md social-input form-control-social" required="" type="text">
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button>
+                                </div>
+                            </div>*@
+
+                        @if (!eStep.Product.Ignore())
+                        {
+                            <div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab == '@eStep.Product'}" ng-show="congratulationsDashboard.tab == '@eStep.Product'">
+                                <div class="congrat-title">
+                                    <h2 class="p-l-n">Добавьте категории и товары чтобы начать продавать </h2>
+                                </div>
+                                <div class="congrat__subtitle-block p-b-lg">
+                                    <div class=" congrat-subtitle">
+                                        Для начала вам нужно создать категории каталога и добавить в них товары
+                                    </div>
+                                </div>
+                                <div class="p-b-lg">
+                                    <a href="@UrlService.GetAdminUrl("catalog")" target="_blank" class="btn btn-submit btn-reverse"
+                                       ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickProductButton')">Управление каталогом</a>
+                                </div>
+                                <div class=" video-block-item">
+                                    <a class="text-decoration-none title-video" href="https://www.youtube.com/watch?v=Z5gWWnhF6cA" magnific-popup="" magnific-popup-options="congratulationsDashboard.magnificPopupOptions"
+                                       ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickProductVideo')">
+                                        <div class="flex middle-xs">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="m-r-xs" width="16" height="16" viewBox="0 0 16 16">
+                                                <path fill="currentColor" fill-rule="nonzero" d="M14.883 3.989A7.974 7.974 0 0 0 3.989 1.07 7.974 7.974 0 0 0 1.07 11.964a7.974 7.974 0 0 0 10.893 2.919 7.974 7.974 0 0 0 2.92-10.894zM11.166 13.5a6.38 6.38 0 1 1-6.38-11.05 6.38 6.38 0 1 1 6.38 11.05zm-.319-5.849L6.671 5.217c-.38-.223-.687-.045-.685.395l.021 4.835c.002.44.313.619.695.398l4.144-2.392c.38-.22.382-.579.001-.8z"></path>
+                                            </svg>
+                                            Видеоурок по управлению каталогом (4:51)
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class=" video-block-item">
+                                    <a class="text-decoration-none title-video" href="https://www.youtube.com/watch?v=t3BClhvoz58" magnific-popup="" magnific-popup-options="congratulationsDashboard.magnificPopupOptions"
+                                       ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickProductVideo')">
+                                        <div class="flex middle-xs">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="m-r-xs" width="16" height="16" viewBox="0 0 16 16">
+                                                <path fill="currentColor" fill-rule="nonzero" d="M14.883 3.989A7.974 7.974 0 0 0 3.989 1.07 7.974 7.974 0 0 0 1.07 11.964a7.974 7.974 0 0 0 10.893 2.919 7.974 7.974 0 0 0 2.92-10.894zM11.166 13.5a6.38 6.38 0 1 1-6.38-11.05 6.38 6.38 0 1 1 6.38 11.05zm-.319-5.849L6.671 5.217c-.38-.223-.687-.045-.685.395l.021 4.835c.002.44.313.619.695.398l4.144-2.392c.38-.22.382-.579.001-.8z"></path>
+                                            </svg>
+                                            Как загрузить прайс поставщика? (1:57)
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!eStep.Design.Ignore())
+                        {
+                            <div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab == '@eStep.Design'}" ng-show="congratulationsDashboard.tab == '@eStep.Design'">
+                                <div class="congrat-title">
+                                    <h2 class="p-l-n">Настройте дизайн вашего магазина</h2>
+                                </div>
+                                <div class="congrat__subtitle-block p-b-lg">
+                                    <div class=" congrat-subtitle">
+                                        Выберите шаблон и цветовую схему, создайте или загрузите логотип
+                                    </div>
+                                </div>
+                                <div class="p-b-lg">
+                                    <a href="@UrlService.GetUrl("?showTransformer=true")" target="_blank" class="btn btn-submit btn-reverse"
+                                       ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickDesignButton')">Дизайн</a>
+                                </div>
+                                <div class=" video-block-item">
+                                    <a class="text-decoration-none title-video" href="https://www.youtube.com/watch?v=Z_lmz24j5_U" magnific-popup="" magnific-popup-options="congratulationsDashboard.magnificPopupOptions"
+                                       ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickDesignVideo')">
+                                        <div class="flex middle-xs">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="m-r-xs" width="16" height="16" viewBox="0 0 16 16">
+                                                <path fill="currentColor" fill-rule="nonzero" d="M14.883 3.989A7.974 7.974 0 0 0 3.989 1.07 7.974 7.974 0 0 0 1.07 11.964a7.974 7.974 0 0 0 10.893 2.919 7.974 7.974 0 0 0 2.92-10.894zM11.166 13.5a6.38 6.38 0 1 1-6.38-11.05 6.38 6.38 0 1 1 6.38 11.05zm-.319-5.849L6.671 5.217c-.38-.223-.687-.045-.685.395l.021 4.835c.002.44.313.619.695.398l4.144-2.392c.38-.22.382-.579.001-.8z"></path>
+                                            </svg>
+                                            Видеоурок по настройке дизайна (2:10)
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button>
+                                </div>
+                            </div>
+                        }
+
+                        @* @if (!eStep.Logo.Ignore()) *@
+                        @* { *@
+                        @*     <div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab == '@eStep.Logo'}" ng-show="congratulationsDashboard.tab == '@eStep.Logo'"> *@
+                        @*         <div class="congrat-title"> *@
+                        @*             <h2 class="p-l-n">Загрузите свой или создайте новый логотип</h2> *@
+                        @*         </div> *@
+                        @*         <div class="p-b-lg"> *@
+                        @*             <div class="add_logo-block p-r-lg"> *@
+                        @*                 <div class="p-b-md bolder">У меня есть логотип</div> *@
+                        @*                 <a href="@Url.AbsoluteActionUrl("common", "settings")" target="_blank" class="btn btn-submit btn-reverse" *@
+                        @*                    ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickLogoDownloadButton')">Загрузить логотип</a> *@
+                        @*             </div> *@
+                        @*             <div class="create__logo-block p-l-sm"> *@
+                        @*                 <div class="p-b-md bolder">У меня нет логотипа</div> *@
+                        @*                 <a href="@UrlService.GetUrl("?logoGeneratorEditOnPageLoad=true")" target="_blank" class="btn btn-submit btn-reverse" *@
+                        @*                    ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickLogoGenerateButton')">Создать логотип</a> *@
+                        @*             </div> *@
+                        @*         </div> *@
+                        @*         <div class="text-right"> *@
+                        @*             <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button> *@
+                        @*         </div> *@
+                        @*     </div> *@
+                        @* } *@
+
+                        @* @if (!eStep.ShippingPayment.Ignore()) *@
+                        @* { *@
+                        @*     <div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab == '@eStep.ShippingPayment'}" ng-show="congratulationsDashboard.tab == '@eStep.ShippingPayment'"> *@
+                        @*         <div class="congrat-title"> *@
+                        @*             <h2 class="p-l-n">Настройка оплаты и доставки</h2> *@
+                        @*         </div> *@
+                        @*         <div class="p-b-lg row"> *@
+                        @*             <div class="col-xs"> *@
+                        @*                 <div class="congrat-payment-block"> *@
+                        @*                     <div class="congrat-payment-text-block p-b-lg"> *@
+                        @*                         <div class="bolder"> *@
+                        @*                             Оплата *@
+                        @*                         </div> *@
+                        @*                         <div class="congrat-sub-title"> *@
+                        @*                             Настройте необходимые для работы методы оплаты *@
+                        @*                         </div> *@
+                        @*                         <a href="@Url.AbsoluteActionUrl("paymentmethods", "settings")" target="_blank" class="btn btn-submit btn-reverse" *@
+                        @*                            ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickPaymentButton')">Методы оплаты</a> *@
+                        @*                     </div> *@
+                        @*                     <div class=" video-block-item"> *@
+                        @*                         <a class="text-decoration-none title-video" href="https://www.youtube.com/watch?v=JiV0UnaScds" magnific-popup="" magnific-popup-options="congratulationsDashboard.magnificPopupOptions" *@
+                        @*                            ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickPaymentVideo')"> *@
+                        @*                             <div class="flex middle-xs"> *@
+                        @*                                 <svg xmlns="http://www.w3.org/2000/svg" class="m-r-xs" width="16" height="16" viewBox="0 0 16 16"> *@
+                        @*                                     <path fill="currentColor" fill-rule="nonzero" d="M14.883 3.989A7.974 7.974 0 0 0 3.989 1.07 7.974 7.974 0 0 0 1.07 11.964a7.974 7.974 0 0 0 10.893 2.919 7.974 7.974 0 0 0 2.92-10.894zM11.166 13.5a6.38 6.38 0 1 1-6.38-11.05 6.38 6.38 0 1 1 6.38 11.05zm-.319-5.849L6.671 5.217c-.38-.223-.687-.045-.685.395l.021 4.835c.002.44.313.619.695.398l4.144-2.392c.38-.22.382-.579.001-.8z"></path> *@
+                        @*                                 </svg> *@
+                        @*                                 Видеоурок по оплате (2:45) *@
+                        @*                             </div> *@
+                        @*                         </a> *@
+                        @*                     </div> *@
+                        @*                 </div> *@
+                        @*             </div> *@
+                        @*             <div class="col-xs"> *@
+                        @*                 <div class="congrat-orders-block"> *@
+                        @*                     <div class="congrat-orders-text-block  p-b-lg"> *@
+                        @*                         <div class="bolder"> *@
+                        @*                             Доставка *@
+                        @*                         </div> *@
+                        @*                         <div class="congrat-sub-title"> *@
+                        @*                             Настройте необходимые для работы методы доставки *@
+                        @*                         </div> *@
+                        @*                         <a href="@Url.AbsoluteActionUrl("shippingmethods", "settings")" target="_blank" class="btn btn-submit btn-reverse" *@
+                        @*                            ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickShippingButton')">Методы доставки</a> *@
+                        @*                     </div> *@
+                        @*                     <div class=" video-block-item"> *@
+                        @*                         <a class="text-decoration-none title-video" href="https://www.youtube.com/watch?v=AxIkO0t__1Q" magnific-popup="" magnific-popup-options="congratulationsDashboard.magnificPopupOptions" *@
+                        @*                            ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickShippingVideo')"> *@
+                        @*                             <div class="flex middle-xs"> *@
+                        @*                                 <svg xmlns="http://www.w3.org/2000/svg" class="m-r-xs" width="16" height="16" viewBox="0 0 16 16"> *@
+                        @*                                     <path fill="currentColor" fill-rule="nonzero" d="M14.883 3.989A7.974 7.974 0 0 0 3.989 1.07 7.974 7.974 0 0 0 1.07 11.964a7.974 7.974 0 0 0 10.893 2.919 7.974 7.974 0 0 0 2.92-10.894zM11.166 13.5a6.38 6.38 0 1 1-6.38-11.05 6.38 6.38 0 1 1 6.38 11.05zm-.319-5.849L6.671 5.217c-.38-.223-.687-.045-.685.395l.021 4.835c.002.44.313.619.695.398l4.144-2.392c.38-.22.382-.579.001-.8z"></path> *@
+                        @*                                 </svg> *@
+                        @*                                 Видеоурок по доставке (3:28) *@
+                        @*                             </div> *@
+                        @*                         </a> *@
+                        @*                     </div> *@
+                        @*                 </div> *@
+                        @*             </div> *@
+                        @*         </div> *@
+                        @*         <div class="text-right"> *@
+                        @*             <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button> *@
+                        @*         </div> *@
+                        @*     </div> *@
+                        @* } *@
+
+                        @if (!eStep.Domain.Ignore())
+                        {
+                            <div class="congrat-tab-pane" ng-class="{'active':congratulationsDashboard.tab == '@eStep.Domain'}" ng-show="congratulationsDashboard.tab == '@eStep.Domain'">
+                                <div class="congrat-title">
+                                    <h2 class="p-l-n">Подключить домен</h2>
+                                </div>
+                                <div class="congrat__subtitle-block p-b-lg">
+                                    <div class=" congrat-subtitle">
+                                        Купите или привяжите доменное имя
+                                    </div>
+                                </div>
+                                <div class="p-b-lg">
+                                    <div class="add_logo-block p-r-lg">
+                                        <a href="@Url.AbsoluteActionUrl("domainbuy", "service")" target="_blank" class="btn btn-submit btn-reverse"
+                                           ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickBuyDomainButton')">Купить домен</a>
+                                    </div>
+                                    <div class="create__logo-block p-l-sm">
+                                        <a href="@Url.AbsoluteActionUrl("domains", "service")" target="_blank" class="btn btn-submit btn-reverse"
+                                           ng-click="congratulationsDashboard.trackEvent('@ETrackEvent.Dashboard_ClickBindDomainButton')">Привязать существующий домен</a>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-submit" ng-click="congratulationsDashboard.nextStep()">Далее</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row between-xs middle-xs m-t-md ">
+                        <div class="col-xs-8">
+                            <div class="fs-lg bold p-l-md footer-tabs-text ">
+                                Обучающие видео, новости и советы, как<br /> продавать в интернете, в наших  группах:
+                            </div>
+                        </div>
+
+                        <div class="col-xs-4">
+                            <div class="social-block row">
+                                <div class="text-center col-xs-offset-2  col-xs-3">
+                                    <a href="http://www.facebook.com/AdVantShop.NET" class="social-icon " target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 96.124 96.123" style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve" fill="currentColor">
+<path d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803   c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654   c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246   c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" data-original="#000000" class="active-path" data-old_color="#000000" /></svg>
+                                    </a>
+                                </div>
+                                <div class=" text-center col-xs-3">
+                                    <a href=" https://www.youtube.com/channel/UCR9o2YJ2sOJwuV1sR1eqaSw" class="social-icon " target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 90 90" style="enable-background:new 0 0 90 90;" xml:space="preserve" fill="currentColor">
+<path id="YouTube" d="M70.939,65.832H66l0.023-2.869c0-1.275,1.047-2.318,2.326-2.318h0.315c1.282,0,2.332,1.043,2.332,2.318   L70.939,65.832z M52.413,59.684c-1.253,0-2.278,0.842-2.278,1.873V75.51c0,1.029,1.025,1.869,2.278,1.869   c1.258,0,2.284-0.84,2.284-1.869V61.557C54.697,60.525,53.671,59.684,52.413,59.684z M82.5,51.879v26.544   C82.5,84.79,76.979,90,70.23,90H19.771C13.02,90,7.5,84.79,7.5,78.423V51.879c0-6.367,5.52-11.578,12.271-11.578H70.23   C76.979,40.301,82.5,45.512,82.5,51.879z M23.137,81.305l-0.004-27.961l6.255,0.002v-4.143l-16.674-0.025v4.073l5.205,0.015v28.039   H23.137z M41.887,57.509h-5.215v14.931c0,2.16,0.131,3.24-0.008,3.621c-0.424,1.158-2.33,2.388-3.073,0.125   c-0.126-0.396-0.015-1.591-0.017-3.643l-0.021-15.034h-5.186l0.016,14.798c0.004,2.268-0.051,3.959,0.018,4.729   c0.127,1.357,0.082,2.939,1.341,3.843c2.346,1.69,6.843-0.252,7.968-2.668l-0.01,3.083l4.188,0.005L41.887,57.509L41.887,57.509z    M58.57,74.607L58.559,62.18c-0.004-4.736-3.547-7.572-8.356-3.74l0.021-9.239l-5.209,0.008l-0.025,31.89l4.284-0.062l0.39-1.986   C55.137,84.072,58.578,80.631,58.57,74.607z M74.891,72.96l-3.91,0.021c-0.002,0.155-0.008,0.334-0.01,0.529v2.182   c0,1.168-0.965,2.119-2.137,2.119h-0.766c-1.174,0-2.139-0.951-2.139-2.119V75.45v-2.4v-3.097h8.954v-3.37   c0-2.463-0.063-4.925-0.267-6.333c-0.641-4.454-6.893-5.161-10.051-2.881c-0.991,0.712-1.748,1.665-2.188,2.945   c-0.444,1.281-0.665,3.031-0.665,5.254v7.41C61.714,85.296,76.676,83.555,74.891,72.96z M54.833,32.732   c0.269,0.654,0.687,1.184,1.254,1.584c0.56,0.394,1.276,0.592,2.134,0.592c0.752,0,1.418-0.203,1.998-0.622   c0.578-0.417,1.065-1.04,1.463-1.871l-0.099,2.046h5.813V9.74H62.82v19.24c0,1.042-0.858,1.895-1.907,1.895   c-1.043,0-1.904-0.853-1.904-1.895V9.74h-4.776v16.674c0,2.124,0.039,3.54,0.102,4.258C54.4,31.385,54.564,32.069,54.833,32.732z    M37.217,18.77c0-2.373,0.198-4.226,0.591-5.562c0.396-1.331,1.107-2.401,2.137-3.208c1.027-0.811,2.342-1.217,3.941-1.217   c1.345,0,2.497,0.264,3.459,0.781c0.967,0.52,1.713,1.195,2.23,2.028c0.527,0.836,0.885,1.695,1.076,2.574   c0.195,0.891,0.291,2.235,0.291,4.048v6.252c0,2.293-0.092,3.98-0.271,5.051c-0.177,1.074-0.557,2.07-1.146,3.004   c-0.58,0.924-1.329,1.615-2.237,2.056c-0.918,0.445-1.968,0.663-3.154,0.663c-1.325,0-2.441-0.183-3.361-0.565   c-0.923-0.38-1.636-0.953-2.144-1.714c-0.513-0.762-0.874-1.69-1.092-2.772c-0.219-1.081-0.323-2.707-0.323-4.874L37.217,18.77   L37.217,18.77z M41.77,28.59c0,1.4,1.042,2.543,2.311,2.543c1.27,0,2.308-1.143,2.308-2.543V15.43c0-1.398-1.038-2.541-2.308-2.541   c-1.269,0-2.311,1.143-2.311,2.541V28.59z M25.682,35.235h5.484l0.006-18.96l6.48-16.242h-5.998l-3.445,12.064L24.715,0h-5.936   l6.894,16.284L25.682,35.235z" data-original="#000000" class="active-path" data-old_color="#000000" /></svg>
+                                    </a>
+                                </div>
+                                <div class=" text-center col-xs-3">
+                                    <a href="http://vk.com/advantshop" class="social-icon " target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 532.337 532.337" style="enable-background:new 0 0 532.337 532.337;" xml:space="preserve" fill="currentColor">
+                                        <path d="M471.998,241.286c7.57-9.786,13.58-17.638,18.018-23.562c31.965-42.498,45.82-69.646,41.574-81.482l-1.666-2.772    c-1.107-1.665-3.977-3.194-8.592-4.578c-4.621-1.383-10.533-1.604-17.736-0.691l-79.822,0.563    c-1.848-0.184-3.697-0.141-5.545,0.128c-1.848,0.281-3.047,0.563-3.605,0.832c-0.557,0.282-1.016,0.508-1.383,0.692l-1.107,0.832    c-0.924,0.551-1.939,1.524-3.047,2.914c-1.109,1.389-2.039,2.999-2.773,4.853c-8.684,22.356-18.568,43.146-29.656,62.363    c-6.838,11.457-13.123,21.396-18.844,29.792c-5.729,8.415-10.533,14.603-14.414,18.568c-3.879,3.972-7.393,7.166-10.531,9.56    c-3.146,2.411-5.545,3.421-7.203,3.054c-1.666-0.367-3.238-0.734-4.713-1.114c-2.588-1.658-4.67-3.917-6.236-6.787    c-1.572-2.857-2.631-6.463-3.189-10.808c-0.551-4.339-0.881-8.084-0.967-11.23c-0.098-3.139-0.049-7.57,0.141-13.305    c0.184-5.729,0.275-9.602,0.275-11.64c0-7.014,0.141-14.639,0.418-22.864c0.275-8.219,0.508-14.737,0.691-19.542    c0.184-4.798,0.275-9.884,0.275-15.245c0-5.349-0.324-9.56-0.975-12.613c-0.648-3.042-1.621-5.998-2.906-8.868    c-1.297-2.858-3.189-5.08-5.686-6.646c-2.496-1.573-5.588-2.815-9.283-3.746c-9.799-2.222-22.271-3.409-37.418-3.604    c-34.37-0.355-56.451,1.86-66.243,6.658c-3.88,2.038-7.393,4.804-10.532,8.317c-3.329,4.07-3.788,6.291-1.383,6.646    c11.089,1.665,18.936,5.643,23.556,11.922l1.665,3.323c1.291,2.411,2.583,6.659,3.88,12.754c1.292,6.096,2.124,12.84,2.497,20.233    c0.924,13.488,0.924,25.031,0,34.646c-0.924,9.614-1.799,17.093-2.631,22.442c-0.833,5.361-2.081,9.7-3.74,13.023    c-1.665,3.335-2.772,5.367-3.329,6.107c-0.557,0.734-1.016,1.199-1.383,1.384c-2.405,0.918-4.896,1.383-7.484,1.383    c-2.589,0-5.729-1.298-9.425-3.887c-3.697-2.576-7.534-6.138-11.5-10.667c-3.978-4.522-8.452-10.856-13.446-18.99    c-4.988-8.121-10.166-17.736-15.521-28.819l-4.431-8.042c-2.772-5.165-6.561-12.699-11.365-22.583s-9.058-19.443-12.748-28.69    c-1.481-3.874-3.697-6.83-6.652-8.868l-1.383-0.832c-0.924-0.735-2.405-1.524-4.437-2.351c-2.038-0.832-4.155-1.432-6.377-1.805    l-75.943,0.551c-7.76,0-13.023,1.763-15.795,5.275l-1.108,1.659C0.275,136.059,0,137.54,0,139.566    c0,2.038,0.557,4.529,1.665,7.479c11.089,26.059,23.146,51.188,36.169,75.386c13.03,24.211,24.346,43.709,33.954,58.489    c9.608,14.792,19.4,28.733,29.382,41.854c9.982,13.121,16.585,21.523,19.816,25.214c3.231,3.703,5.771,6.476,7.62,8.317    l6.928,6.658c4.431,4.432,10.949,9.743,19.542,15.937c8.592,6.193,18.103,12.289,28.55,18.287    c10.435,6.01,22.589,10.899,36.444,14.694c13.856,3.794,27.344,5.317,40.465,4.571h31.874c6.469-0.551,11.363-2.576,14.688-6.096    l1.107-1.383c0.734-1.102,1.432-2.815,2.08-5.123c0.643-2.307,0.975-4.853,0.975-7.619c-0.191-7.943,0.416-15.116,1.799-21.481    c1.383-6.377,2.955-11.175,4.713-14.418c1.756-3.226,3.738-5.955,5.959-8.177c2.217-2.222,3.783-3.55,4.713-4.015    c0.924-0.453,1.666-0.777,2.217-0.973c4.43-1.476,9.65-0.043,15.66,4.296c6.004,4.352,11.641,9.7,16.91,16.077    c5.262,6.377,11.59,13.531,18.984,21.481c7.387,7.943,13.855,13.855,19.4,17.735l5.545,3.336    c3.695,2.209,8.494,4.241,14.412,6.096c5.912,1.842,11.09,2.307,15.52,1.383l70.955-1.114c7.02,0,12.473-1.15,16.354-3.464    c3.879-2.295,6.188-4.853,6.928-7.619c0.734-2.772,0.783-5.899,0.141-9.419c-0.648-3.507-1.297-5.955-1.939-7.338    c-0.648-1.383-1.25-2.546-1.807-3.464c-9.24-16.628-26.885-37.051-52.938-61.255l-0.557-0.551l-0.275-0.281l-0.275-0.27H473.4    c-11.83-11.273-19.309-18.85-22.449-22.736c-5.727-7.38-7.025-14.865-3.879-22.441    C449.275,271.874,457.586,259.769,471.998,241.286z" data-original="#000000" class="active-path" data-old_color="#000000" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>

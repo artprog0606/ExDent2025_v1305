@@ -1,0 +1,64 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row @(Model.Block.TryGetSetting("align_block") != null ? Model.Block.TryGetSetting("align_block") :"middle-xs")">
+            <div class="col-xs-12 col-sm-4 col-md-5  lp-block-text-image__col text-center" data-e2e="textImageReversePicture">
+                @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                {
+                    GalleryIconsEnabled = false,
+                    DeletePicture = false,
+                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                    MaxWidthPicture = PictureLoaderImageSize.XMiddleWidth,
+                    MaxHeightPicture = PictureLoaderImageSize.XMiddleWidth,
+                    ImageLink = Model.Block.TryGetSetting("image_link")
+                }, Model.Inplace)
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-7  lp-block-text-image__col">
+                <div class="lp-block-text-image-reverse__content">
+                    @if (Model.Block.TryGetSetting("show_title") == true)
+                    {
+                        <div class="lp-h2 lp-h2--color" data-e2e="textImageReverseTitle">
+                            @Html.SubBlock(Model, "title")
+                        </div>
+                    }
+
+                    @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                    {
+                        <div class="lp-h3 lp-h3--color" data-e2e="textImageReverseSubtitle">
+                            @Html.SubBlock(Model, "subtitle")
+                        </div>
+                    }
+
+                    <div class="lp-h3--color lp-block-text--middle lp-font-size--middle" data-e2e="textImageReverseText">
+                        @Html.SubBlock(Model, "text")
+                    </div>
+                    @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                    {
+                        <div class="lp-block-text-button">
+                            <div class="row @Model.Block.TryGetSetting("align_btns")">
+                                <div class="col-xs-12">
+                                    <div class="lp-btn-group @Model.Block.TryGetSetting("align_btns")">
+                                        @if (Model.Block.TryGetSetting("show_button") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent" data-e2e="textImageBtn1">
+                                                @Html.Button(Model.Block, "button")
+                                            </div>
+                                        }
+                                        @if (Model.Block.TryGetSetting("show_button2") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent" data-e2e="textImageBtn2">
+                                                @Html.Button(Model.Block, "button2")
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

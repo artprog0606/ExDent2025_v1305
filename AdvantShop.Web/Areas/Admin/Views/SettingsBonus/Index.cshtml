@@ -1,0 +1,108 @@
+﻿@using System.Web.Mvc.Html
+@using AdvantShop.Core.Services.Bonuses.Notification
+@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.BonusSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+
+    Html.AddAsset("settingsBonus");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Bonussystem").ToString();
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Bonus")
+    };
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsBonus", FormMethod.Post, new { name = "form", enctype = "multipart/form-data", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                                eButtonModificators.OnlyIcon
+                                                                      },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\" data-button-validation disabled ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+        );
+
+    @Html.Header(headerModel)
+
+    if (isAdminv3)
+    {
+        if (!isMobile)
+        {
+            <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="page-name-block-item-main flex middle-xs">
+                        <h2 class="m-r-xs  sticky-page-name-text m-t-none">@T("Admin.Settings.Commonpage.Bonussystem")</h2>
+
+                    </div>
+                    <div class="page-name-block-item-additional">
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.SettingsBonus.Index.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="SettingsBonusSave" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="ibox">
+            <div class="ibox-content">
+                @Html.Partial("_Settings", Model)
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.SettingsBonus.Index.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+
+        <uib-tabset active uid="'bonussystem'" on-select-batch="settings.onSelectTab(tab.heading);">
+
+            <uib-tab index="1" heading="@T("Admin.Settings.Bonus.Header")" classes="ng-tab">
+                @Html.Partial("_Settings", Model)
+            </uib-tab>
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.SettingsBonus.Index.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="SettingsBonusSave" />
+            </div>
+        </uib-tabset>
+    }
+}

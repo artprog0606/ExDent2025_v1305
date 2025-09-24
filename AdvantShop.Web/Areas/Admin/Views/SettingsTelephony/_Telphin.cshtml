@@ -1,0 +1,123 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.IPTelephonySettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex" : "")">
+            <div>Если у вас нет учетной записи в сервисе Telfin, вы можете зарегистрироваться по <a href="https://go.advantshop.net/telfin" target="_blank">ссылке</a></div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap">
+            <label for="TelphinAppKey" class="form-label-block setting__label">@T("Admin.Settings.Telephony.Telphin.AppKey")</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.TelphinAppKey, new { ng_model = "settingsTelephony.telphinAppKey", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "col-xs-1" : "")" data-title="@T("Admin.Settings.Telephony.Telphin.AppKey")">
+            @T("Admin.Telphin.AppKeyNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap">
+            <label for="TelphinAppSecret" class="form-label-block setting__label">@T("Admin.Settings.Telephony.Telphin.AppSecret")</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.TelphinAppSecret, new { ng_model = "settingsTelephony.telphinAppSecret", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "col-xs-1" : "")" data-title="@T("Admin.Settings.Telephony.Telphin.AppSecret")">
+            @T("Admin.Telphin.AppSecretNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap">
+            <label class="form-label-block setting__label">@T("Admin.Settings.Telephony.Telphin.ServiceUrl")</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex " : "")" ng-init="settingsTelephony.telphinServiceUrl = '@(SettingsMain.SiteUrl)/telphin/pushnotification'">
+        <span style=" @(isMobile ? "word-break:break-all;" : "")" ng-bind="settingsTelephony.telphinServiceUrl"></span>
+        <i class="fa fa-clipboard pointer m-l-xs @(isMobile ? "col-xs-1" : "")" ng-click="settingsTelephony.copy(settingsTelephony.telphinServiceUrl)" title="@T("Admin.SettingsTelephony.CopyALink")" aria-hidden="true"></i>
+        <help-trigger class="ng-cloak word-spacing @(isMobile ? "col-xs-1" : "")" data-title="@T("Admin.Settings.Telephony.Telphin.ServiceUrl")">
+            @T("Admin.Settings.Telephony.Telphin.ServiceUrlNote")
+        </help-trigger>
+    </div>
+</div>
+
+
+@if (isMobile)
+{
+    <div class="form-group row setting__form-group">
+        <h3 class="setting__label col-xs-12">@T("Admin.Telphin.Extensions")</h3>
+       <div class="col-xs-12"><a href="" ng-click="settingsTelephony.getTelphinExtensions()">@T("Admin.Telphin.Extensions.Refresh")</a></div>
+    </div>
+}
+else
+{
+    <div class="setting-title" ng-init="settingsTelephony.telphinExtensions = @Model.TelphinExtensions">
+        <h3 class="setting__subtitle">@T("Admin.Telphin.Extensions") <a href="" ng-click="settingsTelephony.getTelphinExtensions()">@T("Admin.Telphin.Extensions.Refresh")</a></h3>
+    </div>
+}
+
+<div class="form-group row setting__form-group" ng-if="!settingsTelephony.telphinExtensions || settingsTelephony.telphinExtensions.length == 0">
+    <div class="col-xs-12">
+        <div class="setting-label-wrap">
+            <label class="form-label-block setting__label">@T("Admin.Telphin.Extensions.Empty")</label>
+        </div>
+    </div>
+</div>
+<div class="form-group row setting__form-group" ng-if="settingsTelephony.telphinExtensions.length > 0">
+    <div class="col-xs-4 col-sm-1">
+        <b>@T("Admin.Telphin.Extensions.Number")</b>
+    </div>
+    <div class="col-xs-4 col-sm-2">
+        <b>@T("Admin.Telphin.Extensions.Name")</b>
+    </div>
+    <div class="col-xs-4 col-sm-9">
+        <b>@T("Admin.Telphin.Extensions.Notifications")</b>
+    </div>
+</div>
+<div class="form-group row setting__form-group" ng-repeat="ext in settingsTelephony.telphinExtensions">
+    <div class="col-xs-4 col-sm-1">
+        {{ext.extension}}
+    </div>
+    <div class="col-xs-4 col-sm-2">
+        {{ext.label}}
+    </div>
+    <div class="col-xs-4 col-sm-9">
+        <div ng-if="!ext.events || ext.events.length == 0">
+            @T("Admin.Telphin.Extensions.Notifications.NotSet") <a href="" ng-click="settingsTelephony.addTelphinEvents(ext)">@T("Admin.Telphin.Extensions.Notifications.Set")</a>
+        </div>
+        <div class="row" ng-if="ext.events.length > 0">
+            <div class="col-xs-5"><b>@T("Admin.Telphin.Extensions.Notifications.Event")</b></div>
+            <div class="col-xs-7"><b>URL</b></div>
+        </div>
+        <div class="row" ng-repeat="event in ext.events">
+            <div class="col-xs-5">
+                {{event.eventTypeName}}
+            </div>
+            <div class="col-xs-7">
+                {{event.url}}
+            </div>
+        </div>
+        <div class="row" ng-if="ext.events.length > 0">
+            <div class="col-xs-12">
+                <a href="" ng-click="settingsTelephony.addTelphinEvents(ext)">@T("Admin.Telphin.Extensions.Notifications.Add")</a>
+                <a href="" ng-click="settingsTelephony.setTelphinEvents(ext)" class="m-l-sm">@T("Admin.Telphin.Extensions.Notifications.Set")</a>
+                <a href="" ng-click="settingsTelephony.deleteTelphinEvents(ext)" class="text-danger m-l-sm">@T("Admin.Delete")</a>
+            </div>
+        </div>
+    </div>
+</div>
+

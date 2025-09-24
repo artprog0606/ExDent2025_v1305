@@ -1,0 +1,40 @@
+﻿@model BlockModel
+
+@{
+    bool renderSocials = Model.Block.ExistSocials();
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs middle-xs">
+            <div class="col-xs-12">
+                @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    @:<div class="lp-block-contacts-map__header">
+                }
+                @if (Model.Block.TryGetSetting("show_title") == true)
+                {
+                    <div class="lp-h2 lp-h2--color" data-e2e="contactsSimpleTitle">@Html.SubBlock(Model, "title")</div>
+                }
+                @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    <div class="lp-h3 lp-h3--color" data-e2e="contactsSimpleSubtitle">@Html.SubBlock(Model, "subtitle")</div>
+                }
+                @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    @:</div>
+                }
+                <div class="lp-font-size--middle lp-block-contacts-map__text" data-e2e="contactsSimpleText">
+                    @Html.SubBlock(Model, "text")
+                </div>
+
+                @if (renderSocials)
+                {
+                    <div class="lp-block-contacts-center__social">
+                        @Html.Partial("_Socials", Model.Block)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

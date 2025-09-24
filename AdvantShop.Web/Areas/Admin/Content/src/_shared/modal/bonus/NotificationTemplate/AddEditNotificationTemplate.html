@@ -1,0 +1,103 @@
+﻿<form novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2
+            class="modal-header-title"
+            ng-bind="ctrl.IsNew ? ('Admin.Js.SmsTemplate.AddTemplate'|translate) : ('Admin.Js.SmsTemplate.SaveTemplate'|translate)"></h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal" ng-if="{'m-r m-l' : !isMobile.value}">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-4 control-label m-b-xs">
+                        <span class="text-required">{{'Admin.Js.SmsTemplate.Type'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <select
+                            required
+                            class="form-control input-alt"
+                            ng-disabled="!ctrl.IsNew"
+                            ng-options="item.Value as item.Text for item in ctrl.NotificationTypes"
+                            ng-model="ctrl.NotificationTypeId"
+                            ng-change="ctrl.refresh()"
+                            validation-input-text="{{'Admin.Js.SmsTemplate.SelectType'|translate}}"
+                            data-e2e="notificationType">
+                            <option value="">{{'Admin.Js.SmsTemplate.SelectType'|translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-4 control-label m-b-xs">
+                        <span class="text-required">{{'Admin.Js.SmsTemplate.Method'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <select
+                            required
+                            class="form-control input-alt"
+                            disabled-autobind=""
+                            ng-disabled="!ctrl.IsNew"
+                            ng-options="item.Value as item.Text for item in ctrl.NotificationMethods"
+                            ng-model="ctrl.BonusNotificationMethod"
+                            ng-change="ctrl.refresh()"
+                            validation-input-text="{{'Admin.Js.SmsTemplate.SelectMethod'|translate}}"
+                            data-e2e="notificationType">
+                            <option value="">{{'Admin.Js.SmsTemplate.SelectMethod'|translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-4 control-label m-b-xs">
+                        <span class="text-required">{{'Admin.Js.SmsTemplate.Message'|translate}}</span><br />
+                        <div ng-if="ctrl.BonusNotificationMethod == 'Sms'">
+                            <count-sms sms-text="ctrl.SmsBody"></count-sms>
+                        </div>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <textarea
+                            rows="6"
+                            class="form-control input-alt"
+                            ng-model="ctrl.NotificationBody"
+                            required
+                            validation-input-text="{{'Admin.Js.SmsTemplate.Message'|translate}}"
+                            data-e2e="NotificationBody">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-4 m-b-xs setting__label">
+                        <span class="tex-required">{{'Admin.Js.SmsTemplate.AvailableVariables'|translate}}</span>
+                        <span>{{'Admin.Js.SmsTemplate.IncreaseWarning'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <div ng-repeat="variable in ctrl.AvalibleVarible">
+                            <span ng-bind="variable.Key" class="font-bold"></span>
+                            <i class="fa fa-copy pointer" ng-click="ctrl.copy(variable.Key)" title="Скопировать" aria-hidden="true"></i>
+                            <span ng-if="variable.Value">-</span>
+                            <span ng-bind="variable.Value"></span>
+                        </div>
+                        <span ng-if="ctrl.AvalibleVarible.length === 0">{{'Admin.Js.SmsTemplate.NoAvailableVariables'|translate}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.saveTemplate();"
+            ladda="ctrl.btnLoading"
+            data-e2e="addTemplate"
+            ng-bind="ctrl.IsNew ? ('Admin.Js.SmsTemplate.Add'|translate) : ('Admin.Js.SmsTemplate.Save'|translate)">
+            {{'Admin.Js.SmsTemplate.Add'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.SmsTemplate.Cancel'|translate}}</button>
+    </div>
+</form>

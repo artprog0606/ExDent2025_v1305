@@ -1,0 +1,129 @@
+﻿@using AdvantShop.Design
+@using AdvantShop.Web.Admin.Handlers.Store
+@using AdvantShop.Trial
+@using AdvantShop.Core.Services.Admin
+@using AdvantShop.DownloadableContent;
+@using AdvantShop.Core.Services.Domains;
+@model AdvantShop.Web.Admin.ViewModels.Design.DesignModel
+@{
+    Layout = "~/Areas/Admin/Templates/Mobile/Views/Store/_StoreLayout.cshtml";
+    var template = Model.CurrentTemplate;
+    var page = new GetStorePage().Execute();
+}
+@{
+    Html.AddAsset("design");
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Dashboard")
+    };
+
+
+    headerModel.Title = page.StoreName;
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Attributes = new string[] { "ng-if=\"" + page.UseDomainsManager + "\"" };
+    moreButton.Items = new List<MoreButtonPopoverItem>()
+    {
+        //                    new MoreButtonPopoverItem()
+        //                    {
+        //                        ColorType =eColorType.Link,
+        //                        Modificators = new List<eButtonModificators>()
+        //{
+        //                            eButtonModificators.HorizontalPaddingZero
+        //                        },
+        //                        Link = UrlService.GetUrl(),
+        //                        Text = T("Открыть витрину"),
+        //                        Icon = new ButtonIcon(){
+        //                            SvgName = "go",
+        //                            Attributes = new { width = 24, height = 24 }
+        //                        }
+        //                    }
+    };
+
+    if (page.UseDomainsManager)
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Link = Url.AbsoluteActionUrl("Domains", "Store"),
+            Text = T("Привязать домен"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "cog",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+    }
+
+    headerModel.Controls.Add(moreButton);
+}
+
+@Html.Header(headerModel)
+
+<div class="design-preview design-preview--overflow">
+    @if (string.IsNullOrEmpty(SettingsMain.StoreScreenShotMiddle))
+    {
+        <a href="@UrlService.GetUrl()" target="_blank" class="block">
+            <iframe class="tpl-site-online"
+                    frameborder="0"
+                    scrolling="no"
+                    src="@UrlService.GetUrl("?mobilePreview=true")"
+                    onload="this.nextElementSibling.classList.add('ng-hide')"></iframe>
+            <div class="tpl-iframe-loading">
+                <i class="fas fa-spinner fa-spin fa-4x"></i>
+            </div>
+        </a>
+    }
+    else
+    {
+        <div class="text-center">
+            <img width="414"
+                 src="@SettingsMain.StoreScreenShotMiddle" />
+        </div>
+    }
+</div>
+
+
+<div class="text-center m-t">
+    <a href="@UrlService.GetUrl()" class="link-alternative" target="_blank">
+        @T("Admin.Dashboard.GoToTheSite")
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-l-sm">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.707 0V2.001H8.292L0 10.293L1.414 11.707L9.706 3.415V8H11.707V0H3.707Z" fill="currentColor" />
+        </svg>
+    </a>
+</div>
+
+
+<div class="m-t-md settings-list">
+    @foreach (var item in page.MenuItems)
+    {
+        <a href="@Url.AbsoluteActionUrl(item.MenuUrlAction.Action, item.MenuUrlAction.Controller)" class="navigation-item navigation-item--horizontal navigation-item--separated">
+            <span class="navigation-item__icon">@Html.Raw(item.MenuIcon)</span>
+            <span class="navigation-item__text">@item.Name</span>
+            @Html.SvgSprite("arrow-right", "", new { width = 8, height = 12 })
+        </a>
+    }
+    
+    @if (page.UseDomainsManager)
+    {
+            <a class="navigation-item navigation-item--horizontal navigation-item--separated" href="@Url.AbsoluteActionUrl("Domains", "Store")">
+                <span class="navigation-item__icon">
+                    @Html.SvgSprite("www", "", new { width = 24, height = 24 })
+                </span>
+                <span class="navigation-item__text">Привязать домен</span>
+                @Html.SvgSprite("arrow-right", "", new { width = 8, height = 12 })
+            </a>
+    }
+    
+</div>
+

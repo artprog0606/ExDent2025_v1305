@@ -1,0 +1,99 @@
+<div ng-switch="checkOrderModal.isLoaded">
+    <div ng-switch-when="true">
+        <div ng-if="checkOrderModal.data.Error == null">
+            <div class="checkorder-modal__header checkorder-modal__block">
+                <span class="" data-ng-bind="'№' + checkOrderModal.data.OrderNumber"></span>
+                <span ng-bind="checkOrderModal.data.StatusName"></span>
+            </div>
+            <div class="checkorder-modal__block" ng-if="checkOrderModal.data.StatusComment != null && checkOrderModal.data.StatusComment.length > 0">
+                <div class="checkorder-modal__subheader--block">{{ ::'Js.CheckOrder.Comment' | translate }}:</div>
+                <div ng-bind="checkOrderModal.data.StatusComment"></div>
+            </div>
+            <div
+                class="checkorder-modal__block"
+                ng-if="checkOrderModal.data.ShippingHistory && checkOrderModal.data.ShippingHistory.HistoryOfMovement && checkOrderModal.data.ShippingHistory.HistoryOfMovement.length">
+                <div class="row between-xs">
+                    <div class="col-xs-12">
+                        <div class="">
+                            <div class="checkorder-modal__subheader--block">{{ ::'Js.CheckOrder.OrderStatus' | translate }}:</div>
+                            <div
+                                class="row between-xs"
+                                ng-repeat="item in checkOrderModal.data.ShippingHistory.HistoryOfMovement | orderBy:predicate:reverse | limitTo: checkOrderModal.historyCountVisible track by $index">
+                                <div class="col-xs-4 p-t-xs p-b-xs cs-t-3" data-ng-bind="item.Name"></div>
+                                <div class="col-xs-8 p-t-xs p-b-xs">
+                                    <div ng-bind="item.DateString"></div>
+                                    <div class="cs-t-3" ng-bind="item.Comment"></div>
+                                </div>
+                            </div>
+
+                            <div class="row between-xs">
+                                <div class="col-xs-12">
+                                    <a
+                                        href="javascript:void(0)"
+                                        class="btn btn-xsmall btn-action"
+                                        ng-click="checkOrderModal.historyCountVisible = checkOrderModal.historyCountVisible === 5 ? checkOrderModal.data.ShippingHistory.HistoryOfMovement.length : 5"
+                                        ng-if="checkOrderModal.data.ShippingHistory.HistoryOfMovement.length > 1"
+                                        ng-bind="(checkOrderModal.historyCountVisible === 5 ? 'Js.CheckOrder.ShowAll' : 'Js.CheckOrder.HideHistory') | translate"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="checkOrderModal.data.ShippingHistory && checkOrderModal.data.ShippingHistory.PointInfo">
+                <div class="checkorder-modal__block">
+                    <div class="checkorder-modal__subheader--block">{{ ::'Js.CheckOrder.Address' | translate }}:</div>
+                    <div ng-bind="checkOrderModal.data.ShippingHistory.PointInfo.Address"></div>
+                    <div ng-if="checkOrderModal.data.ShippingHistory.PointInfo.Latitude && checkOrderModal.data.ShippingHistory.PointInfo.Longitude">
+                        <a
+                            href="javascript:void(0)"
+                            ng-href="{{ '//maps.yandex.ru/?text=' + checkOrderModal.data.ShippingHistory.PointInfo.Latitude + ', ' + checkOrderModal.data.ShippingHistory.PointInfo.Longitude}}"
+                            class="btn btn-xsmall btn-action"
+                            target="_blank"
+                            >{{ ::'Js.CheckOrder.ShowOnMap' | translate }}</a
+                        >
+                    </div>
+                    <div
+                        ng-if="checkOrderModal.data.ShippingHistory.PointInfo.Address && !(checkOrderModal.data.ShippingHistory.PointInfo.Latitude && checkOrderModal.data.ShippingHistory.PointInfo.Longitude)">
+                        <a
+                            href="javascript:void(0)"
+                            ng-href="{{ '//maps.yandex.ru/?text=' + checkOrderModal.data.ShippingHistory.PointInfo.Address}}"
+                            class="btn btn-xsmall btn-action"
+                            target="_blank"
+                            >{{ ::'Js.CheckOrder.ShowOnMap' | translate }}</a
+                        >
+                    </div>
+                </div>
+                <div class="checkorder-modal__block">
+                    <ul class="checkorder-modal__contacts">
+                        <li class="" ng-if="checkOrderModal.data.ShippingHistory.PointInfo.TimeWork">
+                            <div class="cs-t-3">{{ ::'Js.CheckOrder.WorkHours' | translate }}:</div>
+                            <div class="" ng-bind="checkOrderModal.data.ShippingHistory.PointInfo.TimeWork"></div>
+                        </li>
+                        <li class="" ng-if="checkOrderModal.data.ShippingHistory.PointInfo.Phone">
+                            <div class="cs-t-3">{{ ::'Js.CheckOrder.Phone' | translate }}:</div>
+                            <div class="" ng-bind="checkOrderModal.data.ShippingHistory.PointInfo.Phone"></div>
+                        </li>
+                    </ul>
+                </div>
+                <read-more
+                    data-max-height="20"
+                    data-ng-if="checkOrderModal.data.ShippingHistory.PointInfo.Description"
+                    data-content="checkOrderModal.data.ShippingHistory.PointInfo.Description | sanitize"></read-more>
+            </div>
+
+            <div
+                class="checkorder-modal__subheader--block"
+                ng-if="(checkOrderModal.data.StatusComment == null || checkOrderModal.data.StatusComment.length === 0) &&      
+                        (!checkOrderModal.data.ShippingHistory || !checkOrderModal.data.ShippingHistory.HistoryOfMovement || !checkOrderModal.data.ShippingHistory.HistoryOfMovement.length) &&
+                        (!checkOrderModal.data.ShippingHistory || !checkOrderModal.data.ShippingHistory.PointInfo)">
+                {{ ::'Js.CheckOrder.NoDetails' | translate }}
+            </div>
+        </div>
+        <div ng-if="checkOrderModal.data.Error" ng-bind="checkOrderModal.data.Error"></div>
+    </div>
+    <div ng-switch-default class="checkorder-modal__loading">
+        <span class="icon-spinner-before icon-animate-spin-before"> {{ ::'Js.CheckOrder.LoadingData' | translate }} </span>
+    </div>
+</div>

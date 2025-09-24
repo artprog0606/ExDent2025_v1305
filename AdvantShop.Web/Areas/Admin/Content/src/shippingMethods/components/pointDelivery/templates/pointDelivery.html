@@ -1,0 +1,126 @@
+﻿<ng-form name="pointdelivery">
+    <div is-mobile>
+        <div class="flex m-b-md">
+            <div>
+                <ui-modal-trigger
+                    data-controller="'ModalAddPointDeliveryCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/shippingMethods/modal/addPointDelivery/addPointDelivery.html"
+                    data-resolve="item"
+                    data-on-close="$ctrl.addPoint(result)">
+                    <a href="" class="btn btn-action">{{'Admin.Js.ShippingMethods.Add'|translate}}</a>
+                </ui-modal-trigger>
+                <ui-modal-trigger
+                    data-controller="'ModalSelectWarehouseCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/warehouse/modal/selectWarehouse/selectWarehouse.html"
+                    size="lg"
+                    data-resolve="{'params': { 'multiSelect': false }}"
+                    data-on-close="$ctrl.addWarehouses(result)"
+                    ng-if="$ctrl.warehousesActive">
+                    <a href="" class="btn btn-action">Добавить склад</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+
+        <div id="pointDeliverySortingContainer" class="relative">
+            <div ng-if="!isMobile.value" class="m-b-md sortable-row ng-cloak" ng-model="$ctrl.points" as-sortable="$ctrl.sortableOptions">
+                <div ng-repeat="item in $ctrl.points" as-sortable-item>
+                    <div class="flex payment-row middle-xs between-xs">
+                        <div class="col-xs">
+                            <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                <div class="flex middle-xs">
+                                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                        <icon-move />
+                                    </div>
+                                    <span ng-if="item.WarehouseId">Склад:&nbsp;</span>
+                                    <span data-ng-bind="item.Address"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex middle-xs col-fixed-size-xs">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddPointDeliveryCtrl'"
+                                controller-as="ctrl"
+                                ng-if="!item.WarehouseId"
+                                template-url="../areas/admin/content/src/shippingMethods/modal/addPointDelivery/addPointDelivery.html"
+                                data-resolve="{point: item}"
+                                data-on-close="$ctrl.editPoint(result, item)">
+                                <button
+                                    type="button"
+                                    aria-label="Редактировать"
+                                    class="btn-icon link-invert ui-grid-custom-service-icon fas fa-pencil-alt"></button>
+                            </ui-modal-trigger>
+                            <button
+                                type="button"
+                                ng-click="$ctrl.deletePoint(item)"
+                                class="btn-icon link-invert link-decoration-none fas fa-times"
+                                aria-label="Удалить"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="isMobile.value" ng-model="$ctrl.points" as-sortable="$ctrl.sortableOptions" class="settings-list settings-list--row-gap-3">
+                <div ng-repeat="item in $ctrl.points" as-sortable-item class="swipe-line">
+                    <div class="swipe-line__inner" data-swipe-line>
+                        <div
+                            class="navigation-item navigation-item--horizontal card card--middle swipe-line__content setting__property-group-item"
+                            style="padding: 0 16px">
+                            <div class="as-sortable-item-handle navigation-item__icon" as-sortable-item-handle>
+                                <icon-move>
+                                    <svg
+                                        class="icon-move"
+                                        version="1.0"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10.000000pt"
+                                        height="20.000000pt"
+                                        viewBox="0 0 10.000000 20.000000"
+                                        preserveAspectRatio="xMidYMid meet">
+                                        <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                            <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        </g>
+                                    </svg>
+                                </icon-move>
+                            </div>
+                            <div class="navigation-item__text">
+                                <ui-modal-trigger
+                                    data-controller="'ModalAddPointDeliveryCtrl'"
+                                    controller-as="ctrl"
+                                    template-url="../areas/admin/content/src/shippingMethods/modal/addPointDelivery/addPointDelivery.html"
+                                    data-resolve="{point: item}"
+                                    data-on-close="$ctrl.editPoint(result, item)">
+                                    <div style="padding: 18px 0" data-ng-bind="item.Address"></div>
+                                </ui-modal-trigger>
+                            </div>
+                        </div>
+                        <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                ng-click="$ctrl.deletePoint(item)">
+                                Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="pointsjson" value="{{$ctrl.points | json}}" class="shipping-extend-input-hidden" />
+        <input type="hidden" ng-model="$ctrl.update" class="hidden shipping-extend-input-hidden" />
+        <input
+            ng-if="!$ctrl.points.length"
+            type="hidden"
+            ng-model="$ctrl.emptyString"
+            required
+            readonly
+            class="shipping-extend-input-hidden"
+            validation-input-text="Пункты самовывоза" />
+    </div>
+</ng-form>

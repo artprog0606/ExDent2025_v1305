@@ -1,0 +1,52 @@
+<ul class="stock-list" data-ng-if="!$ctrl.isLoadingStocks">
+    <li class="stock-list__header cs-br-1" data-ng-if="!$ctrl.isMobile">
+        <div class="row stock-list__row">
+            <div class="col-xs-6 stock-list__column">
+                <span class="stock-list__column-name">{{'Js.StockList.Address' | translate}}</span>
+            </div>
+            <div class="col-xs-2 stock-list__column">
+                <span class="stock-list__column-name">{{'Js.StockList.Availability' | translate}}</span>
+            </div>
+            <div class="col-xs-4 stock-list__column">
+                <span class="stock-list__column-name">{{'Js.StockList.WorkingTime' | translate}}</span>
+            </div>
+        </div>
+    </li>
+    <li class="stock-list__item cs-br-1" data-ng-if="!$ctrl.isMobile" data-ng-repeat="item in $ctrl.stockListData">
+        <div class="stock-list__body cs-br-1">
+            <div class="row stock-list__row">
+                <div class="col-xs-6">
+                    <div class="stock-list__value stock-list__name" data-ng-bind="item.Name"></div>
+                    <div class="stock-list__value stock-list__address" data-ng-bind="item.Address"></div>
+                    <div class="stock-list__value stock-list__comment" data-ng-bind="item.AddressComment"></div>
+                </div>
+                <div class="col-xs-2 stock-list__value stock-list__quantity">
+                    <span data-ng-style="{'color': '#' + item.StockColor}" data-ng-bind="item.Stock"></span>
+                    <span data-ng-if="item.Unit" data-ng-style="{'color': '#' + item.StockColor}" data-ng-bind="item.Unit"></span>
+                </div>
+                <div class="col-xs-4 stock-list__value stock-list__work-time">
+                    <div data-ng-repeat="timeOfWork in item.TimeOfWorkList" data-ng-bind="timeOfWork"></div>
+                </div>
+            </div>
+        </div>
+    </li>
+
+    <li data-ng-if="$ctrl.isMobile" class="stock-list__item cs-br-1" data-ng-repeat="item in $ctrl.stockListData">
+        <div class="stock-list__body">
+            <div class="stock-list__value stock-list__name" data-ng-bind="item.Name"></div>
+            <div class="stock-list__value stock-list__address" data-ng-bind="item.Address"></div>
+            <div class="stock-list__value stock-list__comment" data-ng-bind="item.AddressComment"></div>
+            <div class="stock-list__value stock-list__quantity">
+                {{'Js.StockList.Availability' | translate}}: <span data-ng-style="{'color': '#' + item.StockColor}" data-ng-bind="item.Stock"></span>
+                <span data-ng-if="item.Unit" data-ng-style="{'color': '#' + item.StockColor}" data-ng-bind="item.Unit"></span>
+            </div>
+            <div class="stock-list__value stock-list__work-time">
+                <div data-ng-repeat="timeOfWork in item.TimeOfWorkList" data-ng-bind="timeOfWork"></div>
+            </div>
+        </div>
+    </li>
+    <li class="stock-list__empty" data-ng-if="$ctrl.stockListData.length === 0">{{'Js.StockList.OutOfStock' | translate}}</li>
+</ul>
+<div data-ng-if="$ctrl.isLoadingStocks" class="stock-list-spinner">
+    <div class="icon-spinner-before icon-animate-spin-before"></div>
+</div>

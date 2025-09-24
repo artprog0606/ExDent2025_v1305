@@ -1,0 +1,372 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/deliveries/types</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Deliveries.GetDeliveryTypes")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/deliveries/types")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">api/deliveries/types?country=Россия&region=Москва&city=Москва
+</pre>
+        <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.AllFields")</h3>
+        <div class="row-tb">
+            <div class="row m-b-xs">
+                <div class="col-xs-2">type</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Тип доставки</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">types</div>
+                <div class="col-xs-1">string array</div>
+                <div class="col-xs">Массив типов доставки</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">loadWarehouses</div>
+                <div class="col-xs-1">bool?</div>
+                <div class="col-xs">Загружать информацию о складе</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">country</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Страна</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">region</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Область</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">district</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Район</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">city</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Город</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">zipCode</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Постовый индекс</div>
+            </div>
+        </div>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+    <pre class="m-t-sm">[
+    {
+        "id": 1,
+        "type": "SelfDelivery",
+        "name": "Самовывоз",
+        "description": "Самовывоз м. Чеховская",
+        "zeroCostText": "Бесплатно",
+        "icon": "https://mysite.ru/pictures/shipping/selfdelivery.svg",
+        "warehouseIds": [1],
+        "address": null
+    },
+    {
+        "id": 2,
+        "type": "DeliveryByZones",
+        "name": "Доставка по зонам",
+        "description": null,
+        "zeroCostText": "Бесплатно",
+        "icon": "https://mysite.ru/pictures/shipping/default.svg",
+        "warehouseIds": [],
+        "address": "Город Цветочный"
+    },
+    {
+        "id": 3,
+        "type": "FixedRate",
+        "name": "Курьером",
+        "description": "Курьером по Москве и области",
+        "zeroCostText": "Бесплатно",
+        "icon": "https://mysite.ru/pictures/shipping/default.svg",
+        "warehouseIds": [1, 2],
+        "address": null
+    }
+]</pre>
+        
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/deliveries/check-delivery-zone</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Deliveries.CheckAdressDeliveryZone")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/deliveries/check-delivery-zone")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "country": "Россия",
+    "region": "Москва",
+    "city": "Москва",
+    "district": null,
+    "zip": null,
+    "street": "Климентовский переулок",
+    "house": "44",
+    "structure": "3",
+}
+</pre>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "hasDelivery": true
+}
+</pre>
+        
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/deliveries/calculate</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Deliveries.ShippingCalculation")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/deliveries/calculate")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "address": {
+        "country": "Россия",
+        "region": "Москва",
+        "city": "Москва"
+    },
+    "products": [
+        {
+            "offerId": 12537,
+            "amount": 1,
+            "options": [
+                {
+                    "id": 332,
+                    "options": [1971]
+                },
+                {
+                    "id": 333,
+                    "options": [1974]
+                }
+            ]
+        }
+    ],
+    "inProductDetails": true
+}</pre>
+        <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.AllFields")</h3>
+        <div class="row-tb">
+             <div class="row m-b-xs">
+                <div class="col-xs-2"><b>address</b></div>
+                <div class="col-xs-1"></div>
+                <div class="col-xs">Адрес доставки</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">country</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Страна</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">region</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Область</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">district</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Район</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">city</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Город</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">zipCode</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Постовый индекс</div>
+            </div>
+            
+            <div class="row m-b-xs m-t">
+                <div class="col-xs-2"><b>products</b></div>
+                <div class="col-xs-1"></div>
+                <div class="col-xs">Список товаров</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">offerId</div>
+                <div class="col-xs-1">int</div>
+                <div class="col-xs">Id модификации. Обяз. параметр.</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">amount</div>
+                <div class="col-xs-1">double</div>
+                <div class="col-xs">Кол-во товара. Обяз. параметр.</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">options</div>
+                <div class="col-xs-1">array</div>
+                <div class="col-xs">Список выбранных доп. опций. Не обяз. параметр.</div>
+            </div>
+
+            <div class="row m-b-xs m-t">
+                <div class="col-xs-2"><b>inProductDetails</b></div>
+                <div class="col-xs-1">bool</div>
+                <div class="col-xs">Расчет доставки в карточке товара. Не обяз. параметр.</div>
+            </div>
+        </div>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+    <pre class="m-t-sm">[
+    {
+        "id": "1_-123",
+        "name": "Самовывоз",
+        "description": "Самовывоз м. Смоленская",
+        "deliveryTime": null,
+        "preparedPrice": "Бесплатно"
+    },
+    {
+        "id": "2_-456",
+        "name": "Доставка по зонам",
+        "description": null,
+        "deliveryTime": "1-2 часа",
+        "preparedPrice": "Бесплатно"
+    },
+    {
+        "id": "3-789",
+        "name": "Курьером",
+        "description": null,
+        "deliveryTime": "в течении дня",
+        "preparedPrice": "300 руб."
+    }
+]</pre>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+    <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Товар 123456 не найден"
+}</pre>
+        
+    </div>
+</div>
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/deliveries/point-deliveries</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Deliveries.GetPickupPoints")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/deliveries/point-deliveries")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">api/deliveries/point-deliveries?country=Россия&region=Москва&city=Москва&inhouse=true
+</pre>
+        <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.AllFields")</h3>
+        <div class="row-tb">
+            <div class="row m-b-xs">
+                <div class="col-xs-2">typeId</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Id типа доставки</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">inhouse</div>
+                <div class="col-xs-1">bool</div>
+                <div class="col-xs">В зале</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">country</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Страна</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">region</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Область</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">district</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Район</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">city</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Город</div>
+            </div>
+            <div class="row m-b-xs">
+                <div class="col-xs-2">zipCode</div>
+                <div class="col-xs-1">string</div>
+                <div class="col-xs">Постовый индекс</div>
+            </div>                s
+        </div>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+    <pre class="m-t-sm">[
+    {
+        "id": "123_45",
+        "pointStringId": "123-ТЦ Самолет",
+        "inHouse": true,
+        "name": "м. Смоленская",
+        "description": null,
+        "zeroCostText": "Бесплатно",
+        "price": 100.0,
+        "preparedPrice": "100 руб.",
+        "deliveryTime": "1-10 дней",
+        "icon": "https://mysite.ru/images/shipping/selfdelivery.svg",
+        "warehouseId": null,
+        "coordinates": {
+            "latitude": 10.0,
+            "longitude": 20.0
+        }
+    },
+    {
+        "id": "124_67",
+        "pointStringId": "123-ТЦ Аквамолл",
+        "inHouse": false,
+        "name": "м. Китай-город",
+        "description": "Описание пункта выдачи",
+        "zeroCostText": "Бесплатно",
+        "price": 100.0,
+        "preparedPrice": "100 руб.",
+        "deliveryTime": "1-10 дней",
+        "icon": "https://mysite.ru/images/shipping/selfdelivery.svg",
+        "warehouseId": 1,
+        "coordinates": {
+            "latitude": 11.0,
+            "longitude": 22.0
+        }
+    }
+]</pre>
+        
+    </div>
+</div>

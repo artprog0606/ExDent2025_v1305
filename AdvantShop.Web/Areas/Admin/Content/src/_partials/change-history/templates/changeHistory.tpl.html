@@ -1,0 +1,57 @@
+﻿<div ng-if="$ctrl.hide">
+    <a href="" ng-click="$ctrl.showHistory = !$ctrl.showHistory" class="link-invert">{{'Admin.Js.ChangeHistory.ChangeHistory'|translate}}</a>
+</div>
+<div ng-if="$ctrl.showHistory || !$ctrl.hide" class="m-t" is-mobile>
+    <!--<ui-grid-custom grid-unique-id="gridChangeHistory"
+                    grid-filter-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{objId: $ctrl.objId, type: ($ctrl.objType != null ? $ctrl.objType : $ctrl.type)}"
+                    grid-options="$ctrl.gridOptions"
+                    grid-url="'adminComments/getChangeHistory'"
+                    grid-extend-ctrl="$ctrl"
+                    ng-if="!isMobile">
+    </ui-grid-custom>--><!--grid-pagination-enabled="false"-->
+
+    <ui-grid-custom
+        grid-unique-id="gridChangeHistory"
+        grid-filter-enabled="false"
+        grid-selection-enabled="false"
+        grid-params="{objId: $ctrl.objId, type: ($ctrl.objType != null ? $ctrl.objType : $ctrl.type)}"
+        grid-options="$ctrl.gridOptions"
+        grid-url="'adminComments/getChangeHistory'"
+        grid-extend-ctrl="$ctrl"
+        ng-if="isMobile">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card m-b">
+                <div class="card__content">
+                    <div class="card__row">
+                        <span>{{'Admin.Js.Order.Date'|translate}}</span>
+                        <time datetime="{{row.entity.ModificationTime}}" ng-bind="row.entity.ModificationTimeFormatted"></time>
+                    </div>
+                    <div class="card__row">
+                        <div>{{'Admin.Js.Order.WhatChanged'|translate}}</div>
+                        <div>
+                            <div ng-bind="row.entity.ParameterName"></div>
+                            <div
+                                class="order-history-param-descr"
+                                ng-if="row.entity.ParameterDescription != null"
+                                ng-bind="row.entity.ParameterDescription"></div>
+                        </div>
+                    </div>
+                    <div class="card__row" ng-if="row.entity.OldValue != null && row.entity.OldValue.length > 0">
+                        <div>{{'Admin.Js.Order.OldValue'|translate}}</div>
+                        <div ng-bind="row.entity.OldValue"></div>
+                    </div>
+                    <div class="card__row" ng-if="row.entity.NewValue != null && row.entity.NewValue.length > 0">
+                        <div>{{'Admin.Js.Order.NewValue'|translate}}</div>
+                        <div ng-bind="row.entity.NewValue"></div>
+                    </div>
+                    <div class="card__row">
+                        <div>{{'Admin.Js.Order.WhoChanged'|translate}}</div>
+                        <div ng-bind="row.entity.ChangedByName"></div>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+</div>

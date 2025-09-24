@@ -1,0 +1,60 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+@{
+    var modalId = "modal_exit_" + Model.Block.Id;
+    var ouibounce = Model.Block.TryGetSetting<OuibounceModel>("ouibounce");
+}
+
+<div class="ng-hide"
+     id="@modalId"
+     modal-control
+     modal-class="color-scheme--light lp-block-exit-modal lp-block-exit-popup-form-picture-modal"
+     callback-open="modal.lpForm.openModal(modal.modalDataAdditional)"
+     callback-close="modal.lpForm.closeModal()"
+     modal-ouibounce
+     modal-ouibounce-disabled="@Model.Inplace.ToLowerString()"
+     modal-ouibounce-options="{delay: @(ouibounce.Delay)}">
+    <div class="modal-content">
+        <div class="row middle-xs">
+            <div class="col-xs-12 col-sm-5 text-center">
+                <figure class="lp-block-exit-popup-form-picture__figure">
+                    @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                       {
+                           DeletePicture = true,
+                           GalleryIconsEnabled = false,
+                           LazyLoadEnabled = false,
+                           LazyLoadType = ePictureLoaderLazyLoadType.None,
+                           MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                           MaxHeightPicture = PictureLoaderImageSize.SmallHeight
+                       }, Model.Inplace)
+                </figure>
+            </div>
+            <div class="col-xs-12 col-sm-7">
+                <article class="lp-block-exit-popup-form-picture__data">
+                    <header class="lp-block-exit-popup-form-picture__header">
+                        @Html.BlockHeader(Model)
+                    </header>
+                    <div class="lp-block-exit-popup-form-picture__footer">
+                        @Html.Form(Model.Form, false, AdvantShop.App.Landing.Models.Landing.eFormAlign.Left)
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    <div class="ng-cloak lp-block-products-view__empty--admin  block-padding-top--35 block-padding-bottom--35">
+        <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                            data-block-id="@Model.Block.Id"
+                            data-name="@Model.Block.Name"
+                            data-type="@Model.Block.Type"
+                            data-is-show-options="::true"
+                            data-template-custom="true">
+            <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock('tabFormFront')">Настроить блок Exit popup</button>
+            <button type="button" class="lp-btn lp-btn--secondary" modal-open="@modalId">Показать</button>
+        </blocks-constructor>
+    </div>
+}

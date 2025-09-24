@@ -1,0 +1,52 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.WarehouseSettings.WarehouseSettingsModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="WarehouseTypesCtrl as warehouseTypes" @Html.Raw(isMobile ? "ng-init=\"settingsWarehouses.warehouseTypes = warehouseTypes\"" : "")>
+     @if (!isMobile)
+    {
+        <div class="sticky-page-name m-t-n-xs" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main flex middle-xs setting--flex-column">
+                        <h2 class="sticky-page-name-text m-t-none setting--align-top setting__subtitle">
+                            @T("Admin.Settings.WarehousesTypes.Title")
+                        </h2>
+               
+                </div>
+                <div class="page-name-block-item-additional">
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="warehouseTypes.showType()">
+                        <span class="fa fa-plus"></span>
+                        @T("Admin.Settings.WarehousesTypes.Add")
+                    </button>
+                </div>
+            </div>
+        </div>
+     }
+
+    <div class="">
+        <ui-grid-custom grid-unique-id="gridWarehouseTypes"
+                        grid-on-init="warehouseTypes.gridOnInit(grid)"
+                        grid-options="warehouseTypes.gridOptions"
+                        grid-row-identificator="'TypeId'"
+                        grid-url="'warehouse/getwarehousetypes'"
+                        grid-inplace-url="'warehouse/inplacewarehousetype'"
+                        grid-extend-ctrl="warehouseTypes"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm card--p-18" style="padding: 0">
+                    <div class="flex between-xs center-xs">
+                        <div class="flex-grow card__col m-r-xs card--p-18"
+                             ng-click="grid.appScope.$ctrl.gridExtendCtrl.showType(row.entity.TypeId); $event.preventDefault();">
+                            {{row.entity.TypeName}}
+                        </div>
+                        <div class="card__col card__col--end setting--align-center card--p-18">
+                            <ui-grid-custom-switch row="row"></ui-grid-custom-switch>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>
+

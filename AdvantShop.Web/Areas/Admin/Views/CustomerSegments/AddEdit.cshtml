@@ -1,0 +1,171 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomerSegments.CustomerSegmentModel
+@{
+    if (Request.RawUrl.Contains("customersegmentscrm"))
+    {
+        Layout = "~/Areas/Admin/Views/Leads/_CrmLayout.cshtml";
+        ViewBag.NavMenu = "customers";
+    }
+
+    Html.AddAsset("customerSegment");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<form method="POST" action="@Url.AbsoluteActionUrl("AddEdit")" enctype="multipart/form-data" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.IsEditMode)
+
+    @if (!isMobile)
+    {
+        @Html.Back(T("Admin.Customers.ViewSegments.Segments").ToString(), "./settingscustomers?tab=customerSegments")
+
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @Html.Raw(Model.IsEditMode ? T("Admin.CustomerSegments.AddEdit.Segment") + " " + Model.Name : T("Admin.CustomerSegments.AddEdit.NewSegment").ToString())
+                    </h1>
+                </div>
+
+                <div class="page-name-block-item-additional">
+                    <a href="" class="link-danger m-r-xs" ng-click="customerSegment.deleteSegment(@Model.Id)">@T("Admin.CustomerSegments.AddEdit.Delete")</a>
+                    @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, validation: true, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" })
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = Model.IsEditMode ? T("Admin.CustomerSegments.AddEdit.Segment") + " " +  Model.Name : T("Admin.CustomerSegments.AddEdit.NewSegment").ToString();
+        headerModel.ShowOnlySticky = true;
+
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "SettingsCustomers") + "?tab=customerSegments",
+        };
+
+        headerModel.Controls = new List<IButton>()
+{
+
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+{
+             eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Save,
+            Attributes =  new[] {  "ng-disabled=\"!form.modified\"", "disabled", "data-e2e=\"btnSave\"", "data-button-validation" },
+            Icon =  new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new { width=25, height=25 }
+            }
+        },
+    };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+        moreButton.Attributes = new string[] { "ng-if = \"" + Model.IsEditMode.ToLowerString() + "\"" };
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.CustomerSegments.AddEdit.Delete"),
+            Modificators = new List<eButtonModificators>
+()
+{
+                    eButtonModificators.HorizontalPaddingZero
+                    },
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Attributes = new[] { "ng-click=\"customerSegment.deleteSegment(" + Model.Id + ")\"" },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            },
+        });
+
+        headerModel.Controls.Add(moreButton);
+        @Html.Header(headerModel)
+
+    }
+
+    <div class="row">
+        <div class="col-xs-12 col-wl-12">
+            <div class="ibox">
+                <div class="ibox-content category-content border_none">
+
+                    <div class="row middle-xs m-b-lg">
+                        <div class="flex-grow-n col-xs-12 col-md-1 @(isMobile ? "setting__label" : "")">
+                            <span class="text-required">@T("Admin.CustomerSegments.AddEdit.Name")</span>
+                        </div>
+                        <div class="flex-grow flex-basis-n flex-width-n relative @(isMobile ? "col-xs-12 setting--m-t-sm" : "")">
+                            @Html.TextBoxFor(x => x.Name, new { @class = "form-control input-alt", required = "required", ng_model = "customerSegment.name", validation_input_text = T("Admin.CustomerSegments.AddEdit.Name") })
+                        </div>
+                    </div>
+
+                    @Html.Partial("~/Areas/Admin/Views/CustomerSegments/_Filters.cshtml", Model)
+
+                </div>
+            </div>
+
+            @if (Model.IsEditMode)
+            {
+                <div class="m-b-md clearfix @(isMobile ? "row" : "m-t-md")">
+                    <h3 class="@(isMobile ? "col-xs-12 setting__subtitle setting--m-t-none" : "pull-left page-name-block-text")">
+                        @T("Admin.CustomerSegments.AddEdit.Customers")
+                    </h3>
+                    <div class="@(isMobile ? "col-xs-12" : "pull-right")">
+                        <div class="flex middle-xs">
+
+                            @if (!isMobile)
+                            {
+                                @Html.Partial("_AddEditSendMessage")
+                            }
+                            else
+                            {
+                                @Html.Partial("_AddEditSendMessageMobile")
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-content category-content border_none">
+                        <div class="row middle-xs m-b-lg">
+                            <div class="col-xs-12">
+                                <div>
+                                    <ui-grid-custom grid-unique-id="grid"
+                                                    grid-options="customerSegment.gridOptions"
+                                                    grid-selection-enabled="false"
+                                                    grid-url="'customerSegments/getCustomersBySegment'"
+                                                    grid-params="{Id: @Model.Id}"
+                                                    grid-on-init="customerSegment.gridOnInit(grid)"
+                                                    grid-show-export="true">
+                                        @if (isMobile)
+                                        {
+                                            <ui-grid-custom-override-control class="ng-cloak">
+
+                                                <a ng-href="customers/view/{{row.entity.CustomerId}}" class="card card--gap-row-sm grid g-xs m-b-md">
+                                                    <div class="card__title g-col-12" ng-bind="row.entity.Name"></div>
+                                                    <div class="card__text g-col-12 m-t-xs" ng-if="row.entity.Phone" ng-bind="row.entity.Phone"></div>
+                                                    <div class="card__text card__text--color-alt g-col-12" ng-if="row.entity.Email" ng-bind="row.entity.Email"></div>
+                                                </a>
+                                            </ui-grid-custom-override-control>
+                                        }
+                                    </ui-grid-custom>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</form>

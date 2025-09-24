@@ -1,0 +1,52 @@
+﻿@model BlockModel
+@{
+    string content = Model.Block.TryGetSetting("html");
+}
+@if (content != null && Model.Block.IsActiveModule())
+{
+    <div>
+        @Html.Raw(content)
+    </div>
+}
+else if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    if (Model.Block.IsActiveModule())
+    {
+        <div class="color-scheme--light block-padding-top--45 block-padding-bottom--45">
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    <div class="lp-h2 lp-h2--color lp-products-view__title">
+                        Ваш Квиз блок
+                    </div>
+                </div>
+            </div>
+            <div class="ng-cloak lp-block-products-view__empty--admin">
+                <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                                    data-block-id="@Model.Block.Id"
+                                    data-name="@Model.Block.Name"
+                                    data-type="@Model.Block.Type"
+                                    data-is-show-options="::true"
+                                    data-template-custom="true">
+                    <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock()">Выбрать Квиз</button>
+                </blocks-constructor>
+            </div>
+        </div>
+    }
+    else
+    {
+        var title = Model.Block.IsInstallModule() ? "Модуль Квизы не активен" : "Модуль Квизы не установлен";
+        var link = Model.Block.IsInstallModule() ? "adminv3/modules/details/Quizzes" : "adminv3/modules/market?name=Квизы";
+        <div class="color-scheme--light block-padding-top--45 block-padding-bottom--45">
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    <div class="lp-h2 lp-h2--color lp-products-view__title">
+                        @title
+                    </div>
+                </div>
+            </div>
+            <div class="ng-cloak lp-block-products-view__empty--admin">
+                <a href="@link" target="_blank" class="lp-btn lp-btn--primary" style="text-decoration: none;">Перейти к модулю</a>
+            </div>
+        </div>
+    }
+}

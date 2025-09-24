@@ -1,0 +1,186 @@
+﻿<form name="formSaveVkMarketSettings" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">Парметры выгрузки товаров</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Как выгружать товары</div>
+                <div class="col-xs-12 col-md-7 relative">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ExportMode"
+                        ng-options="option.value as option.label for option in ctrl.ExportModes"
+                        ng-change="ctrl.changeMode()"></select>
+                </div>
+                <div class="col-xs"></div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Выгружать не доступные к покупке товары
+                </div>
+                <div class="col-xs-12 col-md-3 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ExportUnavailableProducts"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" ng-class="{'col-xs-1 p-l-sm' : isMobile.value}">
+                        Нужно учитывать, что ВКонтакте не принимает товары с ценой меньше или равной 0.
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group" ng-if="ctrl.settings.ExportUnavailableProducts === false">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Выгружать товары, доступные только под заказ
+                </div>
+                <div class="col-xs-12 col-md-3 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ExportPreorderProducts"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" ng-class="{'col-xs-1 p-l-sm' : isMobile.value}">
+                        Выгружать или нет товары не в наличии, но доступные под заказ.
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Добавлять к названию цвет и размер
+                </div>
+                <div class="col-xs-12 col-md-3">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.AddSizeAndColorInName"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Выгружать кол-во товара</div>
+                <div class="col-xs-12 col-md-3">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ExportAmount"
+                        ng-options="option.value as option.label for option in ctrl.settings.ExportAmounts"></select>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Описание</div>
+                <div class="col-xs-12 col-md-3">
+                    <select class="form-control input-alt" ng-model="ctrl.settings.ShowDescription" convert-to-number>
+                        <option value="0">Не выгружать</option>
+                        <option value="1">Полное</option>
+                        <option value="2">Краткое</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Добавлять информацию о доступных цветах и размерах в описание
+                </div>
+                <div class="col-xs-12 col-md-3">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.AddSizeAndColorInDescription"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Размещать в описании ссылку на сайт
+                </div>
+                <div class="col-xs-12 col-md-3 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                    <select class="form-control input-alt" ng-model="ctrl.settings.AddLinkToSite" convert-to-number>
+                        <option value="0">Нет</option>
+                        <option value="1">Сверху</option>
+                        <option value="2">Снизу</option>
+                    </select>
+
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" ng-class="{'col-xs-1 p-l-sm' : isMobile.value}">
+                        Добавит в описание ссылку на страницу сайта с товаром
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Фраза в описании ссылку на сайт
+                </div>
+                <div class="col-xs-12 col-md-7 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                    <input type="text" class="form-control input-alt" ng-model="ctrl.settings.TextBeforeLinkToSite" />
+
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" ng-class="{'col-xs-1 p-l-sm' : isMobile.value}">
+                        Фраза перед ссылкой, которая ведет на страницу товара, если активна опция "Размещать в описании ссылку на сайт"
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                    Выгружать свойства товара в описание
+                </div>
+                <div class="col-xs-12 col-md-3 relative">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ShowProperties"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Валюта товаров</div>
+                <div class="col-xs-12 col-md-3 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.CurrencyIso3"
+                        ng-options="item.Value as item.Text for item in ctrl.settings.Currencies"></select>
+
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" ng-class="{'col-xs-1 p-l-sm' : isMobile.value}">
+                        Валюта, в которую будут конвертироваться товары. Убедитесь, что выбранная валюта стоит в ВКонтакте.
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row middle-xs setting__form-group">
+                <div ng-if="!isMobile.value" class="col-xs-4">Учитывать минимальное количество товара</div>
+                <div class="col-xs-12 col-md-3">
+                    <label class="adv-checkbox-label">
+                        <input class="adv-checkbox-input" type="checkbox" ng-model="ctrl.settings.ConsiderMinimalAmount" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value" class="p-l-xs setting__label"> Учитывать минимальное количество товара </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group row setting__form-group">
+                <div class="col-xs-12 col-md-4" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Выгружать по расписанию</div>
+                <div class="col-xs-12 col-md-3 relative">
+                    <select
+                        class="form-control input-alt"
+                        ng-model="ctrl.settings.ExportOnShedule"
+                        ng-options="option.value as option.label for option in ctrl.YesNo"></select>
+                </div>
+                <div class="col-xs"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation
+            data-button-validation-success="ctrl.save()"
+            ladda="ctrl.btnLoading">
+            Сохранить
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddProduct.Cancel'|translate}}</button>
+    </div>
+</form>

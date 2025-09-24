@@ -1,0 +1,234 @@
+@using AdvantShop.Core.Services.SalesChannels
+@using AdvantShop.FilePath;
+@using AdvantShop.Helpers;
+@using AdvantShop.Saas;
+@using AdvantShop.Trial;
+
+@model  AdvantShop.Web.Admin.ViewModels.Shared.Common.LeftMenuViewModel
+@{
+    var countVisibleMenuItem = 0;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    bool showBalanceMessage = (CustomerContext.CurrentCustomer.IsAdmin || CustomerContext.CurrentCustomer.IsVirtual) &&
+                               ((SaasDataService.IsSaasEnabled && SaasDataService.CurrentSaasData.LeftDay <= 7) || (TrialService.IsTrialEnabled && TrialService.LeftDay <= 7));
+}
+
+<nav class="main-menu main-menu--sidebar">
+
+    <div class="main-menu-top-block">
+        @Html.Action("TopPanelUser", "Account")
+        @Html.Partial("~/Areas/Admin/Templates/Mobile/Views/Common/SaasBlock.cshtml")
+    </div>
+
+    <h1 class="main-menu__title">@T("Admin.Home.Menu.Menu")</h1>
+
+    <ul class="main-menu__list">
+        @if (Model.CustomMenuItems != null && Model.CustomMenuItems.Count() > 0)
+        {
+            <li class="main-menu__item">
+                <ul class="main-menu__group">
+                    @foreach (var rootItem in Model.CustomMenuItems)
+                    {
+                        <li class="main-menu__group-item @(rootItem.Selected ? "main-menu__group-item--selected" : "")">
+                            <a class="navigation-item navigation-item--horizontal @(rootItem.Selected ? "navigation-item--selected" : "")"
+                               href="@rootItem.UrlPath">
+                                @*@Html.Raw(hasChild ? "class=\"sidebar__link sidebar__item\" onclick=\"event.stopPropagation()\"" : "class=\"sidebar__trigger sidebar__trigger--root sidebar__item\"")*@
+                                <span class="navigation-item__icon">
+                                    @if (rootItem.IconPath.IsNotEmpty())
+                                    {
+                                        <img src="@FoldersHelper.GetPath(FolderType.MenuIcons, rootItem.IconPath, false)" alt=""/>
+                                    }
+                                    else
+                                    {
+                                        <svg width="24" height="24">
+                                            <use xlink:href="../areas/admin/menu-sprite.svg#bookmark"></use>
+                                        </svg>
+                                    }
+                                </span>
+                                <span class="navigation-item__text">@rootItem.Name</span>
+                                @Html.SvgSprite("arrow-right", "", new {width = 8, height = 12})
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+
+        @for (int i = 0; i < Model.MenuItems.Count(); i++)
+        {
+            var menuCategoryAccessibleToUser = Model.MenuItems[i].Menu.Any(y => y.IsAccessibleToUser());
+
+            if (menuCategoryAccessibleToUser)
+            {
+                <li class="main-menu__item main-menu__category">
+                    <h2 class="main-menu__category-name">@T(Model.MenuItems[i].Name)</h2>
+                </li>
+                if (Model.MenuItems[i].Menu.Count > 0)
+                {
+                    <li class="main-menu__item">
+                        <ul class="main-menu__group">
+                            @foreach (var rootItem in Model.MenuItems[i].Menu)
+                            {
+                                if (rootItem.IsHiddenMobile || !rootItem.Visible || !rootItem.IsAccessibleToUser() || !rootItem.ActiveInSaas)
+                                {
+                                    continue;
+                                }
+                                <li class="main-menu__group-item @(rootItem.Selected ? "main-menu__group-item--selected" : "")">
+                                    <a class="navigation-item navigation-item--horizontal @(rootItem.Selected ? "navigation-item--selected" : "")"
+                                       href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))"
+                                       onclick="event.stopPropagation()">
+                                        <span class="navigation-item__icon">
+                                            @Html.Raw(rootItem.IconContent)
+                                            @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                            {
+                                                <span class="main-menu__item-counter">
+                                                    <span class="main-menu__item-count" data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                                </span>
+                                            }
+                                        </span>
+                                        <span class="navigation-item__text">@T(rootItem.Name)</span>
+                                        @Html.SvgSprite("arrow-right", "", new {width = 8, height = 12})
+                                    </a>
+                                </li>
+                                ++countVisibleMenuItem;
+                            }
+                        </ul>
+                    </li>
+                }
+            }
+        }
+
+        @if (Model.SalesChannelsMenuItems.Count() > 0 || CustomerContext.CurrentCustomer.IsAdmin)
+        {
+            <li class="main-menu__item main-menu__category">
+                <h2 class="main-menu__category-name">@T("Admin.Home.Menu.SalesChannels")</h2>
+            </li>
+
+            <li class="main-menu__item">
+                <ul class="main-menu__group">
+                    @if (Model.SalesChannelsMenuItems.Count() > 0)
+                    {
+                        foreach (var channel in Model.SalesChannelsMenuItems)
+                        {
+                            if (channel.IsHiddenMobile)
+                            {
+                                continue;
+                            }
+
+                            <li class="main-menu__group-item @(channel.Selected ? "main-menu__group-item--selected" : "")">
+                                <a class="navigation-item navigation-item--horizontal @(channel.Selected ? "navigation-item--selected" : "")"
+                                   href="@(channel.MenuUrlAction != null ? Url.AbsoluteActionUrl(channel.MenuUrlAction.Action, channel.MenuUrlAction.Controller, channel.MenuUrlAction.RouteDictionary) : channel.Url != null ? channel.Url : null)">
+                                    <span class="navigation-item__icon">
+                                        @Html.Raw(channel.MenuIcon)
+                                    </span>
+                                    <span class="navigation-item__text">@channel.MenuName</span>
+                                    @Html.SvgSprite("arrow-right", "", new {width = 8, height = 12})
+                                </a>
+                                @if (channel.ChildMenuRoute != null)
+                                {
+                                    if (channel.ChildMenuRoute.Route == null)
+                                    {
+                                        channel.ChildMenuRoute.Route = new Dictionary<string, object>();
+                                    }
+
+                                    channel.ChildMenuRoute.Route.Add("IsOpen", channel.Selected);
+
+                                    @Html.Action(channel.ChildMenuRoute.Action, channel.ChildMenuRoute.Controller, channel.ChildMenuRoute.RouteDictionary)
+                                }
+                            </li>
+                        }
+                    }
+
+                    @if (CustomerContext.CurrentCustomer.IsAdmin)
+                    {
+                        <li class="main-menu__group-item">
+                            <ui-modal-trigger data-controller="'ModalSalesChannelsCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("salesChannels.html")"
+                                              class="main-menu__add-trigger main-menu__trigger" window-class="simple-modal modal-sales-channels">
+                                <a class="main-menu__add-trigger-link navigation-item navigation-item--horizontal">
+                                    <div class="navigation-item__icon">
+                                        <svg class="main-menu__item-icon"
+                                             width="24px"
+                                             height="24px"
+                                             viewBox="0 0 24 24">
+                                            <circle stroke="currentColor" stroke-width="" fill="transparent" cx="12" cy="12" r="8.5"></circle>
+                                            <path d="M12.6,11.4 L15.4,11.4 C15.7313708,11.4 16,11.6686291 16,12 C16,12.3313709 15.7313708,12.6 15.4,12.6 L12.6,12.6 L12.6,15.4 C12.6,15.7313708 12.3313709,16 12,16 C11.6686291,16 11.4,15.7313708 11.4,15.4 L11.4,12.6 L8.60000002,12.6 C8.26862916,12.6 8,12.3313709 8,12 C8,11.6686291 8.26862916,11.4 8.60000002,11.4 L11.4,11.4 L11.4,8.60000002 C11.4,8.26862916 11.6686291,8 12,8 C12.3313709,8 12.6,8.26862916 12.6,8.60000002 L12.6,11.4 Z" id="Combined-Shape" fill="currentColor"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="main-menu__add-trigger-name navigation-item__text">@T("Admin.Home.Menu.AddChannel")</div>
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+
+        @if (isMobile)
+        {
+            <li class="main-menu__item main-menu__category">
+                <h2 class="main-menu__category-name">@T("Admin.Mobile.Home.Menu.Help")</h2>
+            </li>
+            <li class="main-menu__item">
+                <ul class="main-menu__group">
+                    <li class="main-menu__group-item">
+                        <a class="navigation-item navigation-item--horizontal"
+                           href="https://www.advantshop.net/help" target="_blank">
+                            <span class="navigation-item__icon">
+                                @Html.SvgSprite("contact_support", "", new {width = 20, height = 20})
+                            </span>
+                            <span class="navigation-item__text">@T("Admin.Home.Menu.Support")</span>
+                            @Html.SvgSprite("arrow-right", "", new {width = 8, height = 12})
+                        </a>
+                    </li>
+                    <li class="main-menu__item">
+                        <a class="navigation-item navigation-item--horizontal"
+                           href="https://www.advantshop.net/service" target="_blank">
+                            <span class="navigation-item__icon">
+                                @Html.SvgSprite("user_circle", "", new {width = 20, height = 20})
+                            </span>
+                            <span class="navigation-item__text">@T("Admin.Common.TopPanel.OrderImplementation")</span>
+                            @Html.SvgSprite("arrow-right", "", new {width = 8, height = 12})
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+
+        <li class="main-menu__item">
+            <ui-modal-trigger data-controller="'ModalReferralLinkCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("ReferralLink.html")"
+                              class="main-menu__referral-link-trigger  main-menu__trigger" window-class="">
+                <a class="main-menu__referral-link navigation-item navigation-item--horizontal">
+                    <div class="navigation-item__icon">
+                        <svg class="main-menu__icon"
+                             viewBox="0 0 512 512.00508"
+                             width="20"
+                             height="20"
+                             fill="currentColor">
+                            <path d="m453.335938 512.003906h-394.667969c-32.363281 0-58.66406275-26.304687-58.66406275-58.664062v-309.335938c0-32.363281 26.30078175-58.664062 58.66406275-58.664062h74.667969c8.832031 0 16 7.167968 16 16 0 8.832031-7.167969 16-16 16h-74.667969c-14.699219 0-26.664063 11.964844-26.664063 26.664062v309.335938c0 14.695312 11.964844 26.664062 26.664063 26.664062h394.667969c14.699218 0 26.667968-11.96875 26.667968-26.664062v-181.335938c0-8.832031 7.167969-16 16-16 8.832032 0 16 7.167969 16 16v181.335938c0 32.359375-26.304687 58.664062-58.667968 58.664062zm0 0"/>
+                            <path d="m143.980469 341.0625c-1.171875 0-2.347657-.128906-3.519531-.429688-7.230469-1.683593-12.457032-7.871093-12.457032-15.292968v-32c0-114.6875 93.3125-208 208-208h5.332032v-69.335938c0-6.527344 3.96875-12.394531 10.027343-14.847656 6.035157-2.429688 12.96875-.960938 17.492188 3.753906l138.667969 144c5.972656 6.1875 5.972656 16 0 22.1875l-138.667969 144c-4.523438 4.714844-11.5 6.167969-17.492188 3.753906-6.058593-2.453124-10.027343-8.320312-10.027343-14.847656v-69.332031h-25.34375c-67.113282 0-127.425782 37.289063-157.417969 97.300781-2.753907 5.546875-8.535157 9.089844-14.59375 9.089844zm192.023437-223.722656c-89.601562 0-163.796875 67.304687-174.65625 154.023437 38.78125-43.261719 94.398438-68.691406 154.644532-68.691406h41.34375c8.832031 0 16 7.167969 16 16v45.652344l100.457031-104.320313-100.457031-104.320312v45.65625c0 8.832031-7.167969 16-16 16zm0 0"></path>
+                        </svg>
+                    </div>
+                    <div class="navigation-item__text">@T("Admin.Home.Menu.ReferralProgram")</div>
+                </a>
+            </ui-modal-trigger>
+        </li>
+
+    </ul>
+    <div class="main-menu__go-to-desktop" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("mobileOverlap")]}]">
+        <a data-ng-controller="mobileOverlapCtrl as mOverlap" data-ng-click="mOverlap.goToDesktop('deviceModeAdmin', 'desktop')" href="javascript:void(0);">@T("Admin.Home.Menu.GoFullVersion")</a>
+    </div>
+</nav>
+
+@if(showBalanceMessage){
+    <div class="balance-message-wrap">
+        <div class="balance-message">
+                <div class="balance-message__text">
+                    @T("Admin.Home.Menu.BalanceRunningLow")
+                </div>
+                <div class="balance-message__action">
+                    <a href="service/tariffs" class="btn btn-danger btn-md btn--full-width">@T("Admin.Home.Menu.TopUpBalance")</a>
+                </div>
+            </div>
+    </div>    
+}

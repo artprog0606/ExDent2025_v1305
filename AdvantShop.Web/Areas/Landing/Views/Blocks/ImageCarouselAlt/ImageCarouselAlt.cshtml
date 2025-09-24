@@ -1,0 +1,49 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+                /**/
+
+                var items = Model.Block.TryGetSettingAsList<GalleryItemModel, OldGalleryItemModel>("items");
+}
+<div class="lp-area">
+    <div class="container-fluid">
+        <div class="lp-container">
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    @Html.BlockHeader(Model)
+                </div>
+                <div class="col-xs-12 col-sm-11" @Html.Raw(LpService.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+
+                    @if (items != null)
+                    {
+                        var itemsCount = LpService.PreviewInAdmin ? Math.Min(items.Count, 1) : items.Count;
+
+                        <slick settings="@Model.Block.TryGetSetting("carouselOptions")" class="ng-cloak slick-dots--inner image-carousel-alt__carousel">
+                            @for (var i = 0; i < itemsCount; i++)
+                            {
+                                <div class="image-carousel__item">
+                                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                               {
+                                   LandingPageId = Model.Block.LandingId,
+                                   BlockId = Model.Block.Id,
+                                   OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                   OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                   OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                   OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                   Current = items[i].Picture.Src ,
+                                   GalleryIconsEnabled = false,
+                                   LazyLoadType = ePictureLoaderLazyLoadType.Carousel,
+                                   MaxWidthPicture = PictureLoaderImageSize.LargeWidth,
+                                   MaxHeightPicture = PictureLoaderImageSize.LargeHeight,
+                                   WidthPicture = items[i].Picture.Width,
+                                   HeightPicture = items[i].Picture.Height
+                               })
+                                </div>
+                            }
+                        </slick>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+﻿@using AdvantShop.Configuration;
+@using AdvantShop.Core
+@using AdvantShop.Helpers
+
+@Html.RenderAssets(AssetsTool.AssetFileType.Link)
+
+@{
+    var pagecss = LPageSettings.PageCss;
+}
+@if (!string.IsNullOrWhiteSpace(pagecss))
+{
+    <style>
+        @Html.Raw(pagecss)
+    </style>
+}
+
+@if (!LpService.PreviewInAdmin)
+{
+    <script src="@UrlService.GetAbsoluteLink("vendors/jquery/jquery.min.js?v=3.7.1")"></script>
+    @Html.RenderAssetFilesAsHtml("common", "Landing")
+    @Html.RenderAssetFilesAsHtml("runtime", "Landing")
+    @Html.RenderAssetFilesAsHtml("head", "Landing", renderOnlyType: AssetsTool.AssetFileType.Script)
+    @Html.RenderAssets(AssetsTool.AssetFileType.Script)
+    <script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("vendors/angular/i18n/angular-locale_" + SettingsMain.LanguageWithFallback() + ".js")"></script>
+    <script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("userfiles/" + SettingsMain.Language + ".js", true)"></script>
+}
+
+@if ((LpService.Inplace || LpService.HasAccess) && !LpService.PreviewInAdmin)
+{
+    <script>
+        window.FontAwesomeConfig = {
+            autoAddCss: false
+        };
+    </script>
+
+    @Html.Action("Inplace", "Common", new { area = "", enabled = true, inplaceMinAsset = "inplaceFunnelMin", inplaceMaxAsset = "inplaceFunnelMax", areaBundle = "Landing" })
+
+    <script>
+        window._LandingCKeditorConfig = {
+            contentsCss: [CKEDITOR.getUrl('contents.css'), CKEDITOR.getUrl('contents.custom.css'), '@UrlService.GetUrl()fonts/fonts.funnel.css'],
+            font_names: 'OpenSans;' +
+                'Roboto;' +
+                'Playfair Display;' +
+                'Cormorant;' +
+                'Montserrat;' +
+                'Merriweather;' +
+                'Ubuntu;' +
+                'Alegreya Sans SC;' +
+                'Spectral SC;' +
+                'Georgia;' +
+                'Arial;' +
+                'Tahoma;' +
+                'Roboto Condensed;' +
+                'Roboto Slab;' +
+                'Rubik;' +
+                'IBM Plex Sans;' +
+                'Scada;' +
+                'Inter;' +
+                'PT Sans;' +
+                'PT Serif;' +
+                'Oswald',
+            line_height: '1;1.1;1.2;1.3;1.4;1.5;1.6;1.7;1.8;1.9;2;2.1;2.2;2.3;2.4;2.5;2.6;2.7;2.8;2.9;3;',
+            //fontSize_sizes: '14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;30/30px;32/32px;34/34px;36/36px;38/38px;40/40px;42/42px;44/44px;46/46px;48/48px;50/50px;52/52px;62/62px;72/72px;82/82px;92/92px;102/102px;',
+            toolbar: [
+                { name: 'source', items: ['Ace'] },
+                { name: 'basicstyles', items: ['fontSizeExtend', 'Bold', 'Italic', 'Underline', 'Strike'] },
+                { name: 'styles', items: ['Styles', 'Font', 'bold', 'lineheight', 'RemoveFormat'] },
+                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',] },
+                { name: 'insert', items: ['Image', 'Table', 'Iframe'] },
+                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                { name: 'links', items: ['Link'] },
+                { name: 'icons', items: ['Emojione'] }
+            ],
+            stylesSet: 'landingStyles',
+            font_size_extend: '8/8px/;10/10px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;30/30px;32/32px;34/34px;36/36px;38/38px;40/40px;42/42px;44/44px;46/46px;48/48px;50/50px;52/52px;62/62px;72/72px;82/82px;92/92px;102/102px;',
+            font_size_extend_template_format: function (fontSize) {
+                return 'font-size-' + fontSize + '--adaptive';
+            },
+            font_size_extend_find_classes: function (className) {
+                var regexpResult = className.match(/font-size-\d+--adaptive/);
+                return regexpResult != null ? regexpResult[0] : null;
+            },
+            font_size_extend_template_parse: function (className) {
+                var regexpResult = className.match(/font-size-(\d+)--adaptive/);
+                return regexpResult != null ? regexpResult[1] : null;
+            }
+        }
+
+        CKEDITOR.stylesSet.add('landingStyles', [
+            // Block-level styles
+            { name: 'Заголовок', element: 'div', attributes: { 'class': 'lp-h1--margin-none lp-h1--color lp-h1' } },
+            { name: 'Подзаголовок 2 уровня', element: 'div', attributes: { 'class': 'lp-h2--margin-none lp-h2--color lp-h2' } },
+            { name: 'Подзаголовок 3 уровня', element: 'div', attributes: { 'class': 'lp-h3--margin-none lp-h3--color lp-h3' } },
+
+            // Inline styles
+            { name: 'Очень маленький текст', element: 'span', attributes: { 'class': 'lp-font-size--xsmall' } },
+            { name: 'Маленький текст', element: 'span', attributes: { 'class': 'lp-font-size--small' } },
+            { name: 'Обычный текст', element: 'span', attributes: { 'class': 'lp-font-size--middle' } },
+            { name: 'Тонкий текст', element: 'span', attributes: { 'class': 'lp-font-size--middle' }, styles: { 'font-weight': '300' } },
+            { name: 'Крупный текст', element: 'span', attributes: { 'class': 'lp-font-size--large' } },
+            { name: 'Крупный тонкий текст', element: 'span', attributes: { 'class': 'lp-font-size--large' }, styles: { 'font-weight': '300' } },
+        ]);
+    </script>
+
+    @Html.RenderAssetFilesAsHtml("admin")
+    
+    <script src="@UrlService.GetAbsoluteFileLinkWithHashInQuery("userfiles/admin_" + SettingsMain.Language + ".js", true)"></script>
+    if (MobileHelper.IsMobileBrowser())
+    {
+        @Html.RenderAssetFilesAsHtml("adminMobile")
+    }
+
+    @Html.Partial("~/Areas/Admin/Views/Shared/_GridTemplates.cshtml")
+}

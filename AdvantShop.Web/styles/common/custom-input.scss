@@ -1,0 +1,359 @@
+@use 'sass:math';
+@import '../settings', '../functions/util';
+
+$ghost-btn-margin: auto rem-calc(20px) auto 0 !default;
+$ghost-btn-color: #adadad;
+$input-height: rem-calc(12px);
+$input-width: rem-calc(12px);
+$input-margin: 0 rem-calc(8px) 0 0;
+$iphone-checkbox-height: rem-calc(18px);
+$iphone-checkbox-width: rem-calc(55px);
+$iphone-checkbox-dim: rem-calc(2px);
+$iphone-checkbox-on-off-width: math.div($iphone-checkbox-width, 2);
+
+//    <label>
+//          <input type="checkbox" class="custom-input-native" />
+//          <span class="custom-input-checkbox"></span>
+//          <span class="custom-input-text">Сравнить</span>
+//    </label>
+
+// <label class="custom-iphone-checkbox">
+//    <input type="checkbox" />
+//    <span class="custom-iphone-checkbox-slider">
+//        <span class="custom-iphone-checkbox-on">ON</span>
+//        <span class="custom-iphone-checkbox-off">OFF</span>
+//        <span class="custom-iphone-checkbox-block"></span>
+//    </span>
+// </label>
+
+//  <span class="custom-select">
+//    <select>...</select>
+//  </span>
+
+.custom-input-text {
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-input-text__indent {
+    padding-left: 23px;
+}
+
+.custom-input-checkbox,
+.custom-input-radio {
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    display: inline-block;
+
+    // width: $input-width;
+    // height: $input-height;
+    width: 12px;
+    height: 12px;
+    margin: $input-margin;
+    box-shadow: 0 0 rem-calc(2px) #818181;
+    border: $border-width #818181 solid;
+    border-bottom-color: #2d2d2d;
+    background: linear-gradient(
+        to bottom,
+        rgb(253 253 253 / 100%) 0%,
+        rgb(243 243 243 / 100%) 11%,
+        rgb(235 235 235 / 100%) 33%,
+        rgb(220 220 220 / 100%) 44%,
+        rgb(230 230 230 / 100%) 67%,
+        rgb(240 240 240 / 100%) 78%,
+        rgb(246 246 246 / 100%) 89%,
+        rgb(255 255 255 / 100%) 100%
+    );
+
+    &:hover {
+        background: linear-gradient(
+            to bottom,
+            rgb(255 255 255 / 100%) 0%,
+            rgb(246 246 246 / 100%) 11%,
+            rgb(240 240 240 / 100%) 22%,
+            rgb(230 230 230 / 100%) 33%,
+            rgb(220 220 220 / 100%) 56%,
+            rgb(235 235 235 / 100%) 67%,
+            rgb(243 243 243 / 100%) 89%,
+            rgb(253 253 253 / 100%) 100%
+        );
+    }
+}
+
+.custom-input-checkbox {
+    border-radius: $border-radius-small;
+}
+
+.custom-input-checkbox ~ .custom-input-text {
+    font-size: 13px;
+}
+
+.custom-input-checkbox__abs {
+    position: absolute;
+    left: 0;
+    top: 4px;
+}
+
+.custom-input-radio {
+    border-radius: 50%;
+}
+
+.custom-input-checkbox::after {
+    content: '';
+    position: absolute;
+
+    // width: $input-width + rem-calc(1px);
+    // height: $input-height + rem-calc(1px);
+    width: $input-width + rem-calc(1px);
+    height: $input-height + rem-calc(1px);
+    background-repeat: no-repeat;
+    left: rem-calc(1px);
+    top: rem-calc(-2px);
+}
+
+.custom-input-radio::after {
+    content: '';
+    position: absolute;
+
+    // width: math.div($input-width, 2);
+    // height: math.div($input-height, 2);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin: auto;
+    inset: 0;
+}
+
+.custom-input-native {
+    opacity: 0;
+    position: absolute;
+
+    &:checked ~ .custom-input-checkbox,
+    &:checked ~ .custom-input-radio {
+        background: linear-gradient(
+            to bottom,
+            rgb(66 80 155 / 100%) 0%,
+            rgb(148 163 202 / 100%) 3%,
+            rgb(233 248 255 / 100%) 5%,
+            rgb(230 243 249 / 100%) 8%,
+            rgb(218 234 247 / 100%) 11%,
+            rgb(186 223 242 / 100%) 16%,
+            rgb(171 212 242 / 100%) 19%,
+            rgb(153 206 238 / 100%) 22%,
+            rgb(128 197 238 / 100%) 41%,
+            rgb(121 196 235 / 100%) 43%,
+            rgb(119 189 241 / 100%) 46%,
+            rgb(51 179 226 / 100%) 49%,
+            rgb(60 179 235 / 100%) 51%,
+            rgb(65 179 233 / 100%) 54%,
+            rgb(81 182 234 / 100%) 57%,
+            rgb(81 186 234 / 100%) 59%,
+            rgb(100 192 243 / 100%) 65%,
+            rgb(102 193 238 / 100%) 68%,
+            rgb(127 204 250 / 100%) 78%,
+            rgb(141 215 254 / 100%) 81%,
+            rgb(167 235 254 / 100%) 86%,
+            rgb(176 246 255 / 100%) 89%,
+            rgb(183 251 254 / 100%) 92%,
+            rgb(184 252 255 / 100%) 95%,
+            rgb(181 247 255 / 100%) 97%,
+            rgb(171 236 254 / 100%) 100%
+        );
+    }
+
+    &:disabled ~ .custom-input-text {
+        color: #94969b;
+        pointer-events: none;
+    }
+
+    &:disabled ~ .custom-input-checkbox {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    &:focus ~ .custom-input-checkbox,
+    &:focus ~ .custom-input-radio {
+        box-shadow: 0 0 5px 0 rgb(66 80 155 / 100%);
+    }
+}
+
+.custom-input-native:checked ~ .custom-input-checkbox::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBvbHlnb24gcG9pbnRzPSIwLDUgNCwxMSA1LDExIDExLDAgOSwwIDUsOCA0LDggMyw1IiBmaWxsPSJyZWQ7Ij48L3BvbHlnb24+PC9zdmc+');
+
+    // <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg"><polygon points="0,5 4,11 5,11 11,0 9,0 5,8 4,8 3,5" fill="red;"></polygon></svg>
+}
+
+.custom-input-native:checked ~ .custom-input-radio::after {
+    background-color: #000;
+}
+
+.custom-iphone-checkbox {
+    border-radius: $border-radius-small;
+    cursor: pointer;
+    display: inline-block;
+    height: $iphone-checkbox-height;
+    overflow: hidden;
+    position: relative;
+    vertical-align: middle;
+    width: $iphone-checkbox-width;
+    user-select: none;
+    font-size: $font-size-xsmall;
+    transform: translateZ(0);
+
+    & input {
+        display: none;
+    }
+
+    & input:checked + .custom-iphone-checkbox-slider {
+        left: 0;
+    }
+}
+
+.custom-iphone-checkbox-slider {
+    left: -50%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    transition: left 0.25s ease-out;
+    border-radius: $border-radius-small;
+}
+
+.custom-iphone-checkbox-on,
+.custom-iphone-checkbox-block,
+.custom-iphone-checkbox-off {
+    display: block;
+    font-weight: bold;
+    height: 100%;
+    line-height: $iphone-checkbox-height;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.custom-iphone-checkbox-on {
+    background-color: rgb(6 98 193);
+    color: white;
+    left: 0;
+    width: $iphone-checkbox-on-off-width + $iphone-checkbox-dim;
+    padding-right: $iphone-checkbox-dim;
+    border-top-left-radius: $border-radius-small;
+    border-bottom-left-radius: $border-radius-small;
+}
+
+.custom-iphone-checkbox-off {
+    background-color: #252729;
+    color: #8b8b8b;
+    padding-left: $iphone-checkbox-dim;
+    left: $iphone-checkbox-width - $iphone-checkbox-dim;
+    width: $iphone-checkbox-on-off-width;
+    border-top-right-radius: $border-radius-small;
+    border-bottom-right-radius: $border-radius-small;
+}
+
+.custom-iphone-checkbox-block {
+    background-color: #5a5d60;
+    border-radius: $border-radius-small;
+    height: 100%;
+    left: math.div($iphone-checkbox-width, 2);
+    width: math.div($iphone-checkbox-width, 2);
+}
+
+.btn-ghost {
+    border: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: $ghost-btn-margin;
+    width: 13px;
+    height: 13px;
+    color: $ghost-btn-color;
+
+    &:hover {
+        text-decoration: none;
+        color: $ghost-btn-color;
+    }
+}
+
+.select-custom {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    color: #fff;
+    vertical-align: middle;
+
+    &::after {
+        right: rem-calc(10px);
+        pointer-events: none;
+    }
+
+    select,
+    .form-select {
+        appearance: none;
+
+        /* do not forget set background color to select by color-sheme */
+
+        /* border: none; */
+        border-color: transparent;
+        padding: rem-calc(8px) rem-calc(30px) rem-calc(8px) rem-calc(15px);
+        border-radius: $border-radius-base;
+        width: 100%;
+        cursor: pointer;
+        border-width: 1px;
+        border-style: solid;
+        box-sizing: border-box;
+
+        &:hover {
+            /* &:focus */
+
+            /* border: none; */
+            outline: none;
+        }
+
+        &::-ms-expand {
+            display: none;
+        }
+
+        option {
+            background-color: #fff;
+            color: #333;
+            border: none;
+
+            &:disabled {
+                color: #4b4f58;
+                background-color: #d1d1d1;
+            }
+        }
+    }
+
+    &--slim {
+        select,
+        .form-select {
+            padding: 0 rem-calc(30px) 0 rem-calc(15px);
+            height: rem-calc(26px);
+        }
+    }
+
+    &--fat {
+        select,
+        .form-select {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+    }
+
+    &--shrink {
+        width: inherit;
+        max-width: 100%;
+    }
+}
+
+.sizes-select-custom,
+.color-select-custom {
+    &::after {
+        color: #252729;
+    }
+}

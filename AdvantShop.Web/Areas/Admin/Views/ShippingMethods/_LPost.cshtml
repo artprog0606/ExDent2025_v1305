@@ -1,0 +1,108 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.LPostShippingModel
+@using Newtonsoft.Json
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.LPost.SecretKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "shippingMethod.Params.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Measoft.SecretKey") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="@T("Admin.ShippingMethods.Measoft.Login")">
+            @T("Admin.ShippingMethods.LPost.SecretKey.HelpText")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <label for="WithInsure">Со страховкой</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.LPost.DeliveryTypes")</span>
+    </div>
+    @{
+        var selectedTariff = Model.ListDeliveryTypes.FindAll(x => Model.DeliveryTypes.Any(y => x.Value == y));
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+         data-ng-init='shippingMethod.tariffsList = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.selectedTariff = @JsonConvert.SerializeObject(selectedTariff)'>
+        <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.selectedTariff"
+                       validation-input-text="@T("Admin.ShippingMethods.LPost.DeliveryTypes")"
+                       ng-required="true"
+                       data-e2e="SelectTariffs">
+                <ui-select-match placeholder="Методы доставки">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="tariff in shippingMethod.tariffsList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="tariff.Disabled === true"
+                                   refresh-delay="0">
+                    {{tariff.Text}}
+                </ui-select-choices>
+             </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="DeliveryTypes" id="DeliveryTypes" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTariff track by $index"></option>
+            </select>
+    </div>
+</div>
+
+@* @if (Model.DeliveryTypes.Contains("0")) *@
+@* { *@
+    <div class="form-group row middle-xs" ng-if="shippingMethod.findChoseItem(shippingMethod.selectedTariff, '0') != null">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">Отображение ПВЗ</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+            @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '1'">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">API-ключ яндекс.карт</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+                <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+            </help-trigger>
+        </div>
+    </div>
+@* } *@
+
+
+@if (Model.Token.IsNullOrEmpty())
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "" : "display:flex;")">
+                После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+            </div>
+        </div>
+    </div>
+}
+
+else /*if (Model.)*/
+{
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">Склад</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative">
+            @Html.DropDownListFor(x => x.DefaultReceivePoint, Model.ListReceivePoints, new { ng_model = "shippingMethod.Params.DefaultReceivePoint", @class = "form-control input-alt", required = "required", validation_input_text = "Склад" })
+        </div>
+    </div>
+}

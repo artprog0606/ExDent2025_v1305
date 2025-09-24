@@ -1,0 +1,99 @@
+﻿<div class="sortable-row payment-methods-list ng-cloak" ng-model="$ctrl.methods" as-sortable="$ctrl.sortableOptions" is-mobile>
+    <div ng-if="!isMobile.value" ng-repeat="item in $ctrl.methods" as-sortable-item class="card payment-methods-list__item">
+        <div class="payment-row middle-xs between-xs payment-methods-list__row row">
+            <div class="flex middle-xs col-xs payment-methods-list__data">
+                <div class="as-sortable-item-handle payment-methods-list__drag" as-sortable-item-handle>
+                    <icon-move />
+                </div>
+                <div class="payment-icon payment-methods-list__icon" ng-if="!isMobile.value">
+                    <a href="paymentmethods/edit/{{item.PaymentMethodId}}"><img ng-if="item.Icon != null" ng-src="{{item.Icon}}" alt="" /></a>
+                </div>
+                <span data-e2e="PaymentName" class="payment-text payment-methods-list__info">
+                    <a class="payment-methods-list__name" href="paymentmethods/edit/{{item.PaymentMethodId}}">{{item.Name}}</a>
+                    <span class="payment-text-grey payment-methods-list__type">{{item.PaymentType}}</span>
+                    <span class="m-l-xs text-danger font-bold">{{item.WarningMessage}}</span>
+                </span>
+            </div>
+            <div class="flex middle-xs col-xs-slim col-fixed-size-sm payment-methods-list__switch">
+                <div class="payment-switcher" ng-switch="isMobile.value">
+                    <switch-on-off
+                        theme="blue"
+                        ng-switch-when="true"
+                        on-click="$ctrl.setEnabled(item.PaymentMethodId, state)"
+                        data-e2e="PaymentEnabled"
+                        checked="item.Enabled"
+                        data-id="{{item.PaymentMethodId}}"></switch-on-off>
+                    <switcher-state
+                        ng-switch-default
+                        on-change="$ctrl.setEnabled(item.PaymentMethodId, checked)"
+                        data-e2e="PaymentEnabled"
+                        text-off="{{'Admin.Js.PaymentMethodsList.Off'|translate}}"
+                        text-on="{{'Admin.Js.PaymentMethodsList.On'|translate}}"
+                        checked="item.Enabled"></switcher-state>
+                </div>
+            </div>
+            <div class="flex middle-xs col-fixed-size-ls payment-methods-list__delete" ng-if="!isMobile.value">
+                <a href="" class="fa fa-times link-invert link-decoration-none" ng-click="$ctrl.deleteMethod(item.PaymentMethodId)"></a>
+            </div>
+        </div>
+    </div>
+    <div ng-if="isMobile.value" ng-repeat="item in $ctrl.methods" as-sortable-item class="swipe-line" style="margin-bottom: 3px">
+        <div class="swipe-line__inner" data-swipe-line>
+            <div class="swipe-line__content payment-methods-list__card card">
+                <div class="as-sortable-item-handle" as-sortable-item-handle>
+                    <icon-move>
+                        <svg
+                            class="icon-move"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="10.000000pt"
+                            height="20.000000pt"
+                            viewBox="0 0 10.000000 20.000000"
+                            preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                            </g>
+                        </svg>
+                    </icon-move>
+                </div>
+                <a
+                    class="navigation-item__text flex flex-column flex-grow payment-methods-list__link"
+                    href="paymentmethods/edit/{{item.PaymentMethodId}}"
+                    data-e2e="PaymentName">
+                    <span class="payment-methods-list__name">{{item.Name}}</span>
+                    <span class="payment-text-grey payment-methods-list__type">{{item.PaymentType}}</span>
+                    <span class="text-danger font-bold payment-methods-list__warning">{{item.WarningMessage}}</span>
+                </a>
+                <div class="payment-methods-list__switch">
+                    <div class="payment-switcher" ng-switch="isMobile.value">
+                        <switch-on-off
+                            theme="blue"
+                            ng-switch-when="true"
+                            on-click="$ctrl.setEnabled(item.PaymentMethodId, state)"
+                            data-e2e="PaymentEnabled"
+                            checked="item.Enabled"
+                            id="{{item.PaymentMethodId}}"></switch-on-off>
+                        <switcher-state
+                            ng-switch-default
+                            on-change="$ctrl.setEnabled(item.PaymentMethodId, checked)"
+                            data-e2e="PaymentEnabled"
+                            text-off="{{'Admin.Js.PaymentMethodsList.Off'|translate}}"
+                            text-on="{{'Admin.Js.PaymentMethodsList.On'|translate}}"
+                            checked="item.Enabled"></switcher-state>
+                    </div>
+                </div>
+            </div>
+            <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                <button class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" ng-click="$ctrl.deleteMethod(item.PaymentMethodId)">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+﻿<div data-ng-switch="orderProduct.items.OrderedProducts.length > 0">
+    <div data-ng-switch-when="true" class="products-view products-view-tile row order-product">
+        <div data-ng-repeat="item in orderProduct.items.OrderedProducts" class="products-view-block cs-br-1 js-products-view-block">
+            <div class="products-view-item text-static cs-br-1 js-products-view-item">
+                <figure class="products-view-pictures">
+                    <a class="products-view-picture-link" ng-href="{{item.Url}}">
+                        <img ng-src="{{item.PhotoSmallUrl}}" width="200" height="200" />
+                    </a>
+                </figure>
+                <div class="products-view-info">
+                    <div class="products-view-name" ng-if="item.Url !== null">
+                        <a ng-href="{{item.Url}}" class="products-view-name-link">{{item.Name}}</a>
+                    </div>
+                    <div class="products-view-name" ng-if="item.Url === null">{{item.Name}}</div>
+                    <div
+                        data-ng-if="orderProduct.productViewOptions.showProductArtNo"
+                        class="products-view-meta products-view-meta-sku-review-count-wrap">
+                        <div class="products-view-meta-item products-view-meta-item-sku-wrap cs-br-1">
+                            <span class="products-view-tile-element-hidden">{{::'Js.MyAccount.OrderProductHistory.Sku' | translate}}: </span>
+                            <span class="products-view-meta-item-artNo">{{item.ArtNo}}</span>
+                        </div>
+                    </div>
+                    <div class="order-product__data" data-ng-click="myaccount.showDetailsOrder(item.LastOrderNumber, tabContent.header)">
+                        <span>
+                            <span class="order-product__last-order">{{::'Js.MyAccount.OrderProductHistory.LastOrder' | translate}}: </span>
+                            <span class="link order-product__datetime">
+                                <span class="order-product__order-number">№ {{item.LastOrderNumber}}</span>
+                                <span class="order-product__order-date-time">
+                                    <span class="order-product__order-date"
+                                        >{{::'Js.MyAccount.OrderProductHistory.BeforeOrderDate'|translate}} {{item.LastOrderDate}}</span
+                                    >
+                                    <span class="order-product__order-time">{{item.LastOrderTime}}</span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="product-view-price-data">
+                    <div class="products-view-price-block products-view-price-inner">
+                        <div class="products-view-price">
+                            <div class="price">
+                                <div class="price-current cs-t-1" ng-bind-html="item.Price"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-ng-switch-when="false" class="text-align-center p-t-md">
+        <span
+            data-ng-bind="( orderProduct.isLoaded ? 'Js.MyAccount.OrderProductHistory.Empty' : 'Js.MyAccount.OrderProductHistory.Loading') | translate"></span>
+    </div>
+</div>

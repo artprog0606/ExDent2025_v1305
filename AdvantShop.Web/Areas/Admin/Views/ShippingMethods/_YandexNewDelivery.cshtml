@@ -1,0 +1,650 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.YandexNewDeliveryShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Токен авторизации</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.AuthorizationToken, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.AuthorizationToken", required = "required", validation_input_text = "Токен авторизации" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Токен авторизации">
+            Для получения необходимо зарегистрировать приложение на Яндекс.OAuth:<br />
+            1. Авторизуйтесь на Яндексе (используйте аккаунт, на который зарегистрирована компания).<br />
+            2. Перейдите на страницу <a href="https://oauth.yandex.ru/client/new" target="_blank">Создание приложения</a><br />
+            3. В поле Название приложения укажите название (оно может быть любым).<br />
+            4. В блоке Платформы выберите Веб-сервисы. Заполните поле Callback URI: нажмите Подставить URL для разработки.<br />
+            5. В поле Доступы выберите Яндекс.Доставка, отметьте опцию Использование API Яндекс.Доставки для партнеров.<br />
+            6. Нажмите кнопку Создать приложение внизу страницы.
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Идентификатор магазина</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ShopId, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.ShopId", required = "required", validation_input_text = "Идентификатор магазина" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Идентификатор склада</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.WarehouseId, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.WarehouseId", required = "required", validation_input_text = "Идентификатор склада" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Город отправителя</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.CityFrom, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.CityFrom", required = "required", validation_input_text = "Город отправителя" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '1'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Api ключ виджета</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.WidgetApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.WidgetApiKey", required = "required", validation_input_text = "Api ключ виджета" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Api ключ виджета">
+            Для получения необходимо подключить API:<br />
+            1. Авторизуйтесь на Яндексе (используйте аккаунт, на который зарегистрирована компания).<br />
+            2. Перейдите в <a href="https://developer.tech.yandex.ru/services/" target="_blank">Кабинет разработчика</a> и нажмите Подключить API. Выберите Виджеты Яндекс.Доставки и нажмите Продолжить.<br />
+            3. Примите условия использования Яндекс.Доставки и нажмите Отправить.<br />
+            4. Введите название для ключа и нажмите Получить ключ. В блоке Ключи API появится ключ.
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Название метода доставки курьером</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.CourierOptionName, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.CourierOptionName", required = "required", validation_input_text = "Название метода доставки курьером" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Название метода доставки самовывозом</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.PickupOptionName, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.PickupOptionName", required = "required", validation_input_text = "Название метода доставки самовывозом" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints != '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Тип отображаемой цены доставки</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.PriceDisplayType, Model.ListPriceDisplayType, new { ng_model = "shippingMethod.Params.PriceDisplayType", @class = "form-control input-alt", required = "required", validation_input_text = "Тип отображаемой цены доставки" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Передавать в качестве внешнего ключа заказа</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.ExportOrderExternalIdType, Model.ListExportOrderExternalIdType, new { ng_model = "shippingMethod.Params.ExportOrderExternalIdType", @class = "form-control input-alt", required = "required", validation_input_text = "Передавать в качестве внешнего ключа заказа" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Внешнешний ключ заказа">
+            Идентификатор заказа, который будет передаваться в Я.Доставку.<br />
+            При выборе номера заказа - убедитесь что он меньше 10 символов.
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    @if (!isMobile)
+    {
+        <div class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            <label for="StatusesSync">Синхронизировать статусы заказов из Яндекс.Доставки</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.StatusesSync, new { ng_model = "shippingMethod.Params.StatusesSync", ng_init = "shippingMethod.Params.StatusesSync=" + Model.StatusesSync.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="StatusesSyncYandex"></span>
+            @if (isMobile)
+            {
+                <span>
+                    Синхронизировать статусы заказов из Яндекс.Доставки
+                </span>
+            }
+        </label>
+    </div>
+</div>
+<div class="row middle-xs @(!isMobile ? "form-group" : "")" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="col-xs-12 flex-grow-n col-fixed-size-md font-bold setting__subtitle">
+        Статусы
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Черновик
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DRAFT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DRAFT", ng_init = "shippingMethod.Params.Status_DRAFT='" + Model.Status_DRAFT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Черновик">
+            заказ доступен для редактирования.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        На проверке
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_VALIDATING, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_VALIDATING", ng_init = "shippingMethod.Params.Status_VALIDATING='" + Model.Status_VALIDATING + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="На проверке">
+            заказ находится на проверке.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Не прошел проверку
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_VALIDATING_ERROR, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_VALIDATING_ERROR", ng_init = "shippingMethod.Params.Status_VALIDATING_ERROR='" + Model.Status_VALIDATING_ERROR + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Не прошел проверку">
+            заказ не прошел проверку.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n  setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Проверен и отправлен в службу доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_CREATED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_CREATED", ng_init = "shippingMethod.Params.Status_CREATED='" + Model.Status_CREATED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Проверен и отправлен в службу доставки">
+            заказ проверен и отправлен в службу доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ожидает подтверждения от службы доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SENDER_SENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SENDER_SENT", ng_init = "shippingMethod.Params.Status_SENDER_SENT='" + Model.Status_SENDER_SENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Ожидает подтверждения от службы доставки">
+            заказ ожидает подтверждения от службы доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Подтвержден
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_LOADED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_LOADED", ng_init = "shippingMethod.Params.Status_DELIVERY_LOADED='" + Model.Status_DELIVERY_LOADED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Подтвержден">
+            заказ подтвержден службой доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ожидается на едином складе
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SENDER_WAIT_FULFILMENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SENDER_WAIT_FULFILMENT", ng_init = "shippingMethod.Params.Status_SENDER_WAIT_FULFILMENT='" + Model.Status_SENDER_WAIT_FULFILMENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Ожидается на едином складе">
+            заказ ожидается на едином складе.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ожидается в службе доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SENDER_WAIT_DELIVERY, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SENDER_WAIT_DELIVERY", ng_init = "shippingMethod.Params.Status_SENDER_WAIT_DELIVERY='" + Model.Status_SENDER_WAIT_DELIVERY + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Ожидается в службе доставки">
+            заказ ожидается в службе доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        На складе службы доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_AT_START, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_AT_START", ng_init = "shippingMethod.Params.Status_DELIVERY_AT_START='" + Model.Status_DELIVERY_AT_START + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="На складе службы доставки">
+            заказ находится на складе службы доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Сортировка в службе доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_AT_START_SORT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_AT_START_SORT", ng_init = "shippingMethod.Params.Status_DELIVERY_AT_START_SORT='" + Model.Status_DELIVERY_AT_START_SORT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Сортировка в службе доставки">
+            заказ находится на сортировке в службе доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставляется
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_TRANSPORTATION, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_TRANSPORTATION", ng_init = "shippingMethod.Params.Status_DELIVERY_TRANSPORTATION='" + Model.Status_DELIVERY_TRANSPORTATION + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставляется">
+            заказ доставляется.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n  setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        В населенном пункте получателя
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_ARRIVED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_ARRIVED", ng_init = "shippingMethod.Params.Status_DELIVERY_ARRIVED='" + Model.Status_DELIVERY_ARRIVED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="В населенном пункте получателя">
+            заказ находится в населенном пункте получателя.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставляется по населенному пункту получателя
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_TRANSPORTATION_RECIPIENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_TRANSPORTATION_RECIPIENT", ng_init = "shippingMethod.Params.Status_DELIVERY_TRANSPORTATION_RECIPIENT='" + Model.Status_DELIVERY_TRANSPORTATION_RECIPIENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставляется по населенному пункту получателя">
+            заказ доставляется по населенному пункту получателя.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Таможенный контроль
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_CUSTOMS_ARRIVED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_CUSTOMS_ARRIVED", ng_init = "shippingMethod.Params.Status_DELIVERY_CUSTOMS_ARRIVED='" + Model.Status_DELIVERY_CUSTOMS_ARRIVED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Таможенный контроль">
+            заказ проходит таможенный контроль.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставка по России
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_CUSTOMS_CLEARED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_CUSTOMS_CLEARED", ng_init = "shippingMethod.Params.Status_DELIVERY_CUSTOMS_CLEARED='" + Model.Status_DELIVERY_CUSTOMS_CLEARED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставка по России">
+            заказ передан в доставку по России.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Срок хранения увеличен
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_STORAGE_PERIOD_EXTENDED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_STORAGE_PERIOD_EXTENDED", ng_init = "shippingMethod.Params.Status_DELIVERY_STORAGE_PERIOD_EXTENDED='" + Model.Status_DELIVERY_STORAGE_PERIOD_EXTENDED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Срок хранения увеличен">
+            срок хранения заказа в службе доставки увеличен.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Срок хранения истек
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_STORAGE_PERIOD_EXPIRED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_STORAGE_PERIOD_EXPIRED", ng_init = "shippingMethod.Params.Status_DELIVERY_STORAGE_PERIOD_EXPIRED='" + Model.Status_DELIVERY_STORAGE_PERIOD_EXPIRED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Срок хранения истек">
+            срок хранения заказа в службе доставки истек.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставка перенесена по вине магазина
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_UPDATED_BY_SHOP, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_SHOP", ng_init = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_SHOP='" + Model.Status_DELIVERY_UPDATED_BY_SHOP + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставка перенесена по вине магазина">
+            доставка перенесена по вине магазина.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставка перенесена по просьбе клиента
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_UPDATED_BY_RECIPIENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_RECIPIENT", ng_init = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_RECIPIENT='" + Model.Status_DELIVERY_UPDATED_BY_RECIPIENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставка перенесена по просьбе клиента">
+            доставка перенесена по просьбе клиента.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставка перенесена службой доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_UPDATED_BY_DELIVERY, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_DELIVERY", ng_init = "shippingMethod.Params.Status_DELIVERY_UPDATED_BY_DELIVERY='" + Model.Status_DELIVERY_UPDATED_BY_DELIVERY + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставка перенесена службой доставки">
+            доставка перенесена службой доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        В пункте самовывоза
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_ARRIVED_PICKUP_POINT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_ARRIVED_PICKUP_POINT", ng_init = "shippingMethod.Params.Status_DELIVERY_ARRIVED_PICKUP_POINT='" + Model.Status_DELIVERY_ARRIVED_PICKUP_POINT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="В пункте самовывоза">
+            заказ находится в пункте самовывоза.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Вручен клиенту
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_TRANSMITTED_TO_RECIPIENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_TRANSMITTED_TO_RECIPIENT", ng_init = "shippingMethod.Params.Status_DELIVERY_TRANSMITTED_TO_RECIPIENT='" + Model.Status_DELIVERY_TRANSMITTED_TO_RECIPIENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Вручен клиенту">
+            заказ вручен клиенту.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Доставлен получателю
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_DELIVERED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_DELIVERED", ng_init = "shippingMethod.Params.Status_DELIVERY_DELIVERED='" + Model.Status_DELIVERY_DELIVERED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Доставлен получателю">
+            заказ доставлен получателю.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Неудачная попытка вручения заказа
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_ATTEMPT_FAILED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_ATTEMPT_FAILED", ng_init = "shippingMethod.Params.Status_DELIVERY_ATTEMPT_FAILED='" + Model.Status_DELIVERY_ATTEMPT_FAILED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Не может быть доставлен
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_DELIVERY_CAN_NOT_BE_COMPLETED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_DELIVERY_CAN_NOT_BE_COMPLETED", ng_init = "shippingMethod.Params.Status_DELIVERY_CAN_NOT_BE_COMPLETED='" + Model.Status_DELIVERY_CAN_NOT_BE_COMPLETED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Не может быть доставлен">
+            заказ не может быть доставлен.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Инициирован возврат
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_RETURN_STARTED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_RETURN_STARTED", ng_init = "shippingMethod.Params.Status_RETURN_STARTED='" + Model.Status_RETURN_STARTED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Готовится к возврату
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_RETURN_PREPARING, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_RETURN_PREPARING", ng_init = "shippingMethod.Params.Status_RETURN_PREPARING='" + Model.Status_RETURN_PREPARING + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Готовится к возврату">
+            заказ готовится к возврату.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвращен на склад службы доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_RETURN_ARRIVED_DELIVERY, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_RETURN_ARRIVED_DELIVERY", ng_init = "shippingMethod.Params.Status_RETURN_ARRIVED_DELIVERY='" + Model.Status_RETURN_ARRIVED_DELIVERY + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Возвращен на склад службы доставки">
+            заказ возвращен на склад службы доставки.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвращен на единый склад
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_RETURN_TRANSMITTED_FULFILLMENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_RETURN_TRANSMITTED_FULFILLMENT", ng_init = "shippingMethod.Params.Status_RETURN_TRANSMITTED_FULFILLMENT='" + Model.Status_RETURN_TRANSMITTED_FULFILLMENT + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Возвращен на единый склад">
+            заказ возвращен на единый склад.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ожидает подтверждения от сортировочного центра
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_CREATED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_CREATED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_CREATED='" + Model.Status_SORTING_CENTER_CREATED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Ожидает подтверждения от сортировочного центра">
+            заказ ожидает подтверждения от сортировочного центра.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Подтвержден сортировочным центром
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_LOADED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_LOADED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_LOADED='" + Model.Status_SORTING_CENTER_LOADED + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Подтвержден сортировочным центром">
+            заказ подтвержден сортировочным центром.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Поступил на склад сортировочного центра
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_AT_START, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_AT_START", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_AT_START='" + Model.Status_SORTING_CENTER_AT_START + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Поступил на склад сортировочного центра">
+            заказ поступил на склад сортировочного центра.
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Некоторые позиции заказа отсутствуют на складе сортировочного центра
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_OUT_OF_STOCK, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_OUT_OF_STOCK", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_OUT_OF_STOCK='" + Model.Status_SORTING_CENTER_OUT_OF_STOCK + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ожидаются уточнения по заказу в сортировочном центре
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_AWAITING_CLARIFICATION, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_AWAITING_CLARIFICATION", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_AWAITING_CLARIFICATION='" + Model.Status_SORTING_CENTER_AWAITING_CLARIFICATION + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n  setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ на складе сортировочного центра подготовлен к отправке в службу доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_PREPARED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_PREPARED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_PREPARED='" + Model.Status_SORTING_CENTER_PREPARED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ отгружен сортировочным центром в службу доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_TRANSMITTED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_TRANSMITTED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_TRANSMITTED='" + Model.Status_SORTING_CENTER_TRANSMITTED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Сортировочный центр получил данные о планируемом возврате заказа
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_PREPARING, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_PREPARING", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_PREPARING='" + Model.Status_SORTING_CENTER_RETURN_PREPARING + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class=" flex-grow-nsetting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ готов к передаче в сортировочный центр
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_RFF_PREPARING_FULFILLMENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_PREPARING_FULFILLMENT", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_PREPARING_FULFILLMENT='" + Model.Status_SORTING_CENTER_RETURN_RFF_PREPARING_FULFILLMENT + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ передан в сортировочный центр
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_RFF_TRANSMITTED_FULFILLMENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_TRANSMITTED_FULFILLMENT", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_TRANSMITTED_FULFILLMENT='" + Model.Status_SORTING_CENTER_RETURN_RFF_TRANSMITTED_FULFILLMENT + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ поступил на склад сортировочного центра
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_RFF_ARRIVED_FULFILLMENT, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_ARRIVED_FULFILLMENT", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RFF_ARRIVED_FULFILLMENT='" + Model.Status_SORTING_CENTER_RETURN_RFF_ARRIVED_FULFILLMENT + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ на складе сортировочного центра
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_ARRIVED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_ARRIVED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_ARRIVED='" + Model.Status_SORTING_CENTER_RETURN_ARRIVED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ готов для передачи магазину
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_PREPARING_SENDER, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_PREPARING_SENDER", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_PREPARING_SENDER='" + Model.Status_SORTING_CENTER_RETURN_PREPARING_SENDER + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Возвратный заказ передан на доставку в магазин
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_TRANSFERRED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_TRANSFERRED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_TRANSFERRED='" + Model.Status_SORTING_CENTER_RETURN_TRANSFERRED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ возвращен в магазин
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_RETURN_RETURNED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RETURNED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_RETURN_RETURNED='" + Model.Status_SORTING_CENTER_RETURN_RETURNED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Сортировочный центр: заказ отменен
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_CANCELED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_CANCELED", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_CANCELED='" + Model.Status_SORTING_CENTER_CANCELED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ошибка создания заказа в сортировочном центре
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_SORTING_CENTER_ERROR, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_SORTING_CENTER_ERROR", ng_init = "shippingMethod.Params.Status_SORTING_CENTER_ERROR='" + Model.Status_SORTING_CENTER_ERROR + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ утерян в процессе доставки
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_LOST, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_LOST", ng_init = "shippingMethod.Params.Status_LOST='" + Model.Status_LOST + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ отменен
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_CANCELLED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_CANCELLED", ng_init = "shippingMethod.Params.Status_CANCELLED='" + Model.Status_CANCELLED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Заказ отменен покупателем
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_CANCELLED_USER, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_CANCELLED_USER", ng_init = "shippingMethod.Params.Status_CANCELLED_USER='" + Model.Status_CANCELLED_USER + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Финальный статус заказа
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_FINISHED, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_FINISHED", ng_init = "shippingMethod.Params.Status_FINISHED='" + Model.Status_FINISHED + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.StatusesSync">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Ошибка создания заказа
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Status_ERROR, Model.ListStatuses, new { ng_model = "shippingMethod.Params.Status_ERROR", ng_init = "shippingMethod.Params.Status_ERROR='" + Model.Status_ERROR + "'", @class = "form-control input-alt" })
+    </div>
+</div>

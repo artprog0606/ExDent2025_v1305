@@ -1,0 +1,164 @@
+﻿<div class="blocks-constructor-settings-col--alt">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="blocks-constructor-row">
+                <label class="blocks-constructor-label" data-e2e="EnabledBtn">
+                    <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.isVisibility" />
+                    <span class="blocks-constructor-checkbox"></span>
+                    <span class="blocks-constructor-label-text"> Кнопка включена </span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-if="$ctrl.isVisibility">
+        <div class="col-xs-12" ng-if="$ctrl.buttonOptions.picture != null" ng-controller="BlocksConstructorFormSettingsCtrl as form">
+            <div class="row">
+                <div class="col-xs-slim">Иконка для кнопки</div>
+                <div class="col-xs">
+                    <picture-loader-trigger
+                        data-lp-id="{{$ctrl.lpId}}"
+                        data-block-id="{{$ctrl.lpBlockId}}"
+                        data-current="$ctrl.buttonOptions.picture.Src"
+                        type="$ctrl.buttonOptions.picture.Type"
+                        data-width-picture="$ctrl.buttonOptions.picture.width"
+                        data-height-picture="$ctrl.buttonOptions.picture.height"
+                        data-delete-picture="true"
+                        data-on-delete="form.onUploadPicture($ctrl.buttonOptions.picture,result)"
+                        on-apply="form.onUploadPicture($ctrl.buttonOptions.picture, result)"
+                        on-resize="form.onResizePicture($ctrl.buttonOptions.picture, result)">
+                        <div class="pointer" ng-switch="$ctrl.buttonOptions.picture.Type" picture-loader-element-trigger>
+                            <div ng-switch-when="svg">
+                                <div ng-bind-html="$ctrl.buttonOptions.picture.Src | sanitize"></div>
+                            </div>
+                            <div ng-switch-default>
+                                <img
+                                    class="image-for-button"
+                                    ng-src="{{$ctrl.buttonOptions.picture.Src || './areas/landing/frontend/images/nophoto_cover.png'}}"
+                                    alt="Alternate Text" />
+                            </div>
+                        </div>
+                    </picture-loader-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6" ng-class="{'blocks-constructor-row' : $ctrl.isMobile}">
+            <div class="blocks-constructor-row__name">Текст кнопки</div>
+            <input class="blocks-constructor-input" data-e2e="TextBtn" type="text" ng-model="$ctrl.buttonOptions.text" />
+        </div>
+
+        <!--<div class="col-xs-12 col-sm-6" ng-if="$ctrl.buttonOptions.align != null">
+            <div class="blocks-constructor-row__name">
+                Выравнивание кнопки
+            </div>
+            <select ng-model="$ctrl.buttonOptions.align" disabled-autobind>
+                <option value="start-xs">По левому краю</option>
+                <option value="center-xs">По центру</option>
+                <option value="end-xs">По правому краю</option>
+            </select>
+        </div>-->
+
+        <div
+            class="col-xs-12 col-sm-6"
+            ng-init="$ctrl.buttonOptions.action = $ctrl.buttonOptions.action != null ? $ctrl.buttonOptions.action : $ctrl.buttonActions[0].value">
+            <div class="blocks-constructor-row__name">Действие</div>
+            <div class="blocks-constructor-select">
+                <select
+                    data-e2e="ButtonActions"
+                    ng-model="$ctrl.buttonOptions.action"
+                    ng-options="item.value as item.label for item in $ctrl.buttonActions"
+                    ng-change="$ctrl.changeAction($ctrl.buttonOptions.action)"></select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row blocks-constructor-settings-col--alt" ng-if="$ctrl.isVisibility">
+    <div class="col-xs-12">
+        <div ng-switch="$ctrl.buttonOptions.action">
+            <div ng-switch-when="Url">
+                <div class="blocks-constructor-row">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">URL</div>
+                    <div
+                        class="blocks-constructor-select"
+                        ng-init="$ctrl.buttonOptions.action_url_lp_id = $ctrl.buttonOptions.action_url_lp_id != null ? $ctrl.buttonOptions.action_url_lp_id : null">
+                        <select
+                            data-e2e="UrlSelect"
+                            ng-model="$ctrl.buttonOptions.action_url_lp_id"
+                            ng-options="item.value as item.label for item in $ctrl.commonOptions.LandingsForUrl"></select>
+                    </div>
+                </div>
+                <div class="blocks-constructor-row" ng-if="$ctrl.buttonOptions.action_url_lp_id == null">
+                    <div class="blocks-constructor-row__name">Свой URL-адрес</div>
+                    <input
+                        class="blocks-constructor-input"
+                        data-e2e="UrlInput"
+                        type="text"
+                        ng-model="$ctrl.buttonOptions.action_url"
+                        placeholder="Введите ссылку" />
+                </div>
+                <div class="blocks-constructor-row">
+                    <label class="blocks-constructor-label" data-e2e="TargetBlank">
+                        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.buttonOptions.target_blank" />
+                        <span class="blocks-constructor-checkbox"></span>
+                        <span class="blocks-constructor-label-text"> Открыть ссылку в новой вкладке </span>
+                    </label>
+                </div>
+            </div>
+
+            <div ng-switch-when="Section">
+                <div class="blocks-constructor-row">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Блок</div>
+                    <div class="blocks-constructor-table">
+                        <div class="blocks-constructor-table-col blocks-constructor-table-col--vertical-middle">
+                            <input
+                                class="blocks-constructor-input"
+                                data-e2e="BlockIdInput"
+                                type="text"
+                                ng-model="$ctrl.buttonOptions.action_section"
+                                pattern="^[#+>:\s\-\.\w\d]*$" />
+                        </div>
+                        <div class="blocks-constructor-table-col blocks-constructor-table-col--vertical-middle">
+                            <span class="link-service" data-e2e="BlockSelect" blocks-constructor-select="$ctrl.selectBlock(blockSelected)"
+                                >Выбрать блок</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="blocks-constructor-row" ng-switch-when="Form">
+                <div ng-if="!$ctrl.hideFormSettings">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Форма</div>
+                    <blocks-constructor-form-settings common-options="$ctrl.commonOptions" form-settings="$ctrl.formSettings">
+                        <script type="text/ng-template" blocks-constructor-form-settings-tab header="'Товар'">
+                            <div ng-include="'areas/landing/frontend/_common/blocks-constructor/templates/partials/_product-price.html'"></div>
+                            <block-constructor-upsell value="$ctrl.buttonOptions.action_upsell_lp_id" items="$ctrl.commonOptions.Landings"></block-constructor-upsell>
+                        </script>
+                    </blocks-constructor-form-settings>
+                </div>
+            </div>
+            <div ng-switch-when="Checkout|CheckoutUpsell" ng-switch-when-separator="|" class="blocks-constructor-row">
+                <div ng-include="'areas/landing/frontend/_common/blocks-constructor/templates/partials/_product-price.html'"></div>
+            </div>
+            <div ng-switch-when="CheckoutUpsell" ng-switch-when-separator="|" class="blocks-constructor-row">
+                <block-constructor-upsell
+                    value="$ctrl.buttonOptions.action_upsell_lp_id"
+                    items="$ctrl.commonOptions.Landings"></block-constructor-upsell>
+            </div>
+        </div>
+        <div ng-if="$ctrl.buttonOptions.action !== 'Form'">
+            <div class="blocks-constructor-row">
+                <label class="blocks-constructor-label" data-e2e="AnaliticsBtn">
+                    <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.buttonOptions.goals.Enabled" />
+                    <span class="blocks-constructor-checkbox"></span>
+                    <span class="blocks-constructor-label-text"> Аналитика </span>
+                </label>
+            </div>
+            <block-constructor-goals
+                ng-if="$ctrl.buttonOptions.goals.Enabled"
+                goals-enabled="$ctrl.buttonOptions.goals.Enabled"
+                ya-metrika-event-name="$ctrl.buttonOptions.goals.YaMetrikaEventName"
+                ga-event-category="$ctrl.buttonOptions.goals.GaEventCategory"
+                ga-event-action="$ctrl.buttonOptions.goals.GaEventAction"></block-constructor-goals>
+        </div>
+    </div>
+</div>

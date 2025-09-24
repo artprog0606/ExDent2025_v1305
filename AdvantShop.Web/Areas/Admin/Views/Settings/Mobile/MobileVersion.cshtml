@@ -1,0 +1,873 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.MobileVersionSettingsModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (!isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+    Html.AddAsset("settingsMobileVersion");
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    if (isMobile)
+    {
+        headerModel.Controls = new List<IButton>();
+        headerModel.Title = "<span class=\"float-header-page\" ng-bind=\"settingsMobile.settingsTab === 'robots' ? 'Robots.txt' : '" + T("Admin.Settings.Commonpage.Mobile").ToString() + "'\"></span>";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Attributes = "ng-click=\"settingsMobile.settingsTab === 'robots' ? $event.preventDefault() : true ; settingsMobile.changeSettingsTab('settings')\"",
+            Classes = "ng-cloak",
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("index", "Design", new { showCommon = true })
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.Attributes = new string[] { "ng-if=\"settingsMobile.settingsTab !== 'robots'\"" };
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderMobileVersion";
+        moreButton.NgIsOpen = "settingsMobile.isOpenPopover";
+        moreButton.Items = new List<MoreButtonPopoverItem>()
+{
+            new MoreButtonPopoverItem()
+            {
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+        {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Text = T("Robots.txt"),
+                Attributes = new string[] { "ng-click=\"settingsMobile.changeSettingsTab('robots'); settingsMobile.isOpenPopover = false\" ng-init=\"settingsMobile.isOpenPopover = true\"" },
+            }
+        };
+
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                        },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "data-button-validation disabled data-e2e=\"mobileSave\" ng-disabled=\"!form.modified\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+            );
+
+        headerModel.Controls.Add(moreButton);
+    }
+}
+
+<div class="form-horizontal">
+    @using (Html.BeginAbsoluteUrlForm("MobileVersion", "Settings", FormMethod.Post, new { name = "form", enctype = "multipart/form-data", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken()
+
+        if (isMobile)
+        {
+            @Html.Header(headerModel)
+        }
+        else
+        {
+            <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner header-hidden">
+                    <div class="page-name-block-item-main">
+                        <h2 class="page-name-block-text sticky-page-name-text" ng-init="settingsMobile.floatHeaderList = {};">
+                            <span class="float-header-page" ng-bind="settingsMobile.floatHeaderList[settingsMobile.settingsTab]"></span>
+                        </h2>
+                    </div>
+                    <div class="page-name-block-item-additional">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" data-e2e="SettingsTemplateSaveHead" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-name-block-item-main--without-action m-b-xs">
+                <div class="flex middle-xs funnel-site__settings page-name-block-item-main--without-action sticky-page-name-inner header-hidden">
+                    <h2 class="m-r-md m-t-none m-b-none sticky-page-name-text">
+                        @T("Admin.Settings.Commonpage.Mobile")
+                    </h2>
+                    <a href="https://www.advantshop.net/help/pages/mobile-version" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z">|</path>
+                    </svg>
+                        <span>@T("Admin.Settings.Commonpage.Mobile.InstructionsSettingMobile")</span>
+                    </a>
+                </div>
+
+                @*<div class="m-t-xs" style="padding-right:0.625rem;">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Common.Save")"
+                               data-button-validation disabled ng-disabled="!form.modified"
+                               data-e2e="mobileSave" />
+                    </div>*@
+            </div>
+
+
+            <div class="flex middle-xs funnel-site__settings p-b-sm between-xs">
+                <div class="flex middle-xs funnel-site__settings flex-grow">
+                    <ul class="nav nav-tabs flex-grow">
+                        <li class="nav-item ng-tab" ng-class="{'active': settingsMobile.settingsTab == 'settings'}"
+                            ng-init="settingsMobile.floatHeaderList['settings'] = '@T("Admin.Settings.Commonpage.Mobile") / Настройки';">
+                            <a href="" ng-click="settingsMobile.changeSettingsTab('settings')">@T("Admin.Settings.Commonpage.Mobile.Settings")</a>
+                        </li>
+                        <li class="nav-item ng-tab" ng-class="{'active': settingsMobile.settingsTab == 'robots'}"
+                            ng-init="settingsMobile.floatHeaderList['robots'] = '@T("Admin.Settings.Commonpage.Mobile") / Robots.txt';">
+                            <a href="" ng-click="settingsMobile.changeSettingsTab('robots')">Robots.txt</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="m-t-xs" style="padding-right:0.625rem;">
+                    <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Common.Save")"
+                           data-button-validation disabled ng-disabled="!form.modified"
+                           data-e2e="mobileSave" />
+                </div>
+            </div>
+        }
+        <div class="tab-content" style="@(isMobile ? "" : "padding-right: 0.625rem;")">
+            <div class="tab-pane" ng-class="{'active': settingsMobile.settingsTab == 'settings'}">
+                <div class="row">
+                    @if (!isMobile)
+                    {
+                        <div class="mobile-settings__preview">
+                            <div class="m-r-lg">
+                                <div class="iframe-mobile__wrapper">
+                                    <iframe src="@UrlService.GetUrl("?mobilePreview=true")" scrolling="no" class="iframe-mobile" onload="this.nextElementSibling.classList.add('ng-hide')"></iframe>
+                                    <div class="tpl-iframe-loading--text">
+                                        @T("Admin.LoadingData")
+                                    </div>
+                                    <div class="mobile-qrcode__block">
+                                        <div class="mobile-qrcode__inner">
+                                            <img class="mobile-qrcode__image" src="@Url.AbsoluteActionUrl("GetMobileVersionQrCode", "Settings")" alt="qrcode" />
+                                            <h2 class="mobile-qrcode__header">@T("Admin.Settings.Mobile.MobileVersion.OpenOnMobile.Title")</h2>
+                                            <p class="mobile-qrcode__text">@T("Admin.Settings.Mobile.MobileVersion.OpenOnMobile.Subtitle")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hidden-md m-t-sm">
+                                    <a href="@UrlService.GetUrl()" class="btn btn-success btn-block">@T("Admin.Settings.MobileVersion")</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                <div class="col-xs">
+                    @if (!isMobile)
+                    {
+                        <div class="row m-b">
+                            <div class="col-xs-12">
+
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs setting--m-b-none @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-sm-3 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.Enabled, T("Admin.Settings.MobileVersion.Enabled"))
+                                </div>
+                            }
+                            <div class="relative col-xs-slim relative flex middle-xs @(isMobile ? "" : "first-xs last-sm")">
+                                <label class="adv-checkbox-label form-label-block flex" data-e2e="mobileEnabled">
+                                    @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "settingsMobile.enabled", ng_init = "settingsMobile.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.MobileVersion.Enabled")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.FooterMunuMode, T("Admin.Settings.Commonpage.Mobile.DispTypeFooterSite"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+
+                                <select class="form-control input-alt-mobile" convert-to-number id="FooterMunuMode" name="FooterMunuMode" ng-model="settingsMobile.templateSettings.FooterMunuMode">
+                                    @foreach (var footerMunuMode in Model.FooterMunuModeList)
+                                    {
+                                        <option value="@footerMunuMode.Value" @(footerMunuMode.Value == Model.FooterMunuMode.ConvertIntString() ? "selected" : "")>
+                                            @footerMunuMode.Text
+                                        </option>
+                                    }
+                                </select>
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.DispTypeFooterSite")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SelectAccordion")
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="@(isMobile ? "" : "row middle-xs setting--m-b-none control-label flex-nowrap")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-sm-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.IsFullCheckout, T("Admin.Settings.MobileVersion.IsFullCheckout"))
+                                </div>
+                            }
+                            <div class="@(isMobile ? "" : "col-xs-slim first-xs last-sm relative flex middle-xs")">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "" : "flex")" data-e2e="mobileFullCheckout">
+                                    @Html.CheckBoxFor(x => x.IsFullCheckout, new { ng_model = "settingsMobile.isFullCheckout", ng_init = "settingsMobile.isFullCheckout=" + Model.IsFullCheckout.ToLowerString(), @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.MobileVersion.IsFullCheckout")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 class="m-t bold setting__subtitle">
+                            @T("Admin.Settings.MobileVersion.MobileTemlateHeader")
+                        </h3>
+                    </div>
+
+                    <div @*style="display:none;"*@>
+                        @if (Model.MobileTemplates != null && Model.MobileTemplates.Count > 1)
+                        {
+                            <div class="form-group setting__form-group">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-3 control-label">
+                                        @Html.LabelFor(x => x.MobileTemlate, T("Admin.Settings.MobileVersion.MobileTemlate"))
+                                    </div>
+                                    <div class="col-xs-12 col-md-7 relative">
+                                        @Html.DropDownListFor(x => x.MobileTemlate, Model.MobileTemplates, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.mobileTemlate", ng_change = "settingsMobile.changeTemplate()" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.MobileTemlate, new { ng_model = "settingsMobile.mobileTemlate" })
+                        }
+                        <div class="form-group setting__form-group">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-3 control-label">
+                                    @Html.LabelFor(x => x.BrowserColorVariantsSelected, T("Admin.Settings.MobileVersion.BrowserPanelColor"))
+                                </div>
+                                <div class="col-xs-12 col-md-7 relative">
+                                    <div class="row relative middle-xs">
+                                        <div class="col-xs">
+                                            @Html.DropDownListFor(x => x.BrowserColorVariantsSelected, Model.BrowserColorVariantsList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.BrowserColorVariantsSelected", convert_to_number = "" })
+                                            @Html.HiddenFor(x => x.BrowserColor, new { ng_value = "settingsMobile.templateSettings.BrowserColor" })
+                                        </div>
+                                        <div class="col-xs-slim setting__color-picker-mobile-version-wrap" ng-if="settingsMobile.templateSettings.BrowserColorVariantsSelected === 2"
+                                             ng-init="settingsMobile.templateSettings.BrowserColor = '@(Model.BrowserColor.IsNotEmpty() ? Model.BrowserColor : "0662c1")'">
+                                            <color-picker required
+                                                          ng-model="settingsMobile.templateSettings.BrowserColor"
+                                                          options="settingsMobile.colorPickerOptions"
+                                                          api="settingsMobile.colorPickerApi"
+                                                          class="input-alt-mobile"
+                                                          event-api="settingsMobile.colorPickerEventApi">
+                                            </color-picker>
+                                        </div>
+                                        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs  m-r-sm" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.BrowserPanelColor")">
+                                            <div class="help-content">
+                                                @T("Admin.Settings.MobileVersion.BrowserPanelColorHint")<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#3" target="_blank">@T("Admin.Settings.Commonpage.Mobile.BrowserBarColor")</a>
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group setting__form-group">
+                                <div class="row @(isMobile ? "middle-xs" : "")">
+                                    <div class="col-xs-12 col-md-3 control-label">
+                                        @Html.LabelFor(x => x.HeaderColorVariantsSelected, T("Admin.Settings.Commonpage.Mobile.HeaderColor"))
+                                    </div>
+                                    <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                        @Html.DropDownListFor(x => x.HeaderColorVariantsSelected, Model.HeaderColorVariantsList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.HeaderColorVariantsSelected", convert_to_number = "" })
+                                        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.HeaderColor")">
+                                            <div class="help-content">
+                                                @T("Admin.Settings.Commonpage.Mobile.SelectSiteHeader").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#4" target="_blank">@T("Admin.Settings.Commonpage.Mobile.HeaderColor")</a>
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h3 class="m-t bold setting__subtitle">
+                            @T("Admin.Settings.Commonpage.Mobile.Main")
+                        </h3>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.LogoType, T("Admin.Settings.Commonpage.Mobile.LogoDisplayOptions"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                @Html.DropDownListFor(x => x.LogoType, Model.LogoTypeList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.LogoType", convert_to_number = "" })
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.LogoDisplayOptions")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SelectLogoOption").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#9" target="_blank">@T("Admin.Settings.Commonpage.Mobile.LogoDisplayOptions")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group" ng-if="settingsMobile.templateSettings.LogoType === 2">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-7 col-sm-offset-3">
+                                @Html.PictureUploader(AdvantShop.Catalog.PhotoType.LogoMobile, 0, Model.LogoImgSrc)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-ng-show="settingsMobile.templateSettings.LogoType === 0">
+                        <div class="form-group setting__form-group">
+                            <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                                @if (!isMobile)
+                                {
+                                    <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                        @Html.LabelFor(x => x.DisplayHeaderTitle, T("Admin.Settings.MobileVersion.DisplayHeaderTitle"))
+                                    </div>
+                                }
+                                <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                    <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")" data-e2e="mobileDisplayHeader">
+                                        @Html.CheckBoxFor(x => x.DisplayHeaderTitle, new { ng_model = "settingsMobile.templateSettings.DisplayHeaderTitle", @class = "adv-checkbox-input" })
+                                        <span class="adv-checkbox-emul"></span>
+                                        @if (isMobile)
+                                        {
+                                            <span>@T("Admin.Settings.MobileVersion.DisplayHeaderTitle")</span>
+                                        }
+                                    </label>
+
+                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.DisplayHeaderTitle")">
+                                        <div class="help-content">
+                                            @T("Admin.Settings.Commonpage.Mobile.DisplayTitleDefault").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#9" target="_blank">@T("Admin.Settings.Commonpage.Mobile.ShowTitleDefault")</a>
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group setting__form-group">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-3 control-label">
+                                    @Html.LabelFor(x => x.HeaderCustomTitle, T("Admin.Settings.MobileVersion.HeaderCustomTitle"))
+                                </div>
+                                <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                    @Html.TextAreaFor(x => x.HeaderCustomTitle, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.HeaderCustomTitle", cols = "50" })
+                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.HeaderCustomTitle")">
+                                        <div class="help-content">
+                                            @T("Admin.Settings.Commonpage.Mobile.EnterTextTitle").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#9" target="_blank">@T("Admin.Settings.Commonpage.Mobile.YourOwnTitle")</a>
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.CatalogMenuViewMode, T("Admin.Settings.Commonpage.Mobile.CategoryDisplayTypeMenu"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                @Html.DropDownListFor(x => x.CatalogMenuViewMode, Model.CatalogMenuViewModeList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.CatalogMenuViewMode", convert_to_number = "" })
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.CategoryDisplayTypeMenu")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SelectCatDisClickSideMenu").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#5" target="_blank">@T("Admin.Settings.Commonpage.Mobile.CategoryDisplayType")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowMenuLinkAll, T("Admin.Settings.Commonpage.Mobile.DisplayProdCatLink"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")">
+                                    @Html.CheckBoxFor(x => x.ShowMenuLinkAll, new { ng_model = "settingsMobile.templateSettings.ShowMenuLinkAll", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.Commonpage.Mobile.DisplayProdCatLink")</span>
+                                    }
+                                </label>
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Отображать ссылку \"Все товары категории\" в меню")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SettingLinkMenuPageAllProd").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#8" target="_blank">@T("Admin.Settings.Commonpage.Mobile.DisplayLinkAllProdCatMenu")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowCity, T("Admin.Settings.Commonpage.Mobile.ShowCityInMenu"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block  @(isMobile ? "flex-grow" : "flex")" data-e2e="mobileShowCity">
+                                    @Html.CheckBoxFor(x => x.ShowCity, new { ng_model = "settingsMobile.templateSettings.ShowCity", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Отображать город в меню")</span>
+                                    }
+                                </label>
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.ShowCityInMenu")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SettingAllowsAutoDisplayCity").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#15" target="_blank">@T("Admin.Settings.Commonpage.Mobile.ShowCity")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowBottomPanel, T("Admin.Settings.MobileVersion.ShowBottomPanel"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs @(isMobile ? "" : "first-xs last-md")">
+                                <label class="adv-checkbox-label form-label-block flex" data-e2e="mobileShowBottomPanel">
+                                    @Html.CheckBoxFor(x => x.ShowBottomPanel, new { ng_model = "settingsMobile.templateSettings.ShowBottomPanel", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.MobileVersion.ShowBottomPanel")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="settingsMobile.templateSettings.ShowBottomPanel" class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.CatalogMenuViewMode, "Действие при клике в нижней панели на каталог")
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative">
+                                @Html.DropDownListFor(x => x.BottomPanelCatalogMenuMode, Model.BottomPanelCatalogMenuModeList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.BottomPanelCatalogMenuMode", convert_to_number = "" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 class="m-t bold setting__subtitle">
+                            @T("Admin.Settings.Commonpage.Mobile.MainPage")
+                        </h3>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowSlider, T("Admin.Settings.MobileVersion.ShowSlider"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")" data-e2e="mobileShowSlider">
+                                    @Html.CheckBoxFor(x => x.ShowSlider, new { ng_model = "settingsMobile.templateSettings.ShowSlider", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.MobileVersion.ShowSlider")</span>
+                                    }
+                                </label>
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.ShowSlider")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SettingShowCarouselMobile").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#16" target="_blank">@T("Admin.Settings.Commonpage.Mobile.ShowCarousel")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.MainPageProductCountMobile, T("Admin.Settings.MobileVersion.MainPageProductsCount"))
+                            </div>
+                            <div class="col-xs-12 col-md-slim relative flex middle-xs">
+                                @if (isMobile)
+                                {
+                                    @Html.TextBoxFor(x => x.MainPageProductCountMobile, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.MainPageProductCountMobile" })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(x => x.MainPageProductCountMobile, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.MainPageProductCountMobile", style = "width: 60px;" })
+                                }
+
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.MainPageProductsCount")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.NumberProdMainPage").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#14" target="_blank">@T("Admin.Settings.Commonpage.Mobile.NumberProdOnMainPage")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.MainPageCatalogView, T("Admin.Settings.Commonpage.Mobile.TypeDispOnMainPage"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative  @(isMobile ? "flex middle-xs" : "")">
+
+                                <select class="form-control input-alt-mobile" convert-to-number id="MainPageCatalogView" name="MainPageCatalogView" ng-model="settingsMobile.templateSettings.MainPageCatalogView">
+                                    @foreach (var mainPageCatalogView in Model.MainPageCatalogViewList)
+                                    {
+                                        <option value="@mainPageCatalogView.Value" @(mainPageCatalogView.Value == Model.MainPageCatalogView.ConvertIntString() ? "selected" : "")>
+                                            @mainPageCatalogView.Text
+                                        </option>
+                                    }
+                                </select>
+
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.TypeDispOnMainPage")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.OptionDispHorizOrVert").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#12" target="_blank">@T("Admin.Settings.Commonpage.Mobile.TypeDispOnMainPage")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.ViewCategoriesOnMain, T("Admin.Settings.Commonpage.Mobile.TypeDispCatOnMainPage"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                @Html.DropDownListFor(x => x.ViewCategoriesOnMain, Model.ViewCategoriesOnMainList, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.templateSettings.ViewCategoriesOnMain", convert_to_number = "" })
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.TypeDispCatOnMainPage")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.TypeDispCatOnMainPageIcons").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#7" target="_blank">@T("Admin.Settings.Commonpage.Mobile.DisplayingCategoriesOnMainPage")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowBriefDescriptionInMainMobile, T("Admin.Settings.Template.MainPageVisibleBriefDescription"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")">
+                                    @Html.CheckBoxFor(x => x.ShowBriefDescriptionInMainMobile, new { ng_model = "settingsMobile.templateSettings.ShowBriefDescriptionInMainMobile", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.Template.MainPageVisibleBriefDescription")</span>
+                                    }
+                                </label>
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Template.MainPageVisibleBriefDescription")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Template.MainPageVisibleBriefDescriptionMobileHelp")
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                            <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                @Html.LabelFor(x => x.ShowNewsOnMainPage, T("Admin.Settings.MobileVersion.ShowNewsOnMainPage"))
+                            </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")" data-e2e="mobileShowNewsOnMainPage">
+                                    @Html.CheckBoxFor(x => x.ShowNewsOnMainPage, new { ng_model = "settingsMobile.templateSettings.ShowNewsOnMainPage", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                    <span>@T("Admin.Settings.MobileVersion.ShowNewsOnMainPage")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 class="m-t bold setting__subtitle">
+                            @T("Admin.Settings.Commonpage.Mobile.ProductCategory")
+                        </h3>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.DefaultCatalogView, T("Admin.Settings.Commonpage.Mobile.DispTypeInCatalogDefault"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative">
+                                <div class="row">
+                                    <div class="col-xs-12 setting__form-group relative @(isMobile ? "flex middle-xs" : "")">
+                                        <select class="form-control input-alt-mobile" convert-to-number id="DefaultCatalogView" name="DefaultCatalogView" ng-model="settingsMobile.templateSettings.DefaultCatalogView">
+                                            @foreach (var catalogView in Model.DefaultViewList)
+                                            {
+                                                <option value="@catalogView.Value" @(catalogView.Value == Model.DefaultCatalogView.ConvertIntString() ? "selected" : "")>
+                                                    @catalogView.Text
+                                                </option>
+                                            }
+                                        </select>
+                                        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.Commonpage.Mobile.DispTypeInCatalogDefault")">
+                                            <div class="help-content">
+                                                @T("Admin.Settings.Commonpage.Mobile.SelectTypeDispProdInCatTitListBlock").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#13" target="_blank">@T("Admin.Settings.Commonpage.Mobile.TypeDispListProdInCat")</a>
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="row middle-xs @(isMobile ? "setting--m-b-none flex-nowrap" : "p-t-sm control-label")">
+                                            <div class="col-xs col-md-slim">
+                                                <label class="adv-checkbox-label flex">
+                                                    @Html.CheckBoxFor(x => x.EnableCatalogViewChange, new { id = "settingsMobileVersionEnableCatalogViewChange", @class = "adv-checkbox-input", ng_model = "settingsMobile.templateSettings.EnableCatalogViewChange" })
+                                                    <span class="adv-checkbox-emul" data-e2e="EnableCatalogViewChange"></span>
+                                                    @if (isMobile)
+                                                    {
+                                                        <span> @T("Admin.Settings.Catalog.EnableCatalogViewChange")</span>
+                                                    }
+                                                </label>
+                                            </div>
+                                            @if (!isMobile)
+                                            {
+                                                <label for="settingsMobileVersionEnableCatalogViewChange" class="@(isMobile ? "flex-grow m-l-xs" : "col-xs-slim")">
+                                                    @T("Admin.Settings.Catalog.EnableCatalogViewChange")
+                                                </label>
+                                            }
+
+                                            <help-trigger class="ng-cloak @(isMobile ? "m-l-sm m-r-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Catalog.EnableCatalogViewChange")">
+                                                <div class="help-content">
+                                                    @T("Admin.SettingsCatalog.CatalogCommon.KindOfDisplayForProducts")
+                                                </div>
+                                            </help-trigger>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                @*@Html.DropDownListFor(x => x.DefaultCatalogView, Model.DefaultViewList, new { @class = "form-control", ng_model = "settingsMobile.templateSettings.DefaultCatalogView", convert_to_number = "" })*@
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.ProductImageType, T("Admin.Settings.MobileVersion.PhotoTypeImage"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative">
+                                <div class="row">
+                                    <div class="col-xs-12 setting__form-group relative @(isMobile ? "flex middle-xs" : "")">
+                                        <select class="form-control input-alt-mobile" convert-to-number id="ProductImageType" name="ProductImageType" ng-model="settingsMobile.templateSettings.ProductImageType">
+                                            @foreach (var ProductImageType in Model.ProductImageTypeList)
+                                            {
+                                                <option value="@ProductImageType.Value" @(ProductImageType.Value == Model.ProductImageType.ConvertIntString() ? "selected" : "")>
+                                                    @ProductImageType.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowAddButton, T("Admin.Settings.MobileVersion.DisplayShowAddButton"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")">
+                                    @Html.CheckBoxFor(x => x.ShowAddButton, new { ng_model = "settingsMobile.templateSettings.ShowAddButton", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.MobileVersion.DisplayShowAddButton")</span>
+                                    }
+                                </label>
+
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.DisplayShowAddButton")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SettingDispAddToCardButCatalog").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#10" target="_blank">@T("Admin.Settings.Commonpage.Mobile.ShowAddToCartButInProdList")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowBriefDescription, T("Admin.SettingsCatalog.CatalogCommon.CatalogVisibleBriefDescription"))
+                                </div>
+                            }
+                            <div class="relative col-xs-12 col-md-slim relative flex middle-xs">
+                                <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "flex")">
+                                    @Html.CheckBoxFor(x => x.ShowBriefDescription, new { ng_model = "settingsMobile.templateSettings.ShowBriefDescription", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.SettingsCatalog.CatalogCommon.CatalogVisibleBriefDescription")</span>
+                                    }
+                                </label>
+
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.SettingsCatalog.CatalogCommon.CatalogVisibleBriefDescription")">
+                                    <div class="help-content">
+                                        @T("Admin.SettingsCatalog.CatalogCommon.CatalogVisibleBriefDescriptionMobileHelp")
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.BlockProductPhotoHeight, T("Admin.Settings.MobileVersion.BlockHeight"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative  @(isMobile ? "flex middle-xs" : "")">
+                                @Html.TextBoxFor(x => x.BlockProductPhotoHeight, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.TemplateSettings.BlockProductPhotoHeight", type = "number" })
+                                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm  p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.BlockHeight")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Commonpage.Mobile.SizeProdBlock").<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#6" target="_blank">@T("Admin.Settings.Commonpage.Mobile.HeightBlockCatalog")</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs">
+                            <div class="col-xs-12 col-md-3 control-label">
+                                @Html.LabelFor(x => x.BlockProductPhotoMiddleHeight, T("Admin.Settings.MobileVersion.BlockHeightForBlock"))
+                            </div>
+                            <div class="col-xs-12 col-md-7 relative @(isMobile ? "flex middle-xs" : "")">
+                                @Html.TextBoxFor(x => x.BlockProductPhotoMiddleHeight, new { @class = "form-control input-alt-mobile", ng_model = "settingsMobile.TemplateSettings.BlockProductPhotoMiddleHeight", type = "number" })
+                                <help-trigger class="help-trigger-icon-abs m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "m-l-xs")" data-title="@T("Admin.Settings.MobileVersion.BlockHeightForBlockHintTitle")">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.MobileVersion.BlockHeightForBlockHintText")<br /><br /> @T("Admin.Settings.Commonpage.Mobile.ReadMore")...<br /><a href="https://www.advantshop.net/help/pages/mobile-version#6" target="_blank">Высота блока изображения товара в каталоге</a>
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 class="bold m-t setting__subtitle">
+                            @T("Admin.Settings.Commonpage.Mobile.ProductCard")
+                        </h3>
+                    </div>
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.ShowUnitCardProductMobile, T("Admin.Settings.Commonpage.Mobile.DisplayUnitMeasurement"))
+                                </div>
+                            }
+
+                            <div class="relative col-xs-12  col-md-slim relative flex middle-xs @(isMobile ? "" : "first-xs last-md")">
+                                <label class="adv-checkbox-label form-label-block  @(isMobile ? "" : "flex")">
+                                    @Html.CheckBoxFor(x => x.ShowUnitCardProductMobile, new { ng_model = "settingsMobile.templateSettings.ShowUnitCardProductMobile", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.Commonpage.Mobile.DisplayUnitMeasurement")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group setting__form-group">
+                        <div class="row middle-xs flex-nowrap @(isMobile ? "" : "control-label")">
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-slim col-md-3 flex-shrink-1 @(isMobile ? "p-l-xs" : "")">
+                                    @Html.LabelFor(x => x.IsProductInfoBlocksAccordion, T("Admin.Settings.Commonpage.Mobile.CollapsInfoBlocksProdCart"))
+                                </div>
+                            }
+
+                            <div class="relative col-xs-12  col-md-slim relative flex middle-xs @(isMobile ? "" : "first-xs last-md")">
+                                <label class="adv-checkbox-label form-label-block  @(isMobile ? "" : "flex")">
+                                    @Html.CheckBoxFor(x => x.IsProductInfoBlocksAccordion, new { ng_model = "settingsMobile.templateSettings.IsProductInfoBlocksAccordion", @class = "adv-checkbox-input" })
+                                    <span class="adv-checkbox-emul"></span>
+                                    @if (isMobile)
+                                    {
+                                        <span>@T("Admin.Settings.Commonpage.Mobile.CollapsInfoBlocksProdCart")</span>
+                                    }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" ng-class="{'active': settingsMobile.settingsTab == 'robots'}">
+                <div class="form-group row">
+                    <div class="col-xs-12 col-md-3">
+                        <div class="control-label">
+                            @Html.LabelFor(x => x.Robots, T("Admin.Settings.MobileVersion.Robots"))
+                        </div>
+                        <div class="m-t-sm m-b-sm">
+                            @T("Admin.Settings.Mobile.MobileVersion.FileWillBeUsed")
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-7">
+                        <ui-ace-textarea ng-model="settingsMobile.robots">
+                            @Html.TextAreaFor(x => x.Robots, new { ng_model = "settingsMobile.robots" })
+                        </ui-ace-textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

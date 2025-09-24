@@ -1,0 +1,37 @@
+﻿@model AdvantShop.Models.Common.LogoModel
+
+@if (!Model.LogoGeneratorEnabled)
+{
+    if (Model.DisplayHref)
+    {
+        <a href="@UrlService.GetUrl()" class="site-head-logo-link">
+            @Html.Raw(Model.Html)
+        </a>
+    }
+    else
+    {
+        @Html.Raw(Model.Html)
+    }
+}
+else
+{
+    if (Model.DisplayHref)
+    {
+        @Html.Raw("<a href=" + UrlService.GetUrl() + " class=\"site-head-logo-link logo-generator-link\">")
+    }
+    <div class="logo-generator-wrap"
+         data-oc-lazy-load="[{ files: [@Html.RenderAssetFilesList("logogenerator")]}]">
+        <logo-generator-preview class="logo-generator-preview"
+                                url-save="logogenerator/savelogo"
+                                data-edit-on-page-load="@Model.LogoGeneratorEditOnPageLoad.ToLowerString()"
+                                data-logo-generator-id="logoMain"
+                                data-is-svg="@Model.IsSvg.ToLowerString()">
+            @Html.Raw(Model.Html)
+        </logo-generator-preview>
+        <logo-generator-start></logo-generator-start>
+    </div>
+    if (Model.DisplayHref)
+    {
+        @Html.Raw("</a>");
+    }
+}

@@ -1,0 +1,61 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+    if (AdminAreaTemplate.IsAdminv3())
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Catalog/_TopContentCatalogLayout.cshtml";
+    }
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Shared/_Layout.cshtml";
+    }
+
+    var categoryId = ViewBag.CategoryId != null ? (int)ViewBag.CategoryId : 0;
+    var ngCallbackOnInit = (string)ViewBag.CatalogLeftMenuNgCallbackOnInit;
+    
+}
+
+@helper ClearDemoData()
+{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdvantShop.Trial.TrialService.IsTrialEnabled && AdvantShop.Trial.TrialService.HasDemoProducts() && !isMobile)
+    {
+        <ui-modal-trigger data-controller="'ModalClearDataCtrl'" controller-as="ctrl" data-resolve="{'params': {'mode': 'catalog'}}"
+                          template-url="@Html.GetAssetPath("ClearData.html")">
+            <a class="aside-menu-row settigs-menu-row link-invert link-danger" href="">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        @T("Admin.Catalog.ClearDemoData")
+                    </div>
+                </div>
+            </a>
+        </ui-modal-trigger>
+    }
+}
+
+<div class="row">
+    @if (isMobile == false)
+    {
+        <div class="col-xs-@(isMobile ? "12" : "3") col-wl-2">
+
+            @Html.Action("CatalogLeftMenu", "Catalog", new { categoryId = categoryId, NgCallbackOnInit = ngCallbackOnInit })
+            @Html.Action("CatalogTreeView", "Catalog", new { categoryId = 0, categoryIdSelected = categoryId })
+
+            @ClearDemoData()
+        </div>
+    }
+    <div class="col-xs-@(isMobile ? "12" : "9") col-md-9 col-wl-10"> @* col-xs-9 если выключена мобилка и она зумиться *@
+        @if (isMobile)
+        {
+            @ClearDemoData()
+        }
+        @RenderBody()
+    </div>
+</div>

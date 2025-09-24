@@ -1,0 +1,317 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings
+@using AdvantShop.Core.Services.Orders
+@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    bool hasContacts = Model.Customer != null && Model.Customer.Contacts != null && Model.Customer.Contacts.Count > 0;
+    var isDraft = !Model.IsEditMode || Model.Order == null || Model.Order.IsDraft;
+    var customerId = Guid.Empty;
+    string orderStatusId = null;
+
+    if (order != null)
+    {
+        if (order.OrderCustomer != null)
+        {
+            customerId = order.OrderCustomer.CustomerID;
+        }
+
+        orderStatusId = order.OrderStatusId.ToString();
+    }
+    else
+    {
+        var status = Model.OrderStatuses.FirstOrDefault();
+        orderStatusId = status != null ? status.Value : null;
+    }
+}
+
+
+<form method="POST" action="@(!isDraft ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" novalidate="novalidate" name="form" id="orderForm">
+    @Html.AntiForgeryToken()
+
+    <div ng-init="order.initOrder(@Model.OrderId, @Model.IsEditMode.ToLowerString(), @isDraft.ToLowerString(), '@customerId', '@Model.StandardPhone', @hasContacts.ToLowerString())">
+
+        <input name="IsEditMode" type="hidden" value="{{order.isEditMode}}" />
+        <input name="OrderId" type="hidden" value="{{order.orderId}}" />
+        <input name="Order.OrderId" type="hidden" value="{{order.orderId}}" />
+        <input name="Order.IsDraft" type="hidden" value="{{order.isDraft}}" />
+
+        <input name="Order.OrderCustomer.CustomerId" type="hidden" value="{{order.customerId}}" />
+    </div>
+    @Html.Back("Заказы", Url.AbsoluteActionUrl("Index", "Orders"))
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name vertical-middle m-r-md page-name-block-text--bigger">
+                    @if (Model.IsEditMode)
+                    {
+                        <i class="fa fa-circle item" style="color: #@(order.OrderStatus != null ? order.OrderStatus.Color : "9ccc65")"></i>
+                        <span>@T(!isDraft ? "Admin.Orders.AddEdit.OrderTitle" : "Admin.Orders.AddEdit.OrderDraftTitle", order.Number)</span>
+                    }
+                    else
+                    {
+                        <span>@T("Admin.Orders.AddEdit.CreationOfNewOrder")</span>
+                    }
+                </h1>
+                @if (Model.IsEditMode)
+                {
+                    <div class="inline order-header-item order-header-item-select vertical-middle m-r-md">
+                        @Html.DropDownListFor(x => x.Order.OrderStatusId, Model.OrderStatuses, new { @class = "orderstatus form-control", ng_model = "order.orderStatus", ng_change = "order.changeStatus($event)", ng_init = "order.orderStatus='" + orderStatusId + "'; order.orderStatusOld='" + orderStatusId + "'", bs_modifiable = "false" })
+                    </div>
+                }
+            </div>
+            <div class="page-name-block-item-additional">
+                <div class="row middle-xs">
+                    @if (Model.IsEditMode)
+                    {
+                        <div class="col-xs-slim">
+                            <a href="javascript:void(0)" class="link-danger item link-decoration-none" ng-click="order.deleteOrder()">@T("Admin.Orders.AddEdit.DeleteOrder")</a>
+                        </div>
+                        <div class="col-xs-slim">
+                            <switcher-state on-change="order.setPaied(checked)" checked="order.isPaied" text-off="@T("Admin.Orders.AddEdit.UnPaid")" text-on="@T("Admin.Orders.AddEdit.Paid")" name="IsPayed"></switcher-state>
+                        </div>
+                    }
+                    @if (isDraft)
+                    {
+                        @Html.Button(T("Admin.Orders.Index.AddOrder"), eButtonType.Save, 
+                            attributes: new[] 
+                            { 
+                                "data-button-validation",
+                                "ng-disabled=\"order.orderId == 0 && order.lastName == null && order.firstName == null && order.patronymic == null && order.email == null && order.phone == null\"", 
+                                "disabled" 
+                            })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs order__main">
+            <div class="row">
+                @if (Model.IsEditMode)
+                {
+                    <div class="col-xs-12">
+                        <div class="edit-text">
+                            <div class="edit-inner">
+                                <div class="order-panel__left">
+                                    @T("Admin.Orders.AddEdit.OrderDate"):
+                                    <div class="order-date">
+
+                                        <div class="input-group" ng-flatpickr fp-on-change="order.setDate(selectedDates, dateStr, instance)" fp-opts="{dateFormat: 'd.m.Y H:i:S', startDateFormat: 'Y-m-dTH:i:S', wrap: true, enableTime: true, enableSeconds: true}">
+                                            <span class="flatpickr-custom-wrap">
+                                                <input type="text" id="Order_OrderDate" name="Order.OrderDate" class="form-control input-alt" ng-flatpickr-input ng-init="order.date='@order.OrderDate.ToString("yyyy-MM-ddTHH:mm:ss.ffffzzz")'" ng-model="order.date" value="@order.OrderDate.ToString("yyyy-MM-ddTHH:mm:ss.ffffzzz")">
+                                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                            </span>
+                                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                        </div>
+                                    </div>
+
+                                    <a href="@Url.AbsoluteRouteUrl("PrintOrder", new {code = order.Code, showMap = "true"}){{order.gridOrderItemsSorting}}" target="_blank" class="edit item link-decoration-none" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Orders_PrintOrder_AdminArea.ToString()');">
+                                        @T("Admin.Orders.AddEdit.Print")
+                                    </a>
+                                    <a href="@Url.AbsoluteActionUrl("ExportOrder", "Analytics", new {orderId = Model.OrderId})" class="edit item link-decoration-none">@T("Admin.Orders.AddEdit.ExportExcel")</a>
+                                </div>
+                                <div class="order-panel__right">
+                                    @if (SettingsCheckout.ManagerConfirmed)
+                                    {
+                                        <div class="inline vertical-middle m-l-sm">
+                                            <label class="adv-checkbox-label">
+                                                @Html.CheckBoxFor(x => x.Order.ManagerConfirmed, new { ng_model = "order.ManagerConfirmed", ng_change = "order.setManagerConfirmer(order.ManagerConfirmed)", ng_init = "order.ManagerConfirmed=" + (Model.Order != null ? Model.Order.ManagerConfirmed.ToLowerString() : "false"), @class = "adv-checkbox-input" })
+                                                <span class="adv-checkbox-emul"></span>
+                                                @T("Admin.Orders.AddEdit.OrderIsConfirmedAllowPay")
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (Model.IsEditMode && order != null && Settings1C.Enabled)
+                                    {
+                                        <div class="inline vertical-middle m-l-sm">
+                                            <label class="adv-checkbox-label">
+                                                @Html.CheckBoxFor(x => x.Order.UseIn1C, new { ng_model = "order.UseIn1C", ng_change = "order.set1CExportOrder(order.UseIn1C)", ng_init = "order.UseIn1C=" + (Model.Order != null ? Model.Order.UseIn1C.ToLowerString() : "false"), @class = "adv-checkbox-input" })
+                                                <span class="adv-checkbox-emul"></span>
+                                                @T("Admin.Orders.AddEdit.ExportOrder")
+                                            </label>
+                                            @{
+                                                var status1C = OrderStatus1CService.GetStatus1C(order.OrderID);
+                                                if (status1C != null)
+                                                {
+                                                    <div>@T("Admin.Orders.AddEdit.OrderStatusIn1C")@status1C.Status1C</div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    <div class="inline vertical-middle m-l-sm">
+                                        @if (Model.PrevOrderId.HasValue)
+                                        {
+                                            <a href="@Url.AbsoluteActionUrl("Edit", "Orders", new { id = Model.PrevOrderId.Value })"><i class="fas fa-chevron-left"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-chevron-left"></i>
+                                        }
+                                        @if (Model.NextOrderId.HasValue)
+                                        {
+                                            <a href="@Url.AbsoluteActionUrl("Edit", "Orders", new { id = Model.NextOrderId.Value})" class="m-l-xs"><i class="fas fa-chevron-right"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-chevron-right m-l-xs"></i>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @Html.RenderModules("admin_order_top", new { orderId = Model.OrderId })
+
+                @if (isDraft)
+                {
+                    <div class="col-xs-12">
+                        <div class="ibox category-block">
+                            <div class="ibox-content category-content border_none">
+                                @Html.Partial("_OrderCustomer")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="ibox category-block">
+                            <div class="ibox-content category-content border_none">
+                                @Html.Partial("_OrderAddress")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                <div class="col-xs">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            @Html.Partial("_OrderItems")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.IsEditMode)
+            {
+                <div class="row">
+                    <div class="col-xs">
+                        <div class="ibox category-block">
+                            <uib-tabset active uid="orderTabs">
+                                @if (Model.Customer != null)
+                                {
+                                    <uib-tab index="0" heading="@T("Admin.Orders.AddEdit.Сommunications")" classes="ng-tab" removable="true">
+                                        <div class="customer-tabs--bg-grey">
+                                            <lead-events customer-id="'@Model.Customer.Id'" obj-id="@Model.OrderId" obj-type="'order'" page-type="order" on-init="order.leadEventsOnInit(leadEvents)" bs-modifiable="false">
+                                            </lead-events>
+                                        </div>
+                                    </uib-tab>
+                                }
+
+                                <uib-tab index="1" heading="@T("Admin.Orders.AddEdit.OrderDiscussion")" classes="ng-tab" removable="true">
+                                    <div class="customer-tabs--bg-grey">
+                                        <div class="ibox-content">
+                                            <admin-comments obj-id="order.orderId" type="'order'" form-visible="true" bs-modifiable="false"></admin-comments>
+                                        </div>
+                                    </div>
+                                </uib-tab>
+
+                                <uib-tab index="2" heading="@T("Admin.Orders.AddEdit.ChangesHistory")" classes="ng-tab" removable="true">
+                                    <div class="customer-tabs--bg-grey">
+                                        <div class="ibox-content">
+                                            <order-status-history data-order-id="@Model.OrderId" on-init="order.statusHistoryOnInit(orderStatusHistory)"></order-status-history>
+                                            <order-history data-order-id="@Model.OrderId" on-init="order.orderHistoryOnInit(orderHistory)"></order-history>
+                                        </div>
+                                    </div>
+                                </uib-tab>
+
+                                @if (Model.ShowTasks)
+                                {
+                                    <uib-tab index="3" heading="@T("Admin.Orders.AddEdit.Tasks") {{order.taskGrid.gridTasks.gridOptions.totalItems > 0 ? '(' + order.taskGrid.gridTasks.gridOptions.totalItems + ')' : ''}}"
+                                             classes="ng-tab" removable="true">
+                                        <div class="customer-tabs--bg-grey">
+                                            <div class="ibox-content">
+                                                <tasks-grid obj-id="order.orderId" type="order"
+                                                            on-init="order.taskGridOnInit(taskGrid)"
+                                                            is-admin="@CustomerContext.CurrentCustomer.IsAdmin.ToLowerString()">
+                                                </tasks-grid>
+                                            </div>
+                                        </div>
+                                    </uib-tab>
+                                }
+
+                                <uib-tab id="customerOrderAttachments" index="4" heading="@T("Admin.Orders.AddEdit.CustomerOrderAttachments")" classes="ng-tab" removable="true">
+                                    <div class="customer-tabs--bg-grey">
+                                        <div class="ibox-content">
+                                            <ol class="p-l-sm" ng-if="order.customerOrderAttachments.length > 0">
+                                                <li ng-repeat="attachment in order.customerOrderAttachments track by $index">
+                                                    <a href="" target="_blank" ng-href="{{attachment.FilePathAdmin}}" ng-bind="attachment.OriginFileName ? attachment.OriginFileName : attachment.FileName"></a>
+                                                    - <span ng-bind="attachment.FileSize"></span>
+                                                    <a href=""
+                                                       ng-click="order.deleteCustomerOrderAttachment(attachment.Id, $index)"
+                                                       class="link-decoration-none fa fa-times link-invert btn-icon"
+                                                       aria-label="@T("Admin.Orders.OrderItems.Delete")"></a>
+                                                </li>
+                                            </ol>
+
+                                            <figure>
+                                                <button class="btn btn-action btn-sm"
+                                                        ngf-change="order.updateCustomerOrderAttachments($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                                                        type="button"
+                                                        ngf-drop
+                                                        ngf-max-size="15MB"
+                                                        ngf-select=""
+                                                        ngf-keep="true"
+                                                        ngf-pattern="'@Model.AllowedFileExtensions'"
+                                                        ngf-accept="'@Model.AllowedFileExtensions'"
+                                                        ngf-multiple="true"
+                                                        ladda="order.loadingFiles">
+                                                    <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">@T("Admin.Orders.OrderItems.SelectFile")</span>
+                                                </button>
+                                                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                                    <div class="help-content">@Html.Raw(Model.FilesHelpText)</div>
+                                                </help-trigger>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </uib-tab>
+
+                            </uib-tabset>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-xs order__aside">
+            @Html.Partial("_OrderInfo", Model)
+            @if (Model.IsEditMode)
+            {
+                @Html.Action("ClientInfo", Model)
+            }
+
+            @Html.Partial("_Additionally", Model)
+
+            @if (Model.IsEditMode)
+            {
+                @Html.Partial("_OrderAdminAttachments", Model)
+            }
+
+            @if (Model.IsEditMode)
+            {
+                if (AdvantShop.Core.Services.Bonuses.BonusSystem.IsActive &&
+                    (!AdvantShop.Saas.SaasDataService.IsSaasEnabled || AdvantShop.Saas.SaasDataService.CurrentSaasData.BonusSystem))
+                {
+                    @Html.Partial("_ClientBonusCard")
+                }
+            }
+
+            @if (Model.IsEditMode)
+            {
+                @Html.Partial("_TemplateDocx", Model)
+            }
+            @Html.RenderModules("admin_order_right", new { orderId = Model.OrderId })
+        </div>
+    </div>
+</form>

@@ -1,0 +1,414 @@
+﻿@using AdvantShop.App.Landing.Domain.Products
+@using AdvantShop.App.Landing.Models.Catalogs
+@using AdvantShop.Configuration
+@using AdvantShop.Core.Services.Catalog;
+@using AdvantShop.Catalog;
+@using Newtonsoft.Json;
+@using System.Linq;
+
+@model BlockModel
+@{
+    float width = 100 / Model.Block.TryGetSetting("number_products_in_row");
+    var widthString = width + "%";
+    var minWidth = 1159 / Model.Block.TryGetSetting("number_products_in_row");
+    var heightPhoto = (float) SettingsPictureSize.SmallProductImageHeight;
+    var quickviewValue = Convert.ToBoolean(Model.Block.TryGetSetting("quickview"));
+    var viewModeCategories = Model.Block.TryGetSetting("view_mode_categories");
+    var hoverAnimation = Model.Block.TryGetSetting("hover_animation");
+    var cssCLassForAnimation = hoverAnimation != "none" ? hoverAnimation : "";
+    var showQuickviewButton = Model.Block.TryGetSetting("show_button_quickview") == true || Model.Block.TryGetSetting("show_button_quickview") == null ? "true" : "false";
+    var maxPhotoView = hoverAnimation == "next-image-animation" ? 2 : 5;
+}
+<style>
+    .lp-products-view-categories-item-photo-wrap {
+        position:relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    /*.lp-products-view-item {
+        display: inline-block;
+    }*/
+
+    .lp-products-view-item-photo {
+	    width:100%;
+	    height:100%;
+    }
+
+    .lp-products-view-by-categories-item-wrapper {
+        min-width: 100%;
+        -webkit-flex-basis: 100%;
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    .lp-products-view-item-photo {
+        height: auto;
+    }
+
+    @@media (min-width: 48em) {
+        .lp-products-view-by-categories-item-wrapper {
+            -webkit-flex-basis: @(widthString);
+            -ms-flex-preferred-size: @(widthString);
+            flex-basis: @(widthString);
+            max-width: @(widthString);
+            min-width: @(minWidth)px;
+        }
+        .lp-products-view-item-photo {
+            height: @(heightPhoto)px;
+        }        
+    }
+</style>
+
+<div class="container-fluid">
+<div class="lp-container">
+<div class="row center-xs">
+    @if (Model.Block.TryGetSetting("show_title") == true)
+    {
+        <div class="col-xs-12">
+            <div class="lp-h2 lp-h2--color">
+                @Html.SubBlock(Model, "title")
+            </div>
+        </div>
+    }
+    @if (Model.Block.TryGetSetting("show_subtitle") == true)
+    {
+        <div class="col-xs-12">
+            <div class="lp-h3 lp-h3--color">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        </div>
+    }
+</div>
+@{
+    var lpCategories = Model.Block.TryGetSettingAsList<LpProductCategory>("categories") ?? new List<LpProductCategory>();
+    var count = Convert.ToInt32(Model.Block.TryGetSetting("products_count"));
+    var show_all_categories = Convert.ToBoolean(Model.Block.TryGetSetting("show_all_categories"));
+
+    var categories = new List<Category>();
+
+    if (show_all_categories)
+    {
+        categories = CategoryService.GetChildCategoriesByCategoryId(0, true).Where(x => x.Enabled).ToList();
+    }
+    else 
+    {
+        foreach (var item in lpCategories)
+        {
+            var category = CategoryService.GetCategory(item.CategoryId);
+            if (category != null && category.Enabled)
+            {
+                categories.Add(category);
+            }
+        }
+    }
+}
+@if (categories != null && categories.Count > 0)
+{
+    <div ng-controller="ProductsByCategoryCtrl as productsByCategory" class="m-t-md" ng-init="productsByCategory.categoryIdSelected = @categories.FirstOrDefault().CategoryId">
+    @if (categories.Count > 1)
+    {
+        <div class="flex start-xs center-sm category-name-wrap scroll-always-visible @(viewModeCategories != null ? viewModeCategories == "buttons" ? "" : "category-name-wrap--links" : "")">
+            @foreach (var category in categories)
+            {
+                <div class="category-name">
+                    <button type="button"
+                            class="lp-btn lp-btn--upper link-text-decoration-none category-name-button @(viewModeCategories != null ? viewModeCategories == "buttons" ? "lp-btn--secondary" : "lp-btn--link" : "lp-btn--secondary")"
+                            data-ng-class="{ '@(viewModeCategories != null ? viewModeCategories == "buttons" ? "lp-btn--secondary-active" : "lp-btn--link-active" : "lp-btn--secondary-active")' : productsByCategory.categoryIdSelected == @category.CategoryId}"
+                            data-ng-click="productsByCategory.categoryIdSelected = '@category.CategoryId'">
+                        @category.Name
+                    </button>
+                </div>                
+            }
+        </div>
+    }
+
+    @foreach (var category in categories)
+    {
+        string modalIdPart = "modalProductsByCategories_" + Model.Block.Id.ToString() + "_" + category.CategoryId + "_";
+        if (category.Enabled)
+        {
+            <div class="flex flex-wrap center-xs ng-cloak"
+                 data-ng-if="productsByCategory.categoryIdSelected == @category.CategoryId">
+            @{
+                CatalogProductPagingModel productsModel = LpProductService.GetProductsByCategory(category.CategoryId, count);
+                var model = new ProductViewModel(productsModel.ProductsModel.Products);
+            }
+            @if (productsModel.ProductsModel != null && productsModel.ProductsModel.Products.Count > 0)
+            {
+                foreach (var product in model.Products)
+                {
+                    string modalId = modalIdPart + product.ProductId.ToString();
+                    var photos = LpProductService.GetPhotos(product.ProductId);
+                    var firstPhotoForLoad = photos.Count > 0 ? photos[0].PathMiddle : null;
+
+                    if (product.Enabled)
+                    {
+                        <div class="lp-products-view-by-categories-item-wrapper js-products-view-block"
+                             @(hoverAnimation == "photo-view-list" ? "data-photo-view-list" : "")>
+                            <div class="lp-products-view-item js-products-view-item lp-products-view-item-categories"
+                                 data-product-view-item
+                                 data-offer-id="@product.OfferId"
+                                 data-product-id="@product.ProductId"
+                                 data-modal-id="@modalId"
+                                 data-max-photo-view="@maxPhotoView"
+                                 @(hoverAnimation == "photo-view-list" ? "data-on-change-color=photoViewList.updateActiveElements()" : "")>
+                                <div class="flex center-xs">
+                                    <div class="lp-products-view-categories-item-photo-wrap">
+                                        <a href="@Html.Raw(quickviewValue ? "javascript:void(0)" : "{{productViewItem.picture.PathBig}}")"
+                                           data-ng-init="productViewItem.addPhotoViewer(advBaguetteBox);
+                                                                            @(hoverAnimation == "next-image-animation" || hoverAnimation == "photo-view-list" ? "productViewItem.photos = [{'PathMiddle':" + JsonConvert.SerializeObject(firstPhotoForLoad) + "}];" : "")"
+                                           class="lp-products-view-item-photo js-products-view-item @cssCLassForAnimation"
+                                           @Html.Raw(quickviewValue ? "data-quickview-type-view=\"landing\" data-quickview-trigger data-description-mode=" + Model.Block.TryGetSetting("quickview_description") + " data-spy-address=\"true\" data-modal-id=" + modalId + " data-modal-class='landing-product-view-modal color-scheme--light'" : "data-adv-baguette-box")
+                                           data-landing-id="@LpService.CurrentLanding.Id"
+                                           data-category-id="@category.CategoryId"
+                                           data-product-id="@product.ProductId"
+                                           data-show-lead-button="@showQuickviewButton"
+                                           data-block-id="@Model.Block.Id">
+
+                                            @if (hoverAnimation == null || hoverAnimation == "none" || hoverAnimation == "zoom-animation")
+                                            {
+                                                <img src="@product.PhotoMiddle"
+                                                     data-ng-src="{{productViewItem.picture.PathMiddle}}"
+                                                     data-qazy="true"
+                                                     alt="@Html.Raw(product.Photo.Alt)"
+                                                     title="@Html.Raw(product.Photo.Title)"
+                                                     class="products-view-picture"/>
+                                            }
+
+                                            @if (hoverAnimation == "next-image-animation")
+                                            {
+                                                <div class="next-image-animation__item" data-ng-if="productViewItem.photos.length > 0">
+                                                    <img data-ng-repeat="photo in productViewItem.photos"
+                                                         data-ng-src="{{photo.PathMiddle}}"
+                                                         alt="{{photo.PathMiddle.Alt}}"
+                                                         title="{{photo.PathMiddle.Title}}"
+                                                         class="products-view-picture"/>
+                                                </div>
+                                            }
+                                            @if (hoverAnimation == "photo-view-list")
+                                            {
+                                                <div  class="photo-view-list__wrap" lozad-adv="productViewItem.enter();">
+                                                    <div class="lp-products-view-item__images-wrap"
+                                                         data-ng-if="productViewItem.photos.length > 0">
+                                                        <div class="photo-view-list__nav-wrap">
+                                                            <div data-photo-view-list-nav
+                                                                 data-nav-index="{{$index}}"
+                                                                 data-ng-class="{'active': photoViewList.activeNavIndex === $index}"
+                                                                 data-ng-show="productViewItem.photos.length > 1"
+                                                                 data-ng-repeat="photo in productViewItem.photos track by photo.PhotoId">
+                                                                <span class="lp-btn--primary"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="lp-products-view-item__image-wrap"
+                                                             data-photo-view-list-item
+                                                             data-ng-class="{'active': photoViewList.activeItemIndex === $index}"
+                                                             data-ng-repeat="photo in productViewItem.photos track by photo.PhotoId">
+                                                            <img data-ng-src="{{photo.PathMiddle}}"
+                                                                 alt="{{photo.PathMiddle.Alt}}"
+                                                                 title="{{photo.PathMiddle.Title}}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (product.Gifts)
+                                            {
+                                                <div class="prod-gift-icon"></div>
+                                            }
+                                            <span class="products-view__labels"> @Html.RenderLabels(product.Recomend, product.Sales, product.Bestseller, product.New, product.TotalDiscount, customLabels: product.Labels)</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lp-products-view-item-link-wrap lp-h2--color"
+                                     @Html.Raw(quickviewValue ? "data-quickview-type-view=\"landing\" data-quickview-trigger data-description-mode=" + Model.Block.TryGetSetting("quickview_description") + " data-spy-address=\"true\" data-modal-id=" + modalId + " data-modal-class='landing-product-view-modal color-scheme--light'" : "")
+                                     data-landing-id="@LpService.CurrentLanding.Id"
+                                     data-category-id="@category.CategoryId"
+                                     data-product-id="@product.ProductId"
+                                     data-show-lead-button="@showQuickviewButton"
+                                     data-block-id="@Model.Block.Id">
+                                    @product.Name
+                                </div>
+                                @if (Model.Block.TryGetSetting("show_description") == true)
+                                {
+                                    <div class="lp-products-view-item-brief-description lp-h3--color">
+                                        @Html.Raw(product.BriefDescription)
+                                    </div>
+                                }
+                                <div class="products-view__colors flex center-xs">
+                                    @if (!string.IsNullOrEmpty(product.Colors))
+                                    {
+                                        @Html.Partial("_Colors", new ColorsViewModel()
+                                        {
+                                            NgColors = product.Colors,
+                                            ColorWidth = model.ColorImageWidth,
+                                            ColorHeight = model.ColorImageHeight,
+                                            SelectedColors = model.SelectedColors,
+                                            ColorsViewMode = model.ColorsViewMode
+                                        })
+                                    }
+                                    else
+                                    {
+                                        <div class="products-view-colors-empty products-view-list-element-hidden products-view-table-element-hidden" style="height: @(model.ColorImageHeight - 7)px"></div>
+                                    }
+                                </div>
+
+                                @if (Model.Block.TryGetSetting("show_price") == true)
+                                {
+                                    <div class="lp-products-view-item-price-block lp-h3--color">
+                                        <div class="lp-products-view-item-price">
+                                            <div class="lp-products-view-item-price-inner flex center-xs">@Html.Raw(product.PreparedPrice)</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Block.TryGetSetting("show_buybutton") == true)
+                                {
+                                    var button = Model.Block.TryGetSetting<LpButton>("button");
+                                    if (button != null)
+                                    {
+                                        <div class="lp-products-view-item__button-wrap">
+                                            @Html.Action("Button", "Landing", new {blockId = Model.Block.Id, offerId = product.OfferId, colorId = "productViewItem.colorSelected != null ? productViewItem.colorSelected.ColorId : null"})
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                if (productsModel.Pager.TotalPages > 1)
+                {
+                    <div class="lp-products-view-by-categories-item-wrapper js-products-view-block"
+                         @(hoverAnimation == "photo-view-list" ? "data-photo-view-list" : "")
+                         data-ng-repeat="product in productsByCategory.categoriesData[@category.CategoryId].ProductsModel.Products track by product.ProductId"
+                         data-ng-if="product.Enabled">
+                        <div class="lp-products-view-item js-products-view-item lp-products-view-item-categories"
+                             data-product-view-item
+                             data-offer-id="product.OfferId"
+                             data-product-id="product.ProductId"
+                             data-modal-id="@(modalIdPart){{product.ProductId}}"
+                             data-max-photo-view="@maxPhotoView"
+                             data-ng-init="productViewItem.addPhotoViewer(advBaguetteBox); productViewItem.process(product.ProductId)"
+                             @*@(hoverAnimation == "photo-view-list" ? "data-only-photo-with-color=true" : "" )*@
+                             @(hoverAnimation == "photo-view-list" ? "data-on-change-color=photoViewList.updateActiveElements()" : "")>
+
+                            <div class="flex center-xs">
+                                <div class="lp-products-view-categories-item-photo-wrap">
+                                    <figure class="lp-products-view-item-photo js-products-view-item @cssCLassForAnimation"
+                                            @Html.Raw(quickviewValue ? "data-quickview-type-view=\"landing\" data-quickview-trigger data-description-mode=" + Model.Block.TryGetSetting("quickview_description") + " data-spy-address=\"true\" data-modal-id=\"" + modalIdPart + "{{product.ProductId}}\" data-modal-class='landing-product-view-modal color-scheme--light'" : "")
+                                            data-landing-id="@LpService.CurrentLanding.Id"
+                                            data-category-id="@category.CategoryId"
+                                            data-product-id="product.ProductId"
+                                            data-block-id="@Model.Block.Id">
+                                        @if (hoverAnimation == "none" || hoverAnimation == "zoom-animation")
+                                        {
+                                            <img data-ng-src="{{product.PhotoMiddle}}"
+                                                 alt="{{product.Photo.Alt}}"
+                                                 title="{{product.Photo.Title}}"
+                                                 class="products-view-picture ng-cloak"/>
+                                        }
+                                        @if (hoverAnimation == "next-image-animation")
+                                        {
+                                            <div data-ng-if="productViewItem.photos.length > 0">
+                                                <img data-ng-repeat="photo in productViewItem.photos"
+                                                     data-ng-src="{{photo.PathMiddle}}"
+                                                     alt="{{photo.Photo.Alt}}"
+                                                     title="{{photo.Photo.Title}}"
+                                                     class="products-view-picture ng-cloak"/>
+                                            </div>
+                                        }
+                                        @if (hoverAnimation == "photo-view-list")
+                                        {
+                                            <div lozad-adv="productViewItem.enter();">
+                                                <div class="lp-products-view-item__images-wrap ng-cloak"
+                                                     data-ng-if="productViewItem.photos.length > 0">
+                                                    <div class="photo-view-list__nav-wrap">
+                                                        <div data-photo-view-list-nav
+                                                             data-ng-class="{'active': photoViewList.activeNavIndex === $index}"
+                                                             data-nav-index="{{$index}}"
+                                                             data-ng-show="productViewItem.photos.length > 1"
+                                                             data-ng-repeat="photo in productViewItem.photos track by $index">
+                                                            <span class="lp-btn--primary"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="lp-products-view-item__image-wrap"
+                                                         data-photo-view-list-item
+                                                         data-ng-class="{'active': photoViewList.activeItemIndex === $index}"
+                                                         data-ng-repeat="photo in productViewItem.photos track by $index">
+                                                        <img data-ng-src="{{photo.PathMiddle}}"
+                                                             title="{{photo.Photo.Title}}"
+                                                             alt="{{photo.PathMiddle.Title}}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div data-ng-if="product.Gifts" class="prod-gift-icon"></div>
+                                        <span class="products-view__labels" data-ng-include="productsByCategory.getLabels(product)"></span>
+                                    </figure>
+                                </div>
+                            </div>
+
+                            <div class="lp-products-view-item-link-wrap lp-h2--color" data-ng-bind="product.Name"
+                                 @Html.Raw(quickviewValue ? "data-quickview-type-view=\"landing\" data-quickview-trigger data-description-mode=" + Model.Block.TryGetSetting("quickview_description") + " data-spy-address=\"true\" data-modal-id=\"" + modalIdPart + "{{product.ProductId}}\" data-modal-class='landing-product-view-modal color-scheme--light'" : "")
+                                 data-landing-id="@LpService.CurrentLanding.Id"
+                                 data-category-id="@category.CategoryId"
+                                 data-product-id="product.ProductId"
+                                 data-show-lead-button="@showQuickviewButton"
+                                 data-block-id="@Model.Block.Id">
+                            </div>
+                            <div class="products-view__colors flex center-xs" ng-switch="::product.Colors != null">
+                                <div data-ng-switch-when="true" class="full-width">
+                                    @Html.Partial("_Colors", new ColorsViewModel()
+                                    {
+                                        NgColors = "product.ColorsList",
+                                        ColorWidth = model.ColorImageWidth,
+                                        ColorHeight = model.ColorImageHeight,
+                                        SelectedColors = model.SelectedColors,
+                                        ColorsViewMode = model.ColorsViewMode
+                                    })
+                                </div>
+                                <div ng-switch-when="false" class="products-view-colors-empty products-view-list-element-hidden products-view-table-element-hidden" style="height: @(model.ColorImageHeight - 7)px"></div>
+                            </div>
+
+                            @if (Model.Block.TryGetSetting("show_price") == true)
+                            {
+                                <div class="lp-products-view-item-price-block lp-h3--color">
+                                    <div class="lp-products-view-item-price">
+                                        <div class="flex center-xs lp-products-view-item-price-inner" data-ng-bind-html="product.PreparedPrice"></div>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Block.TryGetSetting("show_buybutton") == true)
+                            {
+                                @Html.Action("Button", "Landing", new {blockId = Model.Block.Id, offerId = "product.OfferId", colorId = "productViewItem.colorSelected != null ? productViewItem.colorSelected.ColorId : null"})
+                            }
+                        </div>
+                        <div ng-if="$last" ng-init="$last ? productsByCategory.setScrollAfterShowMore() : null"></div>
+                    </div>
+                    <div class="col-xs-12" ng-if="(@((productsModel.Pager.TotalPages > 1).ToLowerString()) && productsByCategory.categoriesData[productsByCategory.categoryIdSelected] == null) || (productsByCategory.categoriesData[productsByCategory.categoryIdSelected].Pager.CurrentPage !== productsByCategory.categoriesData[productsByCategory.categoryIdSelected].Pager.TotalPages)">
+                        <div class="text-center">
+                            <button type="button" class="lp-btn lp-btn--primary" data-ng-click="productsByCategory.getItems(@category.CategoryId, @count, productsByCategory.categoriesData[@category.CategoryId].Pager.CurrentPage != null ? productsByCategory.categoriesData[@category.CategoryId].Pager.CurrentPage + 1 : 2)">Показать еще</button>
+                        </div>
+                    </div>
+                }
+            }
+            </div>
+        }
+    }
+    </div>
+}
+else if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    <div class="ng-cloak lp-block-products-view__empty--admin">
+        <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                            data-block-id="@Model.Block.Id"
+                            data-name="@Model.Block.Name"
+                            data-type="@Model.Block.Type"
+                            data-is-show-options="::true"
+                            data-template-custom="true">
+            <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock('tabHeaderCategories')">Добавить категории</button>
+        </blocks-constructor>
+    </div>
+}
+
+</div>
+</div>

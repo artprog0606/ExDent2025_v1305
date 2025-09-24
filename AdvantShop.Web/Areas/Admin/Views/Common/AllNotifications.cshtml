@@ -1,0 +1,65 @@
+﻿@model AdvantShop.Web.Admin.Models.Shared.Common.NotificationGroupModel
+
+<div class="ibox">
+    <div class="ibox-content">
+        @if (Model.EventGroups.Count > 0)
+        {
+            <div class="m-b">
+                <h3 class="inline">@T("Admin.Common.AllNotifications.Notifications")</h3>
+                <div class="inline m-l-md">
+                    <a href="" ng-click="informers.notifyAll()">Отметить все уведомления как прочитанные</a>
+                </div>
+            </div>
+
+            foreach (var group in Model.EventGroups)
+            {
+                <div class="ibox m-b-lg">
+                    <h4 class="m-b">@group.Title</h4>
+
+                    @foreach (var item in group.Events)
+                    {
+                        var ngclick = !string.IsNullOrWhiteSpace(item.InformerLink) ? "ng-click=\"informers.goTo('" + item.InformerLink + "')\"" : "";
+                        
+                        <div class="ibox-content notification-message-item" @Html.Raw(ngclick)>
+                            <div class="row">
+                                <div class="lead-time lead-time flex-grow-n leads-col-fixed-size-sm" title="@item.CreateDateFormat">
+                                    <div class="flex between-xs">
+                                        <div>@item.CreatedDate.ToString("HH:mm")</div>
+                                        <span><i ng-class="informers.getIcon('@item.EventType')" aria-hidden="true"></i></span>
+                                    </div>
+                                    <div class="italic">
+                                        <span>@item.FromCreatedDate {{'Admin.Js.Kanban.Back'|translate}}</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow flex-basis-n flex-width-n">
+                                    <div class="p-l-sm row">
+                                        @if (item.UserPhoto != null)
+                                        {
+                                            <div class="vk-lead-photo">
+                                                <img src="@item.UserPhoto" class="vk-message-photo-img" />
+                                            </div>
+                                        }
+                                        <div class="col-xs">
+                                            @if (item.Title != null)
+                                            {
+                                                <div class="bold">@Html.Raw(item.Title)</div>
+                                            }
+                                            @if (item.Message != null)
+                                            {
+                                                <div class="m-b-sm">@Html.Raw(item.Message)</div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div>@T("Admin.Common.AllNotifications.NewNotificationsNotFound")</div>
+        }
+    </div>
+</div>

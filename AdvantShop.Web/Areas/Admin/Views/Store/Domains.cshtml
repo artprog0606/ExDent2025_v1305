@@ -1,0 +1,247 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    Html.AddAsset("store");
+}
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Controls = new List<IButton>();
+    headerModel.Title = "Привязать домен";
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("index", "Design", new {showCommon = true })
+    };
+
+    @Html.Header(headerModel)
+}
+
+@if (isMobile)
+{
+    <div>
+        <div class="m-b domain-block">
+            <div class="m-b-md">
+                <label class="adv-radio-label domain-label setting__label" data-e2e="funnelBydomain">
+                    <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="0" checked="checked" />
+                    <span class="adv-radio-label-text">Купить домен - от 199 руб</span>
+                    <span class="adv-radio-emul"></span>
+                </label>
+                <div ng-if="storePage.bydomain === '0'" class="m-t-sm">
+                    <div class="domain-note italic m-b-sm">
+                        Домен будет юридически оформлен на Вас, все настройки домена будут осуществлены автоматически.<br />
+                        Магазин начнет открываться по новому домену в течение <b>2 часов</b> после оплаты.
+                    </div>
+                    <div class="domain-note">
+                        <a href="@Url.AbsoluteActionUrl("DomainBuy", "Service", new {area = "adminv2"})" class="btn btn-sm btn-success"
+                           data-e2e="BuyDomain" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Shop_Funnels_ClickBuyDomain.ToString()');">
+                            Купить домен
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="m-b-md">
+                <label class="adv-radio-label domain-label setting__label" data-e2e="funnelHavedomain">
+                    <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="1" />
+                    <span class="adv-radio-label-text">У меня есть домен</span>
+                    <span class="adv-radio-emul"></span>
+                </label>
+                <div ng-if="storePage.bydomain === '1'" class="m-t-sm ng-cloak">
+                    <div class="domain-note italic m-b-sm">
+                        После привязки домена к магазину Вам будет необходимо прописать настройки домена на стороне регистратора. Инструкция прилагается. <br />
+                        Магазин начнёт открываться по новому адресу через <b>12-24 часа</b> после изменения настроек на стороне регистратора.<br>
+                        <a href="https://www.advantshop.net/help/search?name=ns" target="_blank">Инструкции, как прописать NS</a>
+                    </div>
+                    <div class="domain-note">
+                        <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?selectedValueDomainBinding=true" class="btn btn-sm btn-success">Подключить домен</a>
+                    </div>
+                </div>
+            </div>
+            <div class="m-b-md">
+                <label class="adv-radio-label domain-label setting__label" data-e2e="funnelHavedomain">
+                    <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="2" />
+                    <span class="adv-radio-label-text">Использовать ранее подключенный домен</span>
+                    <span class="adv-radio-emul"></span>
+                </label>
+                <div ng-if="storePage.bydomain === '2'" class="m-t-sm ng-cloak">
+                    <div class="domain-note italic m-b-sm">
+                        Если ранее вы уже подключили домен или поддомен, то вы можете переключить его использование для данного интернет магазина.<br>
+                        Изменение привязки происходит быстро, в течение 1 минуты уже будет открываться новое содержимое.
+                    </div>
+                    <div class="domain-note" >
+                        <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?bindYourDomain=true" class="btn btn-sm btn-success">Изменить привязку</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+    <h1 class="page-name-block-text m-b-md m-t-xs">
+        Домены
+    </h1>
+
+    <div class="ibox">
+        <div class="ibox-content">
+
+            <div class="row">
+                <div class="col-xs-11">
+
+                    <div class="row" bs-modifiable="false">
+                        <div class="col-xs-3 col-wl-2">
+                            <div class="setting-label-wrap">
+                                Домен
+                            </div>
+                        </div>
+                        <div class="col-xs-9 relative">
+                            <div>
+
+                                <div class="m-b-xs">
+                                    <h3><strong>Добавить домен</strong></h3>
+                                </div>
+
+                                @*if (Model.UseDomainsManager)
+                                    {*@
+                                <div class="m-b adv-panel-warn adv-panel-warn--show">
+                                    <div class="m-b">
+                                        <label class="adv-radio-label domain-label" data-e2e="funnelBydomain">
+                                            <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="0" checked="checked" />
+                                            <span class="adv-radio-label-text">Купить домен - от 199 руб</span>
+                                            <span class="adv-radio-emul"></span>
+                                        </label>
+                                        <div ng-if="storePage.bydomain === '0'">
+                                            <div class="domain-note italic">
+                                                Домен будет юридически оформлен на Вас, все настройки домена будут осуществлены автоматически.<br />
+                                                Магазин начнет открываться по новому домену в течение <b>2 часов</b> после оплаты.
+                                            </div>
+                                            <div class="domain-note">
+                                                <a href="@Url.AbsoluteActionUrl("DomainBuy", "Service", new {area = "adminv2"})" class="btn btn-sm btn-success"
+                                                   data-e2e="BuyDomain" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Shop_Funnels_ClickBuyDomain.ToString()');">
+                                                    Купить домен
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="m-b">
+                                        <label class="adv-radio-label domain-label" data-e2e="funnelHavedomain">
+                                            <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="1" />
+                                            <span class="adv-radio-label-text">У меня есть домен</span>
+                                            <span class="adv-radio-emul"></span>
+                                        </label>
+                                        <div ng-if="storePage.bydomain === '1'" class="ng-cloak">
+                                            <div class="domain-note italic">
+                                                После привязки домена к магазину Вам будет необходимо прописать настройки домена на стороне регистратора. Инструкция прилагается. <br />
+                                                Магазин начнёт открываться по новому адресу через <b>12-24 часа</b> после изменения настроек на стороне регистратора.<br>
+                                                <a href="https://www.advantshop.net/help/search?name=ns" target="_blank">Инструкции, как прописать NS</a>
+                                            </div>
+                                            <div class="domain-note">
+                                                <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?selectedValueDomainBinding=true" class="btn btn-sm btn-success">Подключить домен</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="m-b">
+                                        <label class="adv-radio-label domain-label" data-e2e="funnelHavedomain">
+                                            <input class="adv-radio-input" ng-model="storePage.bydomain" type="radio" value="2" />
+                                            <span class="adv-radio-label-text">Использовать ранее подключенный домен</span>
+                                            <span class="adv-radio-emul"></span>
+                                        </label>
+                                        <div ng-if="storePage.bydomain === '2'" class="ng-cloak">
+                                            <div class="domain-note italic">
+                                                Если ранее вы уже подключили домен или поддомен, то вы можете переключить его использование для данного интернет магазина.<br>
+                                                Изменение привязки происходит быстро, в течение 1 минуты уже будет открываться новое содержимое.
+                                            </div>
+                                            <div class="domain-note">
+                                                <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")?bindYourDomain=true" class="btn btn-sm btn-success">Изменить привязку</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*}
+                                    else
+                                    {
+                                        <div ng-init="storePage.addDomainMode='new'"
+                                             class="flex">
+                                            <div ng-click="storePage.addDomainMode='new'" class="funnel-domain-item"
+                                                 ng-class="{'funnel-domain-item-selected': storePage.addDomainMode=='new'}">
+                                                Новый
+                                            </div>
+                                            <div ng-click="storePage.addDomainMode='reuse'" class="funnel-domain-item"
+                                                 ng-class="{'funnel-domain-item-selected': storePage.addDomainMode=='reuse'}">
+                                                Использовать ранее добавленный
+                                            </div>
+                                        </div>
+
+                                        <div class="funnel-domains" ng-if="storePage.addDomainMode=='new'">
+                                            <div class="row m-b-md">
+                                                <div class="col-xs-12">Введите доменное имя или поддомен</div>
+                                            </div>
+                                            <div class="row middle-xs m-b">
+                                                <div class="col-xs-slim  p-r-none">
+                                                    <div class="setting-label-wrap">http://</div>
+                                                </div>
+                                                <div class="col-xs-slim">
+                                                    <input type="text" ng-model="storePage.newdomain" class="form-control" style="min-width: 370px;"
+                                                           placeholder="Введите доменное имя или поддомен" pattern="^(?!:\/\/)([a-zA-Zа-яА-Я0-9-_]+\.)*[a-zA-Zа-яА-Я0-9][a-zA-Zа-яА-Я0-9-_]+\.[a-zA-Zа-яА-Я]{2,11}?$" />
+                                                </div>
+                                                <div class="col-xs-slim">
+                                                    <a href="" class="btn btn-sm btn-success" ng-click="storePage.addDomain(storePage.domain != null && storePage.domain.length > 0)">Добавить</a>
+                                                </div>
+                                            </div>
+                                            <div class="bold m-b-xs">Обратите внимание:</div>
+                                            <ol class="m-b-none">
+                                                <li class="m-b-xs">
+                                                    Домен/поддомен следует добавить без приставки www или http. Например: moysite.ru, мойсайт.рф или lp.moysite.ru.
+                                                </li>
+                                                <li class="m-b-xs">
+                                                    Данный список лишь указывает, какой домен используется для воронки, сам домен должен быть куплен и привязан к сайту заранее.
+                                                </li>
+                                            </ol>
+                                        </div>
+
+                                        <div class="funnel-domains" ng-class="{'funnel-domains--empty text-center' : !(storePage.funnelDomains != null && storePage.funnelDomains.length > 0) }" ng-if="storePage.addDomainMode=='reuse'">
+
+                                            <div ng-if="storePage.addDomainMode=='reuse' && storePage.funnelDomains != null && storePage.funnelDomains.length > 0">
+                                                <div class="row m-b-md">
+                                                    <div class="col-xs-12">Выберите доменное имя или поддомен</div>
+                                                </div>
+                                                <div class="row m-b">
+                                                    <div class="col-xs-5">
+                                                        <select class="form-control"
+                                                                ng-model="storePage.reuseDomain"
+                                                                ng-options="item.DomainUrl for item in storePage.funnelDomains"></select>
+                                                    </div>
+                                                    <div class="col-xs-3">
+                                                        <a href="" class="btn btn-sm btn-success" ng-click="storePage.addReuseDomain(storePage.reuseDomain.DomainUrl)">Переключить</a>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="bold m-b-xs">Обратите внимание:</div>
+                                                        <ol class="m-b-none">
+                                                            <li class="m-b-xs">
+                                                                После изменения привязки, старые ссылки перестанут открываться.
+                                                            </li>
+                                                            <li class="m-b-xs">
+                                                                Изменения привязки происходят быстро, в течении 1 минуты уже будет открываться новое содержимое.
+                                                            </li>
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <i ng-if="!(storePage.funnelDomains != null && storePage.funnelDomains.length > 0)">Пока нет подключенных доменов для подключения</i>
+
+                                        </div>
+                                    }*@
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

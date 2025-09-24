@@ -1,0 +1,58 @@
+﻿<div>
+    <div data-ng-if="shippingVariants.showZip" class="row middle-xs">
+        <div class="col-xs-6">
+            <span class="form-field-name vertical-interval-small">{{ ::'Js.Shipping.EnterZip' | translate }}:</span>
+        </div>
+        <div class="col-xs-6">
+            <span class="form-field-input vertical-interval-small">
+                <input
+                    type="text"
+                    data-ng-model="shippingVariants.zip"
+                    name="shippingVariantsZip"
+                    id="shippingVariantsZip"
+                    value=""
+                    class="input-small"
+                    data-ng-change="shippingVariants.calcShippings()"
+                    data-ng-model-options="{ debounce: 300 }" />
+            </span>
+        </div>
+    </div>
+    <div data-ng-switch="shippingVariants.isProgress" ng-model="shippingList.selectShipping" required>
+        <div data-ng-switch-default>
+            <div data-ng-switch="shippingVariants.type">
+                <div data-ng-switch-when="Always">
+                    <div data-ng-switch="shippingVariants.items.length > 0">
+                        <ul class="shipping-variants" data-ng-switch-when="true">
+                            <li class="shipping-variants-row" data-ng-repeat="item in shippingVariants.items track by $index">
+                                <div class="shipping-variants-cell shipping-variants-name">
+                                    <span bind-html-compile="item.Name"></span>
+                                    <span
+                                        data-ng-bind-html="(item.DeliveryTime != null && item.DeliveryTime.length > 0 ? '(' + item.DeliveryTime + ')' : '')"></span>
+                                </div>
+                                <div class="shipping-variants-cell shipping-variants-value">
+                                    <span data-ng-bind="item.Rate"></span>
+                                </div>
+                            </li>
+                        </ul>
+                        <div data-ng-switch-when="false" class="shipping-variants-other-state">
+                            <div data-ng-switch="shippingVariants.showZip && !shippingVariants.zip">
+                                <div data-ng-switch-when="true">{{ ::'Js.Shipping.NoShipping.EnterZip' | translate }}</div>
+                                <div ng-switch-default>{{ ::'Js.Shipping.NoShippingMethods' | translate }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-ng-switch-when="ByClick" class="shipping-variants-link-show">
+                    <a href="javascript:void(0)" role="link" data-ng-click="shippingVariants.calcShippings()"
+                        >{{ ::'Js.Shipping.CalculateShippings' | translate }}</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div data-ng-switch-when="true">
+            <div>
+                <span class="icon-spinner-before icon-animate-spin-before">{{ ::'Js.Shipping.Loading' | translate }}</span>
+            </div>
+        </div>
+    </div>
+</div>

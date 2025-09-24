@@ -1,0 +1,238 @@
+﻿@using AdvantShop.Core.Services.SalesChannels
+@using AdvantShop.FilePath;
+@using AdvantShop.Helpers;
+
+@model  AdvantShop.Web.Admin.ViewModels.Shared.Common.LeftMenuViewModel
+@{
+    var cookieMenu = CommonHelper.GetCookie("adminSidebarMenu");
+    var countVisibleMenuItem = 0;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div data-sidebar-menu-state class="sidebar-wrap">
+
+<div class="sidebar-emul-sticky-start"
+     lozad-adv="app.setIntersectionValue(entry)"
+     lozad-observer-mode="'observerAlways'"
+    lozad-adv-debounce="false"
+     ng-if="!sidebarMenuState.isCompact"></div>
+<nav class="sidebar sidebar--simple @(cookieMenu != null && cookieMenu.Value == "true" && SettingsDesign.IsMobileTemplate == false ? "sidebar--compact" : "sidebar--default")"
+     id="sidebar"
+     ng-class="{'sidebar--sticky': app.intersectionValue.isIntersecting === false && !sidebarMenuState.isCompact, 'sidebar--compact': @(isMobile ? "false" : "sidebarMenuState.isCompact"), 'sidebar--default':  @(isMobile ? "true" : "!sidebarMenuState.isCompact")}">
+<ul class="sidebar__list sidebar__list--main flex flex-column"
+    transformer
+    watch-enabled="sidebarMenuState.isCompact"
+    data-responsive-options="'(min-width: 768px)'"
+    data-container-limit="sidebar"
+    data-limit-visible-scroll="true"
+    data-offset-top="60"
+    data-limit-pos="true">
+@if (Model.CustomMenuItems != null && Model.CustomMenuItems.Count > 0)
+{
+    <li class="sidebar__list-item">
+        <ul class="sidebar__group-item">
+            @foreach (var rootItem in Model.CustomMenuItems)
+            {
+                var hasChild = rootItem.SubItems != null && rootItem.SubItems.Any();
+
+                <li class="sidebar__list-item @(rootItem.Selected ? "sidebar__item--selected" : "")">
+                    <a class="sidebar__trigger sidebar__trigger--root sidebar__item"
+                       href="@rootItem.UrlPath">
+                        <div class="sidebar__link sidebar__item">
+                            <span class="sidebar__icon sidebar__icon--left">
+                                <span class="sidebar__item-icon">
+                                    @if (rootItem.IconPath.IsNotEmpty())
+                                    {
+                                        <img src="@FoldersHelper.GetPath(FolderType.MenuIcons, rootItem.IconPath, false)" alt=""/>
+                                    }
+                                    else
+                                    {
+                                        <svg width="24" height="24">
+                                            <use xlink:href="../areas/admin/menu-sprite.svg#bookmark"></use>
+                                        </svg>
+                                    }
+                                </span>
+                            </span>
+                            <span class="sidebar__name">@rootItem.Name</span>
+                        </div>
+                    </a>
+                </li>
+
+            }
+        </ul>
+    </li>
+}
+
+@for (int i = 0; i < Model.MenuItems.Count(); i++)
+{
+    var menuCategoryAccessibleToUser = Model.MenuItems[i].Menu.Any(y => y.IsAccessibleToUser());
+    if (menuCategoryAccessibleToUser)
+    {
+        <li class="sidebar__category-item sidebar__list-item @(i == 0 ? "first-xs" : null)">
+            <span class="sidebar__item sidebar__category-item-name">@T(Model.MenuItems[i].Name)</span>
+            <span class="sidebar__delimiter">
+                <svg class="sidebar-unit-modal-trigger__icon"
+                     width="23px"
+                     height="24px"
+                     viewBox="0 0 612 612">
+                    <rect y="287.468" width="612" height="37.064" stroke="currentColor" fill="currentColor"/>
+                </svg>
+
+            </span>
+        </li>
+        if (Model.MenuItems[i].Menu.Count > 0)
+        {
+            <li class="sidebar__list-item @(i == 0 ? "first-xs" : null)">
+                <ul class="sidebar__group-item @(i == 0 && Model.CustomMenuItems != null && Model.CustomMenuItems.Count > 0 ? "sidebar__group-item--p-b-n" : null)">
+
+                    @foreach (var rootItem in Model.MenuItems[i].Menu)
+                    {
+                        if (!rootItem.IsAccessibleToUser() || !rootItem.ActiveInSaas)
+                        {
+                            continue;
+                        }
+                        <li class="sidebar__item @(rootItem.Selected ? "sidebar__item--selected" : "")">
+                            <a class="sidebar__trigger sidebar__trigger--root"
+                               href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))"
+                               onclick="event.stopPropagation()">
+                                <div class="sidebar__link">
+                                    <span class="sidebar__icon sidebar__icon--left">
+                                        @Html.Raw(rootItem.IconContent)
+                                    </span>
+                                    <span class="sidebar__name">@T(rootItem.Name)</span>
+                                    @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                    {
+                                        <span class="sidebar__counter sidebar__counter--compact sidebar--compact-visible">
+                                            <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="sidebar__part-right">
+                                    @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                    {
+                                        <span class="sidebar__counter">
+                                            <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                        </span>
+                                    }
+                                </div>
+                            </a>
+                        </li>
+                        ++countVisibleMenuItem;
+                    }
+                </ul>
+            </li>
+        }
+
+    }
+
+}
+
+@if (countVisibleMenuItem > 0)
+{
+    <li class="sidebar__category-item sidebar__list-item sidebar__delimiter">
+        <span>
+            <svg class="sidebar-unit-modal-trigger__icon"
+                 width="23px"
+                 height="24px"
+                 viewBox="0 0 612 612">
+                <rect y="287.468" width="612" height="37.064" stroke="currentColor" fill="currentColor"/>
+            </svg>
+
+        </span>
+    </li>
+
+}
+
+@if (Model.SalesChannelsMenuItems.Count > 0 || CustomerContext.CurrentCustomer.IsAdmin)
+{
+    <li class="sidebar__category-item sidebar__list-item sidebar--compact-none">
+
+        <span class="sidebar__item sidebar__category-item-name">@T("Admin.Home.Menu.SalesChannels")</span>
+
+    </li>
+
+    <li class="sidebar__list-item">
+        <ul class="sidebar__group-item">
+            @if (Model.SalesChannelsMenuItems.Count > 0)
+            {
+                foreach (var channel in Model.SalesChannelsMenuItems)
+                {
+                    <li class="sidebar__item @(channel.Selected ? "sidebar__item--selected" : "")">
+                        <a class="sidebar__trigger sidebar__trigger--root"
+                           href="@(channel.MenuUrlAction != null ? Url.AbsoluteActionUrl(channel.MenuUrlAction.Action, channel.MenuUrlAction.Controller, channel.MenuUrlAction.RouteDictionary) : channel.Url != null ? channel.Url : null)">
+                            <div class="sidebar__link">
+                                <span class="sidebar__icon sidebar__icon--left">
+                                    <span class="sidebar__item-icon">
+                                        @Html.Raw(channel.MenuIcon)
+                                    </span>
+                                </span>
+                                <span class="sidebar__name">@channel.MenuName</span>
+                            </div>
+                        </a>
+                        @if (channel.ChildMenuRoute != null)
+                        {
+                            if (channel.ChildMenuRoute.Route == null)
+                            {
+                                channel.ChildMenuRoute.Route = new Dictionary<string, object>();
+                            }
+                            channel.ChildMenuRoute.Route.Add("IsOpen", channel.Selected);
+
+                            @Html.Action(channel.ChildMenuRoute.Action, channel.ChildMenuRoute.Controller, channel.ChildMenuRoute.RouteDictionary)
+                        }
+                    </li>
+                }
+            }
+
+            @if (CustomerContext.CurrentCustomer.IsAdmin)
+            {
+                <li class="sidebar__item sidebar__item--add">
+                    <ui-modal-trigger data-controller="'ModalSalesChannelsCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("salesChannels.html")"
+                                      class="sidebar-unit-modal-trigger" window-class="simple-modal modal-sales-channels">
+
+
+                        <a class="sidebar__trigger sidebar__trigger--root">
+                            <div class="sidebar__link">
+                                <svg class="sidebar__icon"
+                                     width="24px"
+                                     height="24px"
+                                     viewBox="0 0 24 24">
+                                    <circle stroke="currentColor" stroke-width="" fill="transparent" cx="12" cy="12" r="8.5"></circle>
+                                    <path d="M12.6,11.4 L15.4,11.4 C15.7313708,11.4 16,11.6686291 16,12 C16,12.3313709 15.7313708,12.6 15.4,12.6 L12.6,12.6 L12.6,15.4 C12.6,15.7313708 12.3313709,16 12,16 C11.6686291,16 11.4,15.7313708 11.4,15.4 L11.4,12.6 L8.60000002,12.6 C8.26862916,12.6 8,12.3313709 8,12 C8,11.6686291 8.26862916,11.4 8.60000002,11.4 L11.4,11.4 L11.4,8.60000002 C11.4,8.26862916 11.6686291,8 12,8 C12.3313709,8 12.6,8.26862916 12.6,8.60000002 L12.6,11.4 Z" id="Combined-Shape" fill="currentColor"></path>
+                                </svg>
+                                <span class="sidebar__name sidebar__name--link sidebar_link_none_decoration">@T("Admin.Home.Menu.AddChannel")</span>
+                            </div>
+                        </a>
+
+
+                    </ui-modal-trigger>
+                </li>
+            }
+        </ul>
+    </li>
+}
+<li class="sidebar__item sidebar__item--referral-link">
+    <ui-modal-trigger data-controller="'ModalReferralLinkCtrl'" controller-as="ctrl"
+                      template-url="@Html.GetAssetPath("ReferralLink.html")"
+                      class="sidebar-unit-modal-trigger" window-class="">
+        <a class="sidebar__trigger sidebar__trigger--root sidebar__trigger--root-referralLink">
+            <div class="sidebar__link">
+                <svg width="24px"
+                     height="24px"
+                     xmlns="http://www.w3.org/2000/svg" class="sidebar__icon sidebar__icon--visable-default sidebar__icon-compact-referral"
+                     viewBox="0 0 512 512.00508"
+                     fill="currentColor">
+                    <path d="m453.335938 512.003906h-394.667969c-32.363281 0-58.66406275-26.304687-58.66406275-58.664062v-309.335938c0-32.363281 26.30078175-58.664062 58.66406275-58.664062h74.667969c8.832031 0 16 7.167968 16 16 0 8.832031-7.167969 16-16 16h-74.667969c-14.699219 0-26.664063 11.964844-26.664063 26.664062v309.335938c0 14.695312 11.964844 26.664062 26.664063 26.664062h394.667969c14.699218 0 26.667968-11.96875 26.667968-26.664062v-181.335938c0-8.832031 7.167969-16 16-16 8.832032 0 16 7.167969 16 16v181.335938c0 32.359375-26.304687 58.664062-58.667968 58.664062zm0 0"/>
+                    <path d="m143.980469 341.0625c-1.171875 0-2.347657-.128906-3.519531-.429688-7.230469-1.683593-12.457032-7.871093-12.457032-15.292968v-32c0-114.6875 93.3125-208 208-208h5.332032v-69.335938c0-6.527344 3.96875-12.394531 10.027343-14.847656 6.035157-2.429688 12.96875-.960938 17.492188 3.753906l138.667969 144c5.972656 6.1875 5.972656 16 0 22.1875l-138.667969 144c-4.523438 4.714844-11.5 6.167969-17.492188 3.753906-6.058593-2.453124-10.027343-8.320312-10.027343-14.847656v-69.332031h-25.34375c-67.113282 0-127.425782 37.289063-157.417969 97.300781-2.753907 5.546875-8.535157 9.089844-14.59375 9.089844zm192.023437-223.722656c-89.601562 0-163.796875 67.304687-174.65625 154.023437 38.78125-43.261719 94.398438-68.691406 154.644532-68.691406h41.34375c8.832031 0 16 7.167969 16 16v45.652344l100.457031-104.320313-100.457031-104.320312v45.65625c0 8.832031-7.167969 16-16 16zm0 0"></path>
+                </svg>
+                <span class="sidebar__name sidebar__name--link">@T("Admin.Home.Menu.ReferralProgram")</span>
+
+
+            </div>
+        </a>
+    </ui-modal-trigger>
+</li>
+
+</ul>
+</nav>
+</div>
+

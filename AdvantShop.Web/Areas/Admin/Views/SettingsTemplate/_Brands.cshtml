@@ -1,0 +1,149 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.Templates.SettingsTemplateModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="setting-title m-t-none">
+    <h3 class="setting__subtitle">@T("Admin.Settings.Template.BrandTitle")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2 ">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Template.BrandLogo")
+        </div>
+
+    </div>
+    <div class="col-xs-6 col-md-2">
+        <div class="m-b-xs">
+            @T("Admin.Settings.Template.Width")
+        </div>
+        <div class="input-group  flex middle-xs @(isMobile ? "" : "m-b-sm")">
+            @if (isMobile)
+            {
+                @Html.TextBoxFor(x => x.BrandLogoWidth, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandLogoWidth", type = "number", min = "10", max = "100000", style = "", validation_input_text = "Лого производителя" })
+            }
+            else
+            {
+                @Html.TextBoxFor(x => x.BrandLogoWidth, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandLogoWidth", type = "number", min = "10", max = "100000", style = "width:120px;", validation_input_text = "Лого производителя" })
+            }
+            <span class="col-xs-slim">px</span>&nbsp;
+        </div>
+    </div>
+    <div class="col-xs-6 col-md-2">
+        <div class="m-b-xs">
+            @T("Admin.Settings.Template.Height")
+        </div>
+        <div class="flex middle-xs">
+            <div class="input-group flex middle-xs">
+                @if (isMobile)
+                {
+                    @Html.TextBoxFor(x => x.BrandLogoHeight, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandLogoHeight", type = "number", min = "10", max = "100000", style = "", validation_input_text = "Лого производителя" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(x => x.BrandLogoHeight, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandLogoHeight", type = "number", min = "10", max = "100000", style = "width:120px;", validation_input_text = "Лого производителя" })
+                }
+                <span class="col-xs-slim">px</span>
+            </div>
+            <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Settings.Template.BrandLogo")">
+                <div class="help-content">
+                    @T("Admin.Settings.Template.BrandLogoHote")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Template.BrandsPerPage")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-slim relative flex middle-xs">
+        @if (isMobile)
+        {
+            @Html.TextBoxFor(x => x.BrandsPerPage, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandsPerPage", style = "" })
+        }
+        else
+        {
+            @Html.TextBoxFor(x => x.BrandsPerPage, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.BrandsPerPage", style = "width:120px;" })
+        }
+        <help-trigger class="help-trigger-icon-abs ng-cloak m-l-xs @(isMobile ? "p-l-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Template.BrandsPerPage")">
+            <div class="help-content">
+                @T("Admin.Settings.Template.BrandsPerPageHote")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group row middle-xs">
+      @if (!isMobile)
+      {
+            <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+                <div class="setting-label-wrap  setting--m-none  @(isMobile ? "" : "setting__label")">
+                    @T("Admin.Settings.Template.ShowProductsInBrand")
+                </div>
+            </div>
+      }
+    <div class="col-xs-slim relative flex middle-xs  @(isMobile ? "p-r-xs flex-grow" : "first-xs last-md")">
+        <label class="adv-checkbox-label flex middle-xs">
+            @Html.CheckBoxFor(x => x.ShowProductsInBrand, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowProductsInBrand" })
+            <span class="adv-checkbox-emul" data-e2e="ShowProductsInBrand"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.Settings.Template.ShowProductsInBrand")</span>
+            }
+        </label>
+    </div>
+    <help-trigger class="ng-cloak last-md  @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Template.ShowProductsInBrand")">
+        <div class="help-content">
+            @T("Admin.Settings.Template.ShowProductsInBrandHote")
+        </div>
+    </help-trigger>
+</div>
+
+<div class="form-group row setting__form-group" ng-if="settingsTemplate.ShowProductsInBrand">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Template.DefaultSortOrderProductInBrand")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-slim relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.DefaultSortOrderProductInBrand, Model.DefaultSortOrderProductInBrandOption, new { @class = "form-control input-alt", ng_model = "settingsTemplate.DefaultSortOrderProductInBrand" })
+        <help-trigger class="help-trigger-icon-abs ng-cloak m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Settings.Template.DefaultSortOrderProductInBrand")">
+            <div class="help-content">
+                @T("Admin.Settings.Template.DefaultSortOrderProductInBrandHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <div class="setting-label-wrap setting--m-none @(isMobile ? "" : "setting__label")">
+                @T("Admin.Settings.Template.ShowCategoryTreeInBrand")
+            </div>
+        </div>
+    }
+    <div class="col-xs-slim relative flex middle-xs @(isMobile ? "p-r-xs col-xs-slim flex-grow" : "col-xs-slim first-xs last-md")">
+        <label class="adv-checkbox-label flex middle-xs">
+            @Html.CheckBoxFor(x => x.ShowCategoryTreeInBrand, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowCategoryTreeInBrand" })
+            <span class="adv-checkbox-emul" data-e2e="ShowCategoryTreeInBrand"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.Settings.Template.ShowCategoryTreeInBrand")</span>
+            }
+        </label>
+    </div>
+    <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Template.ShowCategoryTreeInBrand.TitleHote")">
+        <div class="help-content">
+            @T("Admin.Settings.Template.ShowCategoryTreeInBrandHote")
+        </div>
+    </help-trigger>
+</div>
+@Html.Action("OtherSettings", new { section = AdvantShop.Configuration.ETemplateSettingSection.Brands, settings = Model.OtherSettingsSections})

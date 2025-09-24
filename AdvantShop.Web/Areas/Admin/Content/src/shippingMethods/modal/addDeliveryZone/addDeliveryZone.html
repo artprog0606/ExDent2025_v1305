@@ -1,0 +1,154 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddDeliveryZone.Zone'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span class="text-required">{{'Admin.Js.AddDeliveryZone.Name'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.zone.Name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddDeliveryZone.Name'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddDeliveryZone.Description'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <textarea class="form-control input-alt" ng-model="ctrl.zone.Description" rows="2" cols="20" style="height: 100px"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span class="text-required">{{'Admin.Js.AddDeliveryZone.ShippingCost'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <div class="input-group setting__price-margin-in-numbers">
+                    <input
+                        type="number"
+                        class="form-control input-alt"
+                        required
+                        ng-model="ctrl.zone.Rate"
+                        validation-input-text="{{'Admin.Js.AddDeliveryZone.ShippingCost'|translate}}" />
+                    <div class="input-group-btn">
+                        <span class="btn btn-default"><span ng-bind="ctrl.currencyLabel"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddDeliveryZone.ZeroPriceMessage'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.zone.ZeroPriceMessage"
+                    validation-input-text="{{'Admin.Js.AddDeliveryZone.ZeroPriceMessage'|translate}}" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span>{{'Admin.Js.AddDeliveryZone.CostFree'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <div class="input-group setting__price-margin-in-numbers">
+                    <input
+                        type="number"
+                        class="form-control input-alt"
+                        ng-model="ctrl.zone.CostFree"
+                        validation-input-text="{{'Admin.Js.AddDeliveryZone.CostFree'|translate}}" />
+                    <div class="input-group-btn">
+                        <span class="btn btn-default"><span ng-bind="ctrl.currencyLabel"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span>{{'Admin.Js.AddDeliveryZone.MinimalOrderPrice'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <div class="input-group setting__price-margin-in-numbers">
+                    <input
+                        type="number"
+                        class="form-control input-alt"
+                        ng-model="ctrl.zone.MinimalOrderPrice"
+                        validation-input-text="{{'Admin.Js.AddDeliveryZone.MinimalOrderPrice'|translate}}" />
+                    <div class="input-group-btn">
+                        <span class="btn btn-default"><span ng-bind="ctrl.currencyLabel"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddDeliveryZone.DeliveryTime'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.zone.DeliveryTime"
+                    validation-input-text="{{'Admin.Js.AddDeliveryZone.DeliveryTime'|translate}}" />
+            </div>
+        </div>
+        <div class="form-group row" ng-if="ctrl.warehousesActive">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddDeliveryZone.Warehouses'|translate}} </label>
+            <div class="col-xs-12 col-md-9 relative" ng-if="ctrl.warehouses">
+                <div>
+                    <div ng-if="ctrl.zone.CheckWarehouses == null || ctrl.zone.CheckWarehouses.length === 0" class="m-b-sm ng-cloak">
+                        {{'Admin.Js.AddDeliveryZone.WarehousesEmpty'|translate}}
+                    </div>
+                    <div ng-repeat="item in ctrl.zone.CheckWarehouses track by $index" class="ng-cloak m-b-sm shipping-location-item">
+                        {{$index != 0 ? ", " : ""}} {{ctrl.getWarehouseName(item)}}
+                        <a href="" ng-click="ctrl.deleteWarehouse(item)" class="link-invert link-decoration-none fas fa-times"></a>
+                    </div>
+                </div>
+                <div>
+                    <ui-modal-trigger
+                        data-controller="'ModalSelectWarehouseCtrl'"
+                        controller-as="ctrl"
+                        template-url="../areas/admin/content/src/warehouse/modal/selectWarehouse/selectWarehouse.html"
+                        size="lg"
+                        data-resolve="{'params': { 'multiSelect': true }}"
+                        data-on-close="ctrl.selectWarehouses(result)">
+                        <a href="" class="btn btn-action">{{'Admin.Js.Select'|translate}}</a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddDeliveryZone.AvailablePaymentMethods'|translate}} </label>
+            <div class="col-xs-12 col-md-9 relative" is-mobile>
+                <div
+                    ng-class="{'m-b-sm p-b-xs' : isMobile.value && $index != ctrl.payments.length - 1,'m-b-sm' : !isMobile.value && $index != ctrl.payments.length - 1}"
+                    ng-repeat="item in ctrl.payments track by $index">
+                    <label class="adv-checkbox-label form-label-block setting--m-t-sm" ng-class="{'method-notactive' : !item.Enabled}">
+                        <input
+                            type="checkbox"
+                            checklist-model="ctrl.selectedPaymentMethods"
+                            checklist-value="item.PaymentMethodId"
+                            class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span class="">{{item.Name}}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            ladda="ctrl.isProgress"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,49 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.WarehouseSettings.WarehouseSettingsModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="StockLabelListCtrl as stockLabelList" @Html.Raw(isMobile ? "ng-init=\"settingsWarehouses.stockLabelList = stockLabelList\"" : "")>
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name m-t-n-xs" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main flex middle-xs setting--flex-column">
+                    <h2 class="sticky-page-name-text m-t-none setting--align-top setting__subtitle">
+                        @T("Admin.Settings.WarehousesStockLabel.Title")
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="stockLabelList.showStockLabel()">
+                        <span class="fa fa-plus"></span>
+                        @T("Admin.Settings.WarehousesStockLabel.Add")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="">
+        <ui-grid-custom grid-unique-id="gridStockLabels"
+                        grid-on-init="stockLabelList.gridOnInit(grid)"
+                        grid-options="stockLabelList.gridOptions"
+                        grid-row-identificator="'LabelId'"
+                        grid-url="'warehouse/getstocklabels'"
+                        grid-inplace-url="'warehouse/inplacestocklabel'"
+                        grid-extend-ctrl="stockLabelList"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm"
+                     ng-click="grid.appScope.$ctrl.gridExtendCtrl.showStockLabel(row.entity.LabelId); $event.preventDefault();">
+                    <div class="flex between-xs center-xs">
+                        <div class="card__col m-r-xs flex middle-xs">
+                            <span><i class="setting__color-icon" ng-style="{'background-color': '#' + row.entity.Color}"></i></span>
+                            <span class="m-l-sm">{{row.entity.Name}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>
+

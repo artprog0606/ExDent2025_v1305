@@ -1,0 +1,62 @@
+﻿<div>
+    <div class="form-group">
+        <div>
+            <div class="input-group">
+                <div class="input-group-btn" ng-switch="$ctrl.columns.length > 0">
+                    <div class="btn-group" ng-switch-when="true">
+                        <button
+                            type="button"
+                            data-e2e="gridFilterDropdownButton"
+                            data-bs-toggle="dropdown"
+                            class="btn grid-filter-dropdown btn-success dropdown-toggle btn-sm">
+                            {{'Admin.Js.GridCustomFilter.AddAFilter'|translate}}<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu grid-filter-dropdown">
+                            <li ng-repeat="menuItem in $ctrl.checkVisibleMenuItem($ctrl.columns)">
+                                <a
+                                    href=""
+                                    data-e2e="gridFilterDropdownItem"
+                                    data-e2e-filter-dropdown-name="{{menuItem.name}}"
+                                    ng-bind="menuItem.filter.placeholder"
+                                    ng-click="$ctrl.addFilterBlock(menuItem)"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="btn-group" ng-switch-when="false">
+                        <button class="btn btn-success dropdown-toggle btn-sm" type="button">{{'Admin.Js.GridCustomFilter.Search'|translate}}</button>
+                    </div>
+                </div>
+                <input type="password" name="disablingChromeAutoFill" autocomplete="new-password" hidden />
+                <div data-ng-class="{'input-group-addon full-width' : !$ctrl.gridSearchVisible}">
+                    <input
+                        data-e2e="gridFilterSearch"
+                        class="form-control input-sm"
+                        data-autofocus="$ctrl.searchAutofocus"
+                        type="text"
+                        placeholder="{{::$ctrl.gridSearchPlaceholder}}"
+                        data-ng-model="$ctrl.gridSearchText"
+                        ng-if="$ctrl.gridSearchVisible"
+                        ng-keyup="$ctrl.onApplySearch([{name:'search', value: $ctrl.gridSearchText}], null, $event)"
+                        autocomplete="off" />
+                </div>
+                <div
+                    class="input-group-addon ui-grid-custom-filter-total"
+                    ng-if="$ctrl.hiddenTotalItemsCount !== true && $ctrl.gridOptions.totalItems != null"
+                    ng-class="{'full-width': !$ctrl.gridSearchVisible}"
+                    ng-bind="('Admin.Js.UiGridCustomFilter.FoundEntries'|translate) + $ctrl.gridOptions.totalItems + ($ctrl.gridOptions.totalItems === 10000 ? '+' : '')"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-4 col-wl-3" ng-repeat="blockItem in $ctrl.blocks">
+                <ui-grid-custom-filter-block
+                    data-e2e="gridFilterBlock"
+                    data-e2e-grid-filter-block-name="{{blockItem.name}}"
+                    class="ibox"
+                    block-type="blockItem.filter.type"
+                    item="blockItem"
+                    on-apply="$ctrl.onApplyBlock(params, item)"
+                    on-close="$ctrl.onClose(name, item)"></ui-grid-custom-filter-block>
+            </div>
+        </div>
+    </div>
+</div>

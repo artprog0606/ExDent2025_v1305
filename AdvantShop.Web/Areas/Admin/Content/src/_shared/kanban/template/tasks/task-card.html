@@ -1,0 +1,89 @@
+﻿<ui-modal-trigger
+    controller="'ModalEditTaskCtrl'"
+    controller-as="ctrl"
+    size="xs-8 modal-md-7"
+    backdrop="static"
+    on-dismiss="$ctrl.parent.extendCtrl.modalDismiss(result)"
+    on-close="$ctrl.parent.extendCtrl.modalClose(result)"
+    template-url="../areas/admin/content/src/tasks/modal/editTask/editTask.html"
+    resolve="{'id': $ctrl.card.Id}"
+    window-class="modal__window--scrollbar-no"
+    modal-id="{{$ctrl.card.Id}}">
+    <div class="relative">
+        <div class="flex kanban-task-header">
+            <span class="kanban-task__title">
+                <span data-e2e="Number" class="text-muted">{{$ctrl.card.Id}}.</span>
+                <a
+                    data-e2e="Name"
+                    ng-href="tasks?modal={{$ctrl.card.Id}}"
+                    ng-click="$event.preventDefault();"
+                    class="kanban-task-text kanban-task-title">
+                    {{$ctrl.card.Name}}
+                </a>
+            </span>
+
+            <div class="kanban-task-priority" ng-switch="$ctrl.card.Priority">
+                <div data-e2e="Priority" title="{{'Admin.Js.Kanban.Priority'|translate}} {{$ctrl.card.PriorityFormatted}}">
+                    <svg ng-switch-when="2" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 90 90" width="20px" height="20px">
+                        <path
+                            fill="#ff9800"
+                            d="M29.013,89.992c-0.969-0.631,15.768-35.801,15.191-37.343c-0.577-1.541-18.322-7.184-19.189-9.897
+                              c-0.867-2.715,35.037-43.528,35.98-42.741c0.941,0.787-15.646,36.192-15.191,37.342c0.453,1.15,18.641,7.028,19.189,9.898
+                              C65.541,50.121,29.981,90.623,29.013,89.992z" />
+                    </svg>
+                    <svg ng-switch-when="3" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 286.054 286.054" width="20px" height="20px">
+                        <path
+                            fill="#E2574C"
+                            d="M143.027,0C64.04,0,0,64.04,0,143.027c0,78.996,64.04,143.027,143.027,143.027
+		                    c78.996,0,143.027-64.022,143.027-143.027C286.054,64.04,222.022,0,143.027,0z M143.027,259.236
+		                    c-64.183,0-116.209-52.026-116.209-116.209S78.844,26.818,143.027,26.818s116.209,52.026,116.209,116.209
+		                    S207.21,259.236,143.027,259.236z M143.036,62.726c-10.244,0-17.995,5.346-17.995,13.981v79.201c0,8.644,7.75,13.972,17.995,13.972
+		                    c9.994,0,17.995-5.551,17.995-13.972V76.707C161.03,68.277,153.03,62.726,143.036,62.726z M143.036,187.723
+		                    c-9.842,0-17.852,8.01-17.852,17.86c0,9.833,8.01,17.843,17.852,17.843s17.843-8.01,17.843-17.843
+		                    C160.878,195.732,152.878,187.723,143.036,187.723z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="kanban-task-appointed-avatar">
+                <img
+                    class="kanban-task-appointed-avatar-image"
+                    title="{{$ctrl.card.AppointedName || ('Admin.Js.Tasks.AppointedManager.Automatic' |translate) }}"
+                    ng-src="{{$ctrl.card.AppointedCustomerAvatarSrc}}" />
+            </div>
+            <!--<div class="kanban-task-date" ng-bind="$ctrl.card.DateAppointedFormattedFull"></div>-->
+        </div>
+        <!--<div class="flex flex-nowrap between-xs">
+            <div class="kanban-task-text" ng-bind-html="$ctrl.card.Name"></div>
+        </div>-->
+        <div class="flex middle-xs flex-nowrap p-b-xs">
+            <div class="kanban-task-avatar m-r-sm" ng-if="manager.AvatarSrc" ng-repeat="manager in $ctrl.card.Managers track by $index">
+                <img data-e2e="AssignedCustomer" ng-src="{{manager.AvatarSrc}}" alt="{{manager.FullName}}" title="{{manager.FullName}}" />
+            </div>
+        </div>
+        <div class="flex bottom-xs flex-nowrap between-xs">
+            <div>
+                <a
+                    data-ng-href="{{$ctrl.card.TaskGroupUrl}}"
+                    ng-click="$event.stopPropagation();"
+                    data-e2e="TaskGroupName"
+                    class="kanbam-task-name-project"
+                    ng-bind="$ctrl.card.TaskGroupName"></a>
+            </div>
+            <div class="kanban-task__info-date">
+                <div
+                    uib-popover="{{::$ctrl.getFullDate()}}"
+                    popover-placement="top-center"
+                    popover-class="kanban-task__info-date-popover"
+                    popover-trigger="'mouseenter'">
+                    {{'Admin.Js.Kanban.Created'|translate}}
+                    <span data-e2e="AfterCreate" ng-bind="$ctrl.card.DaysAfterCreateInFormatted"></span>
+                    {{'Admin.Js.Kanban.Back'|translate}}
+                </div>
+                <div class="kanban-task-time" ng-class="{'text-danger':$ctrl.card.Overdue}" ng-if="$ctrl.card.DueDateInFormatted">
+                    <span ng-bind="$ctrl.card.Overdue ? ('Admin.Js.Kanban.OverdueFor'|translate) : ('Admin.Js.Kanban.UntilTheEnd'|translate)"></span>:
+                    <span data-e2e="OverDue" ng-bind="$ctrl.card.DueDateInFormatted"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</ui-modal-trigger>

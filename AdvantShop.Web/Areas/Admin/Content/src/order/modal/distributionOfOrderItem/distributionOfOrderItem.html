@@ -1,0 +1,58 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.DistributionOfOrderItem.Title' | translate}}<span ng-bind="ctrl.itemInfo"></span></h2>
+    </div>
+    <div class="modal-body">
+        <div ng-if="!ctrl.distributionItems || !ctrl.distributionItems.length">{{'Admin.Js.DistributionOfOrderItem.Notification' | translate}}</div>
+        <div class="form-group row" ng-repeat="distribution in ctrl.distributionItems track by distribution.WarehouseId">
+            <label class="col-xs-12 col-md-4 control-label setting--m-b-sm"> {{distribution.warehouseName}} </label>
+            <div class="col-xs-12 col-md-3">
+                <input
+                    type="number"
+                    class="form-control input-alt"
+                    min="0"
+                    ng-model="distribution.Amount"
+                    required
+                    validation-input-text="{{distribution.warehouseName}}" />
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <div
+                    ng-if="distribution.Amount - distribution.DecrementedAmount > distribution.availableAmount"
+                    class="order-notavalable"
+                    ng-class="{'m-t-sm' : isMobile.value}">
+                    {{'Admin.Js.DistributionOfOrderItem.Available' | translate}} {{distribution.availableAmount + distribution.DecrementedAmount}}
+                </div>
+            </div>
+        </div>
+        <div class="setting-title-top" ng-if="ctrl.notUsedWarehouses.length">
+            <h3 ng-class="{'control-label' : isMobile.value}">{{'Admin.Js.DistributionOfOrderItem.GetFromAnother' | translate}}</h3>
+        </div>
+        <div class="form-group row" ng-if="ctrl.notUsedWarehouses.length">
+            <label class="col-xs-12 col-md-4 control-label setting--m-b-sm">
+                <select
+                    class="form-control input-alt"
+                    ng-model="ctrl.newWarehouse"
+                    ng-options="item.Id as item.Name for item in ctrl.notUsedWarehouses"
+                    ng-change="ctrl.changeWarehouse()"></select>
+            </label>
+            <div class="col-xs-12 col-md-3">
+                <input type="number" min="0" class="form-control input-alt" ng-model="ctrl.newAmount" />
+            </div>
+            <div class="col-xs-12 col-md-3" ng-class="{'m-t-sm m-b-sm' : isMobile.value}">
+                <button class="btn btn-sm btn-success" type="button" ng-click="ctrl.addDistribution()">{{'Admin.Js.AddEdit.Add'|translate}}</button>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                <div ng-if="ctrl.newAmount > ctrl.availableAmountNewWarehouse" class="order-notavalable">
+                    {{'Admin.Js.DistributionOfOrderItem.Available' | translate}} {{ctrl.availableAmountNewWarehouse}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation>
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

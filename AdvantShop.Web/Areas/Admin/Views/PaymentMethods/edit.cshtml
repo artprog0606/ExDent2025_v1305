@@ -1,0 +1,139 @@
+﻿@model AdvantShop.Core.Services.Payment.PaymentMethodAdminModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settings");
+}
+
+<form method="POST" action="@Url.AbsoluteActionUrl("Edit")" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.PaymentMethodId)
+    @Html.HiddenFor(x => x.ModelType)
+
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.EnabledBack = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("PaymentMethods", "Settings")
+        };
+
+        headerModel.DefaultTitle = T("Admin.PaymentMethod.Edit.PaymentMethod").ToString() + " " + Model.Name;
+
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                            },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+    {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.Delete"),
+            Attributes = new string[] { "ng-click=\"paymentMethod.deleteMethod()\"" }
+        });
+
+
+        headerModel.Controls.Add(moreButton);
+        @Html.Header(headerModel)
+    }
+
+    <div class="ibox">
+        <div class="ibox-content">
+            @if (!isMobile)
+            {
+                <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="page-name-block-item-main">
+                            <h1 class="page-name-block-text sticky-page-name-text m-b-sm ">
+                                @T("Admin.PaymentMethod.Edit.PaymentMethod") - "@Model.Name"
+                            </h1>
+                            <div data-e2e="PaymentReturn" class="flex middle-xs">
+                                <a class="go-back" href="@Url.AbsoluteActionUrl("PaymentMethods", "Settings")">@T("Admin.PaymentMethod.Edit.Return")</a>
+
+                                @if (Model.Instruction != null)
+                                {
+
+                                    <a href="@Model.Instruction.Item1" target="_blank" class="p-l-sm link-academy">
+                                        <span class="adv-panel-info-icon-custom"></span>
+                                        <span class="p-l-xs">@Model.Instruction.Item2 </span>
+                                    </a>
+                                }
+
+
+                            </div>
+                        </div>
+
+                        <div class="page-name-block-item-additional">
+                            <button type="submit" data-e2e="PaymentAdd" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                                <i class="fa fa-check"></i> @T("Admin.Save")
+                            </button>
+                            <a href="" class="link-danger m-l-sm" ng-click="paymentMethod.deleteMethod()">@T("Admin.Delete")</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="m-t" ng-init="paymentMethod.init(@Model.PaymentMethodId, '@Model.Icon')">
+
+                @Html.Partial("_Common", Model)
+
+                @if (Model.PaymentViewPath != null && VirtualPathFactory.Exists(Model.PaymentViewPath))
+                {
+                    <div class="shipping-item-settings-header inline content-header setting__subtitle @(isMobile ? "m-b-lg" : "m-b-md")">
+                        @T("Admin.PaymentMethods.Edit.MethodSettings")
+                    </div>
+                    @Html.Partial(Model.PaymentViewPath, Model)
+                }
+
+                @Html.Partial("_CommonUrls", Model)
+                @if (Model.PaymentKey == "Cash" || Model.PaymentKey == "SberBank" || Model.PaymentKey == "Bill" || Model.PaymentKey == "CashOnDelivery" || Model.PaymentKey == "GiftCertificate" || Model.Instruction != null)
+                {
+                    <div class="form-group row setting__form-group">
+                        <div class="col-xs-12 col-md-9">
+                            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+                                @if (Model.Instruction != null)
+                                {
+
+                                    <a href="@Model.Instruction.Item1" target="_blank">@Model.Instruction.Item2</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+

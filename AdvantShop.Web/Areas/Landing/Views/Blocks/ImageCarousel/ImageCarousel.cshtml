@@ -1,0 +1,58 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<GalleryItemModel, OldGalleryItemModel>("items");
+}
+<div class="lp-area">
+    <div class="container-fluid">
+        <div class="lp-container">
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    @Html.BlockHeader(Model)
+                </div>
+                <div class="col-sm-11 col-xs-12" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "data-adv-baguette-box")>
+                    @if (items != null)
+                    {
+
+                        var itemsCount = LpService.PreviewInAdmin ? Math.Min(items.Count, 1) : items.Count;
+
+                        <slick settings='@Html.Raw(Model.Block.TryGetSetting("carouselOptions"))'>
+                            @for (var i = 0; i < itemsCount; i++)
+                            {
+                                <div class="image-carousel__item">
+                                    @if (!Model.Inplace)
+                                    {
+                                        @:<a href="@items[i].Picture.Src">
+                                    }
+
+                                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                    {
+                                        LandingPageId = Model.Block.LandingId,
+                                        BlockId = Model.Block.Id,
+                                        OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                        OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                        OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                        OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                        Current = items[i].Picture.Src,
+                                        GalleryIconsEnabled = false,
+                                        LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                        LazyLoadType = ePictureLoaderLazyLoadType.Carousel,
+                                        Parameters = "[{ postfix: 'preview'}]",
+                                        MaxWidthPicture = PictureLoaderImageSize.WallWidth,
+                                        MaxHeightPicture = PictureLoaderImageSize.WallHeight,
+                                        WidthPicture = items[i].Picture.Width,
+                                        HeightPicture = items[i].Picture.Height
+                                    })
+                                    @if (!Model.Inplace)
+                                    {
+                                    @:</a>
+                                    }
+                                </div>
+                            }
+                        </slick>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+﻿@{
+    Html.AddAsset("domainsManage");
+
+    var selectedValueDomainBinding = Request["selectedValueDomainBinding"];
+    var bindYourDomain = Request["bindYourDomain"];
+    var isOpenModalAddDomain = Request["isOpenModalAddDomain"];
+}
+@* @Html.Back("Системные настройки", Url.AbsoluteActionUrl("Index", "Settings")) *@
+
+
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Controls = new List<IButton>();
+        headerModel.Title = "<span>Домены</span>";
+
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            NgBackTriggerCallback = "domainsManage.iframeType === 'pay' ? domainsManage.switchOnDomainsManage(true) : domainsManage.switchOnPay()",
+            Attributes = "ng-if=\"domainsManage.iframeType != 'domainsManage'\""
+        };
+        
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.NgIsOpen = "domainsManage.togglePopover";
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Attributes = new[] { "ng-click=\"domainsManage.connectYourDomain('#iframeDomainsManage'); domainsManage.togglePopover = false;\"" },
+            Text = T("Подключить свой домен"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 24, height = 24 },
+
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            RowAttributes = new { ng_if = "domainsManage.iframeType !== 'pay'" },
+            Attributes = new[] { "ng-click=\"domainsManage.switchOnPay(); domainsManage.togglePopover = false;\"" },
+            Text = T("Купить домен"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "cart",
+                Attributes = new { width = 24, height = 24 },
+
+            }
+        });
+        
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+}
+<div ng-if="!domainsManage.pageIsReady && !domainsManage.loadedIframe">
+    <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div ng-if="domainsManage.pageIsReady">
+    <div class="js-iframe-wrap" ng-switch="domainsManage.iframeType">
+        <iframe id="iframeDomainsManage" ng-switch-when="domainsManage" ng-src="{{'@SettingsLic.DomainServiceUrl?lic=@SettingsLic.LicKey&ExecutionTime=@ViewBag.ExecutionTime&Hash=@ViewBag.Hash&selectedValueDomainBinding=@selectedValueDomainBinding&bindYourDomain=@bindYourDomain&isMobile=@isMobile&isOpenShopCollapse=@isOpenModalAddDomain' | sanitizeUrl}}" frameborder="0" width="100" scrolling="no" height="100" style="height:100vh; width: 100%;" name="shopDomain">
+            @T("Admin.Service.NotSupportFrames")
+        </iframe>
+        <iframe ng-switch-when="pay" ng-src="{{'@SettingsLic.BasePlatformUrl/shop/ShopDomainBuy.aspx?headerVisible=false&lic=@SettingsLic.LicKey&ExecutionTime=@ViewBag.ExecutionTime&Hash=@ViewBag.Hash' | sanitizeUrl}}" frameborder="0" width="100" scrolling="no" height="100" style="height:100vh; width: 100%;" name="payDomain">
+            @T("Admin.Service.NotSupportFrames")
+        </iframe>
+    </div>
+</div>

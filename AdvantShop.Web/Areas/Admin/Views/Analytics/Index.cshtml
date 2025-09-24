@@ -1,0 +1,387 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Analytics.AnalyticsReportModel
+@{
+    var currentCustomer = CustomerContext.CurrentCustomer;
+    var tabDefault = string.Empty;
+    var offerId = Request["offerId"];
+    var productId = Request["productId"];
+    if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders) && productId.IsNotEmpty())
+    {
+        tabDefault = "product";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Orders))
+    {
+        tabDefault = "orders";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Customers))
+    {
+        tabDefault = "rfm";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+    {
+        tabDefault = "abcxyz";
+    }
+}
+
+
+@section TopContent {
+    <div class="balance__padding-page balance__padding-page--bg-white m-b-md">
+        <div class="main-panel-page">
+            <div class="sticky-page-name-inner sticky-page-name p-b-n" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="page-name-block-item-main flex middle-xs">
+                        <h1 class="page-name-block-text sticky-page-name-text inline m-r-xs page-name-block-text--bigger">
+                            @T("Admin.Analytics.Analytics")
+                        </h1>
+                        <a href="https://www.advantshop.net/help/section/reports" target="_blank" class="p-l-sm link-academy link-invert inline-flex middle-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                            </svg>
+                            <span>@T("Admin.Analytics.InstructionsReports")</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="wrapper">
+
+<div ng-init="analyticsReport.init('@tabDefault')">
+    <div class="page-name-block m-b-md top-xs row">
+        <div class="page-name-block-item-additional col-xs-12">
+            <div class="row">
+                <div class="col-xs-slim" ng-if="analyticsReport.showDateFrom">
+                    <div class="m-b-xs">
+                        @T("Admin.Account.DateFrom")
+                    </div>
+
+                    <div>
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="analyticsReport.updateData()">
+                            <span class="flatpickr-custom-wrap">
+                                <input type="text" class="form-control input-alt"
+                                       ng-flatpickr-input
+                                       ng-model="analyticsReport.dateFrom"
+                                       ng-init="analyticsReport.dateFrom='@Model.DateFrom.ToString("yyyy-MM-dd")'">
+                                <span class="flatpickr-custom-clear" data-close data-clear>
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </span>
+                            <span class="input-group-addon" data-toggle>
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-slim" ng-if="analyticsReport.showDateTo">
+                    <div class="m-b-xs">
+                        @T("Admin.Account.DateTo")
+                    </div>
+                    <div>
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="analyticsReport.updateData()">
+                            <span class="flatpickr-custom-wrap">
+                                <input type="text" class="form-control input-alt"
+                                       ng-flatpickr-input
+                                       ng-model="analyticsReport.dateTo"
+                                       ng-init="analyticsReport.dateTo='@Model.DateTo.ToString("yyyy-MM-dd")'">
+                                <span class="flatpickr-custom-clear" data-close data-clear>
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </span>
+                            <span class="input-group-addon" data-toggle>
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-slim ng-cloak" ng-if="analyticsReport.showPaid">
+                    <div class="m-b-xs">
+                        @T("Admin.Analytics.Paid")
+                    </div>
+                    <div>
+                        @Html.DropDownListFor(x => x.Paid, Model.PaidItems, new { @class = "form-control input-alt", ng_model = "analyticsReport.paid", ng_init = "analyticsReport.paid='" + Model.Paid + "'", ng_change = "analyticsReport.updateData()" })
+                    </div>
+                </div>
+
+                <div class="col-xs-slim ng-cloak" ng-if="analyticsReport.showOrderStatus">
+                    <div class="m-b-xs">
+                        @T("Admin.Analytics.Status")
+                    </div>
+                    @Html.DropDownListFor(x => x.OrderStatus, Model.OrderStatuses, new { @class = "form-control input-alt", ng_model = "analyticsReport.orderStatus", ng_init = "analyticsReport.orderStatus='" + Model.OrderStatus + "'", ng_change = "analyticsReport.updateData()" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="m-t">
+
+<div class="row">
+
+<div class="col-xs-3 col-wl-2">
+    <div>
+        <div class="aside-menu">
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='orders'}" href="" ng-click="analyticsReport.showTab('orders')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Orders")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='rfm'}" href="" ng-click="analyticsReport.showTab('rfm')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Customers")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='abcxyz'}" href="" ng-click="analyticsReport.showTab('abcxyz')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Goods")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.BonusSystem) && Model.BonusSystemActive)
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='bonus'}" href="" ng-click="analyticsReport.showTab('bonus')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Bonus")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='product'}" href="" ng-click="analyticsReport.showTab('product')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Product")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='offer'}" href="" ng-click="analyticsReport.showTab('offer')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Offer")</div>
+                    </div>
+                </a>
+            }
+            @*@if (currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='vortex'}" href="" ng-click="analyticsReport.showTab('vortex')">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">@T("Admin.Analytics.SalesFunnel")</div>
+                </div>
+            </a>
+        }*@
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='telephony'}" href="" ng-click="analyticsReport.showTab('telephony')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Telephony")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='managers'}" href="" ng-click="analyticsReport.showTab('managers')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Managers")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='emailMailing'}" href="" ng-click="analyticsReport.showTab('emailMailing')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.Emailing")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='searchRequests'}" href="" ng-click="analyticsReport.showTab('searchRequests')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Analytics.SearchRequests")</div>
+                    </div>
+                </a>
+            }
+
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders) || currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <h3 class="m-t-lg">@T("Admin.Analytics.ExportToExcel")</h3>
+            }
+
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='exportProducts'}" href="" ng-click="analyticsReport.showTab('exportProducts')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Home.Menu.StatisticExportProducts")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='exportCustomers'}" href="" ng-click="analyticsReport.showTab('exportCustomers')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Home.Menu.StatisticExportCustomers")</div>
+                    </div>
+                </a>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <a class="aside-menu-row settigs-menu-row link-invert link-decoration-none" ng-class="{'selected':analyticsReport.selectedTab=='exportOrders'}" href="" ng-click="analyticsReport.showTab('exportOrders')">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">@T("Admin.Home.Menu.StatisticExportOrders")</div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-9 col-wl-10">
+    <div class="ibox">
+        <div ng-class="{'ibox-content': analyticsReport.selectedTab !== 'emailMailing' && analyticsReport.selectedTab !== 'telephony'}">
+            <div ng-class="{'container-fluid': analyticsReport.selectedTab !== 'emailMailing' && analyticsReport.selectedTab !== 'telephony'}">
+                <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+
+                    @{
+                        var paramDateFrom = "analyticsReport.dateFrom || " + "'" + Model.DateFrom.ToString("yyyy-MM-dd") + "'";
+                        var paramDateTo = "analyticsReport.dateTo || " + "'" + Model.DateTo.ToString("yyyy-MM-dd") + "'";
+                        var paramPaid = "analyticsReport.paid ||" + Model.Paid;
+                        var paramOrderStatus = "analyticsReport.orderStatus || " + Model.OrderStatus;
+                    }
+
+                    <div ng-switch="analyticsReport.selectedTab">
+                        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="orders">
+                                <div in-view="analyticsReport.inViewOrders = $inview"> <!--"analyticsReport.inViewOrders" --> 
+                                    <orders-analysis class="analytics-page__orders-analysis" 
+                                                     data-is-visible="true"
+                                                     on-init="analyticsReport.onInitOrders(orders, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                                     on-destroy="analyticsReport.onDestroyOrders()">
+                                    </orders-analysis>
+                                </div>
+                                <div in-view="analyticsReport.inViewProfit = $inview"> <!--"analyticsReport.inViewProfit" -->  
+                                    <profit class="analytics-page__profit" 
+                                            data-is-visible="true"
+                                            on-init="analyticsReport.onInitProfit(profit, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                            on-destroy="analyticsReport.onDestroyProfit()"></profit>
+                                </div>
+                                <div in-view="analyticsReport.inViewAvgcheck = $inview"> <!--"analyticsReport.inViewAvgcheck" --> 
+                                    <avgcheck class="analytics-page__avgcheck" 
+                                              data-is-visible="true" 
+                                              on-init="analyticsReport.onInitAvgcheck(avgcheck, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                              on-destroy="analyticsReport.onDestroyAvgcheck()"></avgcheck>
+                                </div>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+                        {
+                            <div ng-switch-when="rfm">
+                                <rfm on-init="analyticsReport.onInitRfm(rfm, @paramDateFrom, @paramDateTo)"></rfm>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+                        {
+                            <div ng-switch-when="abcxyz">
+                                <abcxyz-analysis on-init="analyticsReport.onInitAbcxyz(abcxyz, @paramDateFrom, @paramDateTo)"></abcxyz-analysis>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.BonusSystem) && Model.BonusSystemActive)
+                        {
+                            <div ng-switch-when="bonus">
+                                <bonus on-init="analyticsReport.onInitBonus(bonus, @paramDateFrom, @paramDateTo)"></bonus>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="product">
+                                <product-report on-init="analyticsReport.onInitProductReport(productreport, @paramDateFrom, @paramDateTo, @paramPaid, @(productId.IsNotEmpty() ? productId : "null"))"
+                                                on-change="analyticsReport.onChangeProductReport(productId)">
+                                </product-report>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="offer">
+                                <offer-report on-init="analyticsReport.onInitOfferReport(offerreport, @paramDateFrom, @paramDateTo, @paramPaid, @(offerId.IsNotEmpty() ? offerId : "null"))"
+                                              on-change="analyticsReport.onChangeOfferReport(offerId)">
+                                </offer-report>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+                        {
+                            <div ng-switch-when="telephony">
+                                <uib-tabset active uid="telephonyTab">
+                                    <uib-tab index="'callAnalytics'" heading="@T("Admin.Telephony.CallAnalytics")" classes="ng-tab">
+                                        <telephony class="container-fluid" on-init="analyticsReport.onInitTelephony(telephony, @paramDateFrom, @paramDateTo)"></telephony>
+                                    </uib-tab>
+                                    <uib-tab index="'callLog'" heading="@T("Admin.Telephony.CallLog")" classes="ng-tab">
+                                        <telephony-call-log on-init="analyticsReport.onInitTelephonyCallLog(telephony, @paramDateFrom, @paramDateTo)"></telephony-call-log>
+                                    </uib-tab>
+                                </uib-tabset>
+
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="managers">
+                                <managers-report on-init="analyticsReport.onInitManagers(managers, @paramDateFrom, @paramDateTo)"></managers-report>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+                        {
+                            <div ng-switch-when="emailMailing">
+                                <uib-tabset active uid="catalogTab">
+                                    <uib-tab index="'common'" heading="@T("Admin.ManualEmailings.EmailingsWith")" classes="ng-tab">
+                                        <emailings-with on-init="analyticsReport.onInitEmailMailing(emailingsWith)"></emailings-with>
+                                    </uib-tab>
+                                    <uib-tab index="'common1'" heading="@T("Admin.ManualEmailings.EmailingsWithous")" classes="ng-tab">
+                                        <emailings-without on-init="analyticsReport.onInitEmailMailing(emailingsWithout)"></emailings-without>
+                                    </uib-tab>
+                                </uib-tabset>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+                        {
+                            <div ng-switch-when="searchRequests">
+                                <search-requests on-init="analyticsReport.onInitSearchRequests(searchRequests)"></search-requests>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="exportProducts">
+                                <export-products on-init="analyticsReport.onInitExportExcel()"></export-products>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+                        {
+                            <div ng-switch-when="exportCustomers">
+                                <export-customers on-init="analyticsReport.onInitExportExcel()"></export-customers>
+                            </div>
+                        }
+                        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+                        {
+                            <div ng-switch-when="exportOrders">
+                                <export-orders on-init="analyticsReport.onInitExportExcel()"></export-orders>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+</div>

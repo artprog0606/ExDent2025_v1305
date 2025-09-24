@@ -1,0 +1,31 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model SubBlockPictureModel
+@{
+    var imageSrc = Model.SubBlock.TryGetSetting("src");
+    int? width = Model.SubBlock.TryGetSetting("width");
+    int? height = Model.SubBlock.TryGetSetting("height");
+    bool lazyLoadEnabled = Model.SubBlock.TryGetSetting("lazyLoadEnabled") != null ? Model.SubBlock.TryGetSetting("lazyLoadEnabled") : (Model.PictureModel.LazyLoadEnabled.HasValue ? Model.PictureModel.LazyLoadEnabled : true);
+}
+
+<div class="@Model.SubBlock.TryGetSetting("class")">
+    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+    {
+        LandingPageId = Model.ParentBlock.LandingId,
+        BlockId = Model.SubBlock.LandingBlockId,
+        Current = imageSrc ?? "areas/landing/frontend/images/nophoto.jpg",
+        DeletePicture = Model.PictureModel.DeletePicture,
+        OnApply = "subblockInplace.savePicture(result)",
+        OnResize = "subblockInplace.resizePicture(result)",
+        OnLazyLoadChange = "subblockInplace.onLazyLoadChange(result)",
+        LazyLoadEnabled = lazyLoadEnabled,
+        LazyLoadType = Model.PictureModel.LazyLoadType,
+        Type = Model.SubBlock.TryGetSetting("type"),
+        GalleryIconsEnabled = Model.PictureModel.GalleryIconsEnabled,
+        CropperParams = Model.PictureModel.CropperParams,
+        MaxWidthPicture = Model.PictureModel.MaxWidthPicture,
+        MaxHeightPicture = Model.PictureModel.MaxHeightPicture,
+        ImageLink = Model.PictureModel.ImageLink,
+        WidthPicture = width,
+        HeightPicture = height
+    })
+</div>

@@ -1,0 +1,237 @@
+﻿@using AdvantShop.Trial;
+@using AdvantShop.Track;
+@using AdvantShop.Saas;
+@using AdvantShop.Helpers;
+@using AdvantShop.Core.Services.Domains;
+@model  AdvantShop.Web.Admin.ViewModels.Shared.Common.TopMenuViewModel
+@{
+    var cookieMenu = CommonHelper.GetCookie("adminSidebarMenu");
+    var result = Html.Action("GetShowCaseList", "Common");
+    var isEmptyResult = !string.IsNullOrWhiteSpace(result.ToHtmlString());
+}
+@Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/Common/_SaasWarningMessage.cshtml")
+<div class="top-panel">
+    <nav class="top-panel__list" role="navigation">
+        <div class="top-panel__item">
+            <div class="top-panel__sublist">
+                <div class="top-panel__item @(Model.IsDashboard ? "top-panel__burger-wrap" : null)">
+                    <button type="button" class="burger" data-sidebar-menu-trigger data-ng-click="sidebarMenuTrigger.toggle()">
+                        <span class="burger__item"></span>
+                        <span class="burger__item"></span>
+                        <span class="burger__item"></span>
+                    </button>
+                </div>
+                <div class="top-panel__item"
+                     @Html.Raw(Model.IsDashboard ? ("data-sidebar-menu-state " + (cookieMenu != null && cookieMenu.Value == "true" && SettingsDesign.IsMobileTemplate == false ? "class='ng-hide'" : "") + "ng-class=\"{'ng-hide': sidebarMenuState.isCompact}\"") : "")>
+                    <div class="logo-block-inner" style="width:auto;">
+                        <div class="logo-block-cell logo-block-cell-logo @(!isEmptyResult ? "logo-block-cell-logo--increase-width" : null)" data-ng-controller="ChangeAdminShopNameCtrl as changeAdminShopName">
+
+                            @if (Model.IsDashboard)
+                            {
+
+                                <a href="@UrlService.GetAdminUrl(useAdminAreaTemplates:true)"
+                                   ng-hide="sidebarMenuState.isCompact"
+                                   class="logo-block-cell-logo-link ng-hide">
+                                    @T("Admin.Common.TopPanel.Logo")
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="top-menu-block-shopname">
+                                    <a href="@UrlService.GetAdminUrl(useAdminAreaTemplates:true)" 
+                                       class="logo-block-cell-link top-menu-shopname ng-cloak" 
+                                       shop-name shop-name-callback="changeAdminShopName.shopname = shopName"
+                                       title="{{changeAdminShopName.shopname || shopName}}">
+                                        @{
+                                            string shopname = SettingsMain.AdminShopName.IsNotEmpty() ? SettingsMain.AdminShopName : (SettingsMain.AdminShopName = TrialService.IsTrialEnabled ? SettingsMain.ShopName : SettingsMain.SiteUrl.Replace("http://", "").Replace("https://", "").Replace("www.", ""));
+                                        }
+                                        <span class="logo-block-cell-text" ng-bind="changeAdminShopName.shopname || shopName">
+                                            @shopname
+                                        </span>
+                                    </a>
+                                    <ui-modal-trigger data-controller="'ModalChangeAdminShopNameCtrl'"
+                                                      template-url="@Html.GetAssetPath("ChangeAdminShopName.html")"
+                                                      data-resolve="{data: {name: changeAdminShopName.shopname}}"
+                                                      data-on-close="changeAdminShopName.decodeAndSetShopName(result.name)">
+                                        <a href="" class="top-menu-shopname-edit fas fa-pencil-alt" title="@T("Admin.Common.TopMenu.Change")"></a>
+                                    </ui-modal-trigger>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @if (isEmptyResult)
+                {
+                    <div class="top-panel__item" data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': 'body', 'delayHover': 100}">
+                        @result
+                    </div>
+
+                }
+
+                <div class="top-panel__item">
+                    <a href="@Url.AbsoluteActionUrl("SupportCenter", "Service")" class="text-decoration-none link-invert m-l-xs inline">@T("Admin.Home.Menu.Support")</a>
+                </div>
+                <div class="top-panel__item">
+                    <a href="https://www.advantshop.net/service" target="_blank" class="text-decoration-none link-invert m-l-xs inline">@T("Admin.Common.TopPanel.OrderImplementation")</a>
+                </div>
+
+                @if (DomainService.IsAvalable())
+                {
+                    <div class="top-panel__item">
+                        <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")">Управление доменами</a>
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="top-panel__item @(Model.IsDashboard ? "top-panel__item--new-dashboard" : "top-panel__item--old-dashboard")">
+            <div class="top-panel__item top-panel__item--search ">
+                <div class="top-panel__sublist">
+                    <div class="top-panel__item top-panel__item--grow">
+                        @Html.Action("SearchBlock", "Search")
+                    </div>
+                </div>
+            </div>
+            @if (SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled)
+            {
+                <div class="top-panel__item top-panel__item--saas-block">
+                    @Html.Partial("~/Areas/Admin/Views/Common/SaasBlock.cshtml")
+                </div>
+            }
+            <div class="top-panel__item">
+                <div class="flex middle-xs">
+                    <div class="m-r-md">
+                        <ul class="nav" data-submenu-container="{'type': 'modern', checkOrientation:true}">
+                            <li class="side-menu-item top-panel__icon dropdown" data-submenu-parent @*ng-show="@Model.ShowAddMenu.ToLowerString()"*@>
+                                <a href="" class="top-panel__link-add js-menu-link">
+                                    <svg class="top-panel__link-add--icon" width="17" height="18" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.55596 7.85825C1.00368 7.85825 0.555962 8.30597 0.555962 8.85825C0.555962 9.41054 1.00368 9.85825 1.55596 9.85825L7.18918 9.85825L7.18918 15.775C7.18918 16.3272 7.63689 16.775 8.18918 16.775C8.74146 16.775 9.18918 16.3272 9.18918 15.775L9.18918 9.85825L15.1058 9.85825C15.6581 9.85825 16.1058 9.41054 16.1058 8.85825C16.1058 8.30597 15.6581 7.85825 15.1058 7.85825H9.18918L9.18918 2.22515C9.18918 1.67286 8.74146 1.22515 8.18918 1.22515C7.63689 1.22515 7.18918 1.67286 7.18918 2.22515L7.18918 7.85825L1.55596 7.85825Z" fill="#2D9CEE" />
+                                    </svg>
+                                </a>
+
+                                <ul role="menu" class="dropdown-menu side-menu__submenu submenu" data-submenu data-submenu-offset-bottom="50">
+                                    @if (Model.DisplayOrders)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Orders")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Order');">
+                                                @T("Admin.Common.LeftMenu.Order")
+                                            </a>
+                                        </li>
+
+                                        <li class="divider">
+                                        </li>
+                                    }
+                                    @if (Model.DisplayCrm)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddLeadCtrl'" controller-as="ctrl" size="lg" backdrop="static" template-url="@Html.GetAssetPath("addLead.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Lead');">
+                                                    @T("Admin.Common.LeftMenu.Lead")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+
+                                        if (!Model.DisplayTasks)
+                                        {
+                                            <li class="divider">
+                                            </li>
+                                        }
+                                    }
+
+                                    @if (Model.DisplayTasks)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" size="xs-8 modal-md-6" data-controller="'ModalAddTaskCtrl'" controller-as="ctrl" data-resolve="{redirectToTasks: true}" size="lg" backdrop="static" template-url="@Html.GetAssetPath("addTask.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Task');">
+                                                    @T("Admin.Common.LeftMenu.Task")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                    }
+                                    @if (Model.DisplayCustomers)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Customers")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Customer');">
+                                                @T("Admin.Common.LeftMenu.Customer")
+                                            </a>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                    }
+
+                                    @if (Model.DisplayCatalog)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddProductCtrl'" data-controller-as="ctrl" template-url="@Html.GetAssetPath("AddProduct.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Product');">
+                                                    @T("Admin.Common.LeftMenu.Goods")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "Category", new { parentId = 0 })" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'Category');">
+                                                @T("Admin.Common.LeftMenu.Category")
+                                            </a>
+                                        </li>
+
+                                        <li class="divider">
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddProductListCtrl'" template-url="@Html.GetAssetPath("addProductList.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'ProductsList');">
+                                                    @T("Admin.Common.LeftMenu.ListOfGoods")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddCategoryListCtrl'" template-url="@Html.GetAssetPath("addCategoryList.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'CategoriesList');">
+                                                    @T("Admin.Common.LeftMenu.ListOfCategories")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                    }
+                                    @if (Model.DisplayCms)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-menu-link js-menu-link" href="@Url.AbsoluteActionUrl("Add", "News")" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'News');">
+                                                @T("Admin.Common.LeftMenu.News")
+                                            </a>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                    }
+                                    @if (Model.DisplayBooking)
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-controller="'ModalAddUpdateBookingCtrl'" controller-as="ctrl" size="xs-11" backdrop="static" window-class="modal--panel modal-booking-sheduler" opened-class="modal-open--panel" data-resolve="{params: {affiliateId : bookingJournal.affiliateId, beginDate: bookingJournal.sheduler.date, redirectToBooking: true}}" on-close="bookingJournal.modalBookingClose(result)" template-url="@Html.GetAssetPath("addUpdateBooking.html")">
+                                                <a href="" class="dropdown-menu-link js-menu-link" onclick="return advTrack('@ETrackEvent.Core_Common_LeftMenu_QuickAdd.ToString()', 'CategoriesList');">
+                                                    @T("Admin.Common.TopMenu.Booking")
+                                                </a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                    }
+
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div class="m-r-md">
+                        <div class="top-panel__icon">
+                            @Html.Action("Notification", "Common", new { area = "adminv3" })
+                        </div>
+                    </div>
+                    @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/Common/TopPanelUser.cshtml")
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

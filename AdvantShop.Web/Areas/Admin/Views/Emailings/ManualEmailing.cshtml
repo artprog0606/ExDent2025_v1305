@@ -1,0 +1,42 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Emailings.ManualEmailingViewModel
+@{
+    Layout = null;
+}
+
+@*<div class="row m-b">
+    <div class="col-xs-12">
+        <div class="breadcrumb--admin">
+            <a class="breadcrumb__item--admin breadcrumb__link--admin" href="emailings/manualemailings">@T("Admin.ManualEmailings.Title")</a>
+            <span class="breadcrumb__item--admin breadcrumb__separator--admin">></span>
+            <span class="breadcrumb__item--admin breadcrumb__item--admin">@T("Admin.Analytics.EmailingAnalytics")</span>
+        </div>
+    </div>
+</div>*@
+
+<div class="sticky-page-name" sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main">
+            <h1 class="page-name-block-text sticky-page-name-text">
+                @T("Admin.Analytics.EmailingAnalytics")
+            </h1>
+        </div>
+    </div>
+</div>
+@if (!SettingsMail.UseAdvantshopMail)
+{
+    @Html.Partial("AnalyticsUnavailable")
+}
+else
+{
+    <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+        <div ng-controller="ManualEmailingCtrl as manualEmailing" data-ng-init="manualEmailing.init('@Model.Id')">
+            <emailing-analytics emailing-id="@Model.Id"
+                                email-subject="@Model.Name"
+                                send-time="@Model.SendTime.ToString("dd.MM.yy HH:mm:ss")"
+                                email-log-click="$ctrl.changeView('log', '@Model.Id', logGridParams)"
+                                email-data-url="emailings/getManualEmailingAnalytics"
+                                email-come-back-click="$ctrl.changeView('default')"
+                                hide-flatpickr="true"></emailing-analytics>
+        </div>
+    </div>
+}

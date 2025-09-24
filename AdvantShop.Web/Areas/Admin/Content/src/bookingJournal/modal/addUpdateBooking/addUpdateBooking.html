@@ -1,0 +1,408 @@
+<form novalidate name="bookingAddUpdateForm" class="js-add-update-booking-modal-body" is-mobile ng-class="{'modal-body' : !isMobile.value}">
+    <!--<div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{ctrl.mode === 'add' ? ('Admin.Js.AddUpdateBooking.Add'|translate) : (('Admin.Js.AddUpdateBooking.Edit'|translate) + ctrl.bookingInfo.id)}}</h2>
+        <div class="page-name-block-item-additional">
+            <button type="button" class="btn btn-sm btn-red-white btn-default" ng-click="ctrl.deleteBooking()" ng-if="ctrl.mode !== 'add' && ctrl.bookingInfo.status != 'completed'">Удалить</button>
+        </div>
+    </div>-->
+
+    <div class="sticky-page-name sticky-page-name-in-modal--panel" sticky sticky-top="0" sticky-spy=".js-add-update-booking-modal-body">
+        <div ng-if="!isMobile.value" class="page-name-block sticky-page-name-inner m-b-sm">
+            <div class="page-name-block-item-main m-l">
+                <div
+                    class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name"
+                    ng-class="{'modal-header-title' : isMobile.value}">
+                    {{ctrl.mode === 'add' ? ('Admin.Js.AddUpdateBooking.Add'|translate) : (('Admin.Js.AddUpdateBooking.Edit'|translate) + ' ' +
+                    ctrl.bookingInfo.id)}}
+                </div>
+            </div>
+            <div class="page-name-block-item-additional">
+                <span class="ng-cloak m-r-xs" ng-if="ctrl.isPaied && ctrl.summary.ShowCreateBillingLink">
+                    <a ng-if="ctrl.canBeEditing" href="" ng-click="ctrl.createOrder()"> Создать заказ </a>
+                </span>
+                <span class="ng-cloak m-r-xs" ng-if="!ctrl.isPaied && ctrl.mode === 'edit'">
+                    <a ng-if="ctrl.summary.ShowCreateBillingLink && ctrl.canBeEditing" href="" ng-click="ctrl.createPaymentLink()">
+                        Создать ссылку на оплату
+                    </a>
+                    <ui-modal-trigger
+                        ng-if="ctrl.summary.ShowSendBillingLink"
+                        data-controller="'ModalGetBillingLinkCtrl'"
+                        data-controller-as="ctrl"
+                        data-resolve="{params: { orderId: ctrl.bookingInfo.orderId }}"
+                        template-url="../areas/admin/content/src/order/modal/getBillingLink/getBillingLink.html">
+                        <a href="">Ссылка на оплату</a>
+                    </ui-modal-trigger>
+                </span>
+                <div class="inline m-r-md" ng-if="ctrl.canBeEditing">
+                    <switcher-state
+                        checked="ctrl.bookingInfo.payed"
+                        text-off="Не оплачена"
+                        text-on="Оплачена"
+                        on-change="ctrl.changePay(checked)"></switcher-state>
+                </div>
+                <button
+                    type="button"
+                    class="btn btn-red-white btn-default"
+                    ng-class="{'btn-sm' : !isMobile.value}"
+                    ng-click="ctrl.deleteBooking(); ctrl.btnLoading = true"
+                    ng-if="ctrl.canBeDeleted && ctrl.mode !== 'add' && ctrl.bookingInfo.status != 'completed'"
+                    ladda="ctrl.btnLoading">
+                    Удалить
+                </button>
+                <button
+                    data-e2e="BookingAdd"
+                    class="btn btn-sm btn-success"
+                    type="submit"
+                    ng-if="ctrl.canBeEditing"
+                    button-validation
+                    button-validation-success="ctrl.addUpdateBooking(); ctrl.btnLoading = true"
+                    ladda="ctrl.btnLoading">
+                    {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+                </button>
+            </div>
+        </div>
+        <ui-modal-cross></ui-modal-cross>
+    </div>
+
+    <div
+        ng-if="isMobile.value"
+        class="sticky-page-name sticky-page-name--nextgen"
+        ng-class="{'modal-header' : isMobile.value, 'lead-info__header' : !isMobile.value}">
+        <div class="page-name-block sticky-page-name-inner lead-info__header-cols middle-xs">
+            <div
+                ng-if="ctrl.mode === 'edit'"
+                class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name"
+                ng-class="{'lead-info__title flex-grow' : isMobile.value}">
+                {{'№' + ctrl.bookingInfo.id}}
+            </div>
+            <div
+                ng-if="ctrl.mode === 'add'"
+                class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name"
+                ng-class="{'modal-header-title flex-grow' : isMobile.value}">
+                Добавить бронь
+            </div>
+            <div class="page-name-block-item-additional lead-info__header-buttons middle-xs">
+                <!--<div>
+                    <button data-e2e="BookingAdd" class="btn btn-sm btn-success m-r-sm" type="submit" ng-if="ctrl.canBeEditing" ng-disabled="ctrl.mode !== 'add' && !ctrl.isLoaded()" button-validation button-validation-success="ctrl.addUpdateBooking(); ctrl.btnLoading = true" ladda="ctrl.btnLoading">{{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}</button>
+                </div>-->
+                <div
+                    ng-if="ctrl.mode === 'edit' && ctrl.canBeDeleted && ctrl.mode !== 'add' && ctrl.bookingInfo.status != 'completed'"
+                    class=""
+                    popover-class="more-button-popover"
+                    uib-popover-template="'Itemsss.html'"
+                    popover-append-to-body="true">
+                    <button type="button" class="btn btn--simple btn-secondary btn--with-icon btn--only-icon lead-info__more-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                                fill="currentColor" />
+                            <path
+                                d="M12 20C13.1046 20 14 19.1046 14 18C14 16.8954 13.1046 16 12 16C10.8954 16 10 16.8954 10 18C10 19.1046 10.8954 20 12 20Z"
+                                fill="currentColor" />
+                            <path
+                                d="M12 8C13.1046 8 14 7.10457 14 6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6C10 7.10457 10.8954 8 12 8Z"
+                                fill="currentColor" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-class="{'modal-body' : isMobile.value}">
+        <div ng-if="isMobile.value && ctrl.canBeEditing" class="form-group funnel__switcher-state-wrap">
+            <switcher-state
+                checked="ctrl.bookingInfo.payed"
+                text-off="Не оплачена"
+                text-on="Оплачена"
+                on-change="ctrl.changePay(checked)"></switcher-state>
+        </div>
+
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="row">
+                <div class="col-xs-12 col-md-4 col-wl-3">
+                    <div class="aside-menu">
+                        <!--booing description-->
+                        <div class="ibox">
+                            <div class="ibox-content block-additional-parameters-content block-additional-parameters-content--padding-mid">
+                                <div class="form-horizontal" ng-class="{'container-fluid' : !isMobile.value}">
+                                    <booking-info
+                                        booking-info="ctrl.bookingInfo"
+                                        mode="ctrl.mode"
+                                        can-be-editing="ctrl.canBeEditing"
+                                        params="ctrl.params"
+                                        on-init="ctrl.bookingInfoOnInit(bookingInfo)">
+                                    </booking-info>
+                                </div>
+                            </div>
+                        </div>
+
+                        <booking-customer
+                            customer="ctrl.customer"
+                            mode="ctrl.mode"
+                            can-be-editing="ctrl.canBeEditing"
+                            on-init="ctrl.bookingCustomerOnInit(bookingCustomer)"
+                            params="ctrl.params"
+                            booking-events="ctrl.bookingEvents">
+                        </booking-customer>
+
+                        <!--attached files-->
+                        <div class="ibox" ng-if="ctrl.mode === 'edit'" ng-class="{'form-group' : isMobile.value}">
+                            <div class="ibox-content block-additional-parameters-content">
+                                <h3 class="m-b-md" ng-class="{'funnel__subtitle' : isMobile.value}">Прикрепленные файлы</h3>
+                                <ol class="p-l-sm ng-cloak" ng-if="ctrl.attachments.length > 0">
+                                    <li class="word-break" ng-repeat="attachment in ctrl.attachments track by $index">
+                                        <a
+                                            href=""
+                                            target="_blank"
+                                            ng-href="{{attachment.FilePathAdmin}}"
+                                            ng-bind="attachment.OriginFileName"
+                                            data-e2e="attachedFileName"></a>
+                                        - <span ng-bind="attachment.FileSize"></span>
+                                        <a
+                                            href=""
+                                            ng-click="ctrl.deleteAttachment(attachment.Id)"
+                                            class="fa fa-times link-invert link-decoration-none"
+                                            title="Удалить"
+                                            data-e2e="attachedFileDelete"></a>
+                                    </li>
+                                </ol>
+                                <p class="ng-cloak" ng-if="ctrl.attachments.length == 0">Нет файлов</p>
+                                <figure class="" ng-if="ctrl.canBeEditing">
+                                    <button
+                                        class="btn btn-action btn-sm"
+                                        type="button"
+                                        ngf-drop
+                                        ngf-max-size="15MB"
+                                        ngf-select=""
+                                        multiple
+                                        ngf-change="ctrl.uploadAttachment($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                                        ladda="ctrl.loadingFiles">
+                                        <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">Прикрепить файл</span>
+                                    </button>
+                                    <help-trigger class="ng-cloak m-l-xs" ng-if="ctrl.attachmentHelpText" use-template="true">
+                                        <div class="help-content">{{ctrl.attachmentHelpText}}</div>
+                                    </help-trigger>
+                                </figure>
+                            </div>
+                        </div>
+
+                        <!--templateDocx-->
+                        <div class="ibox" ng-if="ctrl.mode === 'edit'" ng-class="{'form-group' : isMobile.value}">
+                            <div class="ibox-content block-additional-parameters-content">
+                                <h3 class="m-b-md" ng-class="{'funnel__subtitle' : isMobile.value}">Генерация документов</h3>
+                                <div ng-if="ctrl.templatesDocx.length > 0">
+                                    <div>Выберите шаблоны:</div>
+                                    <div class="p-b-sm">
+                                        <div ng-repeat="template in ctrl.templatesDocx track by template.Id">
+                                            <label class="adv-checkbox-label form-label-block">
+                                                <input
+                                                    type="checkbox"
+                                                    checklist-model="ctrl.selectedTemplatesDocx"
+                                                    checklist-value="template.Id"
+                                                    class="adv-checkbox-input" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                {{template.Name}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="btn btn-success btn-sm"
+                                        type="button"
+                                        ladda="ctrl.creatingDocxs"
+                                        disabled
+                                        ng-disabled="!ctrl.selectedTemplatesDocx || ctrl.selectedTemplatesDocx.length === 0"
+                                        ng-click="ctrl.createDocx()">
+                                        <span
+                                            class="fa fa-download"
+                                            ng-class="{'fa-plus': ctrl.templatesDocxAttach, 'fa-download': !ctrl.templatesDocxAttach}"></span>
+                                        Создать документы
+                                    </button>
+                                    <label class="adv-checkbox-label" ng-if="ctrl.canBeEditing">
+                                        <input
+                                            id="BookingTemplatesDocxAttach"
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox"
+                                            ng-model="ctrl.templatesDocxAttach" />
+                                        <span class="adv-checkbox-emul"></span>
+                                        Прикрепить к файлам
+                                    </label>
+                                </div>
+                                <p class="ng-cloak" ng-class="{'m-b-none' : isMobile.value}" ng-if="ctrl.templatesDocx.length === 0">Нет шаблонов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-8 col-wl-9">
+                    <div
+                        class="ibox m-b"
+                        ng-show="ctrl.mode === 'add' || ctrl.gridBookingItemsOptions.data.length > 0 || !ctrl.bookingEvents || !ctrl.bookingEvents.data || ctrl.bookingEvents.data.length == 0 || !ctrl.canBeEditing">
+                        <!--|| !ctrl.customer.customerId-->
+                        <div class="ibox-content">
+                            <div class="m-b-sm" ng-class="{'flex between-xs middle-xs' : isMobile.value}">
+                                <div class="flex between-xs inline">
+                                    <h3
+                                        class="page-name-block-text"
+                                        ng-class="{'form-control-title form-control-title--middle setting__subtitle setting--m-none' : isMobile.value}">
+                                        {{'Admin.Js.AddUpdateBooking.Content'|translate}}
+                                    </h3>
+                                </div>
+                                <ui-modal-trigger
+                                    class="pull-right"
+                                    size="xs-11"
+                                    data-controller="'ModalBookingServicesSelectvizrCtrl'"
+                                    data-controller-as="ctrl"
+                                    data-resolve="{params:{affiliateId: ctrl.bookingInfo.affiliateId, reservationResourceId: ctrl.bookingInfo.reservationResourceId}}"
+                                    data-on-close="ctrl.addServicesModal(result)"
+                                    template-url="../areas/admin/content/src/_shared/modal/bookingServicesSelectvizr/bookingServicesSelectvizr.html"
+                                    ng-if="ctrl.canBeEditing && !ctrl.isPaied">
+                                    <a href="" ng-class="{'btn btn-sm btn-success' : !isMobile.value}">
+                                        <span ng-class="{'fa fa-plus' : !isMobile.value}"></span>
+                                        {{'Admin.Js.AddUpdateBooking.AddService'|translate}}
+                                    </a>
+                                </ui-modal-trigger>
+                            </div>
+                            <div class="m-b">
+                                <div>
+                                    <ui-grid-custom
+                                        grid-unique-id="{{ctrl.gridUniqueId}}"
+                                        grid-on-init="ctrl.gridBookingItemsOnInit(grid)"
+                                        grid-filter-enabled="false"
+                                        grid-pagination-enabled="false"
+                                        grid-selection-enabled="false"
+                                        grid-options="ctrl.gridBookingItemsOptions"
+                                        grid-extend-ctrl="ctrl"
+                                        grid-on-inplace-before-apply="ctrl.gridOnInplaceBeforeApply(rowEntity, colDef, newValue)"
+                                        grid-empty-text="ctrl.canBeEditing ? ('Admin.Js.AddUpdateBooking.SelectServices'|translate) : 'Нет услуг'"
+                                        grid-swipe-line="true">
+                                        <ui-grid-custom-override-control class="ng-cloak">
+                                            <div class="card card--image-horizontal product-item">
+                                                <div class="product-item__link card__image-wrap">
+                                                    <img
+                                                        class="product-item__img"
+                                                        ng-src="{{row.entity.ImageSrc || '../images/nophoto_small.png'}}" />
+                                                </div>
+                                                <div class="card__content" style="display: block">
+                                                    <div class="product-item__header">
+                                                        <div class="product-item__title product-item__link" ng-bind="row.entity.Name"></div>
+                                                    </div>
+                                                    <div class="product-item__art" ng-if="row.entity.ArtNo">
+                                                        Артикул: <span ng-bind="row.entity.ArtNo"></span>
+                                                    </div>
+                                                    <div class="card__row card__row--bottom" style="margin-top: 15px">
+                                                        <div class="" style="font-weight: 500" ng-bind="row.entity.Cost"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui-grid-custom-override-control>
+                                    </ui-grid-custom>
+
+                                    <booking-items-summary
+                                        summary="ctrl.summary"
+                                        mode="ctrl.mode"
+                                        can-be-editing="ctrl.canBeEditing && !ctrl.isPaied"
+                                        params="ctrl.params"
+                                        on-init="ctrl.bookingItemsSummaryOnInit(bookingItemsSummary)"
+                                        update-summary-fn="ctrl.updateSummary()"
+                                        change-payment-fn="ctrl.changePayment(payment)"
+                                        ng-show="ctrl.gridBookingItems && ctrl.gridBookingItems.gridOptions.data.length"
+                                        on-stop-edit="ctrl.checkStopEdit()">
+                                    </booking-items-summary>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div bs-modifiable="false" ng-if="ctrl.bookingInfo.id && ctrl.bookingCustomerComponent && ctrl.bookingInfoComponent">
+                        <lead-events
+                            obj-id="ctrl.bookingInfo.id"
+                            obj-type="ctrl.bookingInfo.id ? 'booking' : null"
+                            customer-id="ctrl.customer.customerId"
+                            on-init="ctrl.bookingEventsOnInit(leadEvents)">
+                            <!--<task-create class="ng-cloak link m-b-sm m-r-sm inline h4" ng-if="lead.taskGrid == null || lead.taskGrid.gridTasks.gridOptions.data.length === 0" data-resolve="{bindTo:{objId: @Model.Id, type: 'lead'}}" on-after="lead.taskGrid.modalClose()" data-e2e="addTaskTab">
+                                @T("Admin.Leads.Popup.Task")
+                            </task-create>-->
+                            <ui-modal-trigger
+                                ng-if="ctrl.canBeEditing && !ctrl.isPaied && (ctrl.gridBookingItems == null || ctrl.gridBookingItems.gridOptions.data.length === 0)"
+                                class="ng-cloak link m-b-sm m-r-sm inline h4 card__title"
+                                size="xs-11"
+                                data-controller="'ModalBookingServicesSelectvizrCtrl'"
+                                data-controller-as="ctrl"
+                                data-resolve="{params:{affiliateId: ctrl.bookingInfo.affiliateId, reservationResourceId: ctrl.bookingInfo.reservationResourceId}}"
+                                data-on-close="ctrl.addServicesModal(result)"
+                                template-url="../areas/admin/content/src/_shared/modal/bookingServicesSelectvizr/bookingServicesSelectvizr.html">
+                                Услуги
+                            </ui-modal-trigger>
+                        </lead-events>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" ng-if="isMobile.value">
+        <button
+            data-e2e="BookingAdd"
+            class="btn btn-success"
+            ng-class="{'btn-sm' : !isMobile.value}"
+            type="submit"
+            ng-if="ctrl.canBeEditing"
+            button-validation
+            button-validation-success="ctrl.addUpdateBooking(); ctrl.btnLoading = true"
+            ladda="ctrl.btnLoading">
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button data-e2e="BookingCancel" class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddEdit.Cancel'|translate}}
+        </button>
+    </div>
+</form>
+
+<script type="text/ng-template" id="Itemsss.html">
+    <div class="more-button-popover__inner">
+        <div class="more-button-popover__item" ng-if="ctrl.isPaied && ctrl.summary.ShowCreateBillingLink && ctrl.canBeEditing">
+            <button class="btn btn--simple  btn-link  btn--with-icon btn--horizontal-padding-zero  more-button-popover__btn" ng-click="ctrl.createOrder()">
+                <span class="btn-icon">
+                    <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.422.039c-.221.089-.21-.127-.21 4.068v3.856l.101.12c.144.17.359.17.502 0l.101-.12V.703H16.44v18.593H3.916v-7.26l-.1-.12c-.144-.17-.36-.17-.503 0l-.1.12v7.725l.094.11.094.109 6.75.01 6.75.01.121-.101.12-.102V.202l-.12-.1-.12-.102-6.698.002C6.52.004 3.468.02 3.422.04Zm4.33 5.34a.35.35 0 0 0-.235.34c0 .156.018.176 1.887 2.043l1.888 1.886H.21l-.104.103a.343.343 0 0 0 0 .497l.104.103h11.082l-1.888 1.886c-1.87 1.867-1.887 1.887-1.887 2.044 0 .266.266.435.494.314.062-.032 1.094-1.04 2.294-2.24l2.181-2.181v-.348l-2.181-2.182c-1.2-1.2-2.23-2.206-2.288-2.237-.11-.058-.167-.064-.266-.028Z" fill="currentColor" /></svg>
+                </span>
+                <span class="btn-text">Создать заказ</span>
+            </button>
+        </div>
+        <div class="more-button-popover__item" ng-if="!ctrl.isPaied && ctrl.mode === 'edit' && ctrl.summary.ShowCreateBillingLink">
+            <button class="btn btn--simple  btn-link  btn--with-icon btn--horizontal-padding-zero  more-button-popover__btn"
+                    ng-if="ctrl.summary.ShowCreateBillingLink && ctrl.canBeEditing" ng-click="ctrl.createPaymentLink()">
+                <span class="btn-icon">
+                    <svg viewBox="0 0 18 20" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3.422.039c-.221.089-.21-.127-.21 4.068v3.856l.101.12c.144.17.359.17.502 0l.101-.12V.703H16.44v18.593H3.916v-7.26l-.1-.12c-.144-.17-.36-.17-.503 0l-.1.12v7.725l.094.11.094.109 6.75.01 6.75.01.121-.101.12-.102V.202l-.12-.1-.12-.102-6.698.002C6.52.004 3.468.02 3.422.04Zm4.33 5.34a.35.35 0 0 0-.235.34c0 .156.018.176 1.887 2.043l1.888 1.886H.21l-.104.103a.343.343 0 0 0 0 .497l.104.103h11.082l-1.888 1.886c-1.87 1.867-1.887 1.887-1.887 2.044 0 .266.266.435.494.314.062-.032 1.094-1.04 2.294-2.24l2.181-2.181v-.348l-2.181-2.182c-1.2-1.2-2.23-2.206-2.288-2.237-.11-.058-.167-.064-.266-.028Z" fill="currentColor"></path>
+                    </svg>
+                </span>
+                <span class="btn-text">Создать ссылку на оплату</span>
+            </button>
+            <ui-modal-trigger ng-if="ctrl.summary.ShowSendBillingLink"
+                              data-controller="'ModalGetBillingLinkCtrl'" data-controller-as="ctrl"
+                              data-resolve="{params: { orderId: ctrl.bookingInfo.orderId }}"
+                              template-url="../areas/admin/content/src/order/modal/getBillingLink/getBillingLink.html">
+                <button class="btn btn--simple  btn-link  btn--with-icon btn--horizontal-padding-zero  more-button-popover__btn">
+                    <span class="btn-icon">
+                        <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.422.039c-.221.089-.21-.127-.21 4.068v3.856l.101.12c.144.17.359.17.502 0l.101-.12V.703H16.44v18.593H3.916v-7.26l-.1-.12c-.144-.17-.36-.17-.503 0l-.1.12v7.725l.094.11.094.109 6.75.01 6.75.01.121-.101.12-.102V.202l-.12-.1-.12-.102-6.698.002C6.52.004 3.468.02 3.422.04Zm4.33 5.34a.35.35 0 0 0-.235.34c0 .156.018.176 1.887 2.043l1.888 1.886H.21l-.104.103a.343.343 0 0 0 0 .497l.104.103h11.082l-1.888 1.886c-1.87 1.867-1.887 1.887-1.887 2.044 0 .266.266.435.494.314.062-.032 1.094-1.04 2.294-2.24l2.181-2.181v-.348l-2.181-2.182c-1.2-1.2-2.23-2.206-2.288-2.237-.11-.058-.167-.064-.266-.028Z" fill="currentColor"></path>
+                        </svg>
+                    </span>
+                    <span class="btn-text">Ссылка на оплату</span>
+                </button>
+            </ui-modal-trigger>
+        </div>
+        <div class="more-button-popover__item" ng-if="ctrl.canBeDeleted && ctrl.mode !== 'add' && ctrl.bookingInfo.status != 'completed'">
+            <button type="button" class="btn btn--link  btn-danger  btn--with-icon btn--horizontal-padding-zero  more-button-popover__btn"
+                    ng-click="ctrl.deleteBooking(); ctrl.btnLoading = true">
+                <span class="btn-icon">
+                    <svg viewBox="0 0 416 513" width="24" height="24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M144.819 1.09008C137.183 2.58808 126.676 8.29708 120.868 14.1051C111.166 23.8081 106.83 36.1651 106.783 54.2501L106.763 62.0001L76.5129 62.0201C42.4759 62.0421 34.9899 62.7811 25.9379 67.0101C17.8209 70.8021 8.17488 80.3641 4.45588 88.3031C-3.88912 106.121 -0.312122 126.73 13.5039 140.436C18.2779 145.172 29.5629 152 32.6169 152C33.4229 152 33.7989 194.154 33.9949 306.25L34.2629 460.5L36.9869 468.5C40.7609 479.58 46.1159 488.147 53.7789 495.364C61.6359 502.763 69.9969 507.374 80.3589 510.025C87.8399 511.938 91.8519 512 207.763 512C323.674 512 327.686 511.938 335.167 510.025C359.492 503.803 376.935 483.618 380.743 457.284C381.348 453.094 381.731 393.449 381.743 301.328L381.763 152.155L385.513 150.931C399.826 146.259 412.263 131.006 414.848 114.952C417.569 98.0591 409.126 79.2161 394.682 69.9481C383.783 62.9541 382.062 62.6941 343.662 62.2371L309.061 61.8261L308.432 50.1271C307.735 37.1651 305.684 29.6691 300.718 21.9291C294.028 11.5051 281.937 3.30908 269.872 1.02108C263.261 -0.232919 151.251 -0.170919 144.819 1.09008ZM271.284 26.1571C280.246 31.0741 283.824 37.9741 284.524 51.6901L285.05 62.0001H207.796H130.542L130.91 51.2501C131.238 41.7001 131.585 39.9771 134.025 35.8151C135.535 33.2391 138.18 30.1271 139.902 28.9011C146.753 24.0231 146.467 24.0421 209.263 24.2781C262.045 24.4771 268.581 24.6751 271.284 26.1571ZM379.263 88.6531C384.36 91.3961 387.238 94.4991 389.331 99.5081C393.182 108.724 390.011 119.771 381.872 125.491L377.591 128.5L209.927 128.794C92.8749 129 41.1449 128.766 38.5579 128.018C28.5979 125.138 22.2129 113.63 24.7369 103.107C26.6349 95.1951 33.0059 88.9581 41.2629 86.9281C42.9129 86.5221 118.738 86.2601 209.763 86.3451L375.263 86.5001L379.263 88.6531ZM357.534 300.5C357.718 400.792 357.466 449.724 356.739 454.5C354.634 468.328 347.498 478.543 335.982 484.213L329.306 487.5L210.387 487.77C81.3749 488.063 84.7799 488.192 76.0289 482.668C67.8409 477.499 61.0549 467.417 58.8869 457.201C58.0839 453.412 57.7629 409.297 57.7629 302.448V152.993L207.513 153.247L357.263 153.5L357.534 300.5ZM128.977 188.94C127.36 190.557 125.75 193.313 125.4 195.065C125.05 196.817 124.763 249.283 124.763 311.657C124.763 432.569 124.622 428.95 129.501 433.293C132.52 435.98 137.887 436.51 142.054 434.532C149.199 431.141 148.763 439.205 148.763 310.549C148.763 184.991 149.044 191.38 143.349 187.648C141.963 186.74 138.832 186 136.375 186C132.775 186 131.351 186.566 128.977 188.94ZM200.607 188.255C199.147 189.49 197.459 191.483 196.857 192.684C196.084 194.228 195.763 228.782 195.763 310.533C195.763 439.206 195.327 431.141 202.472 434.532C206.639 436.51 212.006 435.98 215.025 433.293C219.904 428.95 219.763 432.569 219.763 311.657C219.763 249.283 219.476 196.817 219.126 195.065C218.776 193.313 217.166 190.557 215.549 188.94C211.716 185.107 204.711 184.785 200.607 188.255ZM270.163 189.4L266.763 192.8V309.95C266.763 410.552 266.969 427.497 268.219 429.915C269.81 432.991 275.148 436 279.016 436C282.754 436 288.109 431.879 289.457 427.965C291.028 423.403 291.288 200.429 289.728 194.814C288.235 189.438 283.694 186 278.086 186C274.275 186 273.027 186.536 270.163 189.4Z" fill="currentColor"></path>
+                    </svg>
+                </span>
+                <span class="btn-text">Удалить</span>
+            </button>
+        </div>
+    </div>
+</script>

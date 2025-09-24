@@ -1,0 +1,193 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Common.CustomerFieldsViewModel
+@{
+    /* рендерится сервером, сохраняется сервером или ангуляром */
+    string onChange = ViewBag.CustomerFieldOnChange;
+    string onBlur = ViewBag.CustomerFieldOnBlur;
+    string formName = ViewBag.CustomerFieldFormName;
+    string readOnlyCtrl = ViewBag.ReadOnlyCtrl ?? "false";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@if (Model != null && Model != null)
+{
+    bool ignoreRequired = Model.IgnoreRequired; // игнорируем обязательность поля
+    var fields = Model.FilteredCustomerFields ?? Model.CustomerFields;
+
+    <div hidden ng-init="@Model.GetName() = @Model.CustomerFieldsSerialized"></div>
+    for (int i = 0; i < fields.Count; i++)
+    {
+        var field = fields[i];
+        var ngmodel = Model.GetName(i, "Value");
+        var ngchange = onChange;
+        var ngrequired = (!ignoreRequired && field.Required).ToLowerString();
+        var ngShow = String.Empty;
+        var onSelectFunc = String.Empty;
+
+        if (Model.NgVariableVisible.IsNotEmpty() && field.CustomerType != CustomerType.All && Model.FilteredCustomerFields == null)
+        {
+            ngShow = String.Format("ng-if=\"{0}=={1}\"", Model.NgVariableVisible, "'" + field.CustomerType + "'");
+        }
+
+        var attributes = new Dictionary<string, object>()
+        {
+            {"class", "form-control input-alt"},
+            {"ng-model", ngmodel},
+            {"ng-required", ngrequired},
+            {"validation-input-text", field.Name}
+        };
+
+        if (Model.OnSelectFunc != null && field.FieldAssignment == CustomerFieldAssignment.INN || field.FieldAssignment == CustomerFieldAssignment.CompanyName || field.FieldAssignment == CustomerFieldAssignment.BIK)
+        {
+            onSelectFunc = Model.OnSelectFunc;
+        }
+        if (ngchange != null)
+        {
+            attributes.Add("ng-change", ngchange);
+        }
+
+        if (onBlur != null)
+        {
+            attributes.Add("ng-blur", (formName != null ? formName + "['customerFields[" + i + "].value'].modified && " : "") + onBlur);
+        }
+        <div class="form-group custom-fields-row-wrap setting__form-group flex-grow" @Html.Raw(ngShow)>
+            @{
+                var isMobileCheckbox = isMobile && field.FieldType == CustomerFieldType.Checkbox;
+                var checkBoxFor = "for=\"checkbox-" + field.Id + "\"";
+            }
+            <div class="custom-fields-row middle-xs">
+                 @if (isMobileCheckbox)
+                 {
+                     @:<div class="flex middle-xs">
+                 }
+                 <div class="custom-fields-col custom-fields-col-name @(isMobileCheckbox ? "m-l-sm" : "")">
+                     <label @Html.Raw(field.FieldType == CustomerFieldType.Checkbox ? checkBoxFor : "" )  class="@(!isMobileCheckbox ? "control-label" : "")  text-left @(!isMobile ? "m-b-xs" : "")">
+                         @Html.Raw(ngrequired.Equals("true") ? "<span class=\"text-required\">" + field.Name + "</span>" : field.Name)
+                     </label>
+                 </div>
+                 <div class="custom-fields-col custom-fields-col-value @(isMobileCheckbox ? "first-xs" : "")">
+                     @if (field.FieldType == CustomerFieldType.Text)
+                     {
+                         attributes.Add("ng-readonly", readOnlyCtrl);
+                         attributes.Add("ng-init", ngmodel + "='" + field.Value + "'");
+                         @Html.TextBoxSuggest("customerFields[" + i + "].value", field.Value, attributes, field.Id, field.FieldAssignment, onSelectFunc)
+                     }
+                     else if (field.FieldType == CustomerFieldType.Number)
+                     {
+                         attributes.Add("type", "text");
+                         attributes.Add("pattern", @"^[\d,\.]*$");
+                         attributes.Add("ng-readonly", readOnlyCtrl);
+                         attributes.Add("ng-init", ngmodel + "='" + field.Value + "'");
+                         @Html.TextBoxSuggest("customerFields[" + i + "].value", field.Value, attributes, field.Id, field.FieldAssignment, onSelectFunc)
+                     }
+                     else if (field.FieldType == CustomerFieldType.TextArea)
+                     {
+                         attributes.Add("ng-readonly", readOnlyCtrl);
+                         attributes.Add("style", "resize: vertical;");
+                         attributes.Add("ng-init", ngmodel + "='" + field.Value + "'");
+                         @Html.TextAreaSuggest("customerFields[" + i + "].value", field.Value, attributes, field.Id, field.FieldAssignment, onSelectFunc)
+                     }
+                     else if (field.FieldType == CustomerFieldType.Date)
+                     {
+                         <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                             <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                                 <input ng-disabled="@readOnlyCtrl"
+                                        type="text"
+                                        ng-flatpickr-input
+                                        id="customerfields_@(i)_value"
+                                        name="customerFields[@(i)].value"
+                                        class="form-control input-alt"
+                                        ng-model="@ngmodel"
+                                        ng-required="@ngrequired"
+                                        @Html.Raw(ngchange != null ? "ng-change='" + ngchange + "'" : "")
+                                        validation-input-text="@field.Name"
+                                        ng-init="@ngmodel='@(field.Value)'">
+                                 <span class="flatpickr-custom-clear" data-close data-clear>
+                                     <i class="fas fa-times"></i>
+                                 </span>
+                             </span>
+                             <span class="input-group-addon" data-toggle>
+                                 <i class="fas fa-calendar-alt"></i>
+                             </span>
+                         </div>
+                     }
+                     else if (field.FieldType == CustomerFieldType.Select)
+                     {
+                         var fieldValues = field.Values;
+                         var selectedValue = "";
+
+
+                         if (field.Required == false)
+                         {
+                             fieldValues.Insert(0, new SelectListItem()
+                             {
+                                 Text = "––––",
+                                 Value = ""
+                             });
+                         }
+
+                         if (field.Value != null && (field.Required == true || field.Value != ""))
+                         {
+                             selectedValue = field.Value;
+                             var option = fieldValues.Find(x => x.Value == selectedValue);
+                             if (option == null)
+                             {
+                                 fieldValues.Insert(0, new SelectListItem() { Text = selectedValue, Value = selectedValue, Selected = true});
+                             }
+                             else
+                             {
+                                 option.Selected = true;
+                             }
+                         }
+                         else
+                         {
+                             var firstValue = fieldValues.FirstOrDefault();
+                             selectedValue = firstValue != null ? firstValue.Value : "";
+                         }
+
+                         attributes.Add("ng-init", ngmodel + "='" + selectedValue + "'");
+                         attributes.Add("ng-disabled", readOnlyCtrl);
+                         attributes.Add("disabled-autobind", "true");
+                         @Html.DropDownList("customerFields[" + i + "].value", fieldValues, attributes)
+                     }
+                     else if (field.FieldType == CustomerFieldType.Tel)
+                     {
+                         attributes.Add("ng-readonly", readOnlyCtrl);
+                         attributes.Add("ng-init", ngmodel + "='" + field.Value + "'");
+                         attributes.Add("type", "tel");
+                         attributes.Add("mask-control", SettingsMain.EnablePhoneMask.ToLowerString());
+                         attributes.Add("mask-control-preset", "phone");
+                         @Html.TextBoxSuggest("customerFields[" + i + "].value", field.Value, attributes, field.Id)
+                     }
+                     else if (field.FieldType == CustomerFieldType.Checkbox)
+                     {
+                         var boolValue = field.Value.TryParseBool();
+                         <label class="adv-checkbox-label">
+                             <input type="checkbox"
+                                    class="adv-checkbox-input"
+                                    name="customerFields[@i].value"
+                                    value="{{@ngmodel}}"
+                                    id="checkbox-@field.Id"
+                                    ng-init="@ngmodel=@boolValue.ToLowerString()"
+                                    ng-model="@ngmodel"
+                                    validation-input-text="@field.Name"/>
+                             <span class="adv-checkbox-emul"></span>
+                         </label>
+                     }
+                     else if (field.FieldType == CustomerFieldType.Email)
+                     {
+                         attributes.Add("type", "email");
+                         attributes.Add("ng-readonly", readOnlyCtrl);
+                         attributes.Add("ng-init", ngmodel + "='" + field.Value + "'");
+                         attributes.Add("pattern", "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)");
+                         @Html.TextBox("customerFields[" + i + "].value", field.Value, attributes)
+                     }
+                     <input type="hidden" name="customerFields[@i].FieldType" value="@field.FieldType"/>
+                     <input type="hidden" name="customerFields[@i].id" value="@field.Id"/>
+                 </div>
+                @if (isMobileCheckbox)
+                 {
+                     @:</div>
+                 }
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,129 @@
+﻿<integrations-limit limit="$ctrl.saasData.limit" count="$ctrl.saasData.count"></integrations-limit>
+
+<div ng-if="!$ctrl.settings.isActive && !$ctrl.saasData.limitRiched && !$ctrl.IsChallengeRequired" class="ng-cloak" is-mobile>
+    <div class="form-group row m-t setting__form-group">
+        <div class="col-xs-12 col-md-2 col-wl-2">
+            <div class="setting-label-wrap setting__label">{{'Admin.Js.InstagramAuth.Login'|translate}}</div>
+        </div>
+        <div class="col-xs-12 col-md-3">
+            <input
+                type="text"
+                class="form-control input-small input-alt"
+                ng-model="$ctrl.settings.login"
+                placeholder="{{'Admin.Js.SettingsCrm.Login'|translate}}" />
+            <div ng-class="{'m-t-xs' : isMobile.value}" style="font-size: 12px">Например: @kimkardashian Телефон и email не подходят.</div>
+        </div>
+    </div>
+
+    <div class="form-group row m-t setting__form-group">
+        <div class="col-xs-12 col-md-2 col-wl-2">
+            <div class="setting-label-wrap setting__label">{{'Admin.Js.InstagramAuth.Password'|translate}}</div>
+        </div>
+        <div class="col-xs-12 col-md-3">
+            <input type="password" class="form-control input-small input-alt" ng-model="$ctrl.settings.password" />
+        </div>
+    </div>
+
+    <div class="form-group row m-t">
+        <div class="col-xs-12" ng-class="{'text-center' : isMobile.value}">
+            <a href="" ng-click="$ctrl.save()" class="btn btn-sm btn-success">{{'Admin.Js.InstagramAuth.OK'|translate}}</a>
+        </div>
+    </div>
+</div>
+
+<div ng-if="$ctrl.IsChallengeRequired" class="ng-cloak" is-mobile>
+    <div class="form-group row m-b-lg setting__form-group">
+        <div class="col-xs-12" ng-class="{'text-center' : isMobile.value}">
+            Не удалось авторизоваться в instagram. Необходимо подтвердить аккаунт по sms или email.
+        </div>
+    </div>
+    <div class="form-group row m-t setting__form-group">
+        <div class="col-xs-12 col-md-3" ng-class="{'text-center' : isMobile.value}">Если к аккаунту привязан телефон:</div>
+        <div class="col-xs-12 col-md" ng-class="{'m-t-sm text-center' : isMobile.value}">
+            <a ng-click="$ctrl.requireChallengeCode(0)" href="" class="btn btn-sm btn-success">Выслать код по sms</a>
+        </div>
+    </div>
+    <div class="form-group row m-t setting__form-group">
+        <div class="col-xs-12 col-md-3" ng-class="{'text-center' : isMobile.value}">Если к аккаунту привязан email:</div>
+        <div class="col-xs-12 col-md" ng-class="{'m-t-sm text-center' : isMobile.value}">
+            <a ng-click="$ctrl.requireChallengeCode(1)" href="" class="btn btn-sm btn-success">Выслать код на почту</a>
+        </div>
+    </div>
+</div>
+
+<div ng-if="$ctrl.IsChallengeRequiredCode" class="ng-cloak" is-mobile>
+    <div class="form-group row m-t setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <input type="text" ng-model="$ctrl.code" class="form-control input-alt" placeholder="Введите код" />
+        </div>
+        <div class="col-xs-12 col-md-3" ng-class="{'m-t-sm text-center' : isMobile.value}">
+            <a ng-class="{'btn btn-sm btn-success' : isMobile.value}" href="" ng-click="$ctrl.sendChallengeCode()">Отправить</a>
+        </div>
+    </div>
+</div>
+
+<div ng-if="$ctrl.settings.isActive" class="ng-cloak" is-mobile>
+    <div ng-if="!isMobile.value">
+        {{'Admin.Js.InstagramAuth.Account'|translate}}
+        <a href="https://www.instagram.com/{{$ctrl.settings.userName}}/" target="_blank" class="instagram-user-name">
+            <i class="fab fa-instagram"></i> {{$ctrl.settings.userName}}
+        </a>
+        <a href="" ng-click="$ctrl.deActivate()" class="m-l">{{'Admin.Js.InstagramAuth.RemoveBinding'|translate}}</a>
+    </div>
+
+    <div ng-if="isMobile.value">
+        <div class="row">
+            <div class="col-xs-12 setting-label-wrap setting__label">{{'Admin.Js.InstagramAuth.Account'|translate}}</div>
+            <div class="col-xs-12">
+                <a href="https://www.instagram.com/{{$ctrl.settings.userName}}/" target="_blank" class="instagram-user-name">
+                    <i class="fab fa-instagram"></i> {{$ctrl.settings.userName}}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-t-lg">
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3 setting__label" ng-class="{'setting-label-wrap' : isMobile.value}">
+                {{'Admin.Js.InstagramAuth.Funnel'|translate}}
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <select
+                    ng-model="$ctrl.settings.salesFunnelId"
+                    ng-options="item.Id as item.Name for item in $ctrl.settings.salesFunnels"
+                    ng-change="$ctrl.saveSettings()"
+                    class="form-control input-alt"></select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div ng-if="!isMobile.value" class="col-xs-3">Создавать лид из личных сообщений</div>
+            <div class="col-xs-12 col-md-3" ng-class="{'flex middle-xs' : isMobile.value}">
+                <label class="adv-checkbox-label">
+                    <input
+                        class="adv-checkbox-input"
+                        type="checkbox"
+                        ng-model="$ctrl.settings.createLeadFromDirectMessages"
+                        ng-change="$ctrl.saveSettings()" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value" class="setting__label flex-grow m-l-sm">Создавать лид из личных сообщений</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div ng-if="!isMobile.value" class="col-xs-3">Создавать лид из комментариев</div>
+            <div class="col-xs-12 col-md-3" ng-class="{'flex middle-xs' : isMobile.value}">
+                <label class="adv-checkbox-label">
+                    <input
+                        class="adv-checkbox-input"
+                        type="checkbox"
+                        ng-model="$ctrl.settings.createLeadFromComments"
+                        ng-change="$ctrl.saveSettings()" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value" class="setting__label flex-grow m-l-sm">Создавать лид из комментариев</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

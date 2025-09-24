@@ -1,0 +1,71 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">Смс шаблон</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required"> Статус брони </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <ui-select
+                            class="input-alt"
+                            data-e2e="BookingSmsTemplateStatus"
+                            ng-model="ctrl.status"
+                            required
+                            convert-to-number
+                            validation-input-text="Статус брони">
+                            <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.statuses | filter: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required"> Шаблон </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <textarea
+                            class="form-control input-alt"
+                            rows="3"
+                            required
+                            data-autofocus="!isMobile.value"
+                            ng-model="ctrl.template"
+                            validation-input-text="Шаблон"
+                            data-e2e="BookingSmsTemplateText"></textarea>
+                        <div ng-class="{'m-t-sm setting--grid-span-grey' : isMobile.value}">
+                            Доступны следующие переменные:
+                            <div ng-repeat="variable in ctrl.smsTemplateVariables">{{variable.Key}} - {{variable.Value}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label ng-if="!isMobile.value" class="col-xs-3 control-label">Активен</label>
+                    <div class="col-xs-12 col-md-9">
+                        <label class="adv-checkbox-label" data-e2e="BookingSmsTemplateEnabled">
+                            <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.enabled" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span ng-if="isMobile.value">Активен</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnLoading"
+            type="button"
+            data-button-validation-success="ctrl.save(); ctrl.btnLoading = true;"
+            data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

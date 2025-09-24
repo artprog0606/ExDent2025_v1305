@@ -1,0 +1,225 @@
+﻿<form novalidate name="formAddTask" is-mobile xmlns="http://www.w3.org/1999/html">
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddTask.NewTask'|translate}}</h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.formAddTask = formAddTask" ng-class="{'task-modal-content-new-item': !isMobile.value}">
+        <div class="form-horizontal" ng-class="{'m-r m-l': !isMobile.value}">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label font-control-title">
+                        <span class="text-required">{{'Admin.Js.AddTask.Name'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-10">
+                        <input
+                            data-e2e="newtaskName"
+                            type="text"
+                            class="form-control input-alt"
+                            placeholder="{{'Admin.Js.AddTask.EnterTitleOfTask'|translate}}"
+                            ng-model="ctrl.name"
+                            required
+                            data-autofocus="!isMobile.value"
+                            validation-input-text="{{'Admin.Js.AddTask.Name'|translate}}" />
+                    </div>
+                </div>
+            </div>
+            <div ng-class="{'form-group': !isMobile.value}">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label font-control-title">{{'Admin.Js.AddTask.TaskExecutor'|translate}}</label>
+                    <div class="col-xs-12 col-md-4" ng-class="{'m-b': isMobile.value}">
+                        <!--<select data-e2e="newtaskAssigned" ng-model="ctrl.assignedManagerId" ng-options="s.value as s.label for s in ctrl.managersAssign" class="form-control" convert-to-number required validation-input-text="Исполнитель">
+            <option value="">Выберите исполнителя</option>
+        </select>-->
+                        <ui-select
+                            class="input-alt"
+                            multiple
+                            data-e2e="newtaskAssigned"
+                            ng-model="ctrl.managerIds"
+                            convert-to-number
+                            ng-click="ctrl.getUiSelectCtrl($select)">
+                            <ui-select-match placeholder="{{'Admin.Js.Tasks.ModalEditTaskCtrl.NotAssigned'|translate}}"
+                                >{{$item.label}}</ui-select-match
+                            >
+                            <ui-select-choices repeat="s.value as s in ctrl.managersAssign | greedysearch: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <a
+                            ng-href=""
+                            ng-class="{'m-t-sm inline': isMobile.value}"
+                            data-e2e="AssignedToMe"
+                            class="pointer"
+                            ng-click="ctrl.managerIds = [ctrl.currentManagerId]"
+                            ng-if="ctrl.canAssingToMe">
+                            {{'Admin.Js.AddTask.AssignedToMe'|translate}}
+                        </a>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="row form-group setting__form-grou">
+                            <div class="col-xs-12 col-md-5" ng-class="{'text-right': !isMobile.value}">
+                                <label class="control-label control-label--right">{{'Admin.Js.AddTask.PeriodOfExecution'|translate}}</label>
+                            </div>
+                            <div class="col-xs">
+                                <div
+                                    class="input-group"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true, minuteIncrement: 10}"
+                                    fp-on-setup="ctrl.flatpickrOnSetup(fpItem)"
+                                    fp-on-change="ctrl.flatpickrOnChange(selectedDates, dateStr, instance)">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow': isMobile.value}">
+                                        <input
+                                            data-e2e="newtaskDuedate"
+                                            type="text"
+                                            class="form-control input-alt"
+                                            ng-flatpickr-input
+                                            ng-model="ctrl.dueDate"
+                                            tabindex="-1"
+                                            data-mask-control
+                                            data-mask-control-preset="datetime" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group end-xs middle-xs" ng-if="ctrl.reminderActive && ctrl.dueDate != null && ctrl.dueDate != ''">
+                            <div class="col-xs-12 col-md-5 text-right">
+                                <label class="adv-checkbox-label line-height" data-e2e="edittaskRemind">
+                                    <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.remind" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>{{'Admin.Js.AddTask.Reminder'|translate}}</span>
+                                </label>
+                                <!--<label class="col-xs-5 control-label control-label--right"></label>-->
+                            </div>
+                            <div class="col-xs" ng-class="{'m-t-sm': isMobile.value}">
+                                <select
+                                    data-e2e="edittaskReminder"
+                                    ng-model="ctrl.reminder"
+                                    ng-options="s.value as s.label for s in ctrl.reminderTypes"
+                                    ng-disabled="ctrl.isReadonlyTask || ctrl.accepted || !ctrl.remind"
+                                    class="form-control input-alt"
+                                    convert-to-number></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label font-control-title"
+                        ><span>{{'Admin.Js.AddTask.Description'|translate}}</span></label
+                    >
+                    <div class="col-xs-12 col-md-10">
+                        <textarea
+                            data-e2e="newtaskDescription"
+                            class="form-control b-n wysiwyg r-v input-alt"
+                            rows="12"
+                            placeholder=""
+                            ckeditor="ctrl.ckeditor"
+                            ng-model="ctrl.description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label font-control-title"
+                        ><span class="text-required">{{'Admin.Js.AddTask.Project'|translate}}</span></label
+                    >
+                    <div class="col-xs-12 col-md-4" ng-class="{'form-group': isMobile.value}">
+                        <select
+                            data-e2e="newtaskGroup"
+                            ng-model="ctrl.taskGroupId"
+                            ng-options="s.value as s.label for s in ctrl.taskGroups"
+                            class="form-control input-alt"
+                            convert-to-number
+                            required
+                            validation-input-text="{{'Admin.Js.AddTask.Project'|translate}}"
+                            ng-change="ctrl.validateTaskGroupManager(); ctrl.getManagers();">
+                            <option value="">{{'Admin.Js.AddTask.SelectProject'|translate}}</option>
+                        </select>
+                    </div>
+                    <label class="col-xs-12 col-md-2 control-label control-label--right">{{'Admin.Js.AddTask.Priority'|translate}}</label>
+                    <div class="col-xs-12 col-md-4">
+                        <select
+                            data-e2e="newtaskPriority"
+                            ng-model="ctrl.priority"
+                            ng-options="s.value as s.label for s in ctrl.priorities"
+                            convert-to-number
+                            class="form-control input-alt"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label font-control-title">{{'Admin.Js.AddTask.Attachments'|translate}}</label>
+                    <div class="col-xs-12 col-md-10">
+                        <ol ng-if="ctrl.attachments.length > 0">
+                            <li ng-repeat="attachment in ctrl.attachments track by $index">
+                                <span ng-bind="attachment.name"></span>
+                                <a
+                                    href=""
+                                    ng-click="ctrl.deleteAttachment($index)"
+                                    class="fa fa-times link-invert link-decoration-none"
+                                    title="{{'Admin.Js.AddTask.Delete'|translate}}"></a>
+                            </li>
+                        </ol>
+                        <figure class="">
+                            <button
+                                data-e2e="newtaskAttachments"
+                                class="btn btn-action btn-sm"
+                                type="button"
+                                ngf-drop
+                                ngf-max-size="15MB"
+                                ngf-select=""
+                                multiple
+                                ngf-change="ctrl.addAttachments($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event);"
+                                ladda="ctrl.loadingFiles">
+                                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">{{'Admin.Js.AddTask.AttachFile'|translate}}</span>
+                            </button>
+                            <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                <div class="help-content" ng-bind-html="ctrl.filesHelpText"></div>
+                            </help-trigger>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div ng-if="!isMobile.value" class="btn-group">
+            <button
+                class="btn btn-save btn-primary"
+                data-e2e="TaskAdd"
+                type="submit"
+                ladda="ctrl.btnLoading"
+                button-validation
+                button-validation-success="ctrl.buttonActionDefault.fn()"
+                ng-bind="ctrl.buttonActionDefault.text"></button>
+            <button
+                type="button"
+                class="btn btn-save btn-primary dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right add-task-popover" ng-class="{'add-task-popover--top' : ctrl.buttonActionsCount > 2}">
+                <li class="dropdown-submenu" ng-repeat="(name, action) in ctrl.buttonActions" ng-hide="action.text === ctrl.buttonActionDefault.text">
+                    <a ng-bind="action.text" button-validation button-validation-success="ctrl.callAndSaveButtonAction(name)"></a>
+                </li>
+            </ul>
+        </div>
+        <button
+            ng-if="isMobile.value"
+            class="btn btn-save btn-primary"
+            data-e2e="TaskAdd"
+            type="submit"
+            ladda="ctrl.btnLoading"
+            button-validation
+            button-validation-success="ctrl.buttonActionDefault.fn()"
+            ng-bind="ctrl.buttonActionDefault.text"></button>
+        <button data-e2e="TaskCancel" class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddTask.Cancel'|translate}}
+        </button>
+    </div>
+</form>

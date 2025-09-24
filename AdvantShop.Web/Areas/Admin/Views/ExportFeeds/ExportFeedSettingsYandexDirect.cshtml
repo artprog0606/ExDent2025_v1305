@@ -1,0 +1,1607 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedSettingsYandexDirectModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="row middle-xs @(isMobile ? "" : "form-group")">
+    <div class="col-xs-12">
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.ExportFeeed.SettingsYandex.ShopSettings")</h3>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ShopName, T("Admin.ExportFeeed.SettingsYandex.ShopName"), new { @class = "required" })
+            <span class="text-required"></span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4">
+        @Html.TextBoxFor(x => x.ShopName, new { @class = "form-control input-alt", required = "required", ng_model = "exportFeeds.AdvancedSettings.ShopName", validation_input_text = T("Admin.ExportFeeed.SettingsYandex.ShopName") })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CompanyName, T("Admin.ExportFeeed.SettingsYandex.CompanyName"), new { @class = "required" })
+            <span class="text-required"></span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4">
+        @Html.TextBoxFor(x => x.CompanyName, new { @class = "form-control input-alt", required = "required", ng_model = "exportFeeds.AdvancedSettings.CompanyName", validation_input_text = T("Admin.ExportFeeed.SettingsYandex.CompanyName") })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.SalesNotes, T("Admin.ExportFeeed.SettingsYandex.SalesNotes"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SalesNotes, new { @class = "form-control input-alt", @maxlength = 50, ng_model = "exportFeeds.AdvancedSettings.SalesNotes", validation_input_text = T("Admin.ExportFeeed.SettingsYandex.SalesNotes") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeeed.SettingsYandex.SalesNotes")">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsYandex.Text50characters")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="@(isMobile ? "" : "form-group") row middle-xs">
+    <div class="col-xs-12">
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.ExportFeeed.SettingsYandex.DeliverySettings")</h3>
+        </div>
+    </div>
+</div>
+
+@if (isMobile)
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Store, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Store=" + Model.Store.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Store" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <label for="Store" class="setting__label flex-grow m-l-sm">
+                @T("Admin.ExportFeed.SettingsYandex.Store")
+            </label>
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.Store")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.StoreHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Pickup, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Pickup=" + Model.Pickup.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Pickup" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <label for="Pickup" class="setting__label flex-grow m-l-sm">
+                @T("Admin.ExportFeeed.SettingsYandex.Pickup")
+            </label>
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.Pickup")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.PickupHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Delivery, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Delivery=" + Model.Delivery.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Delivery" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <label for="Delivery" class="setting__label flex-grow m-l-sm">
+                @T("Admin.ExportFeeed.SettingsYandex.Delivery")
+            </label>
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.Delivery")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.DeliveryHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.Store, T("Admin.ExportFeed.SettingsYandex.Store"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Store, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Store=" + Model.Store.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Store" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.Store")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.StoreHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.Pickup, T("Admin.ExportFeeed.SettingsYandex.Pickup"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Pickup, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Pickup=" + Model.Pickup.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Pickup" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.Pickup")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.PickupHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.Delivery, T("Admin.ExportFeeed.SettingsYandex.Delivery"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.Delivery, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.Delivery=" + Model.Delivery.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.Delivery" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.Delivery")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.DeliveryHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.DeliveryCost, T("Admin.ExportFeeed.SettingsYandex.DeliveryCost"), new { @class = "required" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4">
+        @Html.DropDownList("ddlDeliveryCost", new SelectList(Model.DeliveryCostTypes, "Key", "Value", Model.DeliveryCost), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.DeliveryCost='" + Model.DeliveryCost + "'", ng_model = "exportFeeds.AdvancedSettings.DeliveryCost", ng_disabled = "!exportFeeds.AdvancedSettings.Delivery" })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2  @(isMobile ? "flex" : "")">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.DeliveryCost, T("Admin.ExportFeed.SettingsYandex.LocalDeliveryCost"))
+        </div>
+        @if (isMobile)
+        {
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.LocalDeliveryCost")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.LocalDeliveryCostHelp")
+                </div>
+            </help-trigger>
+        }
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4" style="position: relative;">
+        <div class="@(isMobile ? "form-group" : "m-b-xs")">
+            <span class="text-required  @(isMobile ? "block m-b-xs" : "")">@T("Admin.ExportFeed.SettingsYandex.DeliveryTimeExample")</span>
+            @Html.TextBoxFor(x => Model.LocalDeliveryOption.Days, new { @class = "form-control input-alt", @maxlength = 5, ng_model = "exportFeeds.LocalDeliveryOption.Days", ng_disabled = "exportFeeds.AdvancedSettings.DeliveryCost != 'LocalDeliveryCost' || !exportFeeds.AdvancedSettings.Delivery", validation_input_text = T("Admin.ExportFeeds.YandexMarket.DeliveryTime") })
+        </div>
+        <div class="@(isMobile ? "" : "m-b-xs")">
+            <span class="@(isMobile ? "block m-b-xs m-t-xs" : "")">@T("Admin.ExportFeeds.YandexMarket.Time")</span>
+            @Html.TextBoxFor(x => Model.LocalDeliveryOption.OrderBefore, new { @class = "form-control input-alt", ng_model = "exportFeeds.LocalDeliveryOption.OrderBefore", ng_disabled = "exportFeeds.AdvancedSettings.DeliveryCost != 'LocalDeliveryCost' || !exportFeeds.AdvancedSettings.Delivery" })
+        </div>
+        @if (!isMobile)
+        {
+            <help-trigger class="ng-cloak p-l-sm" style="position: absolute;top: 2rem;right: -1.5rem;" data-title="@T("Admin.ExportFeed.SettingsYandex.LocalDeliveryCost")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.LocalDeliveryCostHelp")
+                </div>
+            </help-trigger>
+        }
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.DeliveryCost, T("Admin.ExportFeed.SettingsYandex.GlobalDeliveryCost"), new { @class = "required" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10" ng-init="exportFeeds.setGridOptionsData(@Model.GlobalDeliveryCostJson)">
+        <ui-grid-custom grid-unique-id="gridGlobalDeliveryCosts"
+                        grid-on-init="exportFeeds.gridOnInit(grid)"
+                        grid-filter-enabled="false"
+                        grid-pagination-enabled="false"
+                        grid-selection-enabled="false"
+                        grid-params="{exportFeedId:@Model.ExportFeedId}"
+                        grid-options="exportFeeds.gridGlobalDeliveryOptions"
+                        grid-on-fetch="exportFeeds.gridOnFetch(grid)"
+                        grid-extend-ctrl="exportFeeds"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div class="">
+                        <div class="card__col m-r-xs ">
+                            <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Стоимость:</div>{{row.entity.Cost}}
+                        </div>
+                        <div class="card__col m-r-xs  m-t-sm">
+                            <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Срок доставки:</div><span class="fs-xs" style="word-break: break-all; ">{{row.entity.Days}}</span>
+                        </div>
+                        <div class="card__col m-r-xs m-t-sm">
+                            <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Время, до которого нужно успеть заказать, чтобы сроки доставки не сдвинулись на один день вперед:</div><span class="fs-xs" style="word-break: break-all; ">{{row.entity.OrderBefore}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+        <ui-modal-trigger ng-if="exportFeeds.AdvancedSettings.DeliveryCost != 'None' && exportFeeds.AdvancedSettings.Delivery" data-controller="'ModalAddYandexGlobalDeliveryCostCtrl'" controller-as="ctrl"
+                          template-url="@Html.GetAssetPath("addYandexGlobalDeliveryCost.html")"
+                          data-resolve="{'exportFeedId': @Model.ExportFeedId }"
+                          data-on-close="exportFeeds.yandexAddGlobalDeliveryCost(result)">
+            <button data-e2e="AddGlobalDeliveryOption" class="btn btn-sm btn-default m-t-xs"
+                    type="button" ng-disabled="exportFeeds.AdvancedSettings.DeliveryCost == 'None' || !exportFeeds.AdvancedSettings.Delivery">
+                @T("Admin.ExportFeeds.YandexMarket.AddOption")
+            </button>
+        </ui-modal-trigger>
+        <button ng-if="exportFeeds.AdvancedSettings.DeliveryCost == 'None' || !exportFeeds.AdvancedSettings.Delivery"
+                data-e2e="AddGlobalDeliveryOption" class="btn btn-sm btn-default m-t-xs" type="button"
+                ng-disabled="exportFeeds.AdvancedSettings.DeliveryCost == 'None' || !exportFeeds.AdvancedSettings.Delivery">
+            @T("Admin.ExportFeeds.YandexMarket.AddOption")
+        </button>
+        <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.GlobalDeliveryCost")">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.GlobalDeliveryCostHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="row middle-xs @(isMobile ? "" : "form-group")">
+    <div class="col-xs-12">
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.ExportFeeed.SettingsYandex.PricesAndCurrenciesSettings")</h3>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.DontExportCurrency, T("Admin.ExportFeed.SettingsYandex.DontExportCurrency"), new { @class = "required" })
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-5 col-wl-4 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.DontExportCurrency, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.DontExportCurrency=" + Model.DontExportCurrency.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.DontExportCurrency" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.DontExportCurrency, T("Admin.ExportFeed.SettingsYandex.DontExportCurrency"), new { @class = "required setting__label flex-grow m-l-sm" })
+        }
+        <help-trigger class="ng-cloak m-l-sm @(isMobile ? "p-l-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@Html.AttributeEncode(T("Admin.ExportFeed.SettingsYandex.DontExportCurrency"))">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.DontExportCurrency.HelpTip")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.Currency, T("Admin.ExportFeeed.SettingsYandex.Currency"), new { @class = "required" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4">
+        @Html.DropDownList("ddlCurrency", new SelectList(Model.Currencies, "Key", "Value", Model.Currency), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.Currency='" + Model.Currency + "'", ng_model = "exportFeeds.AdvancedSettings.Currency" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ProductPriceType, T("Admin.ExportFeed.SettingsYandex.ProductPriceType"), new { @class = "required" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-5 col-wl-4 @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownList("ddlProductPriceType", new SelectList(Model.ProductPriceTypeList, "Key", "Value", Model.ProductPriceType), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.ProductPriceType='" + Model.ProductPriceType + "'", ng_model = "exportFeeds.AdvancedSettings.ProductPriceType" })
+        @if (isMobile)
+        {
+            <help-trigger class="ng-cloak m-l-sm @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeed.SettingsYandex.ProductPriceType")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ProductPriceType.Help")
+                </div>
+            </help-trigger>
+        }
+    </div>
+    @if (!isMobile)
+    {
+        <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ProductPriceType")" style="height:50%;">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.ProductPriceType.Help")
+            </div>
+        </help-trigger>
+    }
+</div>
+
+@if (Model.PriceRulesEnabled && Model.PriceRules.Count > 0)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.PriceRuleId, T("Admin.ExportFeed.SettingsYandex.PriceRule"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4  @(isMobile ? "flex middle-xs" : "")">
+            @Html.DropDownList("ddlPriceRuleId",
+                new SelectList(Model.PriceRulesList, "Value", "Text", Model.PriceRuleId),
+                new { @class = "form-control input-alt-mobile", ng_init = "exportFeeds.AdvancedSettings.PriceRuleId='" + Model.PriceRuleId + "'", ng_model = "exportFeeds.AdvancedSettings.PriceRuleId" })
+            @if (isMobile)
+            {
+                <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.PriceRule")" style="height:50%;">
+                    <div class="help-content">
+                        @T("Admin.ExportFeed.SettingsYandex.PriceRule.Help")
+                    </div>
+                </help-trigger>
+            }
+        </div>
+        @if (!isMobile)
+        {
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.PriceRule")" style="height:50%;">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.PriceRule.Help")
+                </div>
+            </help-trigger>
+        }
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group" 
+         ng-if="exportFeeds.AdvancedSettings.ProductPriceType == 'Both' && exportFeeds.AdvancedSettings.PriceRuleId != null">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.PriceRuleId, T("Admin.ExportFeed.SettingsYandex.PriceRuleIdForOldPrice"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4  @(isMobile ? "flex middle-xs" : "")">
+            @Html.DropDownList("ddlPriceRuleIdForOldPrice",
+                new SelectList(Model.PriceRulesList, "Value", "Text", Model.PriceRuleIdForOldPrice),
+                new { @class = "form-control input-alt-mobile", ng_init = "exportFeeds.AdvancedSettings.PriceRuleIdForOldPrice='" + Model.PriceRuleIdForOldPrice + "'", ng_model = "exportFeeds.AdvancedSettings.PriceRuleIdForOldPrice" })
+            @if (isMobile)
+            {
+                <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.PriceRuleIdForOldPrice")" style="height:50%;">
+                    <div class="help-content">
+                        @T("Admin.ExportFeed.SettingsYandex.PriceRuleIdForOldPrice.Help")
+                    </div>
+                </help-trigger>
+            }
+        </div>
+        @if (!isMobile)
+        {
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.PriceRuleIdForOldPrice")" style="height:50%;">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.PriceRuleIdForOldPrice.Help")
+                </div>
+            </help-trigger>
+        }
+    </div>
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => Model.PriceFrom, T("Admin.ExportFeeed.SettingsYandex.PriceRange"))
+        </div>
+    </div>
+    <div class="col-xs-6 col-md-2 col-wl-1 @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group">
+            <div class="input-group-addon">
+                 @Html.LabelFor(x => Model.PriceFrom, T("Admin.ExportFeeed.SettingsYandex.PriceRangeFrom"))
+            </div>
+            @Html.TextBoxFor(x => Model.PriceFrom, new { @class = "form-control input-alt", @type = "number", ng_model = "exportFeeds.AdvancedSettings.PriceFrom", validation_input_text = T("Admin.ExportFeeed.SettingsYandex.PriceRangeFrom") })
+        </div>
+    </div>
+    <div class="col-xs-6 col-md-2 col-wl-1 @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group">
+            <div class="input-group-addon">
+                 @Html.LabelFor(x => Model.PriceTo, T("Admin.ExportFeeed.SettingsYandex.PriceRangeTo"))
+            </div>
+            @Html.TextBoxFor(x => Model.PriceTo, new { @class = "form-control input-alt", @type = "number", ng_model = "exportFeeds.AdvancedSettings.PriceTo", validation_input_text = T("Admin.ExportFeeed.SettingsYandex.PriceRangeTo") })
+        </div>
+        @if (isMobile)
+        {
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.PriceRange")" style="height:50%;">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.PriceRange.Help")
+                </div>
+            </help-trigger>
+        }
+    </div>
+    @if (!isMobile)
+    {
+        <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.PriceRange")" style="height:50%;">
+            <div class="help-content">
+                @T("Admin.ExportFeeed.SettingsYandex.PriceRange.Help")
+            </div>
+        </help-trigger>
+    }
+</div>
+
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportPurchasePrice, T("Admin.ExportFeed.SettingsYandex.ExportPurchasePrice"), new { @class = "required" })
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-5 col-wl-4 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.ExportPurchasePrice, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportPurchasePrice=" + Model.ExportPurchasePrice.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportPurchasePrice" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.ExportPurchasePrice, T("Admin.ExportFeed.SettingsYandex.ExportPurchasePrice"), new { @class = "required setting__label flex-grow m-l-sm" })
+        }
+        <help-trigger class="ng-cloak m-l-sm @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportPurchasePrice")">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.ExportPurchasePriceHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ConsiderMultiplicityInPrice, T("Admin.ExportFeed.SettingsYandex.ConsiderMultiplicityInPrice"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-5 col-wl-4 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.ConsiderMultiplicityInPrice, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ConsiderMultiplicityInPrice=" + Model.ConsiderMultiplicityInPrice.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ConsiderMultiplicityInPrice" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            @Html.LabelFor(x => x.ConsiderMultiplicityInPrice, T("Admin.ExportFeed.SettingsYandex.ConsiderMultiplicityInPrice"), new { @class = "required setting__label flex-grow m-l-sm" })
+        }
+        <help-trigger class="ng-cloak m-l-sm @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ExportFeed.SettingsYandex.ConsiderMultiplicityInPrice")">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.ConsiderMultiplicityInPriceHelp")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class=" @(isMobile ? "" : "form-group") row middle-xs">
+    <div class="col-xs-12">
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.ExportFeeed.SettingsYandex.ProductsSettings")</h3>
+        </div>
+    </div>
+</div>
+
+@if (isMobile)
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportNotAvailable, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportNotAvailable=" + Model.ExportNotAvailable.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportNotAvailable" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportNotAvailable, T("Admin.ExportFeed.SettingsYandex.ExportNotAvailable"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportNotAvailable")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeds.YandexMarket.UnavailableProducts")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.TypeExportYandex, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.TypeExportYandex=" + Model.TypeExportYandex.ToString(), ng_model = "exportFeeds.AdvancedSettings.TypeExportYandex" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.TypeExportYandex, T("Admin.ExportFeeed.SettingsYandex.TypeExportYandex"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.TypeExportYandex")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.TypeExportYandexHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.OfferIdType, T("Admin.ExportFeeed.SettingsYandex.OfferIdType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4">
+            @Html.DropDownList("ddlOfferIdType", new SelectList(Model.OfferTypes, "Key", "Value", Model.OfferIdType), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.OfferIdType='" + Model.OfferIdType + "'", ng_model = "exportFeeds.AdvancedSettings.OfferIdType" })
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.VendorCodeType, T("Admin.ExportFeeed.SettingsYandex.VendorCodeType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4">
+            @Html.DropDownList("VendorCodeType", new SelectList(Model.VendorCodeTypes, "Key", "Value", Model.VendorCodeType), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.VendorCodeType='" + Model.VendorCodeType + "'", ng_model = "exportFeeds.AdvancedSettings.VendorCodeType" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ColorSizeToName, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ColorSizeToName=" + Model.ColorSizeToName.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ColorSizeToName" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ColorSizeToName, T("Admin.ExportFeeed.SettingsYandex.ColorSizeToName"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.ProductDescriptionType, T("Admin.ExportFeeed.SettingsYandex.ProductDescriptionType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-5 col-wl-4 flex middle-xs">
+            @Html.DropDownList("ddlProductDescriptionType", new SelectList(Model.ProductDescriptionTypeList, "Key", "Value", Model.ProductDescriptionType), new { @class = "form-control input-alt", ng_init = "exportFeeds.AdvancedSettings.ProductDescriptionType='" + Model.ProductDescriptionType + "'", ng_model = "exportFeeds.AdvancedSettings.ProductDescriptionType" })
+
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ProductDescription")" style="height:50%;">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ProductDescriptionHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.RemoveHtml, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.RemoveHtml=" + Model.RemoveHtml.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.RemoveHtml" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.RemoveHtml, T("Admin.ExportFeeed.SettingsYandex.RemoveHtml"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportProductProperties, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportProductProperties=" + Model.ExportProductProperties.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportProductProperties" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportProductProperties, T("Admin.ExportFeeed.SettingsYandex.ExportProductProperties"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportNotAvailable, T("Admin.ExportFeed.SettingsYandex.ExportNotAvailable"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportNotAvailable, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportNotAvailable=" + Model.ExportNotAvailable.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportNotAvailable" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportNotAvailable")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeds.YandexMarket.UnavailableProducts")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.TypeExportYandex, T("Admin.ExportFeeed.SettingsYandex.TypeExportYandex"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.TypeExportYandex, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.TypeExportYandex=" + Model.TypeExportYandex.ToString(), ng_model = "exportFeeds.AdvancedSettings.TypeExportYandex" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.TypeExportYandex")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.TypeExportYandexHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.OfferIdType, T("Admin.ExportFeeed.SettingsYandex.OfferIdType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            @Html.DropDownList("ddlOfferIdType", new SelectList(Model.OfferTypes, "Key", "Value", Model.OfferIdType), new { @class = "form-control", ng_init = "exportFeeds.AdvancedSettings.OfferIdType='" + Model.OfferIdType + "'", ng_model = "exportFeeds.AdvancedSettings.OfferIdType" })
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.VendorCodeType, T("Admin.ExportFeeed.SettingsYandex.VendorCodeType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            @Html.DropDownList("VendorCodeType", new SelectList(Model.VendorCodeTypes, "Key", "Value", Model.VendorCodeType), new { @class = "form-control", ng_init = "exportFeeds.AdvancedSettings.VendorCodeType='" + Model.VendorCodeType + "'", ng_model = "exportFeeds.AdvancedSettings.VendorCodeType" })
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ColorSizeToName, T("Admin.ExportFeeed.SettingsYandex.ColorSizeToName"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ColorSizeToName, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ColorSizeToName=" + Model.ColorSizeToName.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ColorSizeToName" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ProductDescriptionType, T("Admin.ExportFeeed.SettingsYandex.ProductDescriptionType"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            @Html.DropDownList("ddlProductDescriptionType", new SelectList(Model.ProductDescriptionTypeList, "Key", "Value", Model.ProductDescriptionType), new { @class = "form-control", ng_init = "exportFeeds.AdvancedSettings.ProductDescriptionType='" + Model.ProductDescriptionType + "'", ng_model = "exportFeeds.AdvancedSettings.ProductDescriptionType" })
+        </div>
+        <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ProductDescription")" style="height:50%;">
+            <div class="help-content">
+                @T("Admin.ExportFeed.SettingsYandex.ProductDescriptionHelp")
+            </div>
+        </help-trigger>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.RemoveHtml, T("Admin.ExportFeeed.SettingsYandex.RemoveHtml"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.RemoveHtml, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.RemoveHtml=" + Model.RemoveHtml.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.RemoveHtml" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportProductProperties, T("Admin.ExportFeeed.SettingsYandex.ExportProductProperties"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportProductProperties, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportProductProperties=" + Model.ExportProductProperties.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportProductProperties" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+}
+<div ng-if="exportFeeds.AdvancedSettings.ExportProductProperties == true">
+    @if (isMobile)
+    {
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.JoinPropertyValues, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.JoinPropertyValues" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                @Html.LabelFor(x => x.JoinPropertyValues, T("Admin.ExportFeeed.SettingsYandex.JoinPropertyValues"), new { @class = "setting__label flex-grow m-l-sm" })
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs">
+                <div class="flex middle-xs">
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.ExportOnlyUseInDetailsProperties, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsProperties" })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                </div>
+                @Html.LabelFor(x => x.ExportOnlyUseInDetailsProperties, T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsProperties"), new { @class = "flex-grow m-l-sm" })
+                <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsProperties")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsPropertiesHint")
+                    </div>
+                </help-trigger>
+            </div>
+            <div class="col-xs-12 m-t-sm" ng-show="exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsProperties">
+                <div ng-init="exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsPropertiesExceptionIds=@(JsonConvert.SerializeObject(Model.ExportOnlyUseInDetailsPropertiesExceptionIds))">
+                    Дополнительные св-ва:
+                    <span ng-init="exportFeeds.exportOnlyUseInDetailsPropertiesExceptionNames='@Model.ExportOnlyUseInDetailsPropertiesExceptionNames'">
+                        {{exportFeeds.exportOnlyUseInDetailsPropertiesExceptionNames}}
+                    </span>
+                    <ui-modal-trigger data-controller="'ModalAddEditAdditionalPropertiesCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addEditAdditionalProperties.html")"
+                                      data-resolve="{value: { exportFeedId: exportFeeds.exportFeedId}}"
+                                      on-close="exportFeeds.updateExportOnlyUseInDetailsPropertiesExceptionNames(result)">
+                        <a href="">Выбрать</a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 flex middle-xs">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ExportPropertyDisplayedName, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.ExportPropertyDisplayedName" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                @Html.LabelFor(x => x.ExportPropertyDisplayedName, T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedName"), new { @class = "setting__label flex-grow m-l-sm" })
+                <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedName")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedNameHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-group row">
+            <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => x.JoinPropertyValues, T("Admin.ExportFeeed.SettingsYandex.JoinPropertyValues"))
+                </div>
+            </div>
+            <div class="col-xs-5 col-wl-4">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.JoinPropertyValues, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.JoinPropertyValues" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => x.ExportOnlyUseInDetailsProperties, T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsProperties"))
+                </div>
+            </div>
+            <div class="col-xs-5 col-wl-4">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ExportOnlyUseInDetailsProperties, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsProperties" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsProperties")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.SettingsYandex.ExportOnlyUseInDetailsPropertiesHint")
+                    </div>
+                </help-trigger>
+
+                <div ng-show="exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsProperties">
+                    <div ng-init="exportFeeds.AdvancedSettings.ExportOnlyUseInDetailsPropertiesExceptionIds=@(JsonConvert.SerializeObject(Model.ExportOnlyUseInDetailsPropertiesExceptionIds))">
+                        Дополнительные св-ва:
+                        <span ng-init="exportFeeds.exportOnlyUseInDetailsPropertiesExceptionNames='@Model.ExportOnlyUseInDetailsPropertiesExceptionNames'">
+                            {{exportFeeds.exportOnlyUseInDetailsPropertiesExceptionNames}}
+                        </span>
+                        <ui-modal-trigger data-controller="'ModalAddEditAdditionalPropertiesCtrl'" controller-as="ctrl"
+                                          template-url="@Html.GetAssetPath("addEditAdditionalProperties.html")"
+                                          data-resolve="{value: { exportFeedId: exportFeeds.exportFeedId}}"
+                                          on-close="exportFeeds.updateExportOnlyUseInDetailsPropertiesExceptionNames(result)">
+                            <a href="">Выбрать</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => x.ExportPropertyDisplayedName, T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedName"))
+                </div>
+            </div>
+            <div class="col-xs-5 col-wl-4">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ExportPropertyDisplayedName, new { @class = "adv-checkbox-input", ng_model = "exportFeeds.AdvancedSettings.ExportPropertyDisplayedName" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedName")">
+                    <div class="help-content">
+                        @T("Admin.ExportFeeed.SettingsYandex.ExportPropertyDisplayedNameHelp")
+                    </div>
+                </help-trigger>
+            </div>
+        </div>
+}
+</div>
+@if (isMobile)
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportBarCode, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportBarCode=" + Model.ExportBarCode.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportBarCode" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportBarCode, T("Admin.ExportFeed.SettingsYandex.ExportBarCode"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportBarCode")">
+                <div class="help-content">
+                    @T("Admin.Product.Edit.BarcodeHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportAllPhotos, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportAllPhotos=" + Model.ExportAllPhotos.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportAllPhotos" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportAllPhotos, T("Admin.ExportFeeed.SettingsYandex.ExportAllPhotos"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportAllPhotos")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportAllPhotosHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportRelatedProducts, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportRelatedProducts=" + Model.ExportRelatedProducts.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportRelatedProducts" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportRelatedProducts, T("Admin.ExportFeed.SettingsYandex.ExportRelatedProducts"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportRelatedProducts")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportRelatedProductsHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.OnlyMainOfferToExport, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.OnlyMainOfferToExport=" + Model.OnlyMainOfferToExport.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.OnlyMainOfferToExport" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.OnlyMainOfferToExport, T("Admin.ExportFeeed.SettingsYandex.OnlyMainOfferToExport"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.AllowPreOrderProducts, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.AllowPreOrderProducts=" + Model.AllowPreOrderProducts.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.AllowPreOrderProducts" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.AllowPreOrderProducts, T("Admin.ExportFeed.SettingsYandex.AllowPreOrderProducts"), new { @class = "required setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.AllowPreOrderProducts")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeds.SettingsYandex.UnloadedWithAtribute") available="false"
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportDimensions, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportDimensions=" + Model.ExportDimensions.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportDimensions" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportDimensions, T("Admin.ExportFeed.SettingsYandex.ExportDimensions"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.DontExportProductsWithoutDimensionsAndWeight, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.DontExportProductsWithoutDimensionsAndWeight=" + Model.DontExportProductsWithoutDimensionsAndWeight.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.DontExportProductsWithoutDimensionsAndWeight" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.DontExportProductsWithoutDimensionsAndWeight, T("Admin.ExportFeed.SettingsYandex.DontExportProductsWithoutDimensionsAndWeight"), new { @class = "setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCount, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportCount=" + Model.ExportCount.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportCount" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportCount, T("Admin.ExportFeed.SettingsYandex.ExportCount"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCount")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCountHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportShopSku, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportShopSku=" + Model.ExportShopSku.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportShopSku" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportShopSku, T("Admin.ExportFeed.SettingsYandex.ExportShopSku"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportShopSku")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportShopSkuHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportManufacturer, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportManufacturer=" + Model.ExportManufacturer.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportManufacturer" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportManufacturer, T("Admin.ExportFeed.SettingsYandex.ExportManufacturer"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportManufacturer")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportManufacturerHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportExpiry, new { ng_model = "exportFeeds.AdvancedSettings.ExportExpiry", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportExpiry, T("Admin.ExportFeed.SettingsYandex.ExportExpiry"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportExpiry")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportExpiryHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportWarrantyDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportWarrantyDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportWarrantyDays, T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDays"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCommentWarranty, new { ng_model = "exportFeeds.AdvancedSettings.ExportCommentWarranty", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportCommentWarranty, T("Admin.ExportFeed.SettingsYandex.ExportCommentWarranty"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCommentWarranty")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCommentWarrantyHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportPeriodOfValidityDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportPeriodOfValidityDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportPeriodOfValidityDays, T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDays"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportServiceLifeDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportServiceLifeDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportServiceLifeDays, T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDays"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketTnVedCode, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketTnVedCode", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportMarketTnVedCode, T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCode"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCode")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCodeHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketStepQuantity, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketStepQuantity", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportMarketStepQuantity, T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantity"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantity")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantityHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketMinQuantity, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketMinQuantity", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportMarketMinQuantity, T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantity"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantity")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantityHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketCisRequired, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketCisRequired", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportMarketCisRequired, T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequired"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequired")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequiredHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCollections, new { ng_model = "exportFeeds.AdvancedSettings.ExportCollections", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.ExportCollections, T("Admin.ExportFeed.SettingsYandex.ExportCollections"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCollections")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCollectionsHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.NeedZip, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.NeedZip=" + Model.NeedZip.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.NeedZip" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.LabelFor(x => x.NeedZip, T("Admin.ExportFeeed.SettingsYandex.NeedZip"), new { @class = "required setting__label flex-grow m-l-sm" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap setting__label">
+                @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCount")
+            </div>
+        </div>
+        <div class="col-xs-12 flex middle-xs">
+            @Html.TextBoxFor(x => x.NotExportAmountCount, new { @class = "form-control input-alt m-r-sm", type = "number", ng_model = "exportFeeds.AdvancedSettings.NotExportAmountCount" })
+            @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCountUnit")
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.NotExportAmountCount")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCountHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group" 
+         ng-init="exportFeeds.AdvancedSettings.WarehouseIds=@(JsonConvert.SerializeObject(Model.WarehouseIds))">
+        <div class="col-xs-12 flex middle-xs">
+            <label class="adv-checkbox-label"
+                   ng-init='exportFeeds.ShowWarehouses=exportFeeds.AdvancedSettings.WarehouseIds!=null && exportFeeds.AdvancedSettings.WarehouseIds.length>0'>                
+                <input class="adv-checkbox-input" id="ShowWarehouses" name="ShowWarehouses" ng-model="exportFeeds.ShowWarehouses" type="checkbox" />
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            @Html.Label("ShowWarehouses", T("Admin.ExportFeeed.SettingsYandex.WarehouseIds"), new { @class = "setting__label flex-grow m-l-sm" })
+            <help-trigger class="ng-cloak m-l-sm p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.WarehouseIds")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeed.SettingsYandex.WarehouseIdsHint")
+                </div>
+            </help-trigger>            
+        </div>
+        <div data-ng-if="exportFeeds.ShowWarehouses" class="m-t-sm">
+            <div data-ng-init="exportFeeds.initWarehouses()">
+                <ui-select class="input-alt" multiple tagging-label="true" ng-model="exportFeeds.selectedWarehouses">
+                    <ui-select-match placeholder="Выберите склады">{{$item.Name}}</ui-select-match>
+                    <ui-select-choices repeat="item in exportFeeds.warehouses" minimum-input-length="1">
+                        <span ng-bind="item.Name"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportBarCode, T("Admin.ExportFeed.SettingsYandex.ExportBarCode"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportBarCode, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportBarCode=" + Model.ExportBarCode.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportBarCode" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportBarCode")">
+                <div class="help-content">
+                    @T("Admin.Product.Edit.BarcodeHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportAllPhotos, T("Admin.ExportFeeed.SettingsYandex.ExportAllPhotos"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportAllPhotos, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportAllPhotos=" + Model.ExportAllPhotos.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportAllPhotos" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.ExportAllPhotos")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportAllPhotosHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportRelatedProducts, T("Admin.ExportFeed.SettingsYandex.ExportRelatedProducts"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportRelatedProducts, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportRelatedProducts=" + Model.ExportRelatedProducts.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportRelatedProducts" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportRelatedProducts")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportRelatedProductsHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.OnlyMainOfferToExport, T("Admin.ExportFeeed.SettingsYandex.OnlyMainOfferToExport"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.OnlyMainOfferToExport, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.OnlyMainOfferToExport=" + Model.OnlyMainOfferToExport.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.OnlyMainOfferToExport" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.AllowPreOrderProducts, T("Admin.ExportFeed.SettingsYandex.AllowPreOrderProducts"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.AllowPreOrderProducts, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.AllowPreOrderProducts=" + Model.AllowPreOrderProducts.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.AllowPreOrderProducts" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.AllowPreOrderProducts")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeds.SettingsYandex.UnloadedWithAtribute") available="false"
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportDimensions, T("Admin.ExportFeed.SettingsYandex.ExportDimensions"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportDimensions, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportDimensions=" + Model.ExportDimensions.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportDimensions" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.DontExportProductsWithoutDimensionsAndWeight, T("Admin.ExportFeed.SettingsYandex.DontExportProductsWithoutDimensionsAndWeight"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.DontExportProductsWithoutDimensionsAndWeight, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.DontExportProductsWithoutDimensionsAndWeight=" + Model.DontExportProductsWithoutDimensionsAndWeight.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.DontExportProductsWithoutDimensionsAndWeight" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportCount, T("Admin.ExportFeed.SettingsYandex.ExportCount"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCount, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportCount=" + Model.ExportCount.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportCount" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCount")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCountHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportShopSku, T("Admin.ExportFeed.SettingsYandex.ExportShopSku"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportShopSku, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportShopSku=" + Model.ExportShopSku.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportShopSku" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportShopSku")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportShopSkuHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportManufacturer, T("Admin.ExportFeed.SettingsYandex.ExportManufacturer"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportManufacturer, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.ExportManufacturer=" + Model.ExportManufacturer.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.ExportManufacturer" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportManufacturer")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportManufacturerHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportExpiry, T("Admin.ExportFeed.SettingsYandex.ExportExpiry"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportExpiry, new { ng_model = "exportFeeds.AdvancedSettings.ExportExpiry", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportExpiry")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportExpiryHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportWarrantyDays, T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDays"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportWarrantyDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportWarrantyDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportWarrantyDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportCommentWarranty, T("Admin.ExportFeed.SettingsYandex.ExportCommentWarranty"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCommentWarranty, new { ng_model = "exportFeeds.AdvancedSettings.ExportCommentWarranty", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCommentWarranty")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCommentWarrantyHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportPeriodOfValidityDays, T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDays"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportPeriodOfValidityDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportPeriodOfValidityDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportPeriodOfValidityDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportServiceLifeDays, T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDays"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportServiceLifeDays, new { ng_model = "exportFeeds.AdvancedSettings.ExportServiceLifeDays", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDays")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportServiceLifeDaysHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportMarketTnVedCode, T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCode"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketTnVedCode, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketTnVedCode", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCode")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketTnVedCodeHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportMarketStepQuantity, T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantity"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketStepQuantity, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketStepQuantity", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantity")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketStepQuantityHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportMarketMinQuantity, T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantity"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketMinQuantity, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketMinQuantity", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantity")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketMinQuantityHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportMarketCisRequired, T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequired"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportMarketCisRequired, new { ng_model = "exportFeeds.AdvancedSettings.ExportMarketCisRequired", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequired")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportMarketCisRequiredHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    
+        <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.ExportCollections, T("Admin.ExportFeed.SettingsYandex.ExportCollections"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ExportCollections, new { ng_model = "exportFeeds.AdvancedSettings.ExportCollections", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.ExportCollections")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.ExportCollectionsHint")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.NeedZip, T("Admin.ExportFeeed.SettingsYandex.NeedZip"), new { @class = "required" })
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.NeedZip, new { @class = "adv-checkbox-input", ng_init = "exportFeeds.AdvancedSettings.NeedZip=" + Model.NeedZip.ToLowerString(), ng_model = "exportFeeds.AdvancedSettings.NeedZip" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">
+                @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCount")
+            </div>
+        </div>
+        <div class="col-xs-1">
+            @Html.TextBoxFor(x => x.NotExportAmountCount, new { @class = "form-control", type = "number", ng_model = "exportFeeds.AdvancedSettings.NotExportAmountCount" })
+        </div>
+        <div class="col-xs relative">
+            @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCountUnit")
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeed.SettingsYandex.NotExportAmountCount")">
+                <div class="help-content">
+                    @T("Admin.ExportFeed.SettingsYandex.NotExportAmountCountHelp")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-3 col-wl-2 ">
+            <div class="setting-label-wrap">
+                @Html.Label("ShowWarehouses", T("Admin.ExportFeeed.SettingsYandex.WarehouseIds"))
+            </div>
+        </div>
+        <div class="col-xs-5 col-wl-4" 
+             ng-init="exportFeeds.AdvancedSettings.WarehouseIds=@(JsonConvert.SerializeObject(Model.WarehouseIds))">
+            <label class="adv-checkbox-label" 
+                   ng-init='exportFeeds.ShowWarehouses=exportFeeds.AdvancedSettings.WarehouseIds!=null && exportFeeds.AdvancedSettings.WarehouseIds.length>0'>
+                <input class="adv-checkbox-input" id="ShowWarehouses" name="ShowWarehouses" ng-model="exportFeeds.ShowWarehouses" type="checkbox" />
+                <span class="adv-checkbox-emul"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-sm" data-title="@T("Admin.ExportFeeed.SettingsYandex.WarehouseIds")">
+                <div class="help-content">
+                    @T("Admin.ExportFeeed.SettingsYandex.WarehouseIdsHint")
+                </div>
+            </help-trigger>
+            <div data-ng-if="exportFeeds.ShowWarehouses" class="m-t-sm">
+                <div data-ng-init="exportFeeds.initWarehouses()">
+                    <ui-select class="input-alt" multiple tagging-label="true" ng-model="exportFeeds.selectedWarehouses">
+                        <ui-select-match placeholder="Выберите склады">{{$item.Name}}</ui-select-match>
+                        <ui-select-choices repeat="item in exportFeeds.warehouses" minimum-input-length="1">
+                            <span ng-bind="item.Name"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>            
+        </div>
+    </div>
+}

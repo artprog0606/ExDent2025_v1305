@@ -1,0 +1,71 @@
+﻿<form name="addEditePromoCode" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.ModalAddEditAdditionalProperties.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-horizontal">
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <div class="col-xs-12" ng-class="{'setting__label' : isMobile.value}">
+                            Добавление в выгрузку свойств, у которых не стоит "Использовать в карточке товара"
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <div class="col-xs-8">
+                            <ui-select
+                                class="input-alt"
+                                data-e2e="selectProperty"
+                                validation-input-text="{{::'Admin.Js.ProductProperties.Name' | translate}}"
+                                reach-infinity="ctrl.getMore()"
+                                ng-model="ctrl.selectedProperty"
+                                on-select="ctrl.selectProperty($item, $model)"
+                                ng-click="ctrl.clickProperty()"
+                                reset-search-input="true"
+                                append-to-body="true"
+                                skip-focusser="true">
+                                <ui-select-match allow-clear="true" placeholder="{{'Admin.Js.ProductProperties.EnterPropertyName' | translate}}">
+                                    {{$select.selected.Name}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                    refresh="ctrl.findProperty($select.search, $select)"
+                                    refresh-delay="250"
+                                    repeat="item in ctrl.propertiesList track by item.PropertyId"
+                                    minimum-input-length="1">
+                                    <span ng-bind="item.Name"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <div class="col-xs-4">
+                            <a class="btn btn-sm btn-success" ng-click="ctrl.addProperty()">Добавить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <div class="col-xs-12">
+                            <span ng-class="{'setting__label block m-b-md' : isMobile.value}">Выбранные свойства:</span>
+                            <div ng-repeat="item in ctrl.exceptionProperties" class="m-t-xs" ng-class="{'flex' : isMobile.value}">
+                                {{item.label}}
+                                <a
+                                    href=""
+                                    ng-click="ctrl.removeProperty(item)"
+                                    class="fa fa-times link-invert text-decoration-none"
+                                    title="Удалить"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" ng-click="ctrl.save()">{{'Admin.Js.AddEdit.Save'|translate}}</button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

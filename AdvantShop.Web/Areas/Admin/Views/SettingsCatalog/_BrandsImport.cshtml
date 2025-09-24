@@ -1,0 +1,383 @@
+﻿@using AdvantShop.Helpers
+@model AdvantShop.Web.Admin.ViewModels.Catalog.Import.ImportBrandsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div bs-modifiable="false" ng-controller="ImportCtrl as import">
+    <form name="importBrandsForm" novalidate="novalidate">
+        <div class="m-t-n-xs sticky-page-name">
+            <div class="page-name-block sticky-page-name-inner">
+                @if (!isMobile)
+                {
+                    <div class="flex middle-xs page-name-block-item-main">
+                        <h2 class="m-t-none sticky-page-name-text">
+                            @T("Admin.SettingsCatalog.ImportBrands.Title")
+                        </h2>
+                    </div>
+                    <div class="page-name-block-item-additional">
+                        <button class="btn btn-sm btn-success ng-cloak" data-button-validation="" data-button-validation-success="import.startBrandsImport()"
+                                data-e2e="Export"
+                                data-ladda="import.inProgress"
+                                disabled ng-disabled="!import.showFields || import.isStartExport" type="button">
+                            @T("Admin.SettingsCatalog.ImportBrands.Import")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="" ng-if="!import.isStartExport">
+            <div class="row">
+                <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+                    <h3 class="category-title setting__subtitle setting--m-t-none">@T("Admin.SettingsCatalog.ImportBrands.Params")</h3>
+                </div>
+                <div class="col-wl-10 col-xs-12 col-md-9">
+                    <div class="category-block">
+                        <div class="border_none category-content">
+
+                            <div class="form-group middle-xs row setting__form-group">
+                                <div class="col-wl-2 col-xs-12 col-md-3">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.SettingsCatalog.ImportBrands.ColumnSeparator")
+                                    </div>
+                                </div>
+                                <div class="col-wl-2 col-xs-12 col-md-3 @(isMobile ? "flex middle-xs" : "")">
+                                    @Html.DropDownListFor(m => m.ColumnSeparator, Model.ColumnSeparators, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.ColumnSeparator"
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="m-l-xs ng-cloak col-xs-1" data-title="@T("Admin.SettingsCatalog.ImportBrands.ColumnSeparator")" use-template="true">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCatalog.ImportBrands.ColumnSeparatorHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                <div class="col-wl-2 col-xs-12 col-md-3 setting--m-t-sm" ng-if="import.importSettings.ColumnSeparator=='custom'">
+                                    @Html.TextBoxFor(m => m.CustomColumnSeparator, Model.CustomColumnSeparator, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.CustomColumnSeparator",
+                                        ng_required = "import.importSettings.ColumnSeparator=='custom'",
+                                        validation_input_text = T("Admin.SettingsCatalog.ImportBrands.ColumnSeparator")
+                                    })
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="m-l-xs ng-cloak" data-title="@T("Admin.SettingsCatalog.ImportBrands.ColumnSeparator")" use-template="true">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCatalog.ImportBrands.ColumnSeparatorHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+
+                            <div class="form-group middle-xs row setting__form-group">
+                                <div class="col-wl-2 col-xs-12 col-md-3">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.SettingsCatalog.ImportBrands.FileEncoding")
+                                    </div>
+                                </div>
+                                <div class="col-wl-2 col-xs-12 col-md-3 @(isMobile ? "flex middle-xs" : "")">
+                                    @Html.DropDownListFor(m => m.Encoding, Model.Encodings, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.Encoding"
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="m-l-xs ng-cloak col-xs-1" data-title="@T("Admin.SettingsCatalog.ImportBrands.FileEncoding")" use-template="true">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCatalog.ImportBrands.FileEncodingHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="m-l-xs ng-cloak" data-title="@T("Admin.SettingsCatalog.ImportBrands.FileEncoding")" use-template="true">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCatalog.ImportBrands.FileEncodingHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+
+                            <div class="form-group row setting__form-group ">
+                                @if (!isMobile)
+                                {
+                                    <div class="col-wl-2 col-xs-3">
+                                        <div class="setting-label-wrap">
+                                            @T("Admin.SettingsCatalog.ImportBrands.HasHeader")
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-wl-2 col-xs-12 col-md-3 @(isMobile ? "flex middle-xs" : "")">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(m => m.HaveHeader, new
+                                        {
+                                            @class = "adv-checkbox-input",
+                                            ng_model = "import.importSettings.HaveHeader"
+                                        })
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                    @if (isMobile)
+                                    {
+                                        <label for="HaveHeader" class="setting__label col-xs">
+                                            @T("Admin.SettingsCatalog.ImportBrands.HasHeader")
+                                        </label>
+                                    }
+                                    <help-trigger class="m-l-xs ng-cloak @(isMobile ? "col-xs-1" : "")" data-title="@T("Admin.SettingsCatalog.ImportBrands.HasHeader")" use-template="true">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCatalog.ImportBrands.HasHeaderHint")
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-wl-2 col-sm-3 col-xs-12">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        <a data-button-validation="" data-button-validation-success="import.getExampleBrandsFile()" download href="">@T("Admin.SettingsCatalog.ImportBrands.SampleFile")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row @(isMobile ? "" : "m-t")">
+                <div class="col-lg-3 col-wl-2 col-sm-3 col-xs-12">
+                    <h3 class="category-title setting__subtitle">@T("Admin.SettingsCatalog.ImportBrands.CsvFile")</h3>
+                </div>
+                <div class="col-wl-10 col-sm-9 col-xs-12">
+                    <div class="category-block">
+                        <div class="border_none category-content">
+                            <div class="form-group row" ng-if="!import.showFields">
+                                <div class="col-wl-2 col-sm-3 col-xs-12 @(isMobile ? "flex middle-xs" : "")">
+                                    <file-uploader accept=".csv"
+                                                   class="inline picture-uploader-middle"
+                                                   on-update="import.getFieldsFromBrandsCsvFile()"
+                                                   start-src=""
+                                                   upload-params=""
+                                                   upload-url="/import/UploadCsvBrandsFile">
+                                    </file-uploader>
+                                    <help-trigger class="m-l-xs ng-cloak @(isMobile ? "m-l-sm" : "")" use-template="true">
+                                        <div class="help-content">
+                                            @Html.Action("FilesHelpTextByFileType", "Common", new { type = EFileType.Csv | EFileType.Text })
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+                            <div ng-if="import.showFields">
+                                <div class="form-group row">
+                                    <div class="col-sm-3 col-xs-6">
+                                        <div class="setting-title1">
+                                            <h3>@T("Admin.SettingsCatalog.ImportBrands.ColumnInCsv")</h3>
+                                        </div>
+                                    </div>
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-3">
+                                            <div class="setting-title1">
+                                                <h3>@T("Admin.SettingsCatalog.ImportBrands.FirstBrandData")</h3>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-sm-3 col-xs-6">
+                                        <div class="setting-title1">
+                                            <h3>@T("Admin.SettingsCatalog.ImportBrands.DataType")</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-repeat="header in import.headers track by $index">
+                                    <div class="col-sm-3 col-xs-6 setting__label" style="@(isMobile ? "align-self: center;}" : "")">
+                                        <span> {{import.headers[$index]}} </span>
+                                    </div>
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-3">
+                                            <span> {{import.firstObjectFields[$index]}} </span>
+                                        </div>
+                                    }
+                                    <div class="col-sm-3 col-xs-6">
+                                        <select class="form-control input-alt"
+                                                ng-model="import.importSettings.selectedFields[$index]" ng-options="key as value for (key , value) in import.allFields">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-wl-2 col-sm-3 col-xs-12">
+                                        <file-uploader accept=".csv"
+                                                       class="inline picture-uploader-middle"
+                                                       go-to-first-step-after-succes="true"
+                                                       on-update="import.getFieldsFromBrandsCsvFile()"
+                                                       start-src=""
+                                                       title-upload-button="@T("Admin.SettingsCatalog.ImportBrands.ChangeNewFile")"
+                                                       upload-params=""
+                                                       upload-url="/import/UploadCsvBrandsFile">
+                                        </file-uploader>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row @(isMobile ? "" : "m-t")">
+                <div class="col-lg-3 col-wl-2 col-sm-3 col-xs-12">
+                    <h3 class="category-title setting__subtitle">@T("Admin.SettingsCatalog.ImportBrands.ZipFile")</h3>
+                </div>
+                <div class="col-wl-10 col-sm-9 col-xs-12">
+                    <div class="category-block">
+                        <div class="border_none category-content">
+                            <div class="form-group row">
+                                <div class="col-wl-2 col-sm-3 col-xs-12 @(isMobile ? "flex middle-xs" : "")">
+                                    <file-uploader accept=".zip"
+                                                   class="inline picture-uploader-middle"
+                                                   delete-params=""
+                                                   delete-url="/import/deleteZipFile"
+                                                   show-result="true"
+                                                   start-src=""
+                                                   upload-params=""
+                                                   upload-url="/import/uploadZipFile">
+                                    </file-uploader>
+                                    <help-trigger class="m-l-xs ng-cloak @(isMobile ? "m-l-sm" : "")" use-template="true">
+                                        <div class="help-content">
+                                            @Html.Action("FilesHelpTextByFileType", "Common", new { type = EFileType.ZipArchive })
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (isMobile)
+            {
+                <div class="page-name-block-item-additional m-t-sm m-b-sm">
+                    <button class="btn btn-sm btn-success ng-cloak" data-button-validation="" data-button-validation-success="import.startBrandsImport()"
+                            data-e2e="Export"
+                            data-ladda="import.inProgress"
+                            disabled ng-disabled="!import.showFields || import.isStartExport" type="button">
+                        @T("Admin.SettingsCatalog.ImportBrands.Import")
+                    </button>
+                </div>
+            }
+        </div>
+
+        <cm-stat ng-if="import.isStartExport" on-finish="brandsList.onFinishImport(data)">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <uib-progressbar max="cmStat.entity.Total" value="cmStat.entity.Processed">
+                                <span style="color:white; white-space:nowrap;">{{ cmStat.entity.ProcessedPercent }} %</span>
+                            </uib-progressbar>
+                        </div>
+                    </div>
+                    <div class="row @(isMobile ? "m-t-sm" : "")">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group @(isMobile ? "flex middle-xs" : "row")">
+                                <div class="col-sm-2 col-xs-6">
+                                    <div class="setting-label-wrap  setting--m-none">
+                                        @T("Admin.ProgressData.Added")
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-xs-6">
+
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Add"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group @(isMobile ? "flex middle-xs" : "row")">
+                                <div class="col-sm-2 col-xs-6">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.Updated")
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-xs-6">
+
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Update"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group @(isMobile ? "flex middle-xs" : "row")">
+                                <div class="col-sm-2 col-xs-6">
+                                    <div class="setting-label-wrap  setting--m-none">
+                                        @T("Admin.ProgressData.Errors")
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-xs-6">
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Error"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group @(isMobile ? "" : "row")">
+                                <div class="setting-label-wrap  setting--m-none @(isMobile ? "col-xs-6" : "col-sm-2 col-xs-6")">
+                                    <div class="setting-label-wrap">
+                                        @T("Admin.ProgressData.CurrentProcess")
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.CurrentProcessName" ng-href="{{cmStat.entity.CurrentProcess}}"></a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="!cmStat.entity.IsRun">
+                        <div class="col-xs-12">
+                            <div class="form-group @(isMobile ? "" : "row")" ng-if="cmStat.entity.Error == 0">
+                                <div class="col-xs-12">
+                                    <div class="setting-label-wrap">
+                                        @T("Admin.ProgressData.ProcessEndSuccess")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group @(isMobile ? "" : "row")">
+                                <div class="col-xs-12">
+                                    <div class="setting-label-wrap">
+                                        <label class="adv-checkbox-label">
+                                            <a class="link-decoration-none" download href="@Url.AbsoluteActionUrl("GetLogFile", "ExportImportCommon")">@T("Admin.ProgressData.DownloadErrorsLog")</a>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="cmStat.entity.IsRun">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group @(isMobile ? "" : "row")">
+                                <div class="col-xs-12">
+                                    <a class="btn btn-default btn-sm" ng-click="import.abortImport()" target="_blank">@T("Admin.ProgressData.InterruptProcess")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="!cmStat.entity.IsRun">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group @(isMobile ? "" : "row")">
+                                <div class="col-xs-12">
+                                    <a class="link-decoration-none" href="" ng-click="import.isStartExport = false; import.showFields = false;">@T("Admin.ProgressData.BackToImport")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </cm-stat>
+    </form>
+</div>

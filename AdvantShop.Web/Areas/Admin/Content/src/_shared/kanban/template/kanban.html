@@ -1,0 +1,83 @@
+﻿<div class="ibox">
+    <div class="ibox-content no-top-border p-xs-x2 p-b-n clearfix">
+        <ui-grid-custom-filter
+            grid-column-defs="$ctrl.kanbanColumnDefs"
+            grid-params="$ctrl._params"
+            on-init="$ctrl.filterInit(filter)"
+            on-change="$ctrl.filterApply(params, item)"
+            on-remove="$ctrl.filterRemove(name, item)">
+        </ui-grid-custom-filter>
+    </div>
+</div>
+<div id="kanban" class="relative">
+    <div class="kanban-scrollable" ng-class="{'kanban-scrollable-activated dragscroll': $ctrl.kanbanScrollable}">
+        <div class="row kanban-row" ng-class="[$ctrl.kanbanRowClasses]">
+            <div
+                ng-repeat="column in $ctrl.kanbanObj.Columns track by $index"
+                class="col-xs kanban-skeleton-column"
+                ng-class="[$ctrl.kanbanColumnClasses, column.Class]"
+                data-columnindex="{{$index}}"
+                id="column{{$index}}"
+                ng-init="colIndex = $index">
+                <div class="kanban-column-wrap" ng-class="$ctrl.kanbanColumnWrapClasses" ng-style="column.CardStyle">
+                    <div
+                        class="kanban-column-header clearfix"
+                        sticky
+                        sticky-top="$ctrl.kanbanStickyTop"
+                        sticky-group="kanbanColumnHeaderSticky"
+                        sticky-position-type="absolute"
+                        data-e2e="columnHeader">
+                        <div class="kanban-column-header__inner">
+                            <div
+                                class="kanban-column-header__name"
+                                title="{{column.Name + (column.TotalString != null ? ' ' + column.TotalString : '')}}">
+                                <div class="kanban-column-header-child">
+                                    <div class="kanban-column-header-child__name">
+                                        <div class="kanban-column-header-child__name-ellipse">{{column.Name}}</div>
+                                    </div>
+                                    <div
+                                        class="kanban-column-header__count"
+                                        ng-if="column.TotalString"
+                                        data-e2e="columnTotal"
+                                        ng-bind-html="column.TotalString"></div>
+                                </div>
+                            </div>
+                            <div class="kanban-column-header__total" ng-if="column.CardsPerColumn > 0">
+                                <div class="kanban-column-header__total-marker" data-e2e="CardsPerColumn">{{column.TotalCardsCount}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-if="$ctrl.kanbanObj.TotalCardsCount !== 0" class="kanban-column">
+                        <div
+                            class="kanban-task-wrap"
+                            as-sortable="$ctrl._sortOptions"
+                            is-disabled="$ctrl.isSortableDisabled"
+                            ng-class="{'kanban-task-wrap-calc': column.Page < column.TotalPagesCount, 'kanban-sortable--disabled': $ctrl.isSortableDisabled}"
+                            data-ng-model="column.Cards">
+                            <div ng-repeat="card in column.Cards track by card.Id" as-sortable-placeholder as-sortable-item>
+                                <div as-sortable-item-handle class="kanban-task" data-e2e-cell="{{$index}}" ng-style="column.CardStyle">
+                                    <kanban-card card="card" on-update="$ctrl.onUpdateCard(card, colIndex, $index)" />
+                                </div>
+                            </div>
+                            <button
+                                data-e2e="Load{{$index}}"
+                                type="button"
+                                class="kanban-btn"
+                                ng-if="column.Page < column.TotalPagesCount"
+                                ng-click="$ctrl.fetchColumnData($index)">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                {{'Admin.Js.Kanban.LoadMore'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="kanban__not-tasks" data-ng-if="$ctrl.kanbanObj.TotalCardsCount === 0">
+                        <!-- && $index === 0 -->
+                        <kanban-card-empty
+                            sales-funnel-id="$ctrl.kanbanParams.salesFunnelId"
+                            deal-status-id="$ctrl.kanbanObj.Columns[$index].DealStatusId" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

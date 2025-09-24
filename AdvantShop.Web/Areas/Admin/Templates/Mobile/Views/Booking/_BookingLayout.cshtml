@@ -1,0 +1,225 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+    Html.AddAsset("booking");
+}
+
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Title = "<span>" + Html.Action("AffiliatesMenu", "Booking") + "</span>";
+
+    headerModel.Controls = new List<IButton>();
+
+
+    if (LayoutExtensions.NgController.ToString() == "BookingJournalCtrl")
+    {
+        headerModel.Controls.Add(new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+        {
+        eButtonModificators.OnlyIcon
+        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 }
+            },
+            WrapStart = "<ui-modal-trigger window-class=\"modal--panel modal-booking-sheduler\" opened-class=\"modal-open--panel\" data-controller=\"'ModalAddUpdateBookingCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {affiliateId : app.bookingJournal.affiliateId, beginDate: app.bookingJournal.sheduler.date}}\" data-on-close=\"app.bookingJournal.modalBookingClose(result)\" template-url=\"" + Html.GetAssetPath("addUpdateBooking.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>"
+        });
+    }
+
+    if (LayoutExtensions.NgController.ToString() == "BookingReservationResourcesCtrl")
+    {
+        headerModel.Controls.Add(new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+        {
+        eButtonModificators.OnlyIcon
+        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddUpdateReservationResourceCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {affiliateId : app.bookingReservationResources.affiliateId}}\" data-on-close=\"app.bookingReservationResources.onResourceAddUpdate()\" template-url=\"" + Html.GetAssetPath("addUpdateReservationResource.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>"
+        });
+    }
+
+    if (LayoutExtensions.NgController.ToString() == "BookingCategoriesCtrl")
+    {
+        headerModel.Controls.Add(new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+        {
+        eButtonModificators.OnlyIcon
+        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditBookingCategoryCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {affiliateId : app.bookingServices.affiliateId}}\" data-on-close=\"app.bookingServices.onCategoryAddedEdit();app.bookingCategories.listBookingData.fetch()\" template-url=\"" + Html.GetAssetPath("addEditCategoryBooking.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>"
+        });
+    }
+
+    if (LayoutExtensions.NgController.ToString() == "BookingServicesCtrl")
+    {
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = @Url.AbsoluteActionUrl("Index", "BookingCategory")
+        };
+
+        headerModel.Controls.Add(new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+        {
+        eButtonModificators.OnlyIcon
+        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddUpdateBookingServiceCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {categoryId : app.bookingServices.categoryId, affiliateId: app.bookingServices.affiliateId}}\" data-on-close=\"app.bookingServices.onServiceAddedOrUpdated()\" template-url=\"" + Html.GetAssetPath("addUpdateBookingService.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>"
+        });
+    }
+
+    if (LayoutExtensions.NgController.ToString() == "BookingAffiliateSettingsCtrl")
+    {
+        headerModel.Controls.Add(new ButtonModel()
+        {
+            Text = T("Admin.Settings.Save"),
+            Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.OnlyIcon
+                        },
+            Attributes = new[] { "disabled", "ng-disabled=\"!form.modified\"", "ng-click=\"app.bookingAffiliateSettings.formSubmitFromMobileHeader()\"" },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new { width = 25, height = 25 }
+            }
+        });
+
+        //headerModel.Controls.Add(new ButtonModel()
+        //{
+        //    ColorType = eColorType.Secondary,
+        //    Modificators = new List<eButtonModificators>()
+        //{
+        //eButtonModificators.OnlyIcon
+        //},
+        //    Icon = new ButtonIcon()
+        //    {
+        //        SvgName = "plus-alt",
+        //        Attributes = new { width = 16, height = 16 }
+        //    },
+        //    Attributes = new[] { "ng-if=\"app.bookingAffiliateSettings.tabActiveIndex === 'smsnotification'\"" },
+        //    WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddUpdateSmsTemplateCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {'affiliateId': app.bookingAffiliateSettings.affiliateId}}\" data-on-close=\"app.bookingAffiliateSettings.gridBookingSmsTemplates.fetchData()\" template-url=\"" + Html.GetAssetPath("addUpdateSmsTemplate.html") + "\">",
+        //    WrapEnd = "</ui-modal-trigger>"
+        //});
+    }
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Attributes = new string[] { "popover-class=\"more-button-popover\" uib-popover-template=\"'subsidiaryList'\" popover-append-to-body=\"true\"" },
+        Text = T("Поменять филиал")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddAffiliateCtrl'\" data-resolve=\"{\'goToAffiliatePage\': true}\"  template-url=\"" + Html.GetAssetPath("addAffiliate.html") + "\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Добавить филиал")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Link = "https://www.advantshop.net/help/pages/filialy",
+        Attributes = new string[] { "target=\"_blank\"" },
+        Text = T("Помощь")
+    });
+
+    if (LayoutExtensions.NgController.ToString() == "BookingServicesCtrl")
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditBookingCategoryCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{params: {\'id\': app.bookingServices.categoryId}}\" data-on-close=\"app.bookingServices.onCategoryAddedEdit()\" template-url=\"" + Html.GetAssetPath("addEditCategoryBooking.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Редактировать категорию услуг")
+        });
+    }
+
+    if (LayoutExtensions.NgController.ToString() == "BookingAffiliateSettingsCtrl")
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+            Attributes = new string[] { "ng-click=\"app.bookingAffiliateSettings.deleteAffiliate()\"" },
+            Text = T("Удалить филиал")
+        });
+    }
+
+    headerModel.Controls.Add(moreButton);
+}
+
+@Html.Header(headerModel)
+
+@if (IsSectionDefined("BlockAdditional"))
+{
+    @RenderSection("BlockAdditional", false)
+}
+
+@if (AdminAreaTemplate.Current == null || AdminAreaTemplate.IsAdminv3())
+{
+    @Html.Action("NavMenu", "Booking")
+}
+
+<script type="text/ng-template" id="subsidiaryList">
+    @Html.Action("SubsidiaryListMenu", "Booking")
+</script>
+
+@RenderBody()

@@ -1,0 +1,117 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.ReservationResources.ReservationResourcesModel
+@using AdvantShop.Core.Services.Admin
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Booking/_BookingLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Booking/_BookingLayout.cshtml";
+    }
+}
+
+@if (AdminAreaTemplate.Current == null && !isMobile)
+{
+    //adminv2
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text inline m-r-xs bottom-cell">
+                    @T("Admin.BookingCategory.View.Employees")
+                </h1>
+                @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingReservationResources.affiliateId" })
+            </div>
+            <div class="page-name-block-item-additional">
+                @if (Model.AccessToEditing)
+                {
+                    <ui-modal-trigger data-controller="'ModalAddUpdateReservationResourceCtrl'" controller-as="ctrl" size="lg" backdrop="static"
+                                      data-resolve="{params: {affiliateId : bookingReservationResources.affiliateId}}"
+                                      on-close="bookingReservationResources.onResourceAddUpdate()"
+                                      template-url="@Html.GetAssetPath("addUpdateReservationResource.html")" class="pull-right">
+                        <button data-e2e="AddBookingReservationResource" class="btn btn-sm btn-success" type="button"
+                                disabled ng-disabled="!bookingReservationResources.gridReservationResourcesInited">
+                            <span class="fa fa-plus"></span>
+                            @T("Admin.BookingEmployees.Index.AddEmployee")
+                        </button>
+                    </ui-modal-trigger>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    //adminv3
+    @section BlockAdditional {
+        @if (Model.AccessToEditing && !isMobile)
+        {
+            <ui-modal-trigger data-controller="'ModalAddUpdateReservationResourceCtrl'" controller-as="ctrl" size="lg" backdrop="static"
+                              data-resolve="{params: {affiliateId : bookingReservationResources.affiliateId}}"
+                              on-close="bookingReservationResources.onResourceAddUpdate()"
+                              template-url="@Html.GetAssetPath("addUpdateReservationResource.html")" class="pull-right">
+                <button data-e2e="AddBookingReservationResource" class="btn btn-sm btn-success" type="button"
+                        disabled ng-disabled="!bookingReservationResources.gridReservationResourcesInited">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.BookingEmployees.Index.AddEmployee")
+                </button>
+            </ui-modal-trigger>
+        }
+    }
+    @*<div class="flex middle-xs m-b-md page-name-block">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text inline m-r-xs bottom-cell">
+                    @T("Admin.BookingCategory.View.Employees")
+                </h1>
+                @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingReservationResources.affiliateId" })
+            </div>
+        </div>*@
+    if (!isMobile)
+    {
+        <h2 class="content-page__subtitle">
+            @T("Admin.BookingCategory.View.Employees")
+        </h2>
+    }
+
+    @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingReservationResources.affiliateId" })
+}
+
+<div @Html.Raw(isMobile ? "ng-init=\"app.bookingReservationResources = bookingReservationResources\"" : "")>
+    <div class="ibox" ng-init="bookingReservationResources.init(@((!Model.AccessToEditing).ToLowerString()))">
+        <div class="ibox-content no-top-border" ng-if="bookingReservationResources.isInit">
+            <ui-grid-custom grid-unique-id="grid"
+                            grid-row-identificator="'Id'"
+                            grid-on-init="bookingReservationResources.gridResourcesOnInit(grid)"
+                            grid-options="bookingReservationResources.gridResourcesOptions"
+                            grid-url="'bookingResources/getResources'"
+                            grid-params="{affiliateFilterId : bookingReservationResources.affiliateId}"
+                            grid-inplace-url="'bookingResources/inplaceReservationResource'"
+                            grid-extend-ctrl="bookingReservationResources"
+                            grid-swipe-line="true">
+                <ui-grid-custom-override-header-control>
+                    <span class="ui-grid-custom-override-header__cell">ФИО</span>
+                    <span class="ui-grid-custom-override-header__cell">Привязка</span>
+                </ui-grid-custom-override-header-control>
+                <ui-grid-custom-override-control class="ng-cloak">
+                    <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+                        <div class="flex between-xs center-xs">
+                            <div class="flex-grow card__col m-r-xs card--p-18">
+                                <div class="">
+                                    {{row.entity.Name}}
+                                </div>
+                            </div>
+                            <div class="card__col card__col--end setting--align-center card--p-18">
+                                <ui-grid-custom-switch row="row" field-name="BindAffiliate" class="js-grid-not-clicked"></ui-grid-custom-switch>
+                            </div>
+                        </div>
+                    </div>
+                </ui-grid-custom-override-control>
+                <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="bookingReservationResources.gridReservationResources.gridOptions.TotalString">
+                </ui-grid-custom-footer>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

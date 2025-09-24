@@ -1,0 +1,117 @@
+@import '../../../styles/variables';
+
+.photo-view-list {
+    &__wrap {
+        height: 100%;
+    }
+
+    &__nav-wrap {
+        display: none;
+    }
+
+    &__item-wrap {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow: auto hidden;
+        height: 100%;
+    }
+
+    &__item {
+        flex: 1 0 100%;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+
+        img {
+            /* display: block; */
+            display: inline-block;
+        }
+    }
+
+    &__item + &__item {
+        margin-left: 5px;
+    }
+
+    &__item-wrap::-webkit-scrollbar {
+        appearance: none;
+        width: 100px;
+        height: 2px;
+    }
+
+    &__item-wrap::-webkit-scrollbar-thumb {
+        background-color: #bfbfbf;
+        box-shadow: 0 0 1px rgb(255 255 255 / 50%);
+    }
+}
+
+@media #{$viewport-xs} {
+    .photo-view-list {
+        position: relative;
+
+        &__item-wrap {
+            display: block;
+            overflow-x: initial;
+            overflow-y: initial;
+            position: relative;
+        }
+
+        &__item + &__item {
+            margin-left: 0;
+        }
+
+        &__item {
+            max-width: none;
+            height: 0;
+            transition: 0.1s;
+            overflow: hidden;
+
+            img {
+                opacity: 0;
+                pointer-events: none;
+
+                /* display: block; */
+                display: inline-block;
+                margin: 0 auto;
+            }
+        }
+
+        &__item.active {
+            height: 100%;
+        }
+
+        &__item.active img {
+            opacity: 1;
+        }
+
+        &__nav-wrap {
+            display: flex;
+            flex-wrap: nowrap;
+            position: absolute;
+            inset: 0 0 -3px;
+            z-index: 1;
+        }
+
+        &__nav {
+            flex-grow: 1;
+            flex-shrink: 1;
+            position: relative;
+
+            & > * {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                pointer-events: none;
+            }
+
+            & + & > * {
+                margin-left: 2px;
+            }
+        }
+
+        &__nav:not(.active) > span {
+            background-color: rgb(121 119 121 / 70%);
+        }
+    }
+}

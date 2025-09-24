@@ -1,0 +1,99 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("grades");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.Grades.Index.Title") + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Bonus")
+    };
+
+    headerModel.Controls.Add(
+      new ButtonModel()
+      {
+          Modificators = new List<eButtonModificators>()
+     {
+                eButtonModificators.OnlyIcon
+                 },
+          ColorType = eColorType.Secondary,
+          Type = eButtonType.Add,
+          WrapStart = " <ui-modal-trigger data-controller=\"'ModalAddEditGradeCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/grades/modal/addEditGrade/AddEditGrade.html\" on-close=\"grades.grid.fetchData()\">",
+          WrapEnd = "</ui-modal-trigger>",
+          Icon = new ButtonIcon()
+          {
+              SvgName = "plus-alt",
+              Attributes = new { width = 16, height = 16 },
+          }
+      }
+ );
+
+    @Html.Header(headerModel)
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }    
+}
+
+@if (!isMobile)
+{
+    <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main middle-xs">
+                <h2 class="m-r-xs  sticky-page-name-text m-t-none">
+                    @T("Admin.Grades.Index.Title")
+                </h2>
+            </div>
+            <div class="page-name-block-item-additional">
+                <ui-modal-trigger data-controller="'ModalAddEditGradeCtrl'" controller-as="ctrl" on-close="grades.grid.fetchData()"
+                                  template-url="@Html.GetAssetPath("AddEditGrade.html")">
+                    <button data-e2e="GradeAdd" class="btn btn-sm btn-success" type="button">
+                        <span class="fa fa-plus"></span>
+                        @T("Admin.Grades.Index.AddGrade")
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="grades.gridOnInit(grid)"
+                        grid-options="grades.gridOptions"
+                        grid-url="'grades/getgrades'"
+                        grid-extend-ctrl="grades"
+                        grid-inplace-url="'grades/inplacegrade'"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm">
+                    <div class="flex between-xs middle-xs">
+                        <div class="m-r-sm">{{row.entity.Name}}</div>
+                        <div>{{row.entity.BonusPercent}}%</div>
+                    </div>
+                    <div class="m-t-sm flex middle-xs fs-xs">
+                        <div class="m-r-xs setting__special-label">Порог перехода(сумма продаж)</div>
+                        <div>: {{row.entity.PurchaseBarrier}}</div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+        <div data-e2e="GoRules" class="@(isMobile ? "fs-xs m-t-sm" : "")">
+            <span style="color: #f15959;">*</span>
+            @T("Admin.Grades.Index.AutomaticallyChangeGrade") "@Html.AbsoluteActionLink(T("Admin.Grades.Index.Rules").ToString(), "Index", "rules", null, new { target = "_blank" })"
+        </div>
+    </div>
+</div>

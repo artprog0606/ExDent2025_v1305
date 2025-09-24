@@ -1,0 +1,56 @@
+﻿@model BlockModel
+
+@{
+    var items = Model.Block.TryGetSettingAsList<Characteristics>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                @if (Model.Block.TryGetSetting("show_title") == true)
+                {
+                    <div class="lp-h2 lp-h2--color" data-e2e="TitleCharacteristicsAlt">
+                        @Html.SubBlock(Model, "title")
+                    </div>
+                }
+
+                @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    <div class="lp-h3 lp-h3--color" data-e2e="SubTitleCharacteristicsAlt">
+                        @Html.SubBlock(Model, "subtitle")
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row center-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                @if (items != null)
+                {
+                    for (var i = 0; i < items.Count; i++)
+                    {
+                        <div class="row lp-block-characteristics__block">
+                            <div>
+                                <div class="lp-block-characteristics__category lp-font-size--middle" data-e2e="CategoryCharacteristics" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>@Html.Raw(items[i].Header)</div>
+                            </div>
+                        </div>
+
+                        if (items[i].ContentItems != null)
+                        {
+                            <div class="lp-block-characteristics__subblock-wrap">
+                                @for (var j = 0; j < items[i].ContentItems.Count; j++)
+                                {
+                                    <div class="row start-xs lp-block-characteristics__subblock--border color-scheme__divider--border @(j % 2 == 0 ? "color-scheme__bg--alt" : "")">
+                                        <div class="col-xs-6 lp-block-characteristics__cell lp-font-size--small color-scheme__divider--border lp-block-characteristics__cell--p-l-md lp-block-characteristics__cell--border-r" data-e2e="CharacteristicsAltName" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].name")>@Html.Raw(items[i].ContentItems[j].Name)</div>
+                                        <div class="col-xs-6 lp-block-characteristics__cell lp-font-size--small lp-block-characteristics__cell--p-l-md" data-e2e="CharacteristicsAltValue" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].content_items[" + j + "].value")>@Html.Raw(items[i].ContentItems[j].Value)</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Journal.JournalModel
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (Model.SelectedAffiliate != null && !isMobile)
+{
+    if (Model.AccessToEditing)
+    {
+        <ui-modal-trigger data-controller="'ModalAddUpdateBookingCtrl'" controller-as="ctrl" size="xs-11" backdrop="static" window-class="modal--panel modal-booking-sheduler" opened-class="modal-open--panel"
+                          data-resolve="{params: {affiliateId : bookingJournal.affiliateId, beginDate: bookingJournal.sheduler.date}}"
+                          on-close="bookingJournal.modalBookingClose(result)"
+                          template-url="@Html.GetAssetPath("addUpdateBooking.html")" class="pull-right">
+            <button data-e2e="AddBooking" class="btn btn-sm btn-success" type="button"
+                    disabled ng-disabled="!bookingJournal.containerJournalDataInited">
+                <span class="fa fa-plus"></span>
+                @T("Admin.Booking.Index.AddABooking")
+            </button>
+        </ui-modal-trigger>
+    }
+    <div class="pull-right m-r">
+        <div class="flex flex-center">
+            <div class="m-r-sm" style="flex-basis: 40px; flex-shrink: 0;">Вид:</div>
+            <div class="flex-grow">
+                <select class="form-control"
+                        id="BookingJournalChangeViewMode"
+                        ng-model="bookingJournal.viewMode"
+                        ng-options="s.value as s.name for s in bookingJournal.views"
+                        ng-change="bookingJournal.changeView()"
+                        disabled ng-disabled="!bookingJournal.containerJournalDataInited"></select>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,52 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (!isMobile)
+{
+    <div class="clear m-b-xs">
+        <div class="sticky-page-name">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text bottom-cell inline m-r-xs">
+                        @T("Admin.Settings.NotifyEMails.SmsAnswerTemplates")
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalAddEditSmsAnswerTemplateCtrl'" controller-as="ctrl" size="lg"
+                                      template-url="@Html.GetAssetPath("AddEditSmsAnswerTemplate.html")"
+                                      data-on-close="mailSettings.gridSmsAnswerTemplates.fetchData()">
+                        <a href="" class="btn btn-sm btn-success" data-e2e="btnAdd">
+                            <span class="fa fa-plus"></span>@T("Admin.Add")
+                        </a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<ui-grid-custom grid-unique-id="gridSmsAnswerTemplates"
+                grid-on-init="mailSettings.gridSmsAnswerTemplatesOnInit(grid)"
+                grid-row-identificator="'TemplateId'"
+                grid-options="mailSettings.gridSmsAnswerTemplatesOptions"
+                grid-url="'settingsMail/getSmsAnswerTemplates'"
+                grid-inplace-url="'settingsMail/inplaceSmsAnswerTemplate'"
+                grid-extend-ctrl="mailSettings"
+                grid-swipe-line="true">
+    <ui-grid-custom-override-control class="ng-cloak">
+        <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+            <div class="flex between-xs center-xs">
+                <div class="flex-grow card__col m-r-xs card--p-18">
+                        <div class="">
+                            {{row.entity.Name}}
+                        </div>
+                </div>
+                <div class="card__col card__col--end setting--align-center card--p-18">
+                    <ui-grid-custom-switch row="row" field-name="Active" class="js-grid-not-clicked"></ui-grid-custom-switch>
+                </div>
+            </div>
+        </div>
+    </ui-grid-custom-override-control>
+    @*<ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="news.grid.gridOptions.TotalString">
+        </ui-grid-custom-footer>*@
+</ui-grid-custom>

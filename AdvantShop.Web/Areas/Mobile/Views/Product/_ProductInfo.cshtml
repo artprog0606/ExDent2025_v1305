@@ -1,0 +1,98 @@
+﻿@using AdvantShop.Core.Services.Catalog
+@using AdvantShop.Core.Services.Configuration.Settings
+@model AdvantShop.ViewModel.ProductDetails.ProductDetailsViewModel
+@{
+    var product = Model.Product;
+    var offer = Model.Offer;
+    var artNo = offer != null ? offer.ArtNo : product.ArtNo;
+}
+
+@if (SettingsCatalog.ShowProductArtNoOnProductCard)
+{
+    <div class="details-row details-sku product__info-item">
+        <div class="details-param-name">@T("Product.ProductInfo.Sku"):</div>
+        <div class="details-param-value inplace-offset"
+             data-ng-bind="product.offerSelected.ArtNo"
+             data-ng-init="product.offerSelected.ArtNo = '@artNo'">
+        </div>
+        @if (!product.ExportOptions.Adult)
+        {
+            if (!string.IsNullOrEmpty(product.ExportOptions.Mpn))
+            {
+                <meta itemprop="mpn" content="@product.ExportOptions.Mpn"/>
+            }
+            <meta itemprop="sku" content="@artNo" />
+        }
+        @if (!string.IsNullOrEmpty(product.ExportOptions.Gtin))
+        {
+            <meta itemprop="gtin" content="@product.ExportOptions.Gtin" />
+        }
+    </div>
+}
+@if (product.Brand != null)
+{
+    <div class="details-row details-brand product__info-item">
+        @if (product.Brand != null && product.Brand.Enabled)
+        {
+            <div class="details-param-name">@T("Product.ProductInfo.Brand")</div>
+            <div class="details-param-value" @Html.Raw(product.ExportOptions.Adult ? "" : "itemprop=\"brand\" itemtype=\"https://schema.org/Brand\" itemscope")>
+                <span>: <a href="@Url.AbsoluteRouteUrl("Brand", new {url = product.Brand.UrlPath})">@product.Brand.Name</a></span>
+                @if (!product.ExportOptions.Adult)
+                {
+                    <meta itemprop="name" content="@product.Brand.Name" />
+                }
+            </div>
+        }
+    </div>
+}
+@if (SettingsCatalog.DisplayDimensions)
+{
+    var length = offer != null ? offer.GetLength() : 0;
+    var width = offer != null ? offer.GetWidth() : 0;
+    var height = offer != null ? offer.GetHeight() : 0;
+
+    if (length != 0 || width != 0 || height != 0)
+    {
+        <div class="details-row details-dimensions  product__info-item">
+            <div class="details-param-name">@T("Product.ProductInfo.Size"):</div>
+            <div class="details-param-value"
+                 data-ng-bind="product.offerSelected.Length + ' x ' + product.offerSelected.Width + ' x ' + product.offerSelected.Height">
+                @(length + " x " + width + " x " + height)
+            </div>
+        </div>
+    }
+}
+@if (SettingsCatalog.DisplayWeight && offer != null)
+{
+    <div class="details-row details-weight  product__info-item" data-ng-if="product.offerSelected.Weight != 0">
+        <div class="details-param-name">@T("Product.ProductInfo.Weight"):</div>
+        <div class="details-param-value">
+            <div class="inplace-offset details-param-value-weight" data-ng-bind="product.offerSelected.WeightFormatted">@Model.WeightFormatted</div> @Model.WeightUnits
+        </div>
+    </div>
+}
+@if (product.Unit != null && product.Unit.DisplayName.IsNotEmpty() && SettingsMobile.ShowUnitCardProductMobile)
+{
+    <div class="details-row details-unit product__info-item">
+        <div class="details-param-name">@T("Product.ProductInfo.Unit"):</div>
+        <div class="details-param-value inplace-offset">@product.Unit.DisplayName</div>
+    </div>
+}
+@if (Model.BriefProperties != null)
+{
+    foreach (var value in Model.BriefProperties)
+    {
+        <div class="details-row details-briefproperties product__info-item">
+            <div class="details-param-name">@Html.Raw(@value.Property.NameDisplayed):</div>
+            <div class="details-param-value">
+                @Html.Raw(@value.Value)
+            </div>
+        </div>
+    }
+}
+
+@if (offer != null)
+{
+    @Html.Action("SizeColorPicker", "Product", new { area = "", product })
+    @Html.Action("CustomOptions", "Product", new { area = "", product.ProductId })
+}

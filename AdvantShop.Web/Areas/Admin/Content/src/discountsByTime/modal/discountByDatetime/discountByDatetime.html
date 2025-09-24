@@ -1,0 +1,204 @@
+<form is-mobile novalidate name="addEditDiscountByTimeForm">
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.DiscountByDatetime.DiscountByTime' | translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-3 setting__label" for="check10"> {{'Admin.Js.DiscountByDatetime.Activity' | translate}} </label>
+            <div class="col-xs-1 col-sm-9">
+                <label class="adv-checkbox-label control-checkbox">
+                    <input id="check10" type="checkbox" class="adv-checkbox-input" ng-model="ctrl.settings.Enabled" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                <span class="text-required">{{'Admin.Js.DiscountByDatetime.DaysOfWeek' | translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <ui-select
+                    ng-model="ctrl.settings.SelectedDays"
+                    multiple
+                    required
+                    convert-to-number
+                    validation-input-text="{{'Admin.Js.DiscountByDatetime.DayOfWeek'|translate}}">
+                    <ui-select-match placeholder="{{'Admin.Js.DiscountByDatetime.DayOfWeek'|translate}}">{{$item.Text}}</ui-select-match>
+                    <ui-select-choices repeat="day.Value as day in ctrl.formData.DaysOfWeek | filter: $select.search">
+                        <div>{{day.Text}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label" for="timeFrom">
+                <span class="text-required">{{'Admin.Js.DiscountByDatetime.Time' | translate}}</span>
+            </label>
+
+            <div class="col-xs-12 col-md-9">
+                <div class="row middle-xs">
+                    <div class="col-xs-slim">
+                        <div
+                            data-ng-flatpickr
+                            fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 9, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                            <div class="flatpickr-custom-wrap">
+                                <input
+                                    type="text"
+                                    id="timeFrom"
+                                    autocomplete="off"
+                                    class="input-small"
+                                    data-ng-flatpickr-input
+                                    ng-model="ctrl.settings.DateFrom"
+                                    required
+                                    size="5"
+                                    validation-input-text="{{'Admin.Js.DiscountByDatetime.TimeFrom'|translate}}"
+                                    placeholder="09:00" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-slim">-</div>
+                    <div class="col-xs-slim">
+                        <div
+                            data-ng-flatpickr
+                            fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                            <div class="flatpickr-custom-wrap">
+                                <input
+                                    size="5"
+                                    type="text"
+                                    id="timeTo"
+                                    autocomplete="off"
+                                    class="input-small"
+                                    data-ng-flatpickr-input
+                                    ng-model="ctrl.settings.DateTo"
+                                    required
+                                    validation-input-text="{{'Admin.Js.DiscountByDatetime.TimeTo'|translate}}"
+                                    placeholder="12:00" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-slim" ng-bind="::ctrl.formData.GMT"></div>
+                    <div class="col-xs-slim relative">
+                        <help-trigger class="ng-cloak m-l-xs">
+                            <div class="help-content">
+                                <p>Можно указать время внутри дня, например, с 10 до 20, либо с переносом на следующий день, например, с 20 до 10.</p>
+                                <p>Если есть перенос на другой день, то нужно удостовериться, что день недели активен.</p>
+                                <p>
+                                    Т.е. если у вас стоит с 20 до 10 и день недели понедельник, то скидка будет работать только с 20 до 24ч
+                                    понедельника.
+                                </p>
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                <span class="text-required">{{'Admin.Js.DiscountByDatetime.PercentDiscount' | translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    style="width: 150px"
+                    ng-model="ctrl.settings.Percent"
+                    required
+                    validation-input-min="0"
+                    validation-input-max="100"
+                    validation-input-float
+                    validation-input-text="{{'Admin.Js.DiscountByDatetime.PercentDiscount'|translate}}" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-3 setting__label" for="check9"> {{'Admin.Js.DiscountByDatetime.ShowPopUpMessage' | translate}} </label>
+            <div class="col-xs-1 col-sm-9">
+                <label class="adv-checkbox-label control-checkbox">
+                    <input id="check9" type="checkbox" class="adv-checkbox-input" ng-model="ctrl.settings.ShowPopup" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" ng-show="ctrl.settings.ShowPopup">
+            <label class="col-xs-12 col-md-3 control-label setting__label"> {{'Admin.Js.DiscountByDatetime.MessageText' | translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <textarea class="wysiwyg" ckeditor ng-model="ctrl.settings.PopupText"></textarea>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label"> {{'Admin.Js.DiscountByDatetime.DiscountCategories' | translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <span
+                    ng-bind="!ctrl.settings.DiscountCategories || ctrl.settings.DiscountCategories.length == 0
+                                ? ('Admin.Js.DiscountByDatetime.DiscountCategories.All'|translate)
+                                : ctrl.settings.DiscountCategories.length + ' выбрано'"></span>
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCategoriesCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                    data-resolve="{'params': { 'selectedIds': ctrl.settings.DiscountCategories}}"
+                    data-on-close="ctrl.selectCategories(result)">
+                    <a href="" data-e2e="DiscountCategories" ng-bind="'Admin.Js.DiscountByDatetime.DiscountCategories.Change'|translate"></a>
+                </ui-modal-trigger>
+                <a
+                    href=""
+                    ng-if="ctrl.settings.DiscountCategories && ctrl.settings.DiscountCategories.length > 0"
+                    ng-click="ctrl.resetDiscountCategories()"
+                    ng-bind="'Admin.Js.DiscountByDatetime.DiscountCategories.Reset'|translate"></a>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                {{'Admin.Js.DiscountByDatetime.ActiveByTimeCategories' | translate}}
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <span
+                    ng-bind="!ctrl.settings.ActiveByTimeCategories || ctrl.settings.ActiveByTimeCategories.length == 0
+                                ? ('Admin.Js.DiscountByDatetime.DiscountCategories.NotSelected'|translate)
+                                : ctrl.settings.ActiveByTimeCategories.length + ' выбрано'"></span>
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCategoriesCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                    data-resolve="{'params': { 'selectedIds': ctrl.settings.ActiveByTimeCategories}}"
+                    data-on-close="ctrl.selectActiveByTimeCategories(result)">
+                    <a href="" data-e2e="ActiveByTimeCategories" ng-bind="'Admin.Js.DiscountByDatetime.DiscountCategories.Change'|translate"></a>
+                </ui-modal-trigger>
+                <a
+                    href=""
+                    ng-if="ctrl.settings.ActiveByTimeCategories && ctrl.settings.ActiveByTimeCategories.length > 0"
+                    ng-click="ctrl.resetActiveByTimeCategories()"
+                    ng-bind="'Admin.Js.DiscountByDatetime.DiscountCategories.Reset'|translate"></a>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                <span class="text-required">{{'Admin.Js.DiscountByDatetime.SortOrder' | translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    style="width: 150px"
+                    ng-model="ctrl.settings.SortOrder"
+                    required
+                    validation-input-float
+                    validation-input-text="{{'Admin.Js.DiscountByDatetime.SortOrder'|translate}}" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            disabled
+            ng-disabled="!addEditDiscountByTimeForm.modified">
+            {{'Admin.Js.AddEdit.Save' | translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel' | translate}}</button>
+    </div>
+</form>

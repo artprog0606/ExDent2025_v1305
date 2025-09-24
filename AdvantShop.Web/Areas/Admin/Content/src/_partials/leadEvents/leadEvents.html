@@ -1,0 +1,377 @@
+<div class="ibox m-b-lg" is-mobile>
+    <div class="ibox-content">
+        <h1 class="page-name-block-text m-r-sm m-b-sm inline setting__subtitle">{{'Admin.Js.LeadEvents.Comment' | translate}}</h1>
+        <span class="inline" ng-transclude> </span>
+        <div class="relative add-event-dropdown-wrap">
+            <div class="add-event-dropdown input-group">
+                <label for="inputLeadsEvents" class="btn btn-default input-group-label flex around-xs middle-xs">
+                    <i class="far fa-comment" aria-hidden="true"></i>
+                </label>
+            </div>
+            <div class="add-even-btn-wrap">
+                <button type="button" class="btn btn-sm btn-success" ng-click="$ctrl.addLeadEvent()" data-e2e="LeadEventAdd">
+                    {{'Admin.Js.LeadEvents.AddEvent' | translate}}
+                </button>
+            </div>
+            <div class="input-add-event-wrap inline">
+                <input
+                    name="inputLeadsEvents"
+                    id="inputLeadsEvents"
+                    class="form-control input-add-event input-alt"
+                    type="text"
+                    value=""
+                    ng-model="$ctrl.message"
+                    ng-keyup="$ctrl.addEventKeydown($event)"
+                    data-e2e="LeadEvent" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="m-b-md lead-events chips-list">
+    <label
+        class="lead-events__item chips-list__item chip"
+        data-scroll-into-view="$ctrl.filterType === '' ||  $ctrl.filterType == null"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType === '' ||  $ctrl.filterType == null}"
+        data-e2e="eventTypeAll">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.All' | translate}}</span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowComments"
+        data-scroll-into-view="$ctrl.filterType === 'Comment'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Comment', 'lead-events__item_disabled' : $ctrl.data.CommentsCount === 0 }"
+        data-e2e="eventTypeComment">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.Comments' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.CommentsCount > 0" ng-bind="$ctrl.data.CommentsCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Comment" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowCalls"
+        data-scroll-into-view="$ctrl.filterType === 'Call'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Call', 'lead-events__item_disabled' : $ctrl.data.CallsCount === 0 }"
+        data-e2e="eventTypeCall">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.Calls' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.CallsCount > 0" ng-bind="$ctrl.data.CallsCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Call" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowEmails"
+        data-scroll-into-view="$ctrl.filterType === 'Email'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Email', 'lead-events__item_disabled' : $ctrl.data.EmailsCount === 0}"
+        data-e2e="eventTypeEmail">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.Mails' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.EmailsCount > 0" ng-bind="$ctrl.data.EmailsCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Email" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowSms"
+        data-scroll-into-view="$ctrl.filterType === 'Sms'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Sms', 'lead-events__item_disabled' : $ctrl.data.SmsCount === 0}"
+        data-e2e="eventTypeSms">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.SMS' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.SmsCount > 0" ng-bind="$ctrl.data.SmsCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Sms" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowVkMessages"
+        data-scroll-into-view="$ctrl.filterType === 'Vk'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Vk', 'lead-events__item_disabled' : $ctrl.data.VkMessagesInCount === 0}"
+        data-e2e="eventTypeVk">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.VKontakte' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.VkMessagesCount > 0" ng-bind="$ctrl.data.VkMessagesCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Vk" />
+    </label>
+    <!--<label class="lead-events__item chips-list__item chip" ng-if="$ctrl.data == null || $ctrl.data.ShowFacebookMessages"
+           ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Facebook', 'lead-events__item_disabled' : $ctrl.data.FacebookMessagesCount === 0}" data-e2e="eventTypeFacebook">
+        <span class="lead-events__item__label">Facebook</span>
+        <span class="lead-events__item__count_label" ng-bind="$ctrl.data.FacebookMessagesCount"></span>
+        <input type="radio" name="leadEventsFilter" class="lead-events-filter__input" ng-model="$ctrl.filterType" ng-change="$ctrl.filterTypeChange($ctrl.filterType)" value="Facebook" />
+    </label>-->
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowInstagramMessages"
+        data-scroll-into-view="$ctrl.filterType === 'Instagram'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Instagram', 'lead-events__item_disabled' : $ctrl.data.InstagramMessagesCount === 0}"
+        data-e2e="eventTypeInstagram">
+        <span class="lead-events__item__label">Instagram</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.InstagramMessagesCount > 0" ng-bind="$ctrl.data.InstagramMessagesCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Instagram" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowTelegramMessages"
+        data-scroll-into-view="$ctrl.filterType === 'Telegram'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'Telegram', 'lead-events__item_disabled' : $ctrl.data.TelegramMessagesCount === 0}"
+        data-e2e="eventTypeTelegram">
+        <span class="lead-events__item__label">Telegram</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.TelegramMessagesCount > 0" ng-bind="$ctrl.data.TelegramMessagesCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="Telegram" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.data == null || $ctrl.data.ShowOkMessages"
+        data-scroll-into-view="$ctrl.filterType === 'OK'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'OK', 'lead-events__item_disabled' : $ctrl.data.OkMessagesCount === 0}"
+        data-e2e="eventTypeOk">
+        <span class="lead-events__item__label">OK</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.OkMessagesCount > 0" ng-bind="$ctrl.data.OkMessagesCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="OK" />
+    </label>
+    <label
+        class="lead-events__item chips-list__item chip"
+        ng-if="$ctrl.objId != null && ($ctrl.data == null || $ctrl.data.ShowHistory)"
+        data-scroll-into-view="$ctrl.filterType === 'History'"
+        ng-class="{'lead-events__item_active chip--active' : $ctrl.filterType == 'History', 'lead-events__item_disabled' : $ctrl.data.HistoryCount === 0}"
+        data-e2e="eventTypeHistory">
+        <span class="lead-events__item__label">{{'Admin.Js.LeadEvents.History' | translate}}</span>
+        <span class="lead-events__item__count_label" ng-if="$ctrl.data.HistoryCount > 0" ng-bind="$ctrl.data.HistoryCount"></span>
+        <input
+            type="radio"
+            name="leadEventsFilter"
+            class="lead-events-filter__input"
+            ng-model="$ctrl.filterType"
+            ng-change="$ctrl.filterTypeChange($ctrl.filterType)"
+            value="History" />
+    </label>
+</div>
+<div is-mobile>
+    <div
+        class="ibox m-b-lg lead-events-group"
+        data-e2e="EventBlock"
+        ng-repeat="group in $ctrl.groupsFilters = ($ctrl.data.EventGroups | filter : { Events : {$ : $ctrl.filterType }})">
+        <h4 class="m-b lead-events-group__title">{{group.Title}}</h4>
+
+        <div
+            class="ibox-content lead-events-item swipe-line-container"
+            data-e2e="EventBlock-{{event.EventType}}"
+            ng-repeat="event in group.Events | filter : { EventType : $ctrl.filterType }">
+            <div class="swipe-line">
+                <div class="swipe-line__inner lead-events-item__cols" data-swipe-line>
+                    <div class="swipe-line__content card">
+                        <div class="row">
+                            <div class="lead-time flex-grow-n leads-col-fixed-size-sm" title="{{event.CreatedDateFormatted}}">
+                                <div class="flex between-xs">
+                                    <div class="lead-events-item__time">{{event.CreatedDateShort}}</div>
+                                    <span><i ng-class="$ctrl.getIcon(event.EventType)" aria-hidden="true"></i></span>
+                                </div>
+                                <div class="italic lead-events-item__from-create-date">{{event.FromCreatedDate}}</div>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n">
+                                <div class="p-l-sm row flex-nowrap">
+                                    <div ng-if="event.UserPhoto != null" class="vk-lead-photo">
+                                        <img ng-src="{{event.UserPhoto}}" class="vk-message-photo-img" />
+                                    </div>
+                                    <div class="col-xs">
+                                        <div
+                                            ng-if="event.Title != null"
+                                            bind-html-compile="event.Title"
+                                            data-e2e="LeadEventTitle"
+                                            class="word-break lead-event__title"></div>
+
+                                        <div ng-if="event.SubMessage != null" bind-html-compile="event.SubMessage" class="m-t-xs"></div>
+
+                                        <div
+                                            ng-if="event.Message != null && !(event.EventType == 'task' && event.TaskId != null) && !(event.EventType == 'comment' && event.Id != 0)"
+                                            class="m-t-xs">
+                                            <div ng-bind-html="event.Message" data-e2e="LeadEventType"></div>
+                                        </div>
+
+                                        <div
+                                            ng-if="event.EventType == 'comment' && event.Id != 0"
+                                            class="m-t-sm"
+                                            ng-bind-html="event.Message"
+                                            data-e2e="LeadEventType"></div>
+
+                                        <div ng-if="event.EventType == 'call' && event.Data != null" class="m-t-sm">{{event.Data.Text}}</div>
+
+                                        <div ng-if="event.CreatedBy != null" class="m-t-sm">
+                                            <sidebar-user-trigger ng-if="event.CreatedByIsModerator" customer-id="event.CreatedById">
+                                                <a href="" class="link-decoration-none" data-e2e="leadCreatedBy">{{event.CreatedBy}}</a>
+                                            </sidebar-user-trigger>
+                                            <span ng-if="event.CreatedById != null && !event.CreatedByIsModerator">
+                                                <a href="customers/view/{{event.CreatedById}}" class="link-decoration-none" target="_blank"
+                                                    >{{event.CreatedBy}}</a
+                                                >
+                                            </span>
+                                            <span ng-if="event.CreatedById == null">
+                                                <a href="" class="link-decoration-none">{{event.CreatedBy}}</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-swipe-line-right class="swipe-line__right">
+                        <div ng-if="event.EventType == 'comment' && event.Id != 0" class="swipe-line__btn-group flex">
+                            <ui-modal-trigger
+                                ng-if="event.Data.CanEdit"
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                controller="'ModalEditCommentCtrl'"
+                                controller-as="ctrl"
+                                resolve="{params: {id: event.Id, message : event.Message }}"
+                                on-close="event.Message = result;"
+                                size="lg"
+                                template-url="../Areas/Admin/Content/src/_partials/leadEvents/modals/editComment/editComment.html">
+                                <span
+                                    ng-class="{'link-invert link-decoration-none fas fa-pencil-alt m-r-xs' :!isMobile.value}"
+                                    data-e2e="leadCommentEdit"
+                                    ><span class="hidden-sm">Редактировать</span></span
+                                >
+                            </ui-modal-trigger>
+
+                            <button
+                                type="button"
+                                ng-click="$ctrl.deleteComment(event)"
+                                ng-if="event.Data.CanDelete"
+                                ng-class="{'link-invert link-decoration-none fas fa-times btn-invisible' : !isMobile.value, 
+                                                  'btn btn-sm flex center-xs middle-xs btn-danger': isMobile.value}"
+                                data-e2e="leadCommentDelete">
+                                <span class="hidden-sm">Удалить</span>
+                            </button>
+                        </div>
+
+                        <div ng-if="event.EventType == 'task' && event.TaskId != null" class="swipe-line__btn-group">
+                            <ui-modal-trigger
+                                controller="'ModalEditTaskCtrl'"
+                                controller-as="ctrl"
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                on-close="$ctrl.getLeadEvents()"
+                                size="lg"
+                                backdrop="static"
+                                template-url="../areas/admin/content/src/tasks/modal/editTask/editTask.html"
+                                resolve="{'id': event.TaskId}"
+                                modal-id="{{event.TaskId}}">
+                                {{event.Message}}
+                            </ui-modal-trigger>
+                        </div>
+
+                        <div ng-if="event.EmailId != null" class="swipe-line__btn-group">
+                            <ui-modal-trigger
+                                controller="'ModalShowEmailCtrl'"
+                                controller-as="ctrl"
+                                size="lg"
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                on-close="$ctrl.getLeadEventsWithDelay()"
+                                resolve="{ params: {customerId: $ctrl.customerId, id: event.EmailId, folder: event.EmailFolder}}"
+                                template-url="../areas/admin/content/src/_partials/leadEvents/modals/showEmail/showEmail.html">
+                                {{'Admin.Js.LeadEvents.Show' | translate}}
+                            </ui-modal-trigger>
+                        </div>
+
+                        <div ng-if="event.EventType === 'email' && event.Data != null" class="swipe-line__btn-group">
+                            <ui-modal-trigger
+                                controller="'ModalShowEmailCtrl'"
+                                controller-as="ctrl"
+                                size="lg"
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                on-close="$ctrl.getLeadEventsWithDelay()"
+                                resolve="{ params: {customerId: $ctrl.customerId, emailData: event.Data}}"
+                                template-url="../areas/admin/content/src/_partials/leadEvents/modals/showEmail/showEmail.html">
+                                {{'Admin.Js.LeadEvents.Show' | translate}}
+                            </ui-modal-trigger>
+                        </div>
+
+                        <div ng-if="event.EventType == 'call'" class="swipe-line__btn-group">
+                            <ui-modal-trigger
+                                controller="'ModalAddEditCallComentCtrl'"
+                                controller-as="ctrl"
+                                backdrop="static"
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                ng-if="event.Data.CanEdit || event.Data == null"
+                                resolve="{'id': event.Data.Id, 'objId': event.Data.ObjId}"
+                                on-close="$ctrl.setComment(event, result); swipeLine.reinit();"
+                                template-url="../areas/admin/content/src/_partials/leadEvents/modals/addEditCallComent/addEditCallComent.html">
+                                {{( event.Data == null ? 'Admin.Js.LeadEvents.AddComment' : 'Admin.Js.LeadEvents.EditComment') | translate}}
+                            </ui-modal-trigger>
+                        </div>
+
+                        <div
+                            ng-if="event.EventType == 'vk' || event.EventType == 'instagram' || event.EventType == 'facebook' || 
+                                    event.EventType == 'telegram' || event.EventType == 'ok'">
+                            <ui-modal-trigger
+                                ng-class="{'btn btn-sm flex center-xs middle-xs btn-success': isMobile.value}"
+                                controller="'ModalAnswerCtrl'"
+                                controller-as="ctrl"
+                                resolve="{params: { text : event.AnswerText[$index], event: event }}"
+                                on-close="$ctrl.getLeadEventsWithDelay()"
+                                size="lg"
+                                template-url="../Areas/Admin/Content/src/_partials/leadEvents/modals/answer/answer.html">
+                                {{'Admin.Js.LeadEvents.Answer' | translate}}
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="$ctrl.firstLoadingData === true" class="ibox-content text-center lead-events-progress">
+    <i class="fas fa-spinner fa-spin fa-fw fa-2x"></i> <span>{{::'Admin.Js.LoadingData' | translate}}</span>
+</div>
+
+<div
+    class="ibox-content text-center bold card m-t m-b lead-events__nothing-found-block"
+    ng-if="$ctrl.groupsFilters == null || $ctrl.groupsFilters.length === 0">
+    {{'Admin.Js.LeadEvents.NothingFound' | translate}}
+</div>

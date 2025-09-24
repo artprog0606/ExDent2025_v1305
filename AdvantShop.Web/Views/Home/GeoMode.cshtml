@@ -1,0 +1,67 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Models.Location.GeoModeModel
+
+@{
+    var currentAddress = JsonConvert.SerializeObject(Model.CurrentContact);
+}
+
+<div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("geoMode")]}]">
+    <div class="m-b geo-mode geo-mode--desktop ng-cloak" 
+         data-geo-mode="" 
+         data-shipping-type="@Model.ShippingType"
+         data-current-address="@currentAddress" 
+         data-is-point-selected="@Model.IsPointSelected.ToLowerString()">
+        <div class="geo-mode__content">
+            <div class="geo-mode__btn-group">
+                @if (Model.ShowPickPoint)
+                {
+                    <button data-ng-click="geoMode.changeMode(geoMode.modeTypes.delivery)" type="button" class="btn btn-middle btn-action"
+                            data-ng-class="{'btn-confirm': geoMode.shippingType === geoMode.modeTypes.delivery, 'btn--inactive geo-mode__btn-inactive': geoMode.shippingType !== geoMode.modeTypes.delivery}">
+                        @T("Checkout.CheckoutShipping.Delivery")
+                    </button>
+                }
+                @if (Model.ShowSelfDelivery)
+                {
+                    <button data-ng-click="geoMode.changeMode(geoMode.modeTypes.selfDelivery)" type="button" class="btn btn-middle btn-action"
+                            data-ng-class="{'btn-confirm': geoMode.shippingType === geoMode.modeTypes.selfDelivery,
+                                            'btn--inactive geo-mode__btn-inactive': geoMode.shippingType !== geoMode.modeTypes.selfDelivery}">
+                        @T("Checkout.CheckoutShipping.SelfDelivery")
+                    </button>
+                }
+            </div>
+            <span class="geo-mode__icon cs-bg-6"></span>
+            @if (Model.ShowPickPoint)
+            {
+                <div data-ng-if="geoMode.shippingType === geoMode.modeTypes.delivery" class="geo-mode__info geo-mode__content-stretch">
+                    <div class="geo-mode__address-info">
+                        <div>
+                            <div class="geo-mode__label">@T("Js.GeoMode.ShippingPoint.DeliverAddressTitle")</div>
+                            <span class="geo-mode__address" data-ng-bind="geoMode.addressString"></span>
+                        </div>
+                        @if (Model.IsUserRegistered)
+                        {
+                            <button data-geo-mode-change-address-trigger="@currentAddress" class="btn-link geo-mode__change-btn cs-t-1" type="button">@T("Js.GeoMode.ShippingPoint.Change")</button>
+                        }
+                        else
+                        {
+                            <a class="btn-link geo-mode__change-btn cs-t-1" href="@Url.AbsoluteRouteUrl("Login")">@T("Js.GeoMode.ShippingPoint.Change")</a>
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.ShowSelfDelivery)
+            {
+                <div data-ng-if="geoMode.shippingType === geoMode.modeTypes.selfDelivery" class="geo-mode__info geo-mode__content-stretch">
+                    <div class="geo-mode__address-info">
+                        <div>
+                            <div class="geo-mode__label">@T("Js.GeoMode.ShippingPoint.PickPointAddressTitle")</div>
+                            <span data-ng-if="geoMode.shippingsPoints && geoMode.shippingsPoints.length > 0" class="geo-mode__address">@T("Js.Shipping.NotAvailableDeliveryPoints")</span>
+                            <span class="geo-mode__address geo-mode__address--hidden" data-ng-class="{'geo-mode__address--hidden' : !geoMode.isSetShippingPoint, 'geo-mode__address--visible' : geoMode.isSetShippingPoint}" data-ng-bind="geoMode.currentShippingPoint.SelectPickupPoint.Address || geoMode.currentShippingPoint.SelectedPoint.Name || geoMode.currentShippingPoint.Name || ('Js.GeoMode.ShippingPoint.SelectPickupPoint' | translate)"></span>
+                        </div>
+                        <button data-ng-click="geoMode.changeShippingPoint()" class="btn-link geo-mode__change-btn cs-t-1" type="button">@T("Js.GeoMode.ShippingPoint.Change")</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

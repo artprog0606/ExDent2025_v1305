@@ -1,0 +1,256 @@
+﻿@using AdvantShop.Helpers
+@model AdvantShop.Web.Admin.Models.Crm.Leads.LeadModel
+@{
+    Layout = null;
+    bool readOnly = Model.Lead.DealStatus.Status == AdvantShop.Core.Services.Crm.DealStatuses.SalesFunnelStatusType.FinalSuccess
+                    || Model.Lead.DealStatus.Status == AdvantShop.Core.Services.Crm.DealStatuses.SalesFunnelStatusType.Canceled;
+    ViewBag.ReadOnlyCtrl = "lead.readOnly";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div data-ng-controller="LeadCtrl as lead">
+<form novalidate="novalidate" name="leadForm">
+<div ng-init="lead.init(@Model.Id, leadForm, readOnly = @readOnly.ToLowerString()); lead.orderId = @(Model.Order != null ? Model.Order.OrderID.ToString() : "null")">
+    <input name="Id" type="hidden" value="{{lead.instance.lead.Id}}"/>
+</div>
+
+<div class="sticky-page-name sticky-page-name--nextgen lead-info__header">
+    <div class="page-name-block sticky-page-name-inner  @(isMobile ? "" : "m-b-sm") lead-info__header-cols">
+        <div class="page-name-block-item-main @(isMobile ? "" : "m-l")">
+            @{
+                var title = Model.Lead.Title.IsNotEmpty() ? Model.Lead.Title : T("Admin.Leads.Popup.LeadNumber").ToString() + Model.Lead.Id;
+            }
+            <div class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name lead-info__title">
+                @if (isMobile == false)
+                {
+                    <simple-edit ng-init="lead.instance.lead.title = '@Html.AttributeEncode(title)'"
+                                 empty-text="@T("Admin.Leads.Popup.LeadNumber") @Model.Lead.Id"
+                                 class="simple-edit" on-change="lead.updateTitle(value)" ng-if="!lead.readOnly">
+                        <div class="input-ghost simple-edit__input"
+                             data-e2e="leadInfoTitle"
+                             simple-edit-content=""
+                             contenteditable="true"
+                             ng-bind-html="lead.instance.lead.title">
+                        </div>
+                        <simple-edit-trigger class="fas fa-pencil-alt"></simple-edit-trigger>
+
+                    </simple-edit>
+                    <div ng-if="lead.readOnly">
+                        <div class="input-ghost">@title</div>
+                    </div>
+                }
+                else
+                {
+                    <span>№@Model.Lead.Id</span>
+                }
+            </div>
+        </div>
+        <div class="page-name-block-item-additional lead-info__header-buttons">
+            @if (isMobile)
+            {
+                var items = new List<MoreButtonPopoverItem>();
+                items.Add(new MoreButtonPopoverItem()
+                {
+                    ColorType = eColorType.Link,
+                    Text = T("Admin.Leads.Popup.CreateLinkPayment"),
+                    Attributes = new[] {"ng-click=\"lead.createPaymentLink($ctrl.updateLeadInfo)\""},
+                    RowAttributes = new {ng_if = "lead.orderId == null && !lead.readOnly && lead.gridLeadItemsOptions.data.length > 0"},
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "go",
+                        Attributes = new {width = 24, height = 24}
+                    }
+                });
+                items.Add(new MoreButtonPopoverItem()
+                {
+                    ColorType = eColorType.Link,
+                    Text = T("Admin.Leads.Popup.LinkToPayment"),
+                    RowAttributes = new { ng_if = "lead.orderId != null" },
+                    WrapStart = "<ui-modal-trigger data-controller=\"'ModalGetBillingLinkCtrl'\" data-controller-as=\"ctrl\" data-resolve=\"{params: { orderId: lead.orderId }}\" template-url=\"" + Html.GetAssetPath("getBillingLink.html") + "\">",
+                    WrapEnd = "</ui-modal-trigger>",
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "go",
+                        Attributes = new {width = 24, height = 24}
+                    }
+                });
+                if (CustomerContext.CurrentCustomer.IsAdmin)
+                {
+                    items.Add(new MoreButtonPopoverItem()
+                    {
+                        ColorType = eColorType.Danger,
+                        Type = eButtonType.Link,
+                        Text = T("Admin.Leads.Popup.Delete"),
+                        Attributes = new[] { "ng-click=\"lead.deleteLead($ctrl.close)\"" },
+                        Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+                        Icon = new ButtonIcon()
+                        {
+                            SvgName = "remove",
+                            Attributes = new {width = 24, height = 24}
+                        }
+                    });
+                }
+
+                var moreButton = new MoreButtonModel();
+                moreButton.CssClass = "lead-info__more-button";
+                moreButton.Items = items;
+                moreButton.NgTemplateId = "ngTemplateLeadInfo";
+                moreButton.Modificators = new List<eButtonModificators>
+                {
+                    eButtonModificators.OnlyIcon
+                };
+
+                @Html.MoreButton(moreButton)
+            }
+            else
+            {
+                <span class="ng-cloak m-r-xs">
+                    <a ng-if="lead.orderId == null && !lead.readOnly && lead.gridLeadItemsOptions.data.length > 0" href="" ng-click="lead.createPaymentLink($ctrl.updateLeadInfo)">
+                        @T("Admin.Leads.Popup.CreateLinkPayment")
+                    </a>
+                    <ui-modal-trigger ng-if="lead.orderId != null"
+                                      data-controller="'ModalGetBillingLinkCtrl'" data-controller-as="ctrl"
+                                      data-resolve="{params: { orderId: lead.orderId }}"
+                                      template-url="@Html.GetAssetPath("getBillingLink.html")">
+                        <a href="">@T("Admin.Leads.Popup.LinkToPayment")</a>
+                    </ui-modal-trigger>
+                </span>
+                if (CustomerContext.CurrentCustomer.IsAdmin)
+                {
+                    <a href="" class="link-danger m-r-xs" ng-click="lead.deleteLead($ctrl.close)">@T("Admin.Leads.Popup.Delete")</a>
+                }
+            }
+            <ui-modal-trigger ng-if="!lead.readOnly"
+                              data-e2e="LeadCreateOrder"
+                              data-controller="'ModalCompleteLeadCtrl'"
+                              data-controller-as="ctrl"
+                              data-resolve="{id: lead.instance.Id}"
+                              template-url="@Html.GetAssetPath("completeLead.html")"
+                              on-close="lead.onCompleteLead(result, $ctrl.close)">
+                <a class="btn btn-sm btn-success m-r-sm" href="">@T("Admin.Leads.Popup.CompleteLead")</a>
+            </ui-modal-trigger>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 col-wl-3">
+            <div class="aside-menu">
+
+                @if (isMobile)
+                {
+                    <div class="ibox">
+                        <div class="ibox-content block-additional-parameters-content block-additional-parameters-content--padding-mid">
+                            <div class="form-horizontal container-fluid">
+                                <div class="form-group setting__form-group">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-4 control-label">
+                                            @T("Название лида")
+                                        </div>
+                                        <div class="col-xs-12 col-md-8">
+                                            <input type="text" class="form-control input-alt" ng-model="lead.instance.lead.title" data-e2e="leadInfoTitle" ng-on-change="lead.updateTitle(lead.instance.lead.title)" value="@title">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+                @Html.Partial("_Description", Model)
+                @if (isMobile)
+                {
+                    <hr class="delimiter delimiter--negative-popup"/>
+                }
+                @Html.Partial("_Customer", Model)
+                @if (isMobile)
+                {
+                    <hr class="delimiter delimiter--negative-popup"/>
+                }
+                @Html.Partial("_CustomerSocial", Model)
+                @if (isMobile)
+                {
+                    <hr class="delimiter delimiter--negative-popup"/>
+                }
+                <div class="ibox @(isMobile ? "container-fluid" : "")">
+                    <div class="ibox-content block-additional-parameters-content">
+                        <h3 class="m-b-md form-control-title form-control-title--middle setting__subtitle">
+                            @T("Admin.Leads.Popup.AttachedFiles")
+                        </h3>
+                        <ol class="p-l-sm ng-cloak" ng-if="lead.attachments.length > 0">
+                            <li class="word-break" ng-repeat="attachment in lead.attachments track by $index">
+                                <a href="" target="_blank" ng-href="{{attachment.FilePathAdmin}}" ng-bind="attachment.OriginFileName" data-e2e="attachedFileName"></a> - <span ng-bind="attachment.FileSize"></span>
+                                <a href="" ng-if="!lead.readOnly" ng-click="lead.deleteAttachment(attachment.Id)" class="fa fa-times link-invert link-decoration-none" title="@T("Admin.Leads.Popup.Delete")" data-e2e="attachedFileDelete"></a>
+                            </li>
+                        </ol>
+                        <p class="ng-cloak" ng-if="lead.attachments.length == 0">
+                            @T("Admin.Leads.Popup.NoFiles")
+                        </p>
+                        <figure class="">
+                            <button ng-disabled="lead.readOnly" class="btn btn-action btn-sm" type="button" ngf-drop ngf-max-size="15MB" ngf-select="" multiple
+                                    ngf-change="lead.uploadAttachment($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)" ladda="lead.loadingFiles">
+                                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">@T("Admin.Leads.Popup.AttachFile")</span>
+                            </button>
+                            <help-trigger class="ng-cloak m-l-xs">
+                                <div class="help-content">
+                                    @Html.Action("FilesHelpTextByFileType", "Common", new {type = EFileType.Text | EFileType.Document | EFileType.Archive | EFileType.Image | EFileType.Favicon})
+                                </div>
+                            </help-trigger>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8 col-wl-9">
+            @Html.Partial("_Products", Model)
+            @if (isMobile)
+            {
+                <hr class="delimiter delimiter--negative-popup"/>
+            }
+            @if (Model.ShowTasks)
+            {
+                @Html.Partial("_Tasks", Model)
+            }
+            @if (isMobile)
+            {
+                <hr class="delimiter delimiter--negative-popup"/>
+            }
+            @Html.RenderModules("admin_lead_before_leadevents", new {leadId = Model.Lead.Id})
+            @if (isMobile)
+            {
+                <hr class="delimiter delimiter--negative-popup"/>
+            }
+            <div bs-modifiable="false" class="@(isMobile ? "container-fluid" : "")">
+                <lead-events obj-id="@Model.Id" obj-type="'lead'" customer-id="'@Model.Lead.CustomerId'" on-init="lead.leadEventsOnInit(leadEvents)">
+                    @if (Model.ShowTasks)
+                    {
+                        <task-create class="ng-cloak link m-b-sm m-r-sm inline h4 card__title" ng-if="(lead.taskGrid == null || lead.taskGrid.gridTasks.gridOptions.data.length === 0) && !lead.readOnly" data-resolve="{bindTo:{objId: @Model.Id, type: 'lead'}}" on-after="lead.taskGrid.modalClose()" data-e2e="addTaskTab">
+                            @T("Admin.Leads.Popup.Task")
+                        </task-create>
+                    }
+                    <ui-modal-trigger ng-if="(lead.gridLeadItemsOptions == null || lead.gridLeadItemsOptions.data.length === 0) && !lead.readOnly"
+                                      class="ng-cloak link m-b-sm m-r-sm inline h4 card__title" size="xs-11" data-controller="'ModalOffersSelectvizrCtrl'" data-controller-as="ctrl"
+                                      data-on-close="lead.addLeadItems(result)"
+                                      template-url="@Html.GetAssetPath("offersSelectvizrModal.html")"
+                                      data-e2e="addGoodsTab">
+                        @T("Admin.Leads.Popup.Goods")
+                    </ui-modal-trigger>
+                </lead-events>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+</div>

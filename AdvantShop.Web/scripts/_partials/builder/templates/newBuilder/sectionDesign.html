@@ -1,0 +1,851 @@
+<ng-form name="builderDesignSettings" novalidate>
+    <!--Структура (продублирована из MainPage для demo)-->
+    <section
+        class="new-builder__content-section"
+        ng-if="(builder.design.IsDemo && !builder.design.IsAdmin) && (builder.design.MainPageModeImageOptions.length > 1 || builder.design.MainPageModeOptions.length > 1)">
+        <div class="flex middle-xs">
+            <h2 class="new-builder__content-title" data-translate="Js.Builder.PageStructure"></h2>
+
+            <div class="new-builder__content-title">
+                <help-trigger
+                    class="ng-cloak m-l-xs"
+                    use-template="true"
+                    classes="'setting__catalog-popover-custom'"
+                    help-append-to-body="false"
+                    data-title="{{::'Js.Builder.MainPageModeTitle' | translate}}">
+                    <div class="help-content" data-translate="Js.Builder.MainPageModeHint"></div>
+                </help-trigger>
+            </div>
+        </div>
+        <div
+            class="new-builder__content-field"
+            ng-if="(builder.design.IsDemo && !builder.design.IsAdmin) && builder.design.MainPageModeImageOptions.length > 1">
+            <div class="form-field">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label
+                            ng-repeat="mode in builder.design.MainPageModeImageOptions"
+                            class="form-field-label form-field-radio-label form-field-radio-label--block">
+                            <input
+                                type="radio"
+                                name="MainPageMode"
+                                class="form-field-radio"
+                                data-ng-model="builder.design.MainPageMode"
+                                ng-value="mode.Value"
+                                data-ng-click="builder.changeMainPage(mode)" />
+                            <span class="form-field-radio-emul"></span>
+                            <span class="form-field-label-text">{{mode.Title}}</span>
+                        </label>
+                    </div>
+                    <div class="col-xs-6">
+                        <span class="new-builder__field-menu-style-image-wrap">
+                            <span>
+                                <img
+                                    ng-src="{{builder.design.mainPageModeCurrent.ImageSrc}}"
+                                    alt="{{builder.design.mainPageModeCurrent.Title}}"
+                                    title="{{builder.design.mainPageModeCurrent.Title}}" />
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="new-builder__content-field"
+            ng-if="(builder.design.IsDemo && !builder.design.IsAdmin) && builder.design.MainPageModeOptions.length > 1">
+            <div class="form-field">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label
+                            ng-repeat="mode in builder.design.MainPageModeOptions"
+                            class="form-field-label form-field-radio-label form-field-radio-label--block">
+                            <input
+                                type="radio"
+                                name="MainPageModeLegacyOption"
+                                class="form-field-radio"
+                                data-ng-model="builder.design.MainPageMode"
+                                ng-value="mode.Value"
+                                data-ng-click="builder.changeMainPage(mode)" />
+                            <span class="form-field-radio-emul"></span>
+                            <span class="form-field-label-text">{{mode.Text}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section">
+        <h2
+            class="new-builder__content-title"
+            data-ng-init="builder.builderDesignSettings = builderDesignSettings"
+            data-translate="Js.Builder.SectionDesignTitle"></h2>
+
+        <div
+            ng-if="(!builder.design.IsDemo || builder.design.IsAdmin)"
+            class="new-builder__content-field form-field-group"
+            ng-class="{'builder-logo-generator': builder.design.Structures.length > 1}">
+            <div ng-if="builder.design.EnableInplace">
+                <logo-generator-trigger logo-generator-id="logoMain" url-save="logogenerator/savelogo" logo-generator-click-fn="builder.close()">
+                    <button type="button" class="new-builder__logogenerator-btn">Создать логотип</button>
+                </logo-generator-trigger>
+            </div>
+            <div ng-if="!builder.design.EnableInplace">
+                <a href="?logoGeneratorEditOnPageLoad=true" class="new-builder__content-field-link">
+                    <div class="new-builder__logogenerator-btn">Создать логотип</div>
+                </a>
+            </div>
+        </div>
+
+        <div ng-if="builder.design.Colors.length > 0 && builder.design.ColorSelected != null" class="new-builder__content-field">
+            <div class="new-builder__content-field-name form-field-name" data-translate="Js.Builder.Color"></div>
+            <div
+                class="new-builder__colors-viewer"
+                data-colors-viewer
+                data-colors="builder.design.Colors"
+                data-color-selected="builder.design.ColorSelected"
+                data-is-enable-slider="false"
+                data-color-height="'24px'"
+                data-color-width="'24px'"
+                data-change-color="builder.changeColor(color)"></div>
+        </div>
+
+        <div class="new-builder__content-field form-field-group">
+            <div ng-hide="builder.isHidden('Theme')">
+                <div class="form-field-name">
+                    <span data-translate="Js.Builder.Theme"></span>
+                </div>
+                <div class="form-field">
+                    <span class="select-custom">
+                        <select
+                            name="builderThemes"
+                            data-ng-change="builder.changeTheme(builder.design.CurrentTheme)"
+                            data-ng-model="builder.design.CurrentTheme"
+                            data-ng-options="theme.Name as theme.Title for theme in builder.design.Themes"></select>
+                    </span>
+                </div>
+            </div>
+            <div ng-hide="builder.isHidden('Background')">
+                <div class="form-field-name" data-translate="Js.Builder.Background"></div>
+                <div class="form-field">
+                    <span class="select-custom">
+                        <select
+                            name="builderBackgrounds"
+                            data-ng-change="builder.changeBackground(builder.design.CurrentBackGround)"
+                            data-ng-model="builder.design.CurrentBackGround"
+                            data-ng-options="background.Name as background.Title for background in builder.design.Backgrounds"></select>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div ng-if="(!builder.design.IsDemo || builder.design.IsAdmin)">
+            <div ng-if="builder.design.TopPanel != null" class="new-builder__content-field form-field-group">
+                <div>
+                    <div class="form-field-name" data-translate="Js.Builder.TopPanel"></div>
+                    <div class="form-field">
+                        <label ng-repeat="type in builder.design.TopPanelOptions" class="form-field-label-image">
+                            <input
+                                type="radio"
+                                name="TopPanel"
+                                class="form-field-radio-none"
+                                ng-model="builder.design.TopPanel"
+                                value="{{type.Value}}" />
+
+                            <img ng-src="{{type.ImageSrc}}" title="{{type.Title}}" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="builder.design.Header != null" class="new-builder__content-field form-field-group">
+                <div>
+                    <div class="form-field-name" data-translate="Js.Builder.Header"></div>
+                    <div class="form-field">
+                        <label ng-repeat="type in builder.design.HeaderOptions" class="form-field-label-image">
+                            <input type="radio" name="Header" class="form-field-radio-none" ng-model="builder.design.Header" value="{{type.Value}}" />
+
+                            <img ng-src="{{type.ImageSrc}}" title="{{type.Title}}" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="builder.design.TopMenu != null">
+                <div class="new-builder__content-field form-field-group">
+                    <div>
+                        <div class="form-field-name" data-translate="Js.Builder.TopMenu"></div>
+                        <div class="form-field">
+                            <label ng-repeat="type in builder.design.TopMenuOptions" class="form-field-label-image">
+                                <input
+                                    type="radio"
+                                    name="TopMenu"
+                                    class="form-field-radio-none"
+                                    ng-model="builder.design.TopMenu"
+                                    value="{{type.Value}}" />
+
+                                <img ng-src="{{type.ImageSrc}}" title="{{type.Title}}" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="builder.design.SearchBlockLocation != null && (!builder.design.IsDemo || builder.design.IsAdmin)">
+                <div class="form-field-name" data-translate="Js.Builder.SearchBlockLocationTitle"></div>
+                <div class="form-field">
+                    <span class="select-custom">
+                        <select
+                            name="searchBlockLocation"
+                            data-ng-model="builder.design.SearchBlockLocation"
+                            data-ng-options="item.Value as item.Text for item in builder.design.SearchBlockLocationOptions"></select>
+                    </span>
+                </div>
+            </div>
+
+            <div ng-if="builder.design.TopMenu != null">
+                <div class="new-builder__content-field">
+                    <div class="form-field">
+                        <switch-on-off
+                            data-id="TopMenuVisibility"
+                            checked="builder.design.TopMenuVisibility"
+                            theme="blue"
+                            label="{{::'Js.Builder.MenuList.HideGeneralMenu' | translate}}"
+                            on-click="builder.changeCheckbox(state, name)">
+                        </switch-on-off>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-builder__content-field" ng-hide="builder.isHidden('LimitedCategoryMenu')">
+                <div class="form-field flex middle-xs">
+                    <switch-on-off
+                        data-id="LimitedCategoryMenu"
+                        checked="builder.design.LimitedCategoryMenu"
+                        theme="blue"
+                        label="{{::'Js.Builder.LimitedCategoryMenu' | translate}}"
+                        on-click="builder.changeCheckbox(state, name)">
+                    </switch-on-off>
+                    <div class="help-trigger__container">
+                        <help-trigger
+                            class="ng-cloak m-l-xs"
+                            use-template="true"
+                            classes="'setting__catalog-popover-custom'"
+                            help-append-to-body="false"
+                            data-title="{{::'Js.Builder.LimitedCategoryMenu' | translate}}">
+                            <div class="help-content" data-translate="Js.Builder.LimitedCategoryMenuHint"></div>
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+            <div class="new-builder__content-field" ng-hide="builder.isHidden('UseAdaptiveRootCategory')">
+                <div class="form-field flex middle-xs">
+                    <switch-on-off
+                        data-id="UseAdaptiveRootCategory"
+                        checked="builder.design.UseAdaptiveRootCategory"
+                        theme="blue"
+                        label="{{::'Js.Builder.UseAdaptiveRootCategoryTitle' | translate}}"
+                        on-click="builder.changeCheckbox(state, name)">
+                    </switch-on-off>
+                    <div class="help-trigger__container">
+                        <help-trigger
+                            class="ng-cloak m-l-xs"
+                            use-template="true"
+                            classes="'setting__catalog-popover-custom'"
+                            help-append-to-body="false"
+                            data-title="{{::'Js.Builder.UseAdaptiveRootCategoryTitle' | translate}}">
+                            <div class="help-content" data-translate="Js.Builder.UseAdaptiveRootCategoryHint"></div>
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-builder__content-field" ng-if="builder.design.MenuStyle != null">
+                <div class="form-field-name flex middle-xs">
+                    <span data-translate="Js.Builder.MenuStyle"></span>
+                    <div class="help-trigger__container">
+                        <help-trigger
+                            class="ng-cloak m-l-xs"
+                            use-template="true"
+                            classes="'setting__catalog-popover-custom'"
+                            help-append-to-body="false"
+                            data-title="{{'Js.Builder.MenuStyle' | translate}}">
+                            <div class="help-content" data-translate="Js.Builder.MenuStyleHint"></div>
+                        </help-trigger>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label
+                                ng-repeat="style in builder.design.MenuStyleOptions"
+                                class="form-field-label form-field-radio-label form-field-radio-label--block">
+                                <input
+                                    type="radio"
+                                    name="MenuStyle"
+                                    class="form-field-radio"
+                                    data-ng-model="builder.design.MenuStyle"
+                                    data-ng-click="builder.changeMenuStyle(style.Value)"
+                                    value="{{style.Value}}" />
+                                <span class="form-field-radio-emul"></span>
+                                <span class="form-field-label-text">{{style.Text}}</span>
+                            </label>
+                        </div>
+                        <div class="col-xs-6">
+                            <span class="new-builder__field-menu-style-image-wrap">
+                                <span>
+                                    <img
+                                        ng-src="images/settings/menuStyle/{{builder.design.MenuStyle}}.jpg"
+                                        alt="{{builder.design.MenuStyle}}"
+                                        title="{{builder.design.MenuStyle}}" />
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="builder.design.FontStyle" class="new-builder__content-field">
+                <div class="form-field-name">Шрифт</div>
+                <div class="form-field">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <span class="select-custom">
+                                <select
+                                    name="FontStyle"
+                                    class=""
+                                    data-ng-model="builder.design.FontStyle"
+                                    data-ng-options="item.Value as item.Text for item in builder.design.FontStyleOptions"></select>
+                            </span>
+                        </div>
+                        <div class="col-xs-5">
+                            <span class="select-custom">
+                                <select
+                                    name="FontSize"
+                                    data-ng-model="builder.design.FontSize"
+                                    data-ng-options="item.Value as item.Text for item in builder.design.FontSizeOptions"></select>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-builder__content-field" ng-if="builder.design.TitleStyle">
+                <div class="form-field-name">Шрифт Заголовков</div>
+                <div class="form-field">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <span class="select-custom">
+                                <select
+                                    name="TitleStyle"
+                                    class=""
+                                    data-ng-model="builder.design.TitleStyle"
+                                    data-ng-options="item.Value as item.Text for item in builder.design.TitleStyleOptions"></select>
+                            </span>
+                        </div>
+                        <div class="col-xs-5">
+                            <span class="select-custom">
+                                <select
+                                    name="TitleSize"
+                                    data-ng-model="builder.design.TitleSize"
+                                    data-ng-options="item.Value as item.Text for item in builder.design.TitleSizeOptions"></select>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-builder__content-field" ng-if="builder.design.TitleStyle">
+                <div class="form-field-name">Стиль Заголовков</div>
+                <div class="form-field">
+                    <div class="row middle-xs">
+                        <div class="col-xs-3" ng-repeat="style in builder.design.TitleWeightOptions">
+                            <label class="form-field-label form-field-radio-label form-field-radio-label--block">
+                                <input
+                                    type="radio"
+                                    name="TitleWeight"
+                                    class="form-field-radio"
+                                    data-ng-model="builder.design.TitleWeight"
+                                    value="{{style.Value}}" />
+                                <span class="form-field-radio-emul"></span>
+                                <span class="form-field-label-text">{{style.Text}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section
+        class="new-builder__content-section"
+        ng-if="(!builder.design.IsDemo || builder.design.IsAdmin) && builder.design.OthersSectionDesign.length > 0">
+        <div class="new-builder__content-other-fields">
+            <builder-trigger-other-settings
+                settings="builder.design.OthersSectionDesign[0].Settings"
+                show-title="true"></builder-trigger-other-settings>
+        </div>
+    </section>
+    <section class="new-builder__content-section" ng-if="(!builder.design.IsDemo || builder.design.IsAdmin)">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.ViewTitle"></h2>
+        <!--        <div class="new-builder__content-field" data-ng-if="builder.design.MobileAppBannerVisibility != null">-->
+        <!--            <div class="form-field flex middle-xs">-->
+        <!--                <switch-on-off data-id="MobileAppBannerVisibility"-->
+        <!--                               checked="builder.design.MobileAppBannerVisibility"-->
+        <!--                               theme="blue"-->
+        <!--                               -->
+        <!--                               label="{{::'Js.Builder.MobileAppBannerVisibility' | translate}}"-->
+        <!--                               on-click="builder.changeCheckbox(state, name)">-->
+        <!--                </switch-on-off>-->
+        <!--                <div class="help-trigger__container">-->
+        <!--                    <help-trigger class="ng-cloak m-l-xs" use-template="true" classes="'setting__catalog-popover-custom'" help-append-to-body="false"-->
+        <!--                                  data-title="{{::'Js.Builder.MobileAppBannerVisibilityTitle' | translate}}">-->
+        <!--                        <div class="help-content" data-translate="Js.Builder.MobileAppBannerVisibilityNote"></div>-->
+        <!--                    </help-trigger>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="RecentlyViewVisibility"
+                    checked="builder.design.RecentlyViewVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.RecentlyViewVisibilityTitle' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.RecentlyViewVisibilityTitle' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.RecentlyViewVisibilityHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="WishListVisibility"
+                    checked="builder.design.WishListVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.WishListVisibilityTitle' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.WishListVisibilityTitle' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.WishListVisibilityHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="IsStoreClosed"
+                    checked="builder.design.IsStoreClosed"
+                    theme="blue"
+                    label="{{::'Js.Builder.IsStoreClosed' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.IsStoreClosed' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.IsStoreClosedHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="EnableInplace"
+                    checked="builder.design.EnableInplace"
+                    theme="blue"
+                    label="{{::'Js.Builder.EnableInplace' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.EnableInplace' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.EnableInplaceHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-if="!builder.design.HideDisplayToolBarBottomOption">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="DisplayToolBarBottom"
+                    checked="builder.design.DisplayToolBarBottom"
+                    theme="blue"
+                    label="{{::'Js.Builder.DisplayToolBarBottom' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.DisplayToolBarBottom' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.DisplayToolBarBottomHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="HideCityInTopPanel"
+                    checked="builder.design.HideCityInTopPanel"
+                    theme="blue"
+                    label="{{::'Js.Builder.HideCityInTopPanel' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.HideCityInTopPanel' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.HideCityInTopPanelHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="AutodetectCity"
+                    checked="builder.design.AutodetectCity"
+                    theme="blue"
+                    label="{{::'Js.Builder.DisplayCityInTopPanel' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.DisplayCityInTopPanel' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.DisplayCityInTopPanelHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-if="builder.design.AutodetectCity === false">
+            <label for="DefaultCityIfNotAutodetect" class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.DefaultCityIfNotAutodetect"></span>
+            </label>
+            <div class="form-field">
+                <span
+                    class="autocompleter-block"
+                    data-field="Name"
+                    data-autocompleter
+                    data-params="{withId: true}"
+                    data-request-url="/location/GetCitiesAutocomplete"
+                    data-max-height-list="addressList.citiesListMaxHeight"
+                    data-template-path="scripts/_common/autocompleter/templates/location.html"
+                    data-apply-fn="builder.processCity(obj)">
+                    <input
+                        type="text"
+                        name="DefaultCityIfNotAutodetect"
+                        id="DefaultCityIfNotAutodetect"
+                        class="input-small form-control input-alt"
+                        data-ng-model="builder.design.DefaultCityIfNotAutodetect"
+                        required
+                        data-ng-change="builder.processCity(obj)"
+                        data-autocompleter-input
+                        autocomplete="new-password"
+                        maxlength="70" />
+                </span>
+                <span class="help-block" ng-bind="builder.design.DefaultCityDescription"></span>
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section" ng-if="(!builder.design.IsDemo || builder.design.IsAdmin)">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.Other"></h2>
+
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.AdditionalHeadMetaTag"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.AdditionalHeadMetaTag' | translate}}">
+                        <div class="help-content">
+                            <span ng-bind-html="'Js.Builder.AdditionalHeadMetaTagNote' | translate"></span>
+                            <br /><br />
+                            <span ng-bind-html="'Js.Builder.AdditionalHeadMetaTagNoteLink' | translate"></span>
+                        </div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <textarea
+                    name="AdditionalHeadMetaTag"
+                    class="form-field-textarea"
+                    rows="5"
+                    data-ng-model="builder.design.AdditionalHeadMetaTag"></textarea>
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section" ng-if="(!builder.design.IsDemo || builder.design.IsAdmin)">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.CustomersNotifications"></h2>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="ShowUserAgreementText"
+                    checked="builder.design.ShowUserAgreementText"
+                    theme="blue"
+                    label="{{::'Js.Builder.ShowUserAgreementTextField' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.ShowUserAgreementTextField' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.ShowUserAgreementTextHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="AgreementDefaultChecked"
+                    checked="builder.design.AgreementDefaultChecked"
+                    theme="blue"
+                    label="{{::'Js.Builder.AgreementDefaultChecked' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.AgreementDefaultChecked' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.AgreementDefaultCheckedHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name" data-translate="Js.Builder.UserAgreementTextField"></div>
+            <div class="form-field">
+                <textarea data-ng-model="builder.design.UserAgreementText" class="form-field-textarea"></textarea>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="ShowUserAgreementForPromotionalNewsletter"
+                    checked="builder.design.ShowUserAgreementForPromotionalNewsletter"
+                    theme="blue"
+                    label="{{::'Js.Builder.ShowUserAgreementForPromotionalNewsletter' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.ShowUserAgreementForPromotionalNewsletter' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.ShowUserAgreementForPromotionalNewsletterNote"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="SetUserAgreementForPromotionalNewsletterChecked"
+                    checked="builder.design.SetUserAgreementForPromotionalNewsletterChecked"
+                    theme="blue"
+                    label="{{::'Js.Builder.SetUserAgreementForPromotionalNewsletterChecked' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.SetUserAgreementForPromotionalNewsletterChecked' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.SetUserAgreementForPromotionalNewsletterCheckedHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name" data-translate="Js.Builder.UserAgreementForPromotionalNewsletter"></div>
+            <div class="form-field">
+                <textarea data-ng-model="builder.design.UserAgreementForPromotionalNewsletter" class="form-field-textarea"></textarea>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.DisplayCityBubble"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.DisplayCityBubble' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.DisplayCityBubbleHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <span class="select-custom">
+                    <select
+                        name="builderDisplayCityBubbleType"
+                        ng-model="builder.design.DisplayCityBubbleType"
+                        convert-to-number
+                        ng-options="s.Value as s.Text for s in builder.design.DisplayCityBubbleTypes"></select>
+                </span>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="ShowCookiesPolicyMessage"
+                    checked="builder.design.ShowCookiesPolicyMessage"
+                    theme="blue"
+                    label="{{::'Js.Builder.ShowCookiesPolicyMessage' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.ShowCookiesPolicyMessage' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.ShowCookiesPolicyMessageHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name" data-translate="Js.Builder.CookiesPolicyMessage"></div>
+            <div class="form-field">
+                <textarea
+                    name="CookiesPolicyMessage"
+                    class="form-field-textarea"
+                    rows="5"
+                    data-ng-model="builder.design.CookiesPolicyMessage"></textarea>
+                <p class="m-b-none" data-translate="Js.Builder.VariableStoreUrl"></p>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.SiteLanguage"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.SiteLanguage' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.SiteLanguageHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <span class="select-custom">
+                    <select
+                        name="builderSiteLanguage"
+                        ng-model="builder.design.SiteLanguage"
+                        ng-options="s.Value as s.Text for s in builder.design.Languages"></select>
+                </span>
+            </div>
+        </div>
+        <div ng-if="builder.design.ShowAdditionalPhones" class="new-builder__content-field">
+            <div class="form-field-name">
+                <span>Телефоны</span>
+            </div>
+            <div ng-repeat="item in builder.design.AdditionalPhones track by $index" class="m-b">
+                <div class="m-b-xs">
+                    <span ng-if="$index == 0" class="form-field-phone">Основной телефон</span>
+                    <span ng-if="$index != 0" class="form-field-phone">
+                        Дополнительный телефон
+                        <a href="javascript:void(0)" ng-click="builder.deletePhone($index)" class="p-l new-builder__link-red">Удалить</a>
+                    </span>
+                </div>
+
+                <div class="form-field-group m-b-xs" ng-show="item.Type != 4">
+                    <div>
+                        <div class="form-field-name form-field-name--small">Телефон</div>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                data-ng-model="item.Phone"
+                                value=""
+                                ng-change="builder.formatPhone(item)"
+                                class="form-field-input form-field-input-text" />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-field-name form-field-name--small">Телефон в числовом формате</div>
+                        <div class="input-group">
+                            <input type="text" data-ng-model="item.StandardPhone" value="" class="form-field-input form-field-input-text" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div>
+                        <div class="form-field-name form-field-name--small">{{item.Type != 4 ? 'Описание' : 'Название группы'}}</div>
+                        <div class="input-group">
+                            <input type="text" data-ng-model="item.Description" value="" class="form-field-input form-field-input-text" />
+                        </div>
+                    </div>
+                    <div ng-if="$index != 0">
+                        <div class="form-field-name form-field-name--small">SVG иконка</div>
+                        <div class="input-group">
+                            <div class="select-custom">
+                                <select
+                                    data-ng-model="item.Type"
+                                    data-ng-options="s.value as s.label for s in builder.design.AdditionalPhoneTypes"></select>
+                            </div>
+                            <div data-ng-if="item.Type == 1 || item.Type == 4">
+                                <div class="m-t-xs m-b-xs form-field-name form-field-name--small">
+                                    {{item.Type != 4 ? 'Код SVG иконки' : 'Логин пользователя в телеграме'}}
+                                </div>
+                                <input type="text" data-ng-model="item.Icon" value="" class="form-field-input form-field-input-text" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0)" ng-click="builder.addPhone()" class="new-builder__link">Добавить телефон</a>
+        </div>
+    </section>
+</ng-form>

@@ -1,0 +1,44 @@
+﻿@using AdvantShop.Trial
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.ViewModels.Design.DesignModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+}
+
+@Html.Back("Дизайн", Url.AbsoluteActionUrl("Index", "Design"))
+
+<div class="sticky-page-name">
+    @if (isAdminv3)
+    {
+        <h1 class="page-name-block-text">@T("Admin.Design.TemplateShop.Title")</h1>
+    }
+    else
+    {
+        <h1 style="margin: 1rem 0rem;font-size: 21px;">@T("Admin.Design.TemplateShop.Title")</h1>
+    }
+</div>
+
+<div class="ibox">
+    <uib-tabset active uid="templatesTab">
+        <uib-tab index="'allTemplates'" heading="Все шаблоны" classes="ng-tab">
+            @Html.Partial("_TemplateList", Model.MarketTemplates)
+        </uib-tab>
+        <uib-tab index="'paidTemplates'" heading="Платные" classes="ng-tab">
+            @if (TrialService.IsTrialEnabled)
+            {
+                <div class="h5 design__item--trial">
+                    @T("Admin.Design.Index.PaidTemplates")
+                </div>
+            }
+            @Html.Partial("_TemplateList", Model.MarketTemplates.Where(x => x.Price > 0).ToList())
+        </uib-tab>
+        <uib-tab index="'freeTemplates'" heading="Бесплатные" classes="ng-tab">
+            @Html.Partial("_TemplateList", Model.MarketTemplates.Where(x => x.Price <= 0).ToList())
+        </uib-tab>
+    </uib-tabset>
+</div>

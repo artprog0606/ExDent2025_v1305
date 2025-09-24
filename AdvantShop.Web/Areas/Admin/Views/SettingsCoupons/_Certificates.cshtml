@@ -1,0 +1,76 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="CertificatesCtrl as certificates" @Html.Raw(isMobile ? "ng-init=\"settingsCoupons.certificates = certificates\"" : "")>
+    <div class="sticky-page-name @(isMobile ? "" : " m-t-n-xs")" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main flex middle-xs">
+                    <h2 class="sticky-page-name-text m-t-none" data-e2e="CertificatesTitle">
+                        @T("Admin.Certificates.Index.Title")
+                    </h2>
+                </div>
+
+                <div class="page-name-block-item-additional">
+
+                    <ui-modal-trigger data-controller="'ModalCertificateSettingsCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("certificateSettings.html")">
+                        <button class="btn btn-sm btn-success btn--margin-left" data-e2e="CertificatesSettings" type="button">
+                            @T("Admin.Certificates.Index.CertificatesSettings")
+                        </button>
+                    </ui-modal-trigger>
+
+                    <ui-modal-trigger data-controller="'ModalAddEditCertificatesCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addEditCertificates.html")"
+                                      data-on-close="certificates.grid.fetchData()"
+                                      data-size="xs-9">
+                        <button data-e2e="AddCertificates" class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> @T("Admin.Certificates.Index.AddCertificates")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            }
+        </div>
+    </div>
+
+    <ui-grid-custom grid-unique-id="gridCertificates"
+                    grid-on-init="certificates.gridOnInit(grid)"
+                    grid-options="certificates.gridOptions"
+                    grid-url="'certificates/getCertificates'"
+                    grid-extend-ctrl="certificates"
+                    grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+                <div class="flex middle-xs">
+                    <div class="card__col m-r-xs flex-grow">
+                        <ui-modal-trigger data-controller="'ModalAddEditCertificatesCtrl'" controller-as="ctrl"
+                            template-url="@Html.GetAssetPath("addEditCertificates.html")" 
+                            data-resolve="{'id': row.entity.CertificateId}" 
+                            data-on-close="grid.appScope.$ctrl.fetchData()" 
+                            data-size="xs-9">
+                            <div class="card--p-18">
+                                <div class="m-b-xs">{{row.entity.CertificateCode}}</div>
+                                <div style="opacity:0.6;" class="fs-xs">
+                                    <span> {{row.entity.Sum}}</span>
+                                </div>
+                            </div>
+                        </ui-modal-trigger>
+                    </div>
+                    <div class="card__col card__col--end setting--align-center card--p-18">
+                        <a href="" class="link-invert" target="_blank" ng-href="../giftcertificate/print?code={{row.entity.CertificateCode}}">
+                            <span>
+                                <svg width="22" height="22" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    <path d="M7 25 L2 25 2 9 30 9 30 25 25 25 M7 19 L7 30 25 30 25 19 Z M25 9 L25 2 7 2 7 9 M22 14 L25 14" />
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="certificates.grid.gridOptions.TotalString">
+        </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>

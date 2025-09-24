@@ -1,0 +1,23 @@
+//--------------------------------------------------
+// Project: AdvantShop.NET
+// Web site: http:\\www.advantshop.net
+//--------------------------------------------------
+
+using System.Collections.Generic;
+
+namespace AdvantShop.Orders
+{
+    public class OrderPickPoint
+    {
+        public int OrderId { get; set; }
+        public string PickPointId { get; set; }
+        public List<int> WarehouseIds { get; set; }
+        public string PickPointAddress { get; set; }
+        public string AdditionalData { get; set; }
+
+        public override string ToString()
+        {
+            return $"{PickPointId} {PickPointAddress}";
+        }
+    }
+}

@@ -1,0 +1,385 @@
+<div>
+    <div
+        id="modalLpCartPopup"
+        class="modal ng-hide color-scheme--light"
+        data-modal-control
+        data-inject="$ctrl"
+        data-modal-class="lp-cart-modal"
+        data-callback-close="$ctrl.modalCloseCallback(modalScope)">
+        <!--goods-->
+        <div class="modal-header lp-cart-modal__header" ng-if="$ctrl.type === 'goods'">
+            <div class="lp-font-size--large">Ваш заказ</div>
+        </div>
+        <div class="modal-footer lp-cart-modal__footer" ng-if="$ctrl.type === 'goods'">
+            <div class="row center-xs end-sm middle-xs text-align-right-sm" data-ng-if="$ctrl.cartData.CartProducts.length > 0">
+                <div class="col-xs-12 col-sm-slim lp-cart-result">
+                    <div
+                        data-ng-if="$ctrl.cartData.TotalProductPrice != null"
+                        data-ng-show="$ctrl.cartData.TotalPrice != $ctrl.cartData.TotalProductPrice">
+                        <span class="lp-cart-result__name"> {{ ::'Js.Cart.Sum' | translate }}: </span>
+                        <span class="lp-cart-result__value" data-ng-bind="$ctrl.cartData.TotalProductPrice"></span>
+                    </div>
+                    <div data-ng-if="$ctrl.cartData.DiscountPrice != null">
+                        <span class="lp-cart-result__name"> {{ ::'Js.Cart.Discount' | translate }}: </span>
+                        <span class="lp-cart-result__value" data-ng-bind="$ctrl.cartData.DiscountPrice"></span>
+                    </div>
+                    <div data-ng-if="$ctrl.cartData.Certificate != null">
+                        <span class="lp-cart-result__name"> {{ ::'Js.Cart.Certificate' | translate }}: </span>
+                        <span class="lp-cart-result__value">
+                            - <span data-ng-bind="$ctrl.cartData.Certificate"></span>
+                            <a href="javascript:void(0)" data-cards-remove data-type="certificate" data-apply-fn="$ctrl.refreshCart()"></a>
+                        </span>
+                    </div>
+                    <div data-ng-if="$ctrl.cartData.Coupon != null">
+                        <span class="lp-cart-result__name"> {{ ::'Js.Cart.Coupon' | translate }}: </span>
+                        <span class="lp-cart-result__value">
+                            - <span data-ng-bind="$ctrl.cartData.Coupon.Price"></span>
+                            <span data-ng-if="$ctrl.cartData.Coupon.Percent != null"
+                                >(<span data-ng-bind="$ctrl.cartData.Coupon.Percent"></span> %)</span
+                            >
+                            <img
+                                data-ng-if="$ctrl.cartData.Coupon.NotApplied"
+                                src="images/misc/q.png"
+                                title="{{ ::'Js.Cart.CouponErrorMsg' | translate }}" />
+                            <a href="javascript:void(0)" data-cards-remove data-type="coupon" data-apply-fn="$ctrl.refreshCart()"></a>
+                        </span>
+                    </div>
+                    <div>
+                        <span class="lp-cart-result__name lp-font-size--middle"> {{ ::'Js.Cart.Total' | translate }}: </span>
+                        <span class="lp-cart-result__value lp-font-size--large" data-ng-bind="$ctrl.cartData.TotalPrice"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-slim lp-cart-btn-confirm">
+                    <button
+                        type="button"
+                        data-modal-close="modalLpCartPopup"
+                        class="lp-btn lp-btn--secondary lp-font-size--middle pointer"
+                        data-ng-bind="::'Js.Landing.Cart.Return' | translate"></button>
+                    <a
+                        data-ng-href="{{$ctrl.cartData.Valid == ''? ('checkout/lp?lpId=' + $ctrl.lpId + ($ctrl.hideShipping ? '&mode=1' : '')) :''}}"
+                        data-ng-class="{'lp-btn--disabled': $ctrl.cartData.Valid != ''}"
+                        class="lp-btn lp-btn--primary lp-font-size--middle pointer"
+                        data-ng-bind="::'Js.Cart.Checkout' | translate"></a>
+                </div>
+            </div>
+        </div>
+        <div class="modal-content lp-cart-modal__content" ng-if="$ctrl.type === 'goods'">
+            <div data-ng-switch="$ctrl.cartData != null">
+                <div data-ng-switch-when="true">
+                    <div data-ng-switch="$ctrl.cartData.CartProducts.length > 0">
+                        <div data-ng-switch-when="true">
+                            <div class="lp-cart">
+                                <div class="lp-cart__products">
+                                    <div class="lp-cart__item" data-ng-repeat="item in $ctrl.cartData.CartProducts track by $index">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-2 lp-cart__col text-center">
+                                                <img data-ng-src="{{item.PhotoMiddlePath}}" alt="{{item.PhotoAlt}}" />
+                                            </div>
+                                            <div class="col-xs-12 col-sm lp-cart__col">
+                                                <div class="lp-cart__title" data-ng-bind="item.Name"></div>
+                                                <ul class="lp-cart-properties">
+                                                    <li class="lp-cart-properties__row" data-ng-if="item.ColorName">
+                                                        <span class="lp-cart-properties__name" data-ng-bind="$ctrl.cartData.ColorHeader"></span>:
+                                                        <span class="lp-cart-properties__value" data-ng-bind="item.ColorName"></span>
+                                                    </li>
+                                                    <li class="lp-cart-properties__row" data-ng-if="item.SizeName">
+                                                        <span class="lp-cart-properties__name" data-ng-bind="$ctrl.cartData.SizeHeader"></span>:
+                                                        <span class="lp-cart-properties__value" data-ng-bind="item.SizeName"></span>
+                                                    </li>
+                                                    <li
+                                                        class="lp-cart-properties__row"
+                                                        data-ng-if="item.SelectedOptions.length > 0"
+                                                        data-ng-repeat="option in item.SelectedOptions track by $index">
+                                                        <span class="lp-cart-properties__name" data-ng-bind="option.CustomOptionTitle"></span>:
+                                                        <span class="lp-cart-properties__value">
+                                                            <span data-ng-bind="option.OptionTitle"></span>
+                                                            <span data-ng-bind="option.OptionText"></span>
+                                                            <span data-ng-bind="option.FormatPrice"></span>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-2 lp-cart__col">
+                                                <div
+                                                    class="hidden-sm text-center lp-cart__item-title"
+                                                    data-ng-bind="::'Js.Cart.Amount' | translate"></div>
+                                                <div data-ng-switch="item.FrozenAmount">
+                                                    <div data-ng-switch-when="false">
+                                                        <div
+                                                            class="lp-cart__spinbox"
+                                                            data-spinbox
+                                                            data-value="item.Amount"
+                                                            data-proxy="item.ShoppingCartItemId"
+                                                            data-update-fn="$ctrl.updateAmount(value, proxy)"
+                                                            data-step="item.Multiplicity"
+                                                            data-max="item.MaxAmount"
+                                                            data-min="item.MinAmount"></div>
+                                                        <div class="lp-cart-spinbox__unit" data-ng-bind="item.Unit"></div>
+                                                    </div>
+                                                    <div
+                                                        class="lp-cart__unit-block"
+                                                        data-ng-switch-when="true"
+                                                        data-ng-bind="item.Amount + ' ' +  item.Unit"></div>
+                                                </div>
+                                                <div class="lp-cart-spinbox__error">
+                                                    <div data-ng-bind="item.Avalible"></div>
+                                                    <div
+                                                        data-ng-if="item.Avalible == '' && item.AvailableAmount == 0"
+                                                        data-ng-bind="::'Js.Cart.PreOrder' | translate"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-3 lp-cart-bill lp-cart__col">
+                                                <div
+                                                    class="hidden-sm text-center lp-cart__item-title"
+                                                    data-ng-bind="::'Js.Cart.Cost' | translate"></div>
+                                                <div data-ng-switch="item.Discount.HasValue">
+                                                    <div data-ng-switch-when="true">
+                                                        <div class="lp-cart-bill__price">
+                                                            <span class="lp-cart-bill__price--old" data-ng-bind="item.Price"></span>
+                                                            <span class="lp-cart-bill__price--new" data-ng-bind="item.PriceWithDiscount"></span>
+                                                        </div>
+                                                        <div class="lp-cart-bill__discount">
+                                                            <span data-ng-bind="::'Js.Cart.Discount' | translate"></span>:
+                                                            <span class="lp-cart-bill__discount-value" data-ng-bind="item.DiscountText"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div data-ng-switch-when="false">
+                                                        <div class="lp-cart-bill__price">
+                                                            <!--<span class="lp-cart-bill__price--default" data-ng-bind="item.PriceWithDiscount"></span>-->
+                                                            <span class="lp-cart-bill__price--default" data-ng-bind="item.Cost"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-slim lp-cart__col lp-cart__col--delete text-center">
+                                                <div ng-if="!item.IsGift">
+                                                    <button
+                                                        data-ng-click="$ctrl.removeCartItem(item.ShoppingCartItemId)"
+                                                        type="button"
+                                                        class="lp-cart__delete--icon hidden-xs visible-sm pointer"
+                                                        title="{{ ::'Js.Cart.Delete' | translate }}">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            version="1.1"
+                                                            viewBox="0 0 44 44"
+                                                            enable-background="new 0 0 44 44"
+                                                            width="28px"
+                                                            height="28px">
+                                                            <path
+                                                                d="m22,0c-12.2,0-22,9.8-22,22s9.8,22 22,22 22-9.8 22-22-9.8-22-22-22zm3.2,22.4l7.5,7.5c0.2,0.2 0.3,0.5 0.3,0.7s-0.1,0.5-0.3,0.7l-1.4,1.4c-0.2,0.2-0.5,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-7.5-7.5c-0.2-0.2-0.5-0.2-0.7,0l-7.5,7.5c-0.2,0.2-0.5,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-1.4-1.4c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l7.5-7.5c0.2-0.2 0.2-0.5 0-0.7l-7.5-7.5c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l1.4-1.4c0.2-0.2 0.5-0.3 0.7-0.3s0.5,0.1 0.7,0.3l7.5,7.5c0.2,0.2 0.5,0.2 0.7,0l7.5-7.5c0.2-0.2 0.5-0.3 0.7-0.3 0.3,0 0.5,0.1 0.7,0.3l1.4,1.4c0.2,0.2 0.3,0.5 0.3,0.7s-0.1,0.5-0.3,0.7l-7.5,7.5c-0.2,0.1-0.2,0.5 3.55271e-15,0.7z"
+                                                                fill="currentColor" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        data-ng-click="$ctrl.removeCartItem(item.ShoppingCartItemId)"
+                                                        type="button"
+                                                        class="lp-btn lp-btn--secondary lp-btn hidden-sm pointer"
+                                                        title="{{ ::'Js.Cart.Delete' | translate }}"
+                                                        data-ng-bind="::'Js.Cart.Delete' | translate"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lp-cart__item" data-ng-if="$ctrl.cartData.BonusPlus != null">
+                                        <div class="row">
+                                            <div class="col-xs-12 lp-cart__col">
+                                                <span data-ng-bind="::'Js.Cart.BonusPlus' | translate"></span> :
+                                                <span class="bold">+<span data-ng-bind="$ctrl.cartData.BonusPlus"></span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lp-cart__item" data-ng-if="$ctrl.cartData.CouponInputVisible">
+                                        <div class="row">
+                                            <div class="col-xs-12 lp-cart__col">
+                                                <div class="lp-cart-cards-form__title" data-ng-bind="::'Js.Cart.CouponCode' | translate"></div>
+                                                <div
+                                                    class="lp-cart-cards-form__widget"
+                                                    data-cards-form
+                                                    btn-classes="'lp-btn lp-btn--primary lp-btn--expand'"
+                                                    data-apply-fn="$ctrl.refreshCart()"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lp-cart__error" ng-if="$ctrl.cartData.Valid != ''" ng-bind="$ctrl.cartData.Valid"></div>
+                        </div>
+                        <div
+                            class="lp-cart__empty lp-font-size--middle"
+                            data-ng-switch-when="false"
+                            data-ng-bind="::'Js.Cart.EmptyCart' | translate"></div>
+                    </div>
+                </div>
+                <div data-ng-switch-when="false" class="lp-cart__loader">
+                    <svg
+                        version="1.1"
+                        id="loader-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        width="50px"
+                        height="50px"
+                        viewBox="0 0 40 40"
+                        enable-background="new 0 0 40 40"
+                        xml:space="preserve">
+                        <path
+                            opacity="0.2"
+                            fill="#3797eb"
+                            d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+                                s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+                                c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"></path>
+                        <path
+                            fill="#3797eb"
+                            d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+                                C22.32,8.481,24.301,9.057,26.013,10.047z">
+                            <animateTransform
+                                attributeType="xml"
+                                attributeName="transform"
+                                type="rotate"
+                                from="0 20 20"
+                                to="360 20 20"
+                                dur="0.5s"
+                                repeatCount="indefinite"></animateTransform>
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!--booking-->
+        <div class="lp-cart-modal__header" ng-if="$ctrl.type === 'booking'">
+            <div class="lp-font-size--large">Брони</div>
+        </div>
+        <div class="modal-footer lp-cart-modal__footer" ng-if="$ctrl.type === 'booking'">
+            <div class="row center-xs end-sm middle-xs text-align-right-sm" data-ng-if="$ctrl.bookingCartData.obj.CartItems.length > 0">
+                <div class="col-xs-12 col-sm-slim lp-cart-result">
+                    <div>
+                        <span class="lp-cart-result__name lp-font-size--middle"> {{ ::'Js.Cart.Total' | translate }}: </span>
+                        <span class="lp-cart-result__value lp-font-size--large" data-ng-bind="$ctrl.bookingCartData.obj.TotalPrice"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-slim lp-cart-btn-confirm">
+                    <button
+                        type="button"
+                        data-modal-close="modalLpCartPopup"
+                        class="lp-btn lp-btn--secondary lp-font-size--middle pointer"
+                        data-ng-bind="::'Js.Cart.ContinueBooking' | translate"></button>
+                    <a
+                        data-ng-href="{{$ctrl.bookingCartData.obj.Valid == '' ? ('checkout/lp?lpId=' + $ctrl.lpId + ($ctrl.hideShipping ? '&mode=1' : '')) :''}}"
+                        data-ng-class="{'lp-btn--disabled': $ctrl.bookingCartData.obj.Valid != ''}"
+                        class="lp-btn lp-btn--primary lp-font-size--middle pointer"
+                        data-ng-bind="::'Js.Cart.Checkout' | translate"></a>
+                </div>
+            </div>
+        </div>
+        <div class="modal-content lp-cart-modal__content" ng-if="$ctrl.type === 'booking'">
+            <div data-ng-switch="$ctrl.bookingCartData != null">
+                <div data-ng-switch-when="true">
+                    <div data-ng-switch="$ctrl.bookingCartData.obj.CartItems.length > 0">
+                        <div data-ng-switch-when="true">
+                            <div class="lp-cart">
+                                <div class="lp-cart__products">
+                                    <div class="lp-cart__item" data-ng-repeat="item in $ctrl.bookingCartData.obj.CartItems track by $index">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-2 lp-cart__col text-center">
+                                                <img
+                                                    data-ng-src="{{item.ReservationResourcePhoto}}"
+                                                    alt="{{item.AffiliateName}} {{item.ReservationResourceName}}" />
+                                            </div>
+                                            <div class="col-xs-12 col-sm lp-cart__col">
+                                                <div class="lp-cart__title">{{item.AffiliateName}} {{item.ReservationResourceName}}</div>
+                                                <ul class="lp-cart-properties">
+                                                    <li class="lp-cart-properties__row">
+                                                        <span class="lp-cart-properties__value" data-ng-bind="item.BookingDate"></span>
+                                                    </li>
+                                                </ul>
+                                                <div class="lp-cart-spinbox__error">
+                                                    <div data-ng-bind="item.Avalible"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-3 lp-cart-bill lp-cart__col">
+                                                <div
+                                                    class="hidden-sm text-center lp-cart__item-title"
+                                                    data-ng-bind="::'Js.Cart.Cost' | translate"></div>
+                                                <div class="lp-cart-bill__price">
+                                                    <span class="lp-cart-bill__price--default" data-ng-bind="item.Sum"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-slim lp-cart__col lp-cart__col--delete text-center">
+                                                <button
+                                                    data-ng-click="$ctrl.removeBookingItem(item.ShoppingCartItemId)"
+                                                    type="button"
+                                                    class="lp-cart__delete--icon hidden-xs visible-sm pointer"
+                                                    title="{{ ::'Js.Cart.Delete' | translate }}">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                        version="1.1"
+                                                        viewBox="0 0 44 44"
+                                                        enable-background="new 0 0 44 44"
+                                                        width="28px"
+                                                        height="28px">
+                                                        <path
+                                                            d="m22,0c-12.2,0-22,9.8-22,22s9.8,22 22,22 22-9.8 22-22-9.8-22-22-22zm3.2,22.4l7.5,7.5c0.2,0.2 0.3,0.5 0.3,0.7s-0.1,0.5-0.3,0.7l-1.4,1.4c-0.2,0.2-0.5,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-7.5-7.5c-0.2-0.2-0.5-0.2-0.7,0l-7.5,7.5c-0.2,0.2-0.5,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-1.4-1.4c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l7.5-7.5c0.2-0.2 0.2-0.5 0-0.7l-7.5-7.5c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l1.4-1.4c0.2-0.2 0.5-0.3 0.7-0.3s0.5,0.1 0.7,0.3l7.5,7.5c0.2,0.2 0.5,0.2 0.7,0l7.5-7.5c0.2-0.2 0.5-0.3 0.7-0.3 0.3,0 0.5,0.1 0.7,0.3l1.4,1.4c0.2,0.2 0.3,0.5 0.3,0.7s-0.1,0.5-0.3,0.7l-7.5,7.5c-0.2,0.1-0.2,0.5 3.55271e-15,0.7z"
+                                                            fill="currentColor" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    data-ng-click="$ctrl.removeBookingItem(item.ShoppingCartItemId)"
+                                                    type="button"
+                                                    class="lp-btn lp-btn--secondary lp-btn hidden-sm pointer"
+                                                    title="{{ ::'Js.Cart.Delete' | translate }}"
+                                                    data-ng-bind="::'Js.Cart.Delete' | translate"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lp-cart__error" ng-if="$ctrl.bookingCartData.obj.Valid != ''" ng-bind="$ctrl.bookingCartData.obj.Valid"></div>
+                        </div>
+                        <div
+                            class="lp-cart__empty lp-font-size--middle"
+                            data-ng-switch-when="false"
+                            data-ng-bind="::'Js.Cart.EmptyCart' | translate"></div>
+                    </div>
+                </div>
+                <div data-ng-switch-when="false" class="lp-cart__loader">
+                    <svg
+                        version="1.1"
+                        id="loader-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        width="50px"
+                        height="50px"
+                        viewBox="0 0 40 40"
+                        enable-background="new 0 0 40 40"
+                        xml:space="preserve">
+                        <path
+                            opacity="0.2"
+                            fill="#3797eb"
+                            d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+                                s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+                                c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"></path>
+                        <path
+                            fill="#3797eb"
+                            d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+                                C22.32,8.481,24.301,9.057,26.013,10.047z">
+                            <animateTransform
+                                attributeType="xml"
+                                attributeName="transform"
+                                type="rotate"
+                                from="0 20 20"
+                                to="360 20 20"
+                                dur="0.5s"
+                                repeatCount="indefinite"></animateTransform>
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

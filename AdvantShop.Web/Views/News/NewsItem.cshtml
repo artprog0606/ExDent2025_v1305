@@ -1,0 +1,67 @@
+﻿@using AdvantShop.Customers
+@using AdvantShop.News
+@model AdvantShop.ViewModel.News.NewsItemViewModel
+@{ 
+    Html.AddAsset("news");
+}
+
+@{
+    var editLink = CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator ||
+               (CustomerContext.CurrentCustomer.CustomerRole == Role.Moderator && CustomerContext.CurrentCustomer.HasRoleAction(RoleAction.Store));
+}
+<div id="content">
+    <div class="mobile-container-fluid desktop-col-p-v main-content mobile-container-size-viewport">
+            <div class="page-title-row">
+                <div class="news-item-title page-title news-item-title-inner-new cs-bg-4--mobile">
+                    <h1 class="main-title" @Html.InplaceMeta(Model.NewsItem.NewsId, AdvantShop.SEO.MetaType.News)>
+                        @Html.Raw(Html.GetPageH1())
+                    </h1>
+                    @if (Model.ViewRss)
+                    {
+                        <a href="news/rss" class="icon-rss-squared-before news-rss-link link-text-decoration-none" target="_blank" title="RSS"></a>
+                    }
+                </div>
+            </div>
+            <div class="row news-item">
+                <div class="col-xs-12 col-sm-9 news-item-block">
+                    <div class="news-item-inner">
+                        @Html.Action("BreadCrumbs", "Common", new { breadCrumbs = Model.BreadCrumbs })
+                        @if (editLink)
+                        {
+                            <div class="m-b-sm">
+                                <a target="_blank" href="@UrlService.GetUrl("adminv2/news/edit/" + Model.NewsItem.NewsId)">@T("News.NewsItem.EditInAdminArea")</a>
+                            </div>
+                        }
+                        <div class="subheader">
+                            @Model.NewsItem.AddingDate.ToShortDateTime()
+                        </div>
+    
+                        <div class="news-item-content" @Html.InplaceNews(Model.NewsItem.NewsId, NewsInplaceField.TextToPublication) data-qazy-container>
+                            @Html.Raw(Model.NewsItem.TextToPublication)
+                        </div>
+                        @if (Model.NewsItem.ProductsDisplayMode == NewsItem.ENewsProductsDisplayMode.Horizontally)
+                        {
+                            @Html.Partial("NewsProducts", Model.NewsProducts)
+                        }
+                        @Html.Action("SocialButtons", "Common")
+                        <a href="@Url.AbsoluteRouteUrl("NewsHome")" class="link-return">@T("News.NewsItem.BackToNews")</a>
+                        @Html.StaticBlock("NewsItem")
+                        @Html.RenderModules("news_item_after", new { newsItem = Model.NewsItem })
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    @Html.Partial("_NewsCategoryList", Model.NewsCategoriesList)
+                    @if (Model.NewsItem.ProductsDisplayMode == NewsItem.ENewsProductsDisplayMode.Vertically)
+                    {
+                        @Html.Partial("NewsProducts", Model.NewsProducts)
+                    }
+                    @Html.Action("NewsSubscriptionSlim")
+                    <div class="vk-news-block">
+                        @Html.StaticBlock("Vk")
+                        @Html.StaticBlock("BlockInNews")
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+

@@ -1,0 +1,68 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Home.OrderGraphDasboardViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var tabClass = isMobile ? "" : "btn";
+}
+@helper RenderTitle(bool isMobile)
+{
+    <h3 class="orders-graph__title">@T("Продажи")</h3>
+}
+<div class="ibox">
+    <article class="ibox-content orders-graph" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+        <uib-tabset active uid="tabsOnMainPageGraph" 
+                    classes-content="card"
+                    @Html.Raw(isMobile ? "headers-overflow-type=\"scroll\" class=\"nav-tabs-wrap nav-tabs-wrap--chips\"" : "class=\"tabs-theme-buttonify\"")>
+            @if(!isMobile){
+                <uib-tabset-additonal-header class="inline-flex m-l">
+                    <div class="input-group" ng-flatpickr fp-on-change="home.setRangeDateOrderGraph(selectedDates, dateStr, instance)"
+                         fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, mode: 'range'}">
+                        <span class="flatpickr-custom-wrap">
+                            <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="order.date">
+                            <span class="flatpickr-custom-clear" data-close data-clear>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </span>
+                        <span class="input-group-addon" data-toggle>
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </uib-tabset-additonal-header>
+            }
+            <uib-tab index="1" heading="@T("Admin.Home.OrderGraph.Week")" classes="@tabClass">
+                @RenderTitle(isMobile)
+                @*стилистика как в старой админке*@
+                @*chart-dataset-override="[{fill:false, lineTension: 0},{fill:false, lineTension: 0}]"*@
+                <canvas id="ordersChartWeek"
+                        class="chart--main-page chart chart-line"
+                        chart-data="@Model.ChartWeek.Data"
+                        chart-labels="@Model.ChartWeek.Labels"
+                        chart-series="@Model.ChartWeek.Series"
+                        chart-colors="@Model.ChartWeek.Colors"
+                        chart-options="{legend:{display:true}}">
+                </canvas>
+            </uib-tab>
+            <uib-tab index="2" heading="@T("Admin.Home.OrderGraph.Month")" classes="@tabClass" removable="true">
+                @RenderTitle(isMobile)
+                <canvas id="ordersChartMonth"
+                        class="chart--main-page chart chart-line"
+                        chart-data="@Model.ChartMonth.Data"
+                        chart-labels="@Model.ChartMonth.Labels"
+                        chart-series="@Model.ChartMonth.Series"
+                        chart-colors="@Model.ChartMonth.Colors"
+                        chart-options="{legend:{display:true}, scales: {xAxes:[{ticks: {maxTicksLimit: 15}}]}}">
+                </canvas>
+            </uib-tab>
+            <uib-tab index="3" heading="@T("Admin.Home.OrderGraph.Year")" classes="@tabClass" removable="true">
+                @RenderTitle(isMobile)
+                <canvas id="ordersChartYear"
+                        class="chart--main-page chart chart-line"
+                        chart-data="@Model.ChartYear.Data"
+                        chart-labels="@Model.ChartYear.Labels"
+                        chart-series="@Model.ChartYear.Series"
+                        chart-colors="@Model.ChartYear.Colors"
+                        chart-options="{legend:{display:true}, scales: {xAxes:[{ticks: {maxTicksLimit: 15}}]}}">
+                </canvas>
+            </uib-tab>
+        </uib-tabset>
+    </article>
+</div>

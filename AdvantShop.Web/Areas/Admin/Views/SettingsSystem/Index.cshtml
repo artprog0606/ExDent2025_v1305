@@ -1,0 +1,318 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Saas
+@using AdvantShop.Trial
+@model AdvantShop.Web.Admin.Models.Settings.SystemSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsSystem");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsSystem", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Systemsettings").ToString();
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "Settings"),
+            NgBackTriggerCallback = "settingsSystem.onSelectTab(settingsSystem.settingsLocation.locationTypeSelected === 'region' ? settingsSystem.tabActiveIndex : 'default'); settingsSystem.settingsLocation.back($event)"
+        };
+
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                eButtonModificators.OnlyIcon
+                            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsSystem.settingsLocation.locationTypeSelected === 'country' && settingsSystem.tabActiveIndex === 'countries'\" data-controller=\"'ModalAddEditCountryCtrl'\" template-url=\"../areas/admin/content/src/settingsSystem/location/modal/addEditCountry/AddEditCountry.html\" data-on-close=\"settingsSystem.settingsLocation.locationGrids[settingsSystem.settingsLocation.enumLocation.country].fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            }
+        );
+
+        headerModel.Controls.Add(
+             new ButtonModel()
+             {
+                 Modificators = new List<eButtonModificators>()
+             {
+                eButtonModificators.OnlyIcon
+                                                             },
+                 ColorType = eColorType.Secondary,
+                 Type = eButtonType.Add,
+                 WrapStart = " <ui-modal-trigger ng-if=\"settingsSystem.settingsLocation.locationTypeSelected === 'region' && settingsSystem.tabActiveIndex === 'countries'\" data-controller=\"'ModalAddEditRegionsCtrl'\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsSystem/location/modal/addEditRegion/AddEditRegions.html\" resolve=\"{entity : { \'CountryId\': settingsSystem.settingsLocation.locationGridsParams[settingsSystem.settingsLocation.enumLocation.region].id }}\" data-on-close=\"settingsSystem.settingsLocation.locationGrids[settingsSystem.settingsLocation.enumLocation.region].fetchData()\">",
+                 WrapEnd = "</ui-modal-trigger>",
+                 Icon = new ButtonIcon()
+                 {
+                     SvgName = "plus-alt",
+                     Attributes = new { width = 16, height = 16 },
+                 }
+             }
+        );
+
+        headerModel.Controls.Add(
+             new ButtonModel()
+             {
+                 Modificators = new List<eButtonModificators>()
+             {
+                eButtonModificators.OnlyIcon
+                                                             },
+                 ColorType = eColorType.Secondary,
+                 Type = eButtonType.Add,
+                 WrapStart = " <ui-modal-trigger ng-if=\"settingsSystem.settingsLocation.locationTypeSelected == 'city' && settingsSystem.tabActiveIndex === 'countries'\" data-controller=\"'ModalAddEditCitysCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsSystem/location/modal/addEditCitys/AddEditCitys.html\" resolve=\"{\'entity\': { \'RegionId\': settingsSystem.settingsLocation.locationGridsParams[settingsSystem.settingsLocation.enumLocation.city].id, \'cityCountrys\': settingsSystem.settingsLocation.locationGridsParams[settingsSystem.settingsLocation.enumLocation.city].cityCountrys }}\" data-on-close=\"settingsSystem.settingsLocation.locationGrids[settingsSystem.settingsLocation.enumLocation.city].fetchData()\">",
+                 WrapEnd = "</ui-modal-trigger>",
+                 Icon = new ButtonIcon()
+                 {
+                     SvgName = "plus-alt",
+                     Attributes = new { width = 16, height = 16 },
+                 }
+             }
+        );
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+           {
+                eButtonModificators.OnlyIcon
+                                                           },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Add,
+               WrapStart = " <ui-modal-trigger ng-if=\"settingsSystem.tabActiveIndex == 'localization'\" data-controller=\"'ModalAddEditLocalizationCtrl'\" controller-as=\"ctrl\" template-url=\"../areas/admin/content/src/settingsSystem/modal/addEditLocalization/addEditLocalization.html\" data-on-close=\"settingsSystem.gridLocalization.fetchData()\">",
+               WrapEnd = "</ui-modal-trigger>",
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "plus-alt",
+                   Attributes = new { width = 16, height = 16 },
+               }
+           }
+        );
+
+        headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+                        },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            WrapStart = " <ui-modal-trigger ng-if=\"settingsSystem.tabActiveIndex == 'menu'\" data-controller=\"'ModalAddEditMenuItemCtrl'\" controller-as=\"ctrl\" template-url=\"../areas/admin/content/src/menus/modal/addEditMenuItem/addEditMenuItem.html\" data-resolve=\"{params: {menuType: 'Admin'}}\" data-on-close=\"settingsSystem.menus.updateMenu(result, 'admin')\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        }
+        );
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+            {
+            eButtonModificators.OnlyIcon
+                        },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             Attributes = new[] { "ng-if=\"settingsSystem.tabActiveIndex == 'auth' || settingsSystem.tabActiveIndex == 'system'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"", "data-e2e=\"BtnSaveSettings\"" },
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "done",
+                 Attributes = new { width = 25, height = 25 }
+             }
+         }
+        );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if = \"settingsSystem.tabActiveIndex === 'localization'\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "document-export",
+                Attributes = new { width = 24, height = 24 }
+            },
+            RowAttributes = new { ng_if = "settingsSystem.tabActiveIndex === 'localization'" },
+            Text = T("Admin.Settings.System.301Redirects.Export"),
+            Attributes = new string[] { "ng-click=\"settingsSystem.startExportlocalization()\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "import",
+                Attributes = new { width = 22, height = 22 }
+            },
+            RowAttributes = new { ng_if = "settingsSystem.tabActiveIndex === 'localization'" },
+            Text = T("Admin.Settings.System.301Redirects.Import"),
+            WrapStart = " <ui-modal-trigger data-controller=\"'ModalimportLocalizationCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsSystem/modal/importLocalization/importLocalization.html\" data-on-close=\"settingsSystem.gridLocalization.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+            RowAttributes = new { ng_if = "settingsSystem.tabActiveIndex === 'countries' && settingsSystem.settingsLocation.locationTypeSelected == 'city'" },
+            Text = T("Редактирование области"),
+            WrapStart = " <ui-modal-trigger data-controller=\"'ModalAddEditRegionsCtrl'\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsSystem/location/modal/addEditRegion/AddEditRegions.html\" resolve=\"{\'entity\': settingsSystem.settingsLocation.regionEntity}\" data-on-close=\"settingsSystem.settingsLocation.regionGrid.fetchData();settingsSystem.settingsLocation.updateRegion(result)\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+            RowAttributes = new { ng_if = "settingsSystem.tabActiveIndex === 'countries' && settingsSystem.settingsLocation.locationTypeSelected == 'region'" },
+            Text = T("Редактирование страны"),
+            WrapStart = " <ui-modal-trigger data-controller=\"'ModalAddEditCountryCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsSystem/location/modal/addEditCountry/AddEditCountry.html\" data-on-close=\"settingsSystem.settingsLocation.countryGrid.fetchData();settingsSystem.settingsLocation.updateCountry(result)\" data-resolve=\"{\'entity\': settingsSystem.settingsLocation.countryEntity }\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+
+        headerModel.Controls.Add(moreButton);
+
+
+        @Html.Header(headerModel)
+    }
+    
+
+    if (!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+    }
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.Index.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.Systemsettings")</h1>
+
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="BtnSaveSettings" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @Html.AntiForgeryToken()
+    
+    <uib-tabset uid="systemTab"
+                ng-init="settings.headerPage = '@T("Admin.Settings.Commonpage.Systemsettings")'"
+                on-select-batch="settingsSystem.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'system'" classes="ng-tab" heading="@T("Admin.Settings.System.SystemCommon")">
+            <uib-tab-heading ng-class="{'tab-warning' : systemForm.$invalid}">
+                @T("Admin.Settings.System.SystemCommon")
+                <span ng-if="systemForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!systemForm.$invalid && systemForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="systemForm" validation-tab-index="'system'">
+                @Html.Partial("_SystemCommon", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'menu'" classes="ng-tab" heading="@T("Admin.Settings.System.Menu")">
+            @Html.Partial("_Menu")
+        </uib-tab>
+
+        <uib-tab index="'sitemap'" classes="ng-tab" heading="@T("Admin.Settings.System.SiteMap")">
+            <uib-tab-heading ng-class="{'tab-warning' : sitemapForm.$invalid}">
+                @T("Admin.Settings.System.SiteMap")
+                <span ng-if="sitemapForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!sitemapForm.$invalid && sitemapForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="sitemapForm" validation-tab-index="'sitemap'">
+                @Html.Partial("_SiteMap", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'auth'" classes="ng-tab" heading="@T("Admin.Settings.System.RegistrationAndAuthorization")">
+            <uib-tab-heading ng-class="{'tab-warning' : authForm.$invalid}">
+                @T("Admin.Settings.System.RegistrationAndAuthorization")
+                <span ng-if="authForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!authForm.$invalid && authForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="authForm" validation-tab-index="'auth'">
+                @Html.Partial("_Authorization", Model)
+            </ng-form>
+        </uib-tab>
+
+        <uib-tab index="'countries'" heading="@T("Admin.Settings.System.CountriesCities")" classes="ng-tab" removable="true">
+            <settings-location on-init="settingsSystem.addSettingsLocation(ctrl)"></settings-location>
+        </uib-tab>
+
+        <uib-tab index="'localization'" heading="@T("Admin.Settings.System.Localization")" classes="ng-tab" removable="true">
+            @Html.Partial("_Localization", Model)
+        </uib-tab>
+
+        <uib-tab index="'ipBlacklist'" heading="@T("Admin.Settings.System.IpBlacklist")" classes="ng-tab" removable="true">
+            @Html.Partial("_IpBlacklist", Model)
+        </uib-tab>
+        @{
+            var isSaasOrTrial = SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled;
+        }
+        @if (!isSaasOrTrial || CustomerContext.IsDebug)
+        {
+            <uib-tab index="'errlogs'" heading="@T("Admin.Settings.System.LogError")" classes="ng-tab" removable="true">
+                <settings-logs sa="@CustomerContext.CurrentCustomer.IsVirtual.ToLowerString()"></settings-logs>
+            </uib-tab>
+        }
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="BtnSaveSettings" />
+            </div>
+        }
+    </uib-tabset>
+}

@@ -1,0 +1,204 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.FivePostShippingModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.FivePost.ApiKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ApiKey", ng_attr_type = "{{shippingMethod.inputTypeFPApiKey}}", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.FivePost.ApiKey") })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeFPApiKey = 'password'" ng-click="shippingMethod.inputTypeFPApiKey = shippingMethod.inputTypeFPApiKey == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeFPApiKey == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" )">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.FivePost.BarcodeEnrichment")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.BarcodeEnrichment, Model.BarcodeEnrichmentList, new { ng_model = "shippingMethod.Params.BarcodeEnrichment", @class = "form-control input-alt", required = "required", validation_input_text = @T("Admin.ShippingMethods.FivePost.BarcodeEnrichment") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.FivePost.BarcodeEnrichment")">
+            @T("Admin.ShippingMethods.FivePost.CheckSettingsWithManagerHelpText")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.FivePost.UndeliverableOption")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+        @Html.DropDownListFor(x => x.UndeliverableOption, Model.UndeliverableOptionList, new { ng_model = "shippingMethod.Params.UndeliverableOption", @class = "form-control input-alt", required = "required", validation_input_text = @T("Admin.ShippingMethods.FivePost.UndeliverableOption") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Наложенный платеж картой</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.PaymentCodCardId, Model.PaymentsCod, new { ng_model = "shippingMethod.Params.PaymentCodCardId", @class = "form-control input-alt", validation_input_text = "Наложенный платеж картой" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Наложенный платеж картой">
+            Наложенный платеж, который будет считаться наложенным платежом с оплатой банковской картой
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="WithInsure">@T("Admin.ShippingMethods.FivePost.WithInsure")</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="MethodWithInsure"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.ShippingMethods.FivePost.WithInsure")</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" )">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.TypeViewPointsList, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '1'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", ng_attr_type = "{{shippingMethod.inputTypeFPYaMapKey}}", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeFPYaMapKey = 'password'" ng-click="shippingMethod.inputTypeFPYaMapKey = shippingMethod.inputTypeFPYaMapKey == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeFPYaMapKey == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '2'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Ключ виджета</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.WidgetKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.WidgetKey", ng_attr_type = "{{shippingMethod.inputTypeFPWidgetKey}}", required = "required", validation_input_text = "Ключ виджета" })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeFPWidgetKey = 'password'" ng-click="shippingMethod.inputTypeFPWidgetKey = shippingMethod.inputTypeFPWidgetKey == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeFPWidgetKey == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+    </div>
+</div>
+
+<div class="@(isMobile ? "" : "form-group row")">
+    <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">@T("Admin.ShippingMethods.FivePost.OrderStatuses")</h4>
+</div>
+@Html.Partial("_SyncStatuses", Model)
+
+@if (!(Model.IsValidToken.HasValue && Model.IsValidToken.Value))
+{
+    if (Model.ActiveTarifs != null)
+    {
+        <select name="ActiveTarifs" id="ActiveTarifs" multiple hidden>
+            @foreach (var tariff in Model.ActiveTarifs)
+            {
+                <option selected value="@tariff"></option>
+            }
+        </select>
+    }
+    <input type="hidden" name="WarehouseDeliveryTypeReference" value="@Model.WarehouseDeliveryTypeReference" />
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "" : "display:flex;")">
+                После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    if (Model.TarifList != null)
+    {
+        <div class="@(isMobile ? "" : "form-group row")">
+            <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">@T("Admin.ShippingMethods.FivePost.Tarifs")</h4>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                <span class="text-required">@T("Admin.ShippingMethods.FivePost.Tarifs")</span>
+            </div>
+            @{
+                var selectedTarifs = Model.TarifList.FindAll(x => Model.ActiveTarifs.Any(y => x.Value == y));
+            }
+            <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+                 data-ng-init='shippingMethod.deliveryRateList = @JsonConvert.SerializeObject(Model.TarifList); shippingMethod.selectedTarifs = @JsonConvert.SerializeObject(selectedTarifs)'>
+                <ui-select class="input-alt"
+                           multiple
+                           sortable="true"
+                           ng-model="shippingMethod.selectedTarifs"
+                           validation-input-text="@T("Admin.ShippingMethods.FivePost.Tarifs")"
+                           ng-required="true">
+                    <ui-select-match placeholder="Выберите режимы доставки">{{$item.Text}}</ui-select-match>
+                    <ui-select-choices repeat="service in shippingMethod.deliveryRateList | filter:$select.search track by $index"
+                                       minimum-input-length="1"
+                                       refresh-delay="0">
+                        {{service.Text}}
+                    </ui-select-choices>
+                </ui-select>
+                @* select для отправки данных через обычный post *@
+                <select name="ActiveTarifs" id="ActiveTarifs" multiple hidden>
+                    <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTarifs track by $index"></option>
+                </select>
+                <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="@T("Admin.ShippingMethods.FivePost.Tarifs")">
+                    Выберите тарифы доставки которые будут использоваться для расчета стоимости.
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                <span class="text-required">@T("Admin.ShippingMethods.FivePost.RateDeliverySLReference")</span>
+            </div>
+            <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+                <five-post-rate-delivery-s-l-reference rates="shippingMethod.deliveryRateList" references="@Model.RateDeliverySLReference"
+                                                       delivery-sl-json="@Model.DeliveryTypesJson">
+                </five-post-rate-delivery-s-l-reference>
+            </div>
+        </div>
+    }
+    else if (Model.ActiveTarifs != null)
+    {
+        <select name="ActiveTarifs" id="ActiveTarifs" multiple hidden>
+            @foreach (var tariff in Model.ActiveTarifs)
+            {
+                <option selected value="@tariff"></option>
+            }
+        </select>
+    }
+
+    <div class="@(isMobile ? "" : "form-group row")">
+        <h4 class="setting__subtitle text-required" style="@(isMobile ? "" : "font-weight: bold;")">@T("Admin.ShippingMethods.FivePost.Warehouses")</h4>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            <five-post-warehouse-delivery-type-reference style="@(isMobile ? "width:100%;" : "")"
+                                                         delivery-types-json="@Model.DeliveryTypesJson"
+                                                         references="@Model.WarehouseDeliveryTypeReference"
+                                                         warehouses-json="@Model.WarehouseListJson">
+            </five-post-warehouse-delivery-type-reference>
+        </div>
+    </div>
+}

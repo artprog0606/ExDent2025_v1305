@@ -1,0 +1,50 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteSettings
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (isMobile)
+{
+    <div class="m-b-sm p-b-xs">Укажите товары, к которым необходимо привязать данную воронку в качестве воронки допродаж</div>
+}
+else
+{
+    <div class="clearfix">
+        Укажите товары, к которым необходимо привязать данную воронку в качестве воронки допродаж
+        <ui-modal-trigger class="pull-right" size="xs-11"
+                          data-controller="'ModalProductsSelectvizrCtrl'"
+                          data-controller-as="ctrl"
+                          data-on-close="landingSite.addSiteProducts(result)"
+                          template-url="@Html.GetAssetPath("productsSelectvizrModal.html")">
+            <a class="btn btn-sm btn-success" href="">
+                Добавить товары
+            </a>
+        </ui-modal-trigger>
+    </div>
+}
+
+<div class="m-t-sm">
+    <div class="row">
+        <div class="col-xs-12">
+            <ui-grid-custom grid-unique-id="gridFunnelProducts"
+                            grid-row-identificator="'ProductId'"
+                            grid-extend-ctrl="landingSite"
+                            grid-on-init="landingSite.onGridFunnelProductsInit(grid)"
+                            grid-options="landingSite.gridFunnelProductsOptions"
+                            grid-params="{siteId:@Model.Id}"
+                            grid-url="'funnels/getSiteProducts'"
+                            grid-swipe-line="true">
+                <ui-grid-custom-override-control>
+                    <div class="card card--gap-row-sm" style="padding:0;">
+                        <div class="">
+                            <a class="flex card--p-18" ng-href="product/edit/{{row.entity.ProductId}}">{{row.entity.Name}}</a>
+                        </div>
+                    </div>
+                </ui-grid-custom-override-control>
+                <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="landingSite.gridFunnelProducts.gridOptions.TotalString">
+                </ui-grid-custom-footer>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

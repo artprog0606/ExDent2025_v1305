@@ -1,0 +1,255 @@
+﻿@{
+    Html.AddAsset("staticPages");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (!isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+}
+
+
+<div data-ng-controller="StaticBlockCtrl as staticBlock">
+
+    @if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        
+        headerModel.Controls = new List<IButton>();
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                ColorType = eColorType.Secondary,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                Link = Url.AbsoluteActionUrl("Add", "StaticPages"),
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new {width = 16, height = 16}
+                },
+                Attributes = new string[] {"ng-if=\"staticPages.settingsTab === 'pages'\""}
+            }
+        );
+
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                ColorType = eColorType.Secondary,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new {width = 16, height = 16}
+                },
+                // Attributes = new string[] {"ng-if=\"staticPages.settingsTab === 'blocks'\""},
+                WrapStart = "<ui-modal-trigger ng-if=\"staticPages.settingsTab === 'blocks'\" data-controller=\"'ModalAddEditStaticBlockCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" + Html.GetAssetPath("addEditStaticBlock.html") + "\" data-on-close=\"staticBlock.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>"
+            }
+        );
+        headerModel.Title = "<span class=\"float-header-page\" ng-init=\"staticPages.floatHeaderList = {};\" ng-bind=\"staticPages.settingsTab === 'pages' ? '" + T("Admin.StaticPages.Index.Pages").ToString() + "' : '" + T("Admin.StaticPages.Index.Blocks").ToString() + "'\"></span>";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Attributes = "ng-click=\"staticPages.settingsTab === 'blocks' ? $event.preventDefault() : false; staticPages.changeSettingsTab('pages')\"",
+            Classes = "ng-cloak",
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("index", "Design", new {showCommon = true })
+        };
+
+        var moreButton = new MoreButtonModel();
+        // //moreButton.Attributes = new string[] {"ng-if=\"settingsMobile.settingsTab !== 'robots'\""};
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderStaticPages";
+        moreButton.NgIsOpen = "staticPages.isOpenPopover";
+        moreButton.Attributes = new string[] {"ng-if=\"staticPages.settingsTab === 'pages'\""};
+        moreButton.Items = new List<MoreButtonPopoverItem>()
+        {
+            new MoreButtonPopoverItem()
+            {
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                RowAttributes = new {ng_if = "staticPages.settingsTab === 'pages'"},
+                Text = T("Admin.StaticPages.Index.Blocks"),
+                Attributes = new string[] {"ng-click=\"staticPages.changeSettingsTab('blocks'); staticPages.isOpenPopover = false\" ng-init=\"staticPages.isOpenPopover = true\""},
+            }
+        };
+
+        headerModel.Controls.Add(moreButton);
+        @Html.Header(headerModel)
+    }
+    else
+    {
+        <div class="flex between-xs middle-xs m-b-xs">
+            <div class="flex middle-xs page-name-block--without-action funnel-site__settings">
+                <h2 class="m-r-md m-t-none m-b-none">
+                    @T("Admin.StaticPages.Index.Title")
+                </h2>
+                <a ng-if="staticPages.settingsTab == 'pages'" href="https://www.advantshop.net/help/pages/static-stranicy" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                    </svg>
+                    <span>@T("Admin.StaticPages.Index.InstructionsStaticPages")</span>
+                </a>
+                <a ng-if="staticPages.settingsTab == 'blocks'" href="https://www.advantshop.net/help/pages/static-block-common" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                    </svg>
+                    <span>@T("Admin.StaticPages.Index.InstructionsStaticBlocks")</span>
+                </a>
+                <!--<ul class="nav nav-tabs">
+                    <li class="nav-item ng-tab" ng-class="{'active': staticPages.settingsTab == 'pages'}">
+                        <a href="" ng-click="staticPages.changeSettingsTab('pages')">Страницы</a>
+                    </li>
+                    <li class="nav-item ng-tab" ng-class="{'active': staticPages.settingsTab == 'blocks'}">
+                        <a href="" ng-click="staticPages.changeSettingsTab('blocks')">Блоки</a>
+                    </li>
+                </ul>-->
+            </div>
+
+            <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner header-hidden">
+                    <div class="page-name-block-item-main">
+                        <h2 class="page-name-block-text sticky-page-name-text" ng-init="staticPages.floatHeaderList = {};">
+                            <span class="float-header-page" ng-bind="staticPages.floatHeaderList[staticPages.settingsTab]"></span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            @*<div class="m-t-xs" style="padding-right:0.625rem;">
+            <div class="ng-cloak" ng-if="staticPages.settingsTab == 'pages'"
+                 ng-init="staticPages.floatHeaderList['pages'] = '@T("Admin.StaticPages.Index.Title") / Страницы'">
+                <a href="@Url.AbsoluteActionUrl("Add", "StaticPages")" class="btn btn-sm btn-success btn--margin-left" data-e2e="btnAdd" type="button">
+                    <span class="fa fa-plus"></span> @T("Admin.StaticPages.Index.AddStaticPages")
+                </a>
+            </div>
+            <div class="ng-cloak" ng-if="staticPages.settingsTab == 'blocks'"
+                 ng-init="staticPages.floatHeaderList['blocks'] = '@T("Admin.StaticPages.Index.Title") / Блоки'">
+                <ui-modal-trigger data-controller="'ModalAddEditStaticBlockCtrl'" controller-as="ctrl" size="middle"
+                                  template-url="@Html.GetAssetPath("addEditStaticBlock.html")"
+                                  data-on-close="staticBlock.grid.fetchData()">
+                    <button class="btn btn-sm btn-success btn--margin-left" data-e2e="btnAdd" type="button">
+                        <span class="fa fa-plus"></span> @T("Admin.StaticBlock.Index.Add")
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>*@
+        </div>
+        <div class="flex between-xs middle-xs p-b-sm">
+            <div class="flex middle-xs flex-grow">
+				<div class="funnel-site__settings">
+					<ul class="nav nav-tabs">
+						<li class="nav-item ng-tab" ng-class="{'active': staticPages.settingsTab == 'pages'}">
+							<a href="" ng-click="staticPages.changeSettingsTab('pages')">@T("Admin.StaticPages.Index.Pages")</a>
+						</li>
+						<li class="nav-item ng-tab" ng-class="{'active': staticPages.settingsTab == 'blocks'}">
+							<a href="" ng-click="staticPages.changeSettingsTab('blocks')">@T("Admin.StaticPages.Index.Blocks")</a>
+						</li>
+					</ul>
+				</div>
+                <!--<a ng-if="staticPages.settingsTab == 'pages'" href="https://www.advantshop.net/help/pages/static-stranicy" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" />
+                    </svg>
+                    <span>Инструкция. Работа со статическими страницами</span>
+                </a>
+                <a  ng-if="staticPages.settingsTab == 'blocks'" href="https://www.advantshop.net/help/pages/static-block-common" target="_blank" class="link-academy link-invert inline-flex middle-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" />
+                    </svg>
+                    <span>Инструкция. Статические блоки</span>
+                </a>-->
+            </div>
+            <div class="m-t-xs" style="padding-right:0.625rem;">
+                <div class="ng-cloak" ng-if="staticPages.settingsTab == 'pages'"
+                     ng-init="staticPages.floatHeaderList['pages'] = '@T("Admin.StaticPages.Index.Title") / Страницы'">
+                    <a href="@Url.AbsoluteActionUrl("Add", "StaticPages")" class="btn btn-sm btn-success btn--margin-left" data-e2e="btnAdd" type="button">
+                        <span class="fa fa-plus"></span> @T("Admin.StaticPages.Index.AddStaticPages")
+                    </a>
+                </div>
+                <div class="ng-cloak" ng-if="staticPages.settingsTab == 'blocks'"
+                     ng-init="staticPages.floatHeaderList['blocks'] = '@T("Admin.StaticPages.Index.Title") / Блоки'">
+                    <ui-modal-trigger data-controller="'ModalAddEditStaticBlockCtrl'" controller-as="ctrl" size="middle"
+                                      template-url="@Html.GetAssetPath("addEditStaticBlock.html")"
+                                      data-on-close="staticBlock.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" data-e2e="btnAdd" type="button">
+                            <span class="fa fa-plus"></span> @T("Admin.StaticBlock.Index.Add")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="tab-content ng-cloak" style="@(isMobile ? "" : "padding-right: 0.625rem;")">
+        <div class="tab-pane active" ng-if="staticPages.settingsTab == 'pages'">
+            <ui-grid-custom grid-unique-id="gridPages"
+                            grid-row-identificator="'StaticPageId'"
+                            grid-on-init="staticPages.gridOnInit(grid)"
+                            grid-options="staticPages.gridOptions"
+                            grid-url="'staticPages/getStaticPages'"
+                            grid-inplace-url="'staticPages/InplaceStaticPage'"
+                            grid-extend-ctrl="staticPages"
+                            grid-swipe-line="@(isMobile.ToLowerString())">
+                <ui-grid-custom-override-control class="ng-cloak" ng-if="@(isMobile.ToLowerString())">
+                    
+                    @* {"StaticPageId":129,"PageName":"О магазине","Enabled":true,"SortOrder":0,"ModifyDate":"2020-09-17T14:01:24.13","ModifyDateFormatted":"17.09.2020 14:01"} 12323 *@
+                    
+                    <div class="card" style="padding:0;">
+                        <div class="flex middle-xs">
+                            <a class="flex-grow card__text card__link-grid" style="padding:18px;" ng-href="staticpages/edit/{{row.entity.StaticPageId}}">
+                                <span ng-bind="row.entity.PageName">{{COL_FIELD}}</span>
+                            </a>
+                            <div class="" style="padding:18px;">
+                                <ui-grid-custom-switch row="row"></ui-grid-custom-switch>
+                            </div>
+                        </div>
+                    </div>
+                </ui-grid-custom-override-control>
+                <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="staticPages.grid.gridOptions.TotalString">
+                </ui-grid-custom-footer>
+            </ui-grid-custom>
+        </div>
+
+        <div class="tab-pane active" ng-if="staticPages.settingsTab == 'blocks'">
+            <ui-grid-custom grid-unique-id="gridBlocks"
+                            grid-row-identificator="'StaticBlockId'"
+                            grid-options="staticBlock.gridOptions"
+                            grid-on-init="staticBlock.gridOnInit(grid)"
+                            grid-url="'staticBlock/GetItems'"
+                            grid-inplace-url="'staticBlock/inplace'"
+                            grid-extend-ctrl="staticBlock"
+                            grid-swipe-line="@(isMobile.ToLowerString())">
+                                <ui-grid-custom-override-control class="ng-cloak" ng-if="@(isMobile.ToLowerString())">
+                                    <div class="card" style="padding:0;">
+                                        <div class="flex middle-xs">
+                                            <ui-modal-trigger data-controller="'ModalAddEditStaticBlockCtrl'"
+                                                              controller-as="ctrl"
+                                                              size="middle"
+                                                              class="flex-grow"
+                                                              template-url="@Html.GetAssetPath("addEditStaticBlock.html")"
+                                                              data-resolve="{'id': row.entity.StaticBlockId}"
+                                                              data-on-close="grid.appScope.$ctrl.fetchData()">
+                                                <div class="flex-grow" style="padding:18px;">
+                                                    <div ng-bind="row.entity.Key"></div>
+                                                    <div class="fs-xs m-t-xs" style="opacity:0.6;" ng-if="row.entity.InnerName != null" ng-bind="row.entity.InnerName"></div>
+                                                </div>
+                                            </ui-modal-trigger>
+                                            <div style="padding:18px;">
+                                                <ui-grid-custom-switch row="row"></ui-grid-custom-switch>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui-grid-custom-override-control>
+                <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="staticBlock.grid.gridOptions.TotalString">
+                </ui-grid-custom-footer>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

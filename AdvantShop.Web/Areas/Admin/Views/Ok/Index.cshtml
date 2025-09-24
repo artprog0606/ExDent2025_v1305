@@ -1,0 +1,124 @@
+﻿@{
+    Html.AddAsset("okChannel");
+}
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Controls = new List<IButton>();
+        headerModel.DefaultTitle = "Одноклассники";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            NgBackTriggerCallback = "okMain.okChannel.tabActiveIndex = null",
+            Attributes = "ng-if=\"okMain.okChannel.tabActiveIndex != null\""
+
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if=\"okMain.okChannel.tabActiveIndex == null || okMain.okChannel.tabActiveIndex == 'export'\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            RowAttributes = new { ng_if = "okMain.okChannel.tabActiveIndex != null && okMain.okChannel.tabActiveIndex == 'export'" },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalSaveOkMarketExportSettingsCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("modalSaveOkMarketExportSettings.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Настройки выгрузки"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "settings2",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"okMain.okChannel.openGroup();\"" },
+            RowAttributes = new { ng_if = "okMain.okChannel.groupId != null && okMain.okChannel.tabActiveIndex == null" },
+            Text = T("Открыть группу OK"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "go",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"okMain.okChannel.removeChannel()\"" },
+            RowAttributes = new { ng_if = "okMain.okChannel.tabActiveIndex == null" },
+            Text = T("Отключить канал"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "on",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            RowAttributes = new { ng_if = "okMain.okChannel.groupId != null && okMain.okChannel.tabActiveIndex == null" },
+            Attributes = new[] { "ng-click=\"okMain.okChannel.removeBinding()\"" },
+            Text = T("Удалить привязку"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                  {
+                        eButtonModificators.OnlyIcon
+                  },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             // Attributes = new[] { "ng-if=\"app.getTitle() != null && okMain.okChannel.tabActiveIndex == 'export'\"" },
+             WrapStart = "<ui-modal-trigger ng-if=\"okMain.okChannel.tabActiveIndex != null && okMain.okChannel.tabActiveIndex == 'export'\" data-controller=\"'ModalAddEditOkCatalogCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("ModalAddEditOkCatalog.html") + "\" data-on-close=\"okMain.refreshChild('okMarketExport')\">",
+             WrapEnd = "</ui-modal-trigger>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 }
+             }
+         }
+    );
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+}
+
+<ok-channel on-init="okMain.initOkChannel(okChannel)"></ok-channel>

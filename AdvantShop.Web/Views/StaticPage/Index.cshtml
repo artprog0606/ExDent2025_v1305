@@ -1,0 +1,66 @@
+﻿@using AdvantShop.Customers
+@model AdvantShop.ViewModel.StaticPage.StaticPageViewModel
+@{
+    Html.AddAsset("staticPage");
+}
+@{
+    var editLink = CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator ||
+               (CustomerContext.CurrentCustomer.CustomerRole == Role.Moderator && CustomerContext.CurrentCustomer.HasRoleAction(RoleAction.Store));
+}
+
+<div class="desktop-col-p-v main-content mobile-container-size-viewport">
+    <div class="staticpage-title page-title cs-bg-4--mobile">
+        <h1 class="main-title" @Html.InplaceMeta(Model.Id, AdvantShop.SEO.MetaType.StaticPage)>@Html.GetPageH1()</h1>
+    </div>
+    <div class="mobile-content-padding">
+        <div class="row">
+            <div class="col-xs-12 col-md root-staticPage-custom">
+                @Html.Action("BreadCrumbs", "Common", new { breadCrumbs = Model.BreadCrumbs })
+                @if (editLink)
+                {
+                    <div class="m-b-sm">
+                        <a target="_blank" href="@UrlService.GetUrl("adminv2/staticpages/edit/" + Model.Id)">@T("StaticPage.Index.EditInAdminArea")</a>
+                    </div>
+                }
+                <div class="staticpage-content" @Html.InplaceStaticPage(Model.Id, StaticPageInplaceField.PageText) data-qazy-container>
+                    @Html.Raw(Model.Text)
+                </div>
+                @Html.Action("SocialButtons", "Common")
+            </div>
+            @if (Model.ParentPages.Any() || Model.SubPages.Any())
+            {
+                <div class="col-xs-12 col-md-3 col-p-v child-staticPage-custom">
+                    @foreach (var parentPage in Model.ParentPages)
+                    {
+                        <div class="news-item-r-title m-b-xs">
+                            @if (parentPage.UrlPath.IsNotEmpty())
+                            {
+                                <a class="link-text-decoration-none" href="@Url.AbsoluteRouteUrl("StaticPage", new { url = parentPage.UrlPath })">@Html.Raw(parentPage.Title)</a>
+                            }
+                            else
+                            {
+                                @Html.Raw(parentPage.Title)
+                            }
+                        </div>
+                    }
+                    @foreach (var page in Model.SubPages)
+                    {
+                        <div class="news-categories">
+                            @if (page.UrlPath.IsNotEmpty())
+                            {
+                            <a class="news-menu-link link-text-decoration-none" href="@Url.AbsoluteRouteUrl("StaticPage", new {url = page.UrlPath})">@Html.Raw(page.Title)</a>
+                            }
+                            else
+                            {
+                                <span class="news-menu-link">@Html.Raw(page.Title)</span>
+                            }
+                        </div>
+                    }
+                    <div class="vk-news-block">
+                        @Html.StaticBlock("Vk")
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,224 @@
+﻿@using AdvantShop.Areas.Mobile.Models.Product
+@using AdvantShop.Orders
+@using AdvantShop.Catalog
+@using AdvantShop.Core.Services.Configuration.Settings
+@using AdvantShop.FilePath
+@using AdvantShop.ViewCommon
+@using AdvantShop.ViewModel.Shared
+@model AdvantShop.Core.Services.Catalog.ProductViewModel
+
+@{
+    var imgWrapStyle = "height:var(--product-view-photo-size," + (Model.ProductViewMode != ProductViewMode.Single ? Model.BlockProductPhotoHeight : Model.BlockProductPhotoMiddleHeight) + "px)";
+    var imgStyle = "max-height:var(--product-view-photo-size," +
+                   (Model.ProductViewMode != ProductViewMode.Single ? Model.BlockProductPhotoHeight : Model.BlockProductPhotoMiddleHeight) + "px)";
+
+    int indexProduct = 0;
+    var showSpinboxInCatalog = SettingsCatalog.ShowSpinboxInCatalog;
+}
+
+@foreach (var product in Model.Products)
+{
+    var productUrl = Url.AbsoluteRouteUrl("Product", new { url = product.UrlPath });
+    var isNotPhoto = product.CountPhoto == 0;
+    var isUseScroll = product.CountPhoto > 1;
+    int limitPhotoCount = isNotPhoto ? 1 : 4;
+    var allowToBuy = Model.AllowBuyOutOfStockProducts || Model.AllowPreOrderOutOfStockProducts && product.AllowPreorder;
+    var amountBuy = product.GetMinAmount(product);
+
+    <div class="mobile-product-view-item cs-t-1 mobile-product-view__item js-products-view-block @(Model.WrapCssClass)"
+         data-product-view-item data-offer-id="@product.OfferId" data-product-id="@product.ProductId"
+         data-offer="{Amount: @product.Amount.ToInvariantString(), RoundedPrice: @product.RoundedPrice.ToInvariantString(), OfferId: @product.OfferId, ColorId: @product.ColorId, AmountBuy : @amountBuy}"
+         style="--products-view-name-line-count: @Model.CountLinesProductName" data-ng-class="{'mobile-product-view--loading': productViewItem.getStateLoading()}">
+        <div class="mobile-product-view-item-image-wrap">
+            <a href="@productUrl"
+               class="mobile-product-view-item-image-block"
+               data-product-view-image-list
+               data-limit-photo-count="@(isUseScroll ? (limitPhotoCount + 1) : 1)"
+               data-product-id="@product.ProductId"
+               data-view-mode="@Model.ProductViewMode.ToString().ToLower()"
+               data-block-product-photo-height="@(Model.ProductViewMode != ProductViewMode.Single ? Model.BlockProductPhotoHeight : Model.BlockProductPhotoMiddleHeight)"
+               data-product-image-type="'@Model.ProductImageType'"
+               data-photo-width="@Model.PhotoWidth"
+               data-photo-height="@Model.PhotoHeight"
+               data-color-initial-id="@product.ColorId"
+               data-rendered-photo-id="@product.Photo.PhotoId"
+               data-is-product-photo-lazy="@(indexProduct > 4)"
+               data-lozad-adv="productViewImageList.filterPhotos({isVisible, colorId: productViewImageList.currentColorId})"
+               data-lozad-observer-mode="'observerAlways'"
+               lozad-adv-debounce="false"
+               @Html.Raw(isUseScroll ? "data-product-view-scroll-photos" : "")>
+                @Html.Action("ProductViewPhoto", "Product", new { model = new ProductPhotoMobileViewModel(Model, product, limitPhotoCount, indexProduct > 4), area = "Mobile" })
+
+                @if (isUseScroll)
+                {
+                    for (var i = 0; i < limitPhotoCount; i++)
+                    {
+                        <span class="mobile-product-view-item-image-inner js-skeleton-photos"></span>
+                    }
+                }
+            </a>
+            <div class="products-view-labels">
+                @if (Model.ShowNotAvailableLabel && !allowToBuy && (product.AmountByMultiplicity < product.MinAmount || product.AmountByMultiplicity == 0))
+                {
+                    <div class="products-view-label availability">
+                        <span class="products-view-label-inner not-available">@T("Product.NotAvailable")</span>
+                    </div>
+                }
+                @if (!Model.HideMarkers && (product.Recomend || product.Sales || product.Bestseller || product.New || product.TotalDiscount.HasValue))
+                {
+                    @Html.RenderLabels(product.Recomend, product.Sales, product.Bestseller, product.New, product.TotalDiscount, customLabels: product.Labels)
+                }
+            </div>
+            @if (product.Gifts)
+            {
+                <div class="prod-gift-icon"></div>
+            }
+
+            <div class="@(product.OfferId.IsDefault() ? "visibility-hidden" : "")">
+                @Html.Action("WishListBlock", "Wishlist", new { OfferId = product.OfferId, NgOfferId = product.OfferId, NgNameCallbackInit = "product.wishlistControlInit", Mode = "product", Checked = ShoppingCartService.CurrentWishlist.Any(x => x.OfferId == product.OfferId), area = "" })
+            </div>
+        </div>
+        <div class="mobile-prod-info-wrap mobile-product-view-item__wrap">
+            <div class="mobile-product-view-item__inner">
+
+                @if (Model.DisplayRating)
+                {
+                    <div class="products-view-rating">
+                        @Html.Partial("_Rating", new RatingViewModel(product.ManualRatio ?? product.Ratio))
+                    </div>
+                }
+
+                @if (Model.DisplayProductArtNo)
+                {
+                    <div class="mobile-prod-artno cs-t-7">@product.ArtNo</div>
+                }
+                <div class="mobile-product-view-item__name @(Model.ShowBriefDescription ? "mobile-product-view-item__name--with-desc" : "")">
+                    <a href="@productUrl" class="prod-name text-floating" data-ng-href="{{productViewItem.getUrl('@productUrl')}}">@Html.Raw(product.Name)</a>
+                </div>
+                @if (!string.IsNullOrEmpty(product.Colors))
+                {
+                    <div class="mobile-product-view-item__colors-wrap">
+                        <div class="mobile-product-view-item__colors-inner">
+                            @Html.Partial("_Colors", new ColorsViewModel()
+                            {
+                                NgColors = product.Colors,
+                                ColorWidth = Model.ColorImageWidth,
+                                ColorHeight = Model.ColorImageHeight,
+                                SelectedColors = Model.SelectedColors ?? (product.PreSelectedColorId != null ? "[" + product.PreSelectedColorId + "]" : null),
+                                ColorsViewMode = SettingsCatalog.ColorsViewMode
+                            })
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="products-view-colors-empty products-view-list-element-hidden products-view-table-element-hidden" style="height: @(Model.ColorImageHeight)px"></div>
+                }
+
+                @if (Model.ShowBriefDescription)
+                {
+                    <div class="mobile-products-view-description">
+                        @Html.Raw(product.BriefDescription)
+                    </div>
+                }
+            </div>
+            <div class="mobile-product-view-item-price-data">
+                @if (!Model.HidePrice && Model.ShowAmountsTableInCatalog)
+                {
+                    @Html.RenderAmountTable(product)
+                }
+                @if (!Model.HidePrice)
+                {
+                    <div class="price cs-l-8">@Html.Raw(product.PreparedPrice)</div>
+                }
+                else
+                {
+                    <div class="text-instead-of-price cs-l-8">@Html.Raw(Model.TextInsteadOfPrice)</div>
+                }
+                @if (SettingsMobile.ShowAddButton && !Model.HidePrice)
+                {
+                    var isAvailable = product.RoundedPrice > 0 && product.AmountByMultiplicity > 0;
+                    var showBuyButton = (isAvailable || allowToBuy);
+                    var showPreOrderButton = Model.DisplayPreOrderButton && !showBuyButton && !isAvailable && product.AllowPreorder && product.OfferId != 0 && !Model.AllowBuyOutOfStockProducts;
+
+                    if (!showSpinboxInCatalog)
+                    {
+                        <div class="mobile-product-view-item__btn-wrap">
+                            @if (showBuyButton)
+                            {
+                                @Html.Partial("_CartAdd", new CartAddViewModel()
+                                {
+                                    Href = productUrl,
+                                    Source = "mobile",
+                                    NgHref = "{{productViewItem.getUrl('" + productUrl + "')}}",
+                                    OfferId = 0,
+                                    ProductId = product.ProductId,
+                                    Amount = product.MinAmount,
+                                    Classes = "btn btn-buy icon-bag-before products-view-buy",
+                                    BtnContent = Model.BuyButtonText,
+                                    Size = CardAddSize.Small,
+                                    AllowAddProductToCart = product.AllowAddProductToCart
+                                })
+                            }
+                            @if (showPreOrderButton)
+                            {
+                                <a href="@productUrl"
+                                   class="btn btn-small btn-action icon-bag-before products-view-buy">@Model.PreOrderButtonText</a>
+                            }
+                        </div>
+                    }
+                    else if (showBuyButton && showSpinboxInCatalog && !product.AllowAddProductToCart)
+                    {
+                        <div class="mobile-product-view-item__btn-wrap">
+                            <a href="@productUrl"
+                               data-ng-href="{{productViewItem.getUrl('@productUrl')}}"
+                               class="btn btn-buy icon-bag-before products-view-buy btn-small">@Model.BuyButtonText</a>
+
+
+                            @if (showPreOrderButton)
+                            {
+                                <a href="@productUrl"
+                                   class="btn btn-small btn-action icon-bag-before products-view-buy">@Model.PreOrderButtonText</a>
+                            }
+                        </div>
+                    }
+
+                    if (showBuyButton && showSpinboxInCatalog && product.AllowAddProductToCart)
+                    {
+
+                        <div class="mobile-product-view-button__with-spinbox">
+                            <div class="details-spinbox-block-wrap" data-ng-if="(productViewItem.offer.OfferId != null && productViewItem.offer.AmountBuy != null)">
+                                <div class="details-spinbox-block">
+                                    <div data-spinbox
+                                         data-value="productViewItem.offer.AmountBuy"
+                                         data-proxy="productViewItem.offer"
+                                         data-step="@product.Multiplicity.ToInvariantString()"
+                                         data-max="1000000"
+                                         data-min="@amountBuy.ToInvariantString()"></div>
+                                </div>
+                            </div>
+                            <div>
+                                @Html.Partial("_CartAdd", new CartAddViewModel()
+                                {
+                                    
+                                    NgCartAddValid = "product.validate()",
+                                    Classes = "btn btn-buy icon-bag-before products-view-buy",
+                                    NgOfferId = "productViewItem.offer.OfferId",
+                                    ProductId = product.ProductId,
+                                    NgAmount = "productViewItem.offer.AmountBuy",
+                                    BtnContent = Model.BuyButtonText,
+                                    NgAttributesXml = "product.customOptions.xml",
+                                    Size = CardAddSize.Small,
+                                    Source = "mobile"
+                                })
+                            </div>
+                        </div>
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    ++indexProduct;
+}

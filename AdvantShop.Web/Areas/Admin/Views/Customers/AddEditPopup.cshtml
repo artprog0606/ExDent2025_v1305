@@ -1,0 +1,86 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomersModel
+@{
+    var customer = Model.Customer;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+
+    Html.AddAsset("customerAddEditPopup");
+}
+<div data-ng-controller="CustomerCtrl as customer" ng-init="customer.addCallbackOnSave($ctrl.setState)">
+    <form method="POST" action="@Url.AbsoluteActionUrl("AddEdit")" novalidate="novalidate" name="form">
+        @Html.AntiForgeryToken()
+
+        <div ng-init="customer.initCustomer('@Model.CustomerId', @Model.IsEditMode.ToLowerString(), '@(customer != null ? customer.StandardPhone : null)', @(Model.PartnerId.HasValue ? Model.PartnerId.ToString() : "null"), @(Model.OrderId.HasValue ? Model.OrderId.ToString() : "null"))">
+            <input name="IsEditMode" type="hidden" value="{{customer.intstance.isEditMode}}" />
+            <input name="CustomerId" type="hidden" value="{{customer.intstance.customer.customerId}}" />
+            <input name="Customer.CustomerId" type="hidden" value="{{customer.instance.customerId}}" />
+        </div>
+        <div class="sticky-page-name lead-info__header @(isMobile ? "modal-header" : "")">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name @(isMobile ? "modal-header-title" : "")">
+                        @if (!Model.IsEditMode)
+                        {
+                            if (customer != null && !customer.RegistredUser && customer.Code != null)
+                            {
+                                <span>@T("Admin.Customers.ShoppingCart.UserNotRegistered") @T("Admin.Customers.AddEdit.ClientCode") @customer.Code</span>
+                            }
+                            else
+                            {
+                                <span>@T("Admin.Customers.ShoppingCart.NewCustomer")</span>
+                            }
+                        }
+                        else if (customer != null)
+                        {
+                            <span>@customer.LastName @customer.FirstName @customer.Patronymic</span>
+                        }
+                    </h1>
+                </div>
+                @if (!isMobile)
+                {
+                    <div class="page-name-block-item-additional">
+                        <div>
+                            @if (Model.IsEditMode && CustomerService.CanDelete(Model.CustomerId))
+                            {
+                                <a href="" class="link-danger m-r-sm" ng-click="customer.delete()">@T("Admin.Delete")</a>
+                            }
+                            <button type="button" class="btn btn-sm btn-success" data-e2e="btnSave" data-button-validation="" @Html.Raw(Model.AllowForceSave ? "" : "ng-disabled=\"!form.modified\"")
+                                    ng-click="form.$valid ? customer.saveCustomer(form, @Model.IsEditMode.ToLowerString()) : null">
+                                <span class="fa fa-check"></span>@T("Admin.Customers.AddEditPopup.Save")
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        @*}*@
+        <div class="@(isMobile ? "modal-body" : "")">
+            <div class="row">
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="ibox category-block">
+                                <div class="ibox-content category-content border_none">
+                                    <div class="customersegments-custom-fields add-edit-popup-customer-fields">
+                                        @Html.Partial("~/Areas/Admin/Views/Customers/_Customer.cshtml", Model)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_RightBlock.cshtml", Model)
+                </div>
+            </div>
+        </div>
+        @if (isMobile)
+        {
+            <div class="modal-footer">
+                <button class="btn btn-save btn-primary" button-validation="" type="button" ng-click="form.$valid ? customer.saveCustomer(form, @Model.IsEditMode.ToLowerString()) : null" ng-disabled="!form.modified">{{'Admin.Js.AddEdit.Save'|translate}}</button>
+                <button class="btn btn-default btn-cancel" type="button" ng-click="customer.closePopup()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+            </div>
+        }
+    </form>
+</div>

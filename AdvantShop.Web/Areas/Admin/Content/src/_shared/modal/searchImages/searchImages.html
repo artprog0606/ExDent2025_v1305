@@ -1,0 +1,62 @@
+﻿<form novalidate>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.SearchImages.SearchImagesOnTheInternet'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="ng-cloak" ng-if="ctrl.enabled == false">
+            <p>{{'Admin.Js.SearchImages.ConnectAdvantShopSearchService'|translate}}</p>
+            <p>
+                {{'Admin.Js.SearchImages.ForMoreInformation'|translate}}<a
+                    href="https://www.advantshop.net/help/pages/poisk-izobrazhenii-v-internete"
+                    target="_blank"
+                    >{{'Admin.Js.SearchImages.HelpSection'|translate}}</a
+                >
+            </p>
+            <div style="max-width: 530px" class="row middle-xs center-xs between-sm">
+                <div class="col-xs-12 col-md-8">
+                    <a href="" ng-click="ctrl.setEnabled()" class="btn btn-md btn-success">{{'Admin.Js.SearchImages.Enable'|translate}}</a>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <a href="" ng-click="ctrl.hideNotice()" class="link-invert btn-link btn">{{'Admin.Js.SearchImages.DoNotShowAgain'|translate}}</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="ng-cloak" ng-if="ctrl.enabled">
+            <div class="text-danger bing-images-search-error" ng-if="ctrl.error != null" ng-bind="ctrl.error"></div>
+            <div class="row">
+                <div class="col-xs-12 col-md-3 bing-images-search-text-item" ng-repeat="item in ctrl.images track by $index">
+                    <label class="bing-images-search-picture">
+                        <input
+                            type="checkbox"
+                            class="bing-images-search-state"
+                            checklist-value="item.contentUrl"
+                            checklist-model="ctrl.value"
+                            ng-change="ctrl.change(item.contentUrl)" />
+                        <img ng-src="{{item.thumbnailUrl}}" title="{{item.name}}" />
+                    </label>
+                    <div class="bing-images-search-text">
+                        <span ng-bind="item.height"></span>
+                        x
+                        <span ng-bind="item.width"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="submit" ng-if="ctrl.enabled && ctrl.error == null" ng-click="ctrl.findMore();">
+            {{'Admin.Js.SearchImages.FindMore'|translate}}
+        </button>
+        <button
+            class="btn btn-save btn-primary"
+            type="submit"
+            ng-if="ctrl.enabled && ctrl.error == null"
+            ng-click="ctrl.add()"
+            ladda="ctrl.btnLoading">
+            {{'Admin.Js.SearchImages.AddSelected'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.SearchImages.Cancel'|translate}}</button>
+    </div>
+</form>

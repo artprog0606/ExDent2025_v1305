@@ -1,0 +1,99 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.OnPayPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.OnPay.PaymentFormAdress")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.FormPay, new { ng_model = "paymentMethod.Parameters.FormPay", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.OnPay.PaymentFormAdress").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.OnPay.PaymentFormAdress")">
+            @T("Admin.PaymentMethods.OnPay.LoginForApi")
+        </help-trigger>
+        @if (!isMobile)
+        {
+            <div>
+                https://secure.onpay.ru/pay/@(Model.FormPay)
+            </div>
+        }
+
+    </div>
+    @if (isMobile)
+    {
+        <div class="col-xs-12 m-t-xs">
+            https://secure.onpay.ru/pay/@(Model.FormPay)
+        </div>
+    }
+
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.OnPay.APIpassword")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.OnPay.APIpassword").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.OnPay.PasswordForAPI")">
+            @T("Admin.PaymentMethods.OnPay.APIpassword")
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.OnPay.APIMethods")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm flex middle-xs">
+        <div class="adv-radio-group adv-radio-group--horizontal flex-grow-1">
+            <span class="@(!isMobile ? "m-b-sm" : "")">
+                <label class="adv-radio-label">
+                    @Html.RadioButton("SendMethod", "GET", Model.SendMethod == "GET", new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.SendMethod" })
+                    <span class="adv-radio-label-text">GET</span>
+                    <span class="adv-radio-emul"></span>
+                </label>
+            </span>
+            <span class="@(!isMobile ? "m-b-sm" : "")">
+                <label class="adv-radio-label">
+                    @Html.RadioButton("SendMethod", "POST", Model.SendMethod == "POST", new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.SendMethod" })
+                    <span class="adv-radio-label-text">POST</span>
+                    <span class="adv-radio-emul"></span>
+                </label>
+            </span>
+        </div>
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "m-b-sm")" data-title="@T("Admin.PaymentMethods.OnPay.APIMethods")">
+            @T("Admin.PaymentMethods.OnPay.APIMethods")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.PaymentMethods.OnPay.SignatureMD5")</span>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.CheckMd5, new { ng_model = "paymentMethod.Parameters.CheckMd5", ng_init = "paymentMethod.Parameters.CheckMd5=" + Model.CheckMd5.ToLowerString(), @class = "adv-checkbox-input", required = "required", validation_input_text = T("Admin.PaymentMethods.OnPay.SignatureMD5").ToString() })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="CheckMd5" class="col-xs setting__label">
+                <span class="text-required">@T("Admin.PaymentMethods.OnPay.SignatureMD5")</span>
+            </label>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.OnPay.SignatureMD5")">
+            @T("Admin.PaymentMethods.OnPay.SignatureMD5ForRequests")
+        </help-trigger>
+    </div>
+</div>
+

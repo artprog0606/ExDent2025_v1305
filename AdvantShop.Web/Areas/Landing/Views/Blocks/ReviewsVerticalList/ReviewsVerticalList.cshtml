@@ -1,0 +1,90 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@using Newtonsoft.Json;
+@{
+    //List<ReviewModel> items = JsonConvert.DeserializeObject<List<ReviewModel>>(Model.Block.TryGetSetting("items").ToString());
+    var items = Model.Block.TryGetSettingAsList<ReviewModel>("items");
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row">
+            <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                @if (Model.Block.TryGetSetting("show_title") == true)
+                {
+                    <div class="row center-xs">
+                        <div class="col-xs-12">
+                            <div class="lp-h2 lp-h2--color reviews-vertical-list__title">@Html.SubBlock(Model, "title")</div>
+                        </div>
+                    </div>
+                }
+                @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    <div class="row center-xs">
+                        <div class="col-xs-12">
+                            <div class="reviews-vertical-list__addition-text lp-h3 lp-h3--color">
+                                @Html.SubBlock(Model, "subtitle")
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="row" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        <div class="col-xs-12">
+                            <div class="reviews-vertical-list__item">
+                                <div class="row reviews-vertical-list__inner">
+                                    <div class="col-xs-12 col-sm-2">
+                                        <div class="flex center-xs flex-column middle-xs">
+                                            <div class="reviews-vertical-list__picture-wrap">
+                                                @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                           {
+                                               LandingPageId = Model.Block.LandingId,
+                                               BlockId = Model.Block.Id,
+                                               OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                               OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                               OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                               OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                               Current = items[i].Picture.Src,
+                                               GalleryIconsEnabled = false,
+                                               LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                               LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                               CropperParams = new CropperParams()
+                                               {
+                                                   AspectRatio = "1"
+                                               },
+                                               MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                                               MaxHeightPicture = PictureLoaderImageSize.SmallWidth,
+                                               WidthPicture = items[i].Picture.Width,
+                                               HeightPicture = items[i].Picture.Height
+                                           })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="reviews-vertical-list__text-content">
+                                            <div class="reviews-vertical-list__author" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].author")>
+                                                @Html.Raw(items[i].Author)
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(items[i].Caption) || Model.Inplace)
+                                            {
+                                                <div class="reviews-vertical-list__caption lp-h3" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].caption")>
+                                                    @Html.Raw(items[i].Caption)
+                                                </div>
+                                            }
+                                            <div class="reviews-vertical-list__text lp-h3--color">
+                                                <div class="block" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                    @Html.Raw(items[i].Text)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

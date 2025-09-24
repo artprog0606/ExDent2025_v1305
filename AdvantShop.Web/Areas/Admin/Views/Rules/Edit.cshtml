@@ -1,0 +1,148 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Bonuses.Rules.RuleModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("rules");
+
+    Html.AddAsset("rules");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + Model.RuleType.Localize() + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Rules")
+    };
+
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }
+}
+
+<form method="POST" action="@Url.AbsoluteActionUrl("Edit")" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.RuleType)
+    @Html.HiddenFor(x => x.ModelType)
+
+    @{
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                                eButtonModificators.OnlyIcon
+                                                          },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\" data-button-validation disabled ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+        );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"rules.deleteRule('" + Model.RuleType + "')\"" },
+            Text = T("Удалить")
+        });
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+
+    <div class="ibox">
+        <div class="ibox-content">
+            @if (!isMobile)
+            {
+                <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="page-name-block-item-main">
+                            <h2 class="page-name-block-text sticky-page-name-text">
+                                @T("Admin.Rules.Edit.Rule") - "@Model.RuleType.Localize()"
+                            </h2>
+                            <div class="m-t-sm">
+                                <a data-e2e="ReturnRules" href="@Url.AbsoluteActionUrl("Index", "Rules")">@T("Admin.Rules.Edit.Return")</a>
+                            </div>
+                        </div>
+                        <div class="page-name-block-item-additional">
+                            <button data-e2e="SaveRules" type="submit" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                                <i class="fa fa-check"></i> @T("Admin.Save")
+                            </button>
+                            <a data-e2e="DelRules" href="" class="link-danger m-l-sm" ng-click="rules.deleteRule('@Model.RuleType')">@T("Admin.Delete")</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="@(isMobile ? "" : "m-t")">
+                <div class="form-group row middle-xs setting__form-group">
+                    <div class="flex-grow-n col-xs-12 col-md-3">
+                        <span class="text-required setting__label">@T("Admin.Rules.Edit.Name")</span>
+                    </div>
+                    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control input-alt", ng_model = "rule.name", required = "required", validation_input_text = T("Admin.Rules.Edit.Name").ToString() })
+                    </div>
+                </div>
+
+                <div class="form-group row middle-xs setting__form-group">
+                    @if (!isMobile)
+                    {
+                        <div class="flex-grow-n col-xs-12 col-md-3">
+                            @T("Admin.Rules.Edit.Active")
+                        </div>
+                    }
+                    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                        <label class="adv-checkbox-label form-label-block">
+                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "rule.enabled", ng_init = "rule.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                            <span class="adv-checkbox-emul" data-e2e="Enabled"></span>
+                        </label>
+                        @if (!Model.Enabled && !isMobile)
+                        {
+                            <span class="link-danger">@T("Admin.Rules.Edit.NotActive")</span>
+                        }
+                         @if (isMobile)
+                        {
+                            <label for="Enabled" class="flex-grow m-l-sm setting__label">
+                                @T("Admin.Rules.Edit.Active")
+                            </label>
+                        }
+                        <help-trigger class="ng-cloak @(isMobile ? "col-xs-1" : "")" data-title="@T("Admin.Rules.Edit.Active")">
+                            @T("Admin.Rules.Edit.EnableOrDisable")
+                        </help-trigger>
+                    </div>
+                </div>
+
+                @if (Model.ShippingViewPath != null)
+                {
+                    @Html.Partial(Model.ShippingViewPath, Model)
+                }
+            </div>
+        </div>
+    </div>
+</form>

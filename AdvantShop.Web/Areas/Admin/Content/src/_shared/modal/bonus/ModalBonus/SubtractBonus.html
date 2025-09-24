@@ -1,0 +1,82 @@
+﻿<form novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AdditionBonus.WriteOffAdditionalBonuses'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal" ng-class="{'m-r m-l' : !isMobile.value}">
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label m-b-xs">
+                        <span class="text-required">{{'Admin.Js.AdditionBonus.SelectABonus'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <select
+                            ng-model="ctrl.additionId"
+                            class="form-control input-alt"
+                            required
+                            validation-input-text="{{'Admin.Js.AdditionBonus.Bonus'|translate}}"
+                            ng-options="item.Id as (item.Name||'не указано') +' ('+ item.Amount +')' for item in ctrl.additionBonuses">
+                            <option value="">{{'Admin.Js.AdditionBonus.Select'|translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label m-b-xs">
+                        <span class="text-required">{{'Admin.Js.AdditionBonus.Sum'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.amount"
+                            required
+                            validation-input-text="{{'Admin.Js.AdditionBonus.Sum'|translate}}"
+                            data-e2e="amount" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label m-b-xs"> {{'Admin.Js.AdditionBonus.Base'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.reason"
+                            validation-input-text="{{'Admin.Js.AdditionBonus.Base'|translate}}"
+                            data-e2e="Reason" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="middle-xs" ng-class="{'flex' : isMobile.value, 'row': !isMobile.value}">
+                    <label class="control-label" ng-class="{'flex-grow setting--m-none' : isMobile.value, 'col-xs-3 m-b-xs': !isMobile.value}">
+                        {{'Admin.Js.Bonus.SendSms'|translate}}
+                    </label>
+                    <label ng-class="{'adv-checkbox-label adv-checkbox-label--switch-on-off-wrapper' : isMobile.value, 'col-xs-9': !isMobile.value}">
+                        <switch-on-off
+                            checked="ctrl.SendSms"
+                            data-id="SendSms"
+                            readonly="ctrl.isStartExport"
+                            on-change="ctrl.onChangeSwitch(checked)"></switch-on-off>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.subctractBonus(); ctrl.btnLoading = true"
+            ladda="ctrl.btnLoading"
+            data-e2e="subctractBonus">
+            {{'Admin.Js.AdditionBonus.WriteOff'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AdditionBonus.Cancel'|translate}}</button>
+    </div>
+</form>

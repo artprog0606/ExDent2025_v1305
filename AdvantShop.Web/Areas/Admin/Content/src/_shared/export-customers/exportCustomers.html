@@ -1,0 +1,590 @@
+<div class="wrapper" is-mobile>
+    <div class="page-name-block m-b sticky-page-name-inner top-xs" ng-if="!$ctrl.isStartExport">
+        <div class="page-name-block-item-main flex-grow">
+            <div class="m-b" ng-if="!isMobile.value">
+                <h2 class="page-name-block-text sticky-page-name-text m-n">{{'Admin.Js.ExportCustomers.ExportCustomersTitle'|translate}}</h2>
+            </div>
+            <div class="funnel-site__settings m-t-n-xs">
+                <ul class="nav" ng-class="{'chips-list' : isMobile.value, 'nav-tabs' : !isMobile.value}">
+                    <li class="nav-item ng-tab" ng-class="{'active': $ctrl.tab=='params'}">
+                        <a
+                            ng-click="$ctrl.tab='params'"
+                            ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && $ctrl.tab=='params'}">
+                            {{'Admin.Js.Settings.Customers.ExportCustomers.ExportOptions'|translate}}
+                        </a>
+                    </li>
+                    <li class="nav-item ng-tab" ng-class="{'active': $ctrl.tab=='fields'}">
+                        <a
+                            ng-click="$ctrl.tab='fields'"
+                            ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && $ctrl.tab=='fields'}">
+                            {{'Admin.Js.Settings.Customers.ExportCustomers.BuyerFields'|translate}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-name-block-item-additional" ng-if="!isMobile.value">
+            <button class="btn btn-sm btn-success" data-e2e="Export" type="button" ng-click="$ctrl.exportCustomers()">
+                {{'Admin.Js.ProgressData.Export'|translate}}
+            </button>
+        </div>
+    </div>
+
+    <div class="" ng-if="!$ctrl.isStartExport">
+        <div ng-show="$ctrl.tab=='fields'">
+            <div
+                ng-repeat="exportField in $ctrl.exportCustomersSettings.SelectedExportFields track by $index"
+                class="form-group"
+                ng-class="{'row' : !isMobile.value, 'flex' : isMobile.value}">
+                <div class="align-center index-width" style="{{isMobile.value ? 'width:20px;' : ''}}">{{$index+1}}</div>
+                <div class="col-xs col-sm-4">
+                    <select
+                        ng-model="$ctrl.exportCustomersSettings.SelectedExportFields[$index]"
+                        ng-options="s.value as s.label for s in $ctrl.exportCustomersSettings.AllFields"
+                        class="form-control input-alt"></select>
+                </div>
+            </div>
+            <div class="m-t-md m-b-xs" ng-if="!isMobile.value">
+                <button type="button" class="btn btn-sm btn-success" data-e2e="exportSetNone" ng-click="$ctrl.setNoneExportFeedFields()">
+                    {{'Admin.Js.Settings.Customers.ExportCustomers.ResetSelected'|translate}}
+                </button>
+                <button type="button" class="btn btn-sm btn-success m-l-xs" data-e2e="exportSetDefault" ng-click="$ctrl.setDefaultExportFeedFields()">
+                    {{'Admin.Js.Settings.Customers.ExportCustomers.SetDefault'|translate}}
+                </button>
+            </div>
+        </div>
+
+        <div ng-show="$ctrl.tab=='params'">
+            <div class="setting-title flex middle-xs setting--flex-column m-t-none">
+                <h3 class="setting__subtitle setting--align-top">{{'Admin.Js.Settings.Customers.ExportCustomers.UnloadingParameters'|translate}}</h3>
+            </div>
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="export-customer-column-separator" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.ColumnSeparator'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <select
+                        id="export-customer-column-separator"
+                        ng-model="$ctrl.exportCustomersSettings.ColumnSeparator"
+                        class="form-control input-alt-mobile"
+                        disabled-autobind>
+                        <option ng-repeat="(key, value) in $ctrl.exportCustomersSettings.Separators" value="{{key}}">{{value}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--            <div class="form-group row middle-xs">-->
+            <!--                <div class="col-xs-12 col-md-3 col-wl-2">-->
+            <!--                    <label for="txtPropertySeparator" class="setting-label-wrap control-label">-->
+            <!--                        {{'Admin.Js.ExportCustomers.AdressSeparator'|translate}}-->
+            <!--                    </label>-->
+            <!--                </div>-->
+            <!--                <div class="col-xs-12 col-md-5  col-wl-3">-->
+            <!--                    <input-->
+            <!--                        type="text"-->
+            <!--                        id="txtPropertySeparator"-->
+            <!--                        class="form-control input-alt-mobile"-->
+            <!--                        ng-model="$ctrl.exportCustomersSettings.PropertySeparator" />-->
+            <!--                </div>-->
+            <!--            </div>-->
+
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="export-customer-encoding" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.FilesEncoding'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <select
+                        id="export-customer-encoding"
+                        ng-model="$ctrl.exportCustomersSettings.Encoding"
+                        class="form-control input-alt-mobile"
+                        disabled-autobind>
+                        <option ng-repeat="(key, value) in $ctrl.exportCustomersSettings.Encodings" value="{{key}}">{{value}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-title flex middle-xs setting--flex-column">
+                <h3 class="setting__subtitle setting--align-top">Фильтр</h3>
+            </div>
+
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="export-customer-groups" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.GroupOfCustomers'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <select
+                        id="export-customer-groups"
+                        ng-model="$ctrl.exportCustomersSettings.GroupId"
+                        class="form-control input-alt-mobile"
+                        disabled-autobind
+                        convert-to-number>
+                        <option ng-repeat="(key, value) in $ctrl.exportCustomersSettings.Groups" value="{{key}}">{{value}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="showRegistrationDateFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.RegistrationDateInterval'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="showRegistrationDateFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showRegistrationDateFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.RegistrationDateInterval'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showRegistrationDateFilter" class="form-horizontal" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div class="m-b-md row bottom-xs top-sm">
+                            <label
+                                style="white-space: nowrap"
+                                class="col-xs-slim col-md-1 ui-grid-filter-text"
+                                ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                                for="gridFilterDateFrom">
+                                {{'Admin.Js.ExportCustomers.CustomersFrom'|translate}}
+                            </label>
+                            <div class="col-md-11 col-xs">
+                                <div
+                                    class="input-group"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                        <input
+                                            data-e2e="datetimeFilterFrom"
+                                            id="gridFilterDateFrom"
+                                            type="text"
+                                            class="form-control input-alt input-alt-mobile"
+                                            ng-flatpickr-input
+                                            ng-model="$ctrl.exportCustomersSettings.RegistrationDateFrom" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row bottom-xs top-sm" ng-class="{'m-b-md' : !isMobile.value}">
+                            <label
+                                style="white-space: nowrap"
+                                class="col-xs-slim col-md-1 ui-grid-filter-text"
+                                ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                                for="gridFilterDateTo">
+                                {{'Admin.Js.ExportCustomers.CustomersTo'|translate}}
+                            </label>
+                            <div class="col-md-11 col-xs">
+                                <div
+                                    class="input-group"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                        <input
+                                            data-e2e="datetimeFilterTo"
+                                            id="gridFilterDateTo"
+                                            type="text"
+                                            class="form-control input-alt-mobile input-alt"
+                                            ng-flatpickr-input
+                                            ng-model="$ctrl.exportCustomersSettings.RegistrationDateTo" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="ordersCount" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.PaidOrdersCount'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input id="ordersCount" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="$ctrl.showOrdersCountFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.PaidOrdersCount'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showOrdersCountFilter" class="row middle-xs" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">От</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.OrdersCountFrom" class="form-control input-alt-mobile" />
+                        </div>
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">До</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.OrdersCountTo" class="form-control input-alt-mobile" />
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="orderSumFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.PaidOrderSum'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input id="orderSumFilter" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="$ctrl.showOrderSumFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.PaidOrderSum'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showOrderSumFilter" class="row middle-xs" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">От</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.OrderSumFrom" class="form-control input-alt-mobile" />
+                        </div>
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">До</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.OrderSumTo" class="form-control input-alt-mobile" />
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="lastOrderFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.LastOrderId'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="lastOrderFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showLastOrderFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.LastOrderId'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showLastOrderFilter" class="row middle-xs" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">От</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.LastOrderFrom" class="form-control input-alt-mobile" />
+                        </div>
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">До</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.LastOrderTo" class="form-control input-alt-mobile" />
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="lastOrderDateTimeFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.LastOrderDateTime'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="lastOrderDateTimeFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showLastOrderDateTimeFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.LastOrderDateTime'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showLastOrderDateTimeFilter" class="form-horizontal" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div class="m-b-md row bottom-xs top-sm">
+                            <label
+                                style="white-space: nowrap"
+                                class="col-xs-slim col-md-1 ui-grid-filter-text"
+                                ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                                for="gridFilterLastOrderDateTimeFrom">
+                                {{'Admin.Js.ExportCustomers.CustomersFrom'|translate}}
+                            </label>
+                            <div class="col-md-11 col-xs">
+                                <div
+                                    class="input-group"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                        <input
+                                            id="gridFilterLastOrderDateTimeFrom"
+                                            type="text"
+                                            class="form-control input-alt input-alt-mobile"
+                                            ng-flatpickr-input
+                                            ng-model="$ctrl.exportCustomersSettings.LastOrderDateTimeFrom" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row bottom-xs top-sm" ng-class="{'m-b-md' : !isMobile.value}">
+                            <label
+                                style="white-space: nowrap"
+                                class="col-xs-slim col-md-1 ui-grid-filter-text"
+                                ng-class="{'control-label' : !isMobile.value, 'm-b-sm' : isMobile.value}"
+                                for="gridFilterLastOrderDateTimeTo">
+                                {{'Admin.Js.ExportCustomers.CustomersTo'|translate}}
+                            </label>
+                            <div class="col-md-11 col-xs">
+                                <div
+                                    class="input-group"
+                                    ng-flatpickr
+                                    fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                        <input
+                                            id="gridFilterLastOrderDateTimeTo"
+                                            type="text"
+                                            class="form-control input-alt input-alt-mobile"
+                                            ng-flatpickr-input
+                                            ng-model="$ctrl.exportCustomersSettings.LastOrderDateTimeTo" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="AverageCheckFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.AverageCheck'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="AverageCheckFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showAverageCheckFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.AverageCheck'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showAverageCheckFilter" class="row middle-xs" ng-class="{'m-t-sm' : isMobile.value}">
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">От</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.AverageCheckFrom" class="form-control input-alt-mobile" />
+                        </div>
+                        <div style="white-space: nowrap" class="col-xs-1 p-r-none">До</div>
+                        <div class="col-xs-5">
+                            <input type="number" ng-model="$ctrl.exportCustomersSettings.AverageCheckTo" class="form-control input-alt-mobile" />
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="SocialTypeFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.SocialType'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="SocialTypeFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showSocialTypeFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value"> {{'Admin.Js.ExportCustomers.SocialType'|translate}}</span>
+                    </label>
+
+                    <section
+                        ng-if="$ctrl.showSocialTypeFilter"
+                        ng-class="{'m-t-sm' : isMobile.value}"
+                        ng-init="$ctrl.exportCustomersSettings.SocialType=$ctrl.SocialTypes[0].value">
+                        <select
+                            id="export-customer-socialType"
+                            ng-model="$ctrl.exportCustomersSettings.SocialType"
+                            ng-options="s.value as s.label for s in $ctrl.SocialTypes"
+                            class="form-control input-alt-mobile"></select>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="HasBonusCardFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.HasBonusCard'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="HasBonusCardFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showHasBonusCardFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value"> {{'Admin.Js.ExportCustomers.HasBonusCard'|translate}}</span>
+                    </label>
+
+                    <section
+                        ng-if="$ctrl.showHasBonusCardFilter"
+                        ng-class="{'m-t-sm' : isMobile.value}"
+                        ng-init="$ctrl.exportCustomersSettings.HasBonusCard=$ctrl.YesNos[0].value">
+                        <select
+                            id="export-customer-hasBonusCard"
+                            ng-model="$ctrl.exportCustomersSettings.HasBonusCard"
+                            ng-options="s.value as s.label for s in $ctrl.YesNos"
+                            class="form-control input-alt-mobile"></select>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="SubscriptionFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.Subscription'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="SubscriptionFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showSubscriptionFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.Subscription'|translate}}</span>
+                    </label>
+
+                    <section
+                        ng-if="$ctrl.showSubscriptionFilter"
+                        ng-class="{'m-t-sm' : isMobile.value}"
+                        ng-init="$ctrl.exportCustomersSettings.Subscription=$ctrl.YesNos[0].value">
+                        <select
+                            id="export-customer-subscription"
+                            ng-model="$ctrl.exportCustomersSettings.Subscription"
+                            ng-options="s.value as s.label for s in $ctrl.YesNos"
+                            class="form-control input-alt-mobile"></select>
+                    </section>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="ManagerFilter" class="setting-label-wrap control-label"> {{'Admin.Js.ExportCustomers.Manager'|translate}} </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input id="ManagerFilter" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="$ctrl.showManagerFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.Manager'|translate}}</span>
+                    </label>
+
+                    <section ng-if="$ctrl.showManagerFilter" ng-class="{'m-t-sm' : isMobile.value}">
+                        <select
+                            id="export-customer-manager"
+                            ng-model="$ctrl.exportCustomersSettings.ManagerId"
+                            ng-options="s.value as s.label for s in $ctrl.exportCustomersSettings.Managers"
+                            class="form-control input-alt-mobile"></select>
+                    </section>
+                </div>
+            </div>
+
+            <div
+                class="form-group row"
+                ng-if="$ctrl.exportCustomersSettings.CustomerTypes != null && $ctrl.exportCustomersSettings.CustomerTypes.length > 1">
+                <div ng-if="!isMobile.value" class="col-xs-12 col-md-3 col-wl-2">
+                    <label for="CustomerTypeFilter" class="setting-label-wrap control-label">
+                        {{'Admin.Js.ExportCustomers.CustomerType'|translate}}
+                    </label>
+                </div>
+                <div class="col-xs-12 col-md-5 col-wl-3">
+                    <label class="adv-checkbox-label m-b-sm">
+                        <input
+                            id="CustomerTypeFilter"
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="$ctrl.showCustomerTypeFilter" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.ExportCustomers.CustomerType'|translate}}</span>
+                    </label>
+
+                    <section
+                        ng-if="$ctrl.showCustomerTypeFilter"
+                        ng-class="{'m-t-sm' : isMobile.value}"
+                        ng-init="$ctrl.exportCustomersSettings.CustomerType=$ctrl.exportCustomersSettings.CustomerTypes[0].value">
+                        <select
+                            id="export-customer-customerType"
+                            ng-model="$ctrl.exportCustomersSettings.CustomerType"
+                            ng-options="s.value as s.label for s in $ctrl.exportCustomersSettings.CustomerTypes"
+                            class="form-control input-alt-mobile"></select>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ibox" ng-init="$ctrl.initProgress()" ng-if="$ctrl.isStartExport">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <uib-progressbar max="$ctrl.progressTotal" class="m-b-md" value="$ctrl.progressValue">
+                        <span style="color: white; white-space: nowrap"
+                            ><span ng-bind="$ctrl.progressValue"></span> / <span ng-bind="$ctrl.progressTotal"></span
+                        ></span>
+                    </uib-progressbar>
+                </div>
+            </div>
+
+            <div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div>
+                            {{'Admin.Js.ProgressData.CurrentProcess'|translate}}:
+                            <a
+                                class="link-decoration-none p-l-xs"
+                                ng-href="{{$ctrl.progressCurrentProcess}}"
+                                ng-bind="$ctrl.progressCurrentProcessName"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!$ctrl.IsRun">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div>{{'Admin.Js.ProgressData.DataExportedSuccessfully'|translate}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="!$ctrl.IsRun">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <a ng-href="{{$ctrl.FileName}}" class="btn btn-sm btn-default" download>{{'Admin.Js.ProgressData.DownloadFile'|translate}}</a>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <a class="link-decoration-none" href="" ng-click="$ctrl.isStartExport = false">
+                            {{'Admin.Js.ProgressData.ReturnToExport'|translate}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

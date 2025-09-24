@@ -1,0 +1,60 @@
+﻿@model BlockModel
+
+@{ 
+    var modalId = "modal_exit_" + Model.Block.Id;
+    var ouibounce = Model.Block.TryGetSetting<OuibounceModel>("ouibounce");
+    var callback = "modalOuibounce.modalOuibounceClose()";
+}
+
+<div class="ng-hide"
+     id="@modalId"
+     modal-control
+     modal-class="color-scheme--light lp-block-exit-modal lp-block-exit-popup-form-modal"
+     callback-open="modal.lpForm.openModal(modal.modalDataAdditional)"
+     callback-close="modal.lpForm.closeModal()"
+     modal-ouibounce
+     modal-ouibounce-disabled="@Model.Inplace.ToLowerString()"
+     modal-ouibounce-options="{delay: @(ouibounce.Delay)}">
+    <div class="modal-content">
+
+        <div class="row text-center">
+            <article class="col-xs-12 col-sm">
+                <header class="lp-block-exit-popup-form__header">
+                    @Html.BlockHeader(Model)
+                </header>
+                <div class="lp-block-exit-popup-form__content lp-font-size--large">
+                    @Html.SubBlock(Model, "text")
+                </div>
+                <div class="lp-block-exit-popup-form__footer">
+                    @Html.Form(Model.Form, false)
+                </div>
+                @if (Model.Block.TryGetValuableSetting<bool>("show_button") == true)
+                {
+                <div class="lp-block-exit-popup-form__btn">
+                    @{
+                        var button = Model.Block.TryGetSetting<LpButton>("button");
+
+                        button.Callback = callback;
+                    }
+                    @Html.Button(Model.Block, button)
+                </div>
+                }
+            </article>
+        </div>
+    </div>
+</div>
+
+@if (Model.Inplace && !LpService.PreviewInAdmin)
+{
+    <div class="ng-cloak lp-block-products-view__empty--admin  block-padding-top--35 block-padding-bottom--35">
+        <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                            data-block-id="@Model.Block.Id"
+                            data-name="@Model.Block.Name"
+                            data-type="@Model.Block.Type"
+                            data-is-show-options="::true"
+                            data-template-custom="true">
+            <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock('tabFormFront')">Настроить блок Exit popup</button>
+            <button type="button" class="lp-btn lp-btn--secondary" modal-open="@modalId">Показать</button>
+        </blocks-constructor>
+    </div>
+}

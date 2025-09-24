@@ -1,0 +1,95 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SystemSettingsModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div ng-cloak>
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main @(!isMobile ? "flex middle-xs" : "")">
+                @if (!isMobile)
+                {
+                    <h2 class=" sticky-page-name-text m-r-sm" style="margin-top:0;">
+                        <span class="hidden-sticky-title">@T("Admin.SettingsSystem.Localization.SystemSettings") / </span>@(T("Admin.Settings.System.Localization"))
+                    </h2>
+                    <div class="sticky-hidde" bs-modifiable="false">
+                        @Html.DropDownList("langLocalization", Model.Languages,
+                            new
+                            {
+                                @class = "form-control inline vertical-middle input-alt",
+                                @style = "width: 155px;",
+                                ng_model = "settingsSystem.langLocalization",
+                                ng_change = "settingsSystem.changeSelectLanguage()"
+                            })
+                    </div>
+                }
+                else
+                {
+                    <div class="sticky-hidde m-b-md m-t-xs" bs-modifiable="false">
+                        @Html.DropDownList("langLocalization", Model.Languages,
+                            new
+                            {
+                                @class = "form-control inline vertical-middle input-alt",
+                                ng_model = "settingsSystem.langLocalization",
+                                ng_change = "settingsSystem.changeSelectLanguage()"
+                            })
+                    </div>
+                }
+
+            </div>
+             @if (!isMobile)
+             {
+            <div class="page-name-block-item-additional">
+                <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="settingsSystem.startExportlocalization()">
+                    <span class="fa"></span> @(T("Admin.Settings.System.301Redirects.Export"))
+                </button>
+                <file-uploader class="picture-uploader-middle"
+                               accept=".csv"
+                               start-src=""
+                               upload-url="/localization/import"
+                               upload-params=""
+                               on-update="settingsSystem.updateLocalizationGrid()"
+                               on-success="settingsSystem.successLocalization()"
+                               go-to-first-step-after-succes="true"
+                               title-upload-button="@(T("Admin.Settings.System.301Redirects.Import"))" 
+                               style="display: inline-block;">
+                </file-uploader>
+                <ui-modal-trigger data-controller="'ModalAddEditLocalizationCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("addEditLocalization.html")"
+                                  data-on-close="settingsSystem.gridLocalization.fetchData()">
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button">
+                        <span class="fa fa-plus"></span> @(T("Admin.Settings.System.Localization.Add"))
+                    </button>
+                </ui-modal-trigger>
+            </div>
+             }
+        </div>
+    </div>
+
+    <ui-grid-custom grid-unique-id="gridLocalization"
+                    grid-options="settingsSystem.gridOptionsLocalization"
+                    grid-on-init="settingsSystem.gridLocalizationOnInit(grid)"
+                    grid-url="'Localization/GetLocalizations'"
+                    grid-params="{ 'Value': settingsSystem.langLocalization, 'ChangeAll': settingsSystem.AllLocalization }"
+                    grid-inplace-url="'Localization/AddEditLocalization'"
+                    grid-extend-ctrl="settingsSystem"
+                    grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <ui-modal-trigger data-controller="'ModalAddEditLocalizationCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("addEditLocalization.html")"
+                              resolve="{'LanguageCode': {'value' : row.entity.LanguageCode}, 'ResourceKey' : {'value': row.entity.ResourceKey}}"
+                              data-on-close="grid.appScope.$ctrl.fetchData()">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div class="">
+                        <div class="card__col m-r-xs flex">
+                            <span class="setting--grid-span-grey setting--m-t-none m-r-xs">Ключ:</span><span style="word-break: break-all;" class="fs-xs">{{row.entity.ResourceKey}}</span>
+                        </div>
+                        <div class="card__col m-r-xs flex m-t-sm">
+                            <span class="setting--grid-span-grey setting--m-t-none m-r-xs">Значение:</span><span class="fs-xs"></span><span style="word-break: break-all;" class="fs-xs">{{row.entity.ResourceValue}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ui-modal-trigger>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+</div>

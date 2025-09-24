@@ -1,0 +1,70 @@
+﻿@using AdvantShop.Customers
+<div class="checkout-result">
+    <div>
+        @T("Checkout.CheckoutSummary.SumText"): <span class="checkout-result-price" data-ng-bind="checkout.Cart.Result"></span>
+    </div>
+    <div class="checkout-bonus-result" data-ng-show="checkout.Cart.BonusPlus != null">
+        @T("Checkout.CheckoutSummary.BonusPlus"): +<span class="checkout-result-price" data-ng-bind="checkout.Cart.BonusPlus"></span>
+    </div>
+</div>
+
+@if (SettingsDesign.ShowUserAgreementForPromotionalNewsletter && 
+     (!CustomerContext.CurrentCustomer.RegistredUser || !CustomerContext.CurrentCustomer.IsAgreeForPromotionalNewsletter))
+{
+    <div class="checkout-agree-news">
+        <label class="checkout-agree-label">
+            <input class="custom-input-native" type="checkbox" id="isAgreeForPromotionalNewsletter" name="isAgreeForPromotionalNewsletter" 
+                   data-ng-model="checkout.isAgreeForPromotionalNewsletter"  
+                   data-ng-change="checkout.saveAgreementForNewsletter()"
+                   @Html.Raw(SettingsDesign.SetUserAgreementForPromotionalNewsletterChecked ? "checked=\"checked\" data-ng-init=\"checkout.isAgreeForPromotionalNewsletter=true\"": "") />
+            <span class="custom-input-checkbox custom-input-checkbox__abs"></span>
+            <span class="custom-input-text custom-input-text__indent">@Html.Raw(SettingsDesign.UserAgreementForPromotionalNewsletter)</span>
+        </label>
+    </div>
+}
+
+@if (SettingsCheckout.IsShowUserAgreementText)
+{
+    <div class="checkout-agree">
+        <label class="checkout-agree-label">
+            <input class="custom-input-native" type="checkbox" id="agree" name="agree" data-ng-model="checkout.agree" required @Html.Raw(SettingsCheckout.AgreementDefaultChecked ? "checked=\"checked\" data-ng-init=\"checkout.agree=true\"": "") />
+            <span class="custom-input-checkbox custom-input-checkbox__abs"></span>
+            <span class="custom-input-text custom-input-text__indent">@Html.Raw(SettingsCheckout.UserAgreementText)</span>
+        </label>
+    </div>
+}
+
+@if (SettingsMain.EnableCaptchaInCheckout)
+{
+    <div class="row form-field-control">
+        <div class="col-xs-12">
+            <div class="row form-field-control">
+                <div class="col-xs-12 col-md-4 form-field-name-wrap">
+                    <div class="form-field-name vertical-interval-xsmall input-required">
+                        @T("Checkout.CheckoutSummary.Captcha")
+                    </div>
+                </div>
+                <div class="col-xs-7 col-md-8 form-field-input-wrap">
+                    <div class="form-field-input vertical-interval-xsmall">
+                        @Html.Captcha("checkout.captcha")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div>
+    <div data-ng-if="checkout.Cart.Valid" class="checkout-cart-amount-error m-b-xs" data-ng-bind="checkout.Cart.Valid"></div>
+    <button type="submit"
+            class="btn btn-big btn-submit checkout__button-summary"
+            data-ng-disabled="checkout.ngSelectPayment == null || checkout.ngSelectShipping == null"
+            data-e2e="btnCheckout"
+            data-ladda="checkout.confirmInProgress"
+            data-ng-class="{'btn-disabled': checkout.checkoutMiniCart.$invalid || cartFullForm.$invalid }"
+            data-button-validation="!((checkout.userUnRegType === 'oldCustomer' || (checkout.checkoutNewCustomerForm != null && checkout.checkoutNewCustomerForm.$invalid)) || checkoutForm.$invalid || checkout.checkoutMiniCart.$invalid || cartFullForm.$invalid || (checkout.checkoutCustomerRequiredFieldsForm != null && checkout.checkoutCustomerRequiredFieldsForm.$invalid))"
+            data-button-validation-start="checkout.checkoutNewCustomerForm.$setSubmitted(); checkout.checkoutNewCustomerForm.$setDirty();"
+            data-button-validation-success="checkout.submitOrder(clickEvent)"
+            data-button-validation-forms="['checkoutNewCustomerForm', 'checkoutForm', 'cartFullForm', 'checkoutCustomerRequiredFieldsForm', 'checkoutMiniCart']">
+        @T("Checkout.CheckoutSummary.ConfirmButtonText")
+    </button>
+</div>

@@ -1,0 +1,60 @@
+<div>
+    <ng-choices
+        class="color-select-custom select-custom cs-t-4 icon-down-open-after-abs"
+        ng-class="'color-select-custom--' + colorsViewer.viewMode"
+        data-ng-model="colorsViewer.colorSelected"
+        data-label-fn="choice.customProperties.ColorName + (choice.customProperties.Available === false ? ' (' + ('Js.ColorsViewer.ControlType.Unavailable' | translate) + ')' : '')"
+        data-disabled-fn="choice.customProperties.Available === false"
+        data-value-key="'ColorId'"
+        data-custom-properties-fn="choice.customProperties"
+        data-choices="colorsViewer.colors"
+        data-on-choice="colorsViewer.selectColor($event, colorsViewer.colorSelected)">
+        <ng-choices-item-template>
+            <div class="color-viewer" ng-class="'color-viewer--' + colorsViewer.viewMode">
+                <div class="color-viewer-item-wrap">
+                    <div
+                        class="color-viewer-item-block"
+                        title="{{choice.customProperties.ColorName || choice.customProperties.Title || choice.customProperties.Name}}">
+                        <ng-transclude ng-transclude-slot="colorsViewerItemBefore"></ng-transclude>
+                        <!--Сравнение по имени для цветовых схем-->
+                        <div
+                            class="color-viewer-inner cs-br-1"
+                            data-ng-if="::colorsViewer.viewMode !== 'text'"
+                            data-ng-style="{'background-color': choice.customProperties.ColorCode != null && choice.customProperties.ColorCode.length > 0 ? choice.customProperties.ColorCode : 'transparent', 'width': colorsViewer.colorWidth, 'height': colorsViewer.colorHeight }"
+                            data-background-image="{{choice.customProperties.PhotoName != null && choice.customProperties.PhotoName.length > 0 ?  colorsViewer.getImagePath(choice.customProperties.PhotoName) : ''}}"
+                            data-qazy-background></div>
+                        <span
+                            class="color-viewer-item-name text-overflow"
+                            data-ng-style="::{'max-width': colorsViewer.viewMode !== 'text' ? 'calc(100% - ' + colorsViewer.colorWidth + ')' : 'auto'}"
+                            data-ng-if="::colorsViewer.isHiddenColorName !== true && (colorsViewer.viewMode === 'text' || colorsViewer.viewMode === 'iconandtext')"
+                            data-ng-bind="choice.customProperties.ColorName"></span>
+                    </div>
+                </div>
+            </div>
+        </ng-choices-item-template>
+        <ng-choices-choice-template>
+            <div class="color-viewer" ng-class="'color-viewer--' + colorsViewer.viewMode">
+                <div class="color-viewer-item-wrap">
+                    <div
+                        class="color-viewer-item-block"
+                        title="{{choice.customProperties.ColorName || choice.customProperties.Title || choice.customProperties.Name}}"
+                        data-ng-class="{'color-viewer-item-disabled': choice.customProperties.Available === false}">
+                        <ng-transclude ng-transclude-slot="colorsViewerItemBefore"></ng-transclude>
+                        <!--Сравнение по имени для цветовых схем-->
+                        <div
+                            class="color-viewer-inner cs-br-1"
+                            data-ng-if="::colorsViewer.viewMode !== 'text'"
+                            data-ng-style="{'background-color': choice.customProperties.ColorCode != null && choice.customProperties.ColorCode.length > 0 ? choice.customProperties.ColorCode : 'transparent', 'width': colorsViewer.colorWidth, 'height': colorsViewer.colorHeight }"
+                            data-background-image="{{choice.customProperties.PhotoName != null && choice.customProperties.PhotoName.length > 0 ?  colorsViewer.getImagePath(choice.customProperties.PhotoName) : ''}}"
+                            data-qazy-background></div>
+                        <span
+                            data-ng-if="::colorsViewer.isHiddenColorName !== true && (colorsViewer.viewMode === 'text' || colorsViewer.viewMode === 'iconandtext')"
+                            class="color-viewer-item-name text-overflow"
+                            data-ng-style="::{'max-width': colorsViewer.viewMode !== 'text' ? 'calc(100% - ' + colorsViewer.colorWidth + ')' : 'auto'}"
+                            data-ng-bind="choice.customProperties.ColorName"></span>
+                    </div>
+                </div>
+            </div>
+        </ng-choices-choice-template>
+    </ng-choices>
+</div>

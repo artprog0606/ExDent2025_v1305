@@ -1,0 +1,37 @@
+﻿<div class="modal-header">
+    <ui-modal-cross></ui-modal-cross>
+    <h2 class="modal-header-title">{{'Admin.Js.AddBrand.Manufacturers'|translate}}</h2>
+</div>
+<div class="modal-body">
+    <div>
+        <ui-grid-custom
+            grid-unique-id="gridBrands"
+            grid-on-init="ctrl.gridOnInit(grid)"
+            grid-options="ctrl.gridOptions"
+            grid-url="'brands/getBrandsChooser'"
+            grid-search-placeholder="'Admin.Js.AddBrand.SearchByName'|translate"
+            grid-extend-ctrl="ctrl"
+            grid-selection-enabled="ctrl.gridSelectionEnabled"
+            grid-selection-items-selected-fn="ctrl.getSelectedBrandsItems(rowEntity)"
+            grid-selection-on-change="ctrl.gridSelectionOnChange(rows)"
+            grid-selection-on-init="ctrl.gridSelectionOnInit(selectionCustom)"
+            grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div
+                    class="card card--gap-row-sm card--p-18"
+                    ng-click="grid.appScope.$ctrl.gridExtendCtrl.choose(row.entity.BrandId, row.entity.BrandName)">
+                    <div class="flex between-xs center-xs">
+                        <div class="flex-grow card__col">{{row.entity.BrandName}}</div>
+                        <div class="card__col card__col--end setting--align-center">{{row.entity.ProductsCount}}</div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-save btn-primary" ng-if="ctrl.gridSelectionEnabled === true" ng-click="ctrl.saveBrands()">
+        {{'Admin.Js.AddBrand.Save'|translate}}
+    </button>
+    <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddBrand.Cancel'|translate}}</button>
+</div>

@@ -1,0 +1,141 @@
+﻿@using AdvantShop.Core.Services.Admin
+
+@model AdvantShop.Web.Admin.Models.Settings.CommonSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@{ 
+    Html.AddAsset("settings");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "Settings", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settings.onSelectTab(null)"
+    };
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Commonsettings").ToString();
+    headerModel.Controls = new List<IButton>()
+    {
+            new ButtonModel()
+            {
+                Text = @T("Admin.Settings.Common.Save"),
+                Validation = true,
+                Attributes = new string[]{"disabled=\"disabled\"", "ng-disabled=\"!form.modified || !settings.regionsLoaded\"", "ng-if=\"settings.tabActiveIndex != null\"" },
+                Type = eButtonType.Save,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+        };
+
+
+    @Html.Header(headerModel)
+
+    @*<div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner header-hidden">
+            <div class="page-name-block-item-main">
+                <div class="backSetting-link__mobile col-xs-2">
+                    @Html.Back(T("Admin.Settings.IndexSettings").ToString(), )
+                </div>
+                <h1 class="page-name-block-text sticky-page-name-text page-name-block-text_mobile">
+                    <span class="float-header-page" ng-bind="settings.floatHeader"></span>
+                </h1>
+            </div>
+            <div class="page-name-block-item-additional save-img">
+                <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified || !settings.regionsLoaded" />
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23.7803 5.46973L18.5303 0.219727C18.3896 0.0791016 18.1989 0 18 0H0.75C0.335815 0 0 0.335815 0 0.75V23.25C0 23.6642 0.335815 24 0.75 24H23.25C23.6642 24 24 23.6642 24 23.25V6C24 5.80115 23.9209 5.61035 23.7803 5.46973ZM13.5 1.5V4.5H6V1.5H13.5ZM6 22.5V13.5H18V22.5H6ZM22.5 22.5H19.5V12.75C19.5 12.3358 19.1642 12 18.75 12H5.25C4.83582 12 4.5 12.3358 4.5 12.75V22.5H1.5V1.5H4.5V5.25C4.5 5.66418 4.83582 6 5.25 6H14.25C14.6642 6 15 5.66418 15 5.25V1.5H17.6895L22.5 6.31055V22.5Z" fill="#676a6c"></path>
+                </svg>
+            </div>
+        </div>
+    </div>*@
+    
+    if (isAdminv3 && !isMobile)
+    {
+        <div class="backSetting-link__desktop">
+            @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        </div>
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="backSetting-link__mobile col-xs-3">
+                    @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+                </div>
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text text-center__mobile">@T("Admin.Settings.Commonpage.Commonsettings")</h1>
+                </div>
+                <div class="col-xs-6 save-img-block">
+                    <div data-e2e="btnSave" class="text-right save-img">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.7803 5.46973L18.5303 0.219727C18.3896 0.0791016 18.1989 0 18 0H0.75C0.335815 0 0 0.335815 0 0.75V23.25C0 23.6642 0.335815 24 0.75 24H23.25C23.6642 24 24 23.6642 24 23.25V6C24 5.80115 23.9209 5.61035 23.7803 5.46973ZM13.5 1.5V4.5H6V1.5H13.5ZM6 22.5V13.5H18V22.5H6ZM22.5 22.5H19.5V12.75C19.5 12.3358 19.1642 12 18.75 12H5.25C4.83582 12 4.5 12.3358 4.5 12.75V22.5H1.5V1.5H4.5V5.25C4.5 5.66418 4.83582 6 5.25 6H14.25C14.6642 6 15 5.66418 15 5.25V1.5H17.6895L22.5 6.31055V22.5Z" fill="#676a6c"></path>
+                        </svg>
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified || !settings.regionsLoaded" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @Html.AntiForgeryToken()
+    <div class="error">
+        @Html.ValidationSummary()
+    </div>
+    <div>
+        <uib-tabset uid="indexTab" 
+                    on-select-batch="settings.onSelectTab(tab.index);" 
+                    ng-init="settings.form = form;" 
+                    @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"": "")>
+            <uib-tab index="'about'" classes="ng-tab" heading="@T("Admin.Settings.Index.AboutStore")">
+                <uib-tab-heading ng-class="{'tab-warning' : aboutSettingsForm.$invalid}">
+                    <span>@T("Admin.Settings.Index.AboutStore")</span>
+                    <span ng-if="aboutSettingsForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                    <span ng-if="!aboutSettingsForm.$invalid && aboutSettingsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+                </uib-tab-heading>
+                <ng-form name="aboutSettingsForm" validation-tab-index="'about'">
+                    @Html.Partial("Common/Common", Model)
+                </ng-form>
+            </uib-tab>
+            <uib-tab index="'plan'" classes="ng-tab" heading="@T("Admin.Settings.Index.SalesPlan")">
+                <uib-tab-heading ng-class="{'tab-warning' : planForm.$invalid}">
+                    <span>@T("Admin.Settings.Index.SalesPlan")</span>
+                    <span ng-if="planForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                    <span ng-if="!planForm.$invalid && planForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+                </uib-tab-heading>
+                <ng-form name="planForm" validation-tab-index="'plan'">
+                    @Html.Partial("Common/SalesPlan", Model)
+                </ng-form>
+            </uib-tab>
+            <uib-tab index="'feedback'" classes="ng-tab" heading="@T("Admin.Settings.Index.Feedback")">
+                <uib-tab-heading ng-class="{'tab-warning' : feedbackForm.$invalid}">
+                    <span>@T("Admin.Settings.Index.Feedback")</span>
+                    <span ng-if="feedbackForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                    <span ng-if="!feedbackForm.$invalid && feedbackForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+                </uib-tab-heading>
+                <ng-form name="feedbackForm" validation-tab-index="'feedback'">
+                    @Html.Partial("Common/_Feedback", Model)
+                </ng-form>
+            </uib-tab>
+            @if (!isAdminv3)
+            {
+                <div data-e2e="btnSave" class="js-not-tabs">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified || !settings.regionsLoaded" />
+                </div>
+            }
+        </uib-tabset>
+    </div>
+}

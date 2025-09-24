@@ -1,0 +1,137 @@
+<ng-form name="deliveryByZonesList">
+    <div is-mobile>
+        <div class="m-b-sm" ng-bind-html="::'Admin.Js.DeliveryByZonesList.Header'|translate"></div>
+        <div class="m-b-sm">
+            <a
+                class="btn btn-default"
+                ngf-drop
+                ngf-max-size="500KB"
+                ngf-select=""
+                ngf-change="$ctrl.changeFiles($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span>{{'Admin.Js.DeliveryByZonesList.UploadGeoJson'|translate}}</span>
+            </a>
+        </div>
+
+        <div id="deliveryByZonesSortingContainer" class="relative">
+            <div ng-if="!isMobile.value" class="m-b-md sortable-row ng-cloak" ng-model="$ctrl.zones" as-sortable="$ctrl.sortableOptions">
+                <div ng-repeat="item in $ctrl.zones" as-sortable-item>
+                    <div class="flex payment-row middle-xs between-xs">
+                        <div class="col-xs">
+                            <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                <div class="flex middle-xs">
+                                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                        <icon-move />
+                                    </div>
+                                    <span
+                                        >{{item.Name}}, {{item.Rate}} {{$ctrl.currencyLabel}}<span ng-if="item.CostFree">
+                                            ({{'Admin.Js.DeliveryByZonesList.FreeOfFrom'|translate}} {{item.CostFree}} {{$ctrl.currencyLabel}})</span
+                                        ></span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex middle-xs col-fixed-size-xs">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddDeliveryZoneCtrl'"
+                                controller-as="ctrl"
+                                template-url="../areas/admin/content/src/shippingMethods/modal/addDeliveryZone/addDeliveryZone.html"
+                                data-resolve="{params: { zone: item, currencyLabel: $ctrl.currencyLabel, yaMapsApiKey: $ctrl.yaMapsApiKey, methodId: $ctrl.methodId, warehousesActive: $ctrl.warehousesActive}}"
+                                data-on-close="$ctrl.editZone(result, item)">
+                                <button
+                                    type="button"
+                                    aria-label="Редактировать"
+                                    class="btn-icon link-invert ui-grid-custom-service-icon fas fa-pencil-alt"></button>
+                            </ui-modal-trigger>
+                            <button
+                                type="button"
+                                ng-click="$ctrl.deleteZone(item)"
+                                class="btn-icon link-invert link-decoration-none fas fa-times"
+                                aria-label="Удалить"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="isMobile.value" ng-model="$ctrl.zones" as-sortable="$ctrl.sortableOptions" class="settings-list settings-list--row-gap-3">
+                <div ng-repeat="item in $ctrl.zones" as-sortable-item class="swipe-line">
+                    <div class="swipe-line__inner" data-swipe-line>
+                        <div
+                            class="navigation-item navigation-item--horizontal card card--middle swipe-line__content setting__property-group-item"
+                            style="padding: 0 16px">
+                            <div class="as-sortable-item-handle navigation-item__icon" as-sortable-item-handle>
+                                <icon-move>
+                                    <svg
+                                        class="icon-move"
+                                        version="1.0"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10.000000pt"
+                                        height="20.000000pt"
+                                        viewBox="0 0 10.000000 20.000000"
+                                        preserveAspectRatio="xMidYMid meet">
+                                        <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                            <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                            <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        </g>
+                                    </svg>
+                                </icon-move>
+                            </div>
+                            <div class="navigation-item__text">
+                                <ui-modal-trigger
+                                    data-controller="'ModalAddDeliveryZoneCtrl'"
+                                    controller-as="ctrl"
+                                    template-url="../areas/admin/content/src/shippingMethods/modal/addDeliveryZone/addDeliveryZone.html"
+                                    data-resolve="{params: { zone: item, currencyLabel: $ctrl.currencyLabel, yaMapsApiKey: $ctrl.yaMapsApiKey, methodId: $ctrl.methodId}}"
+                                    data-on-close="$ctrl.editZone(result, item)">
+                                    <div style="padding: 18px 0">
+                                        {{item.Name}}, {{item.Rate}} {{$ctrl.currencyLabel}}<span ng-if="item.CostFree">
+                                            ({{'Admin.Js.DeliveryByZonesList.FreeOfFrom'|translate}} {{item.CostFree}} {{$ctrl.currencyLabel}})</span
+                                        >
+                                    </div>
+                                </ui-modal-trigger>
+                            </div>
+                        </div>
+                        <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                ng-click="$ctrl.deleteZone(item)">
+                                {{'Admin.Js.DeliveryByZonesList.Remove'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex m-b-md">
+            <div>
+                <!--                <ui-modal-trigger data-controller="'ModalAddDeliveryZoneCtrl'" controller-as="ctrl"-->
+                <!--                                  template-url="../areas/admin/content/src/shippingMethods/modal/addDeliveryZone/addDeliveryZone.html"-->
+                <!--                                  data-resolve="{params: { currencyLabel: $ctrl.currencyLabel, yaMapsApiKey: $ctrl.yaMapsApiKey, methodId: $ctrl.methodId}}"-->
+                <!--                                  data-on-close="$ctrl.addZone(result)">-->
+                <!--                    <a href="" class="btn btn-action">{{'Admin.Js.ShippingMethods.Add'|translate}}</a>-->
+                <!--                </ui-modal-trigger>-->
+
+                <a class="btn btn-sm btn-default" ng-click="$ctrl.downloadGeoJson(event)" ng-if="$ctrl.zones.length">
+                    <i class="fa fa-download"></i>&nbsp;&nbsp;<span>{{'Admin.Js.DeliveryByZonesList.DownloadGeoJson'|translate}}</span>
+                </a>
+            </div>
+        </div>
+
+        <input type="hidden" name="zonesjson" value="{{$ctrl.zones | json}}" class="shipping-extend-input-hidden" />
+        <input type="hidden" ng-model="$ctrl.update" class="hidden shipping-extend-input-hidden" />
+        <input
+            ng-if="!$ctrl.zones.length"
+            type="hidden"
+            ng-model="$ctrl.emptyString"
+            required
+            readonly
+            class="shipping-extend-input-hidden"
+            validation-input-text="{{'Admin.Js.DeliveryByZonesList.Zones'|translate}}" />
+    </div>
+</ng-form>

@@ -1,0 +1,169 @@
+﻿@using AdvantShop.Core.Services.Loging.Emails 
+@using AdvantShop.Core.Services.Triggers
+@{ 
+    var emailStatuses = new List<EmailStatus>
+    {
+        EmailStatus.Sent,
+        EmailStatus.Delivered,
+        EmailStatus.Opened,
+        EmailStatus.Clicked,
+        EmailStatus.Spam,
+    };
+    var dateFrom = DateTime.Now.Date.AddDays(-7).ToString("yyyy-MM-dd");
+    var dateTo = DateTime.Now.Date.ToString("yyyy-MM-dd");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox" ng-init="$ctrl.init({ dateFrom: '@dateFrom', dateTo: '@dateTo', triggerObjectTypes: [@ETriggerObjectType.Order.ConvertIntString(), @ETriggerObjectType.Lead.ConvertIntString()], triggersActive: @SettingsMain.TriggersActive.ToLowerString(), canAddSalesChannel: @CustomerContext.CurrentCustomer.IsAdmin.ToLowerString() })">
+    <div class="ibox-content">
+        <div class="row middle-xs m-b-md" ng-if="$ctrl.triggerEmails.length > 0">
+            <div class="col-xs-12 col-md-slim funnel__label @(isMobile ? "m-b-sm" : "")">@T("Admin.Funnels.FunnelData.Emails.TimeInterval")</div>
+            <div class="col-xs col-sm-slim">
+                <div class="@(isMobile ? "flex" : "")" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}" fp-on-change="$ctrl.fetch()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="$ctrl.emailsDateFrom">
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+
+            <div class="@(isMobile ? "" : "col-sm-slim")">–</div>
+            <div class="col-xs col-sm-slim">
+                <div class="@(isMobile ? "flex" : "")" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}" fp-on-change="$ctrl.fetch()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control input-alt" ng-flatpickr-input ng-model="$ctrl.emailsDateTo">
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+        </div>
+
+        @if (isMobile)
+        {
+            <div class="landig-site-trigger--mobile" data-e2e="AddSiteTrigger" ng-click="$ctrl.addTrigger()"></div>
+        }
+        else
+        {
+            <div class="m-b-md">
+                <button class="btn btn-sm btn-submit" data-e2e="AddSiteTrigger" type="button" ng-click="$ctrl.addTrigger()">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.Funnels.FunnelData.Emails.NewChainLetters")
+                </button>
+            </div>
+        }
+
+
+        @if (isMobile)
+        {
+            <div class="card ng-cloak text-center" ng-if="$ctrl.triggerEmails == null || $ctrl.triggerEmails.length == 0">
+                @T("Admin.Funnels.FunnelData.Emails.NoChainsConfigured")
+            </div>
+            <div class="ng-cloak" ng-if="$ctrl.triggerEmails.length > 0">
+                
+                <div class="form-group setting__form-group">
+                
+                <div ng-repeat="trigger in $ctrl.triggerEmails track by $index" class="swipe-line-container">
+                    <div class="swipe-line m-b-sm">
+
+                        <div data-swipe-line class="swipe-line__inner">
+
+                            <div class="swipe-line__content">
+                                <div class="card card--gap-row-sm">
+                                    <div class="funnel__label funnel--m-none m-b-sm">
+                                        {{trigger.Name}}
+                                        <a ng-href="triggers/edit/{{trigger.Id}}" class="m-l-sm link-invert link-decoration-none fas fa-pencil-alt" title="Редактировать"></a>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div ng-repeat="item in trigger.Emailings track by $index">
+                                                <div class="row">
+                                                    <div class="col-xs-7 m-b-sm">@T("Admin.Funnels.FunnelData.Emails.SubjectLetter")</div>
+                                                    <div class="col-xs-5 m-b-sm">{{item.EmailSubject || '[Не указана]'}}</div>
+                                                </div>
+                                                @if (SettingsMail.UseAdvantshopMail)
+                                                {
+                                                    foreach (var status in emailStatuses)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-xs-7 m-b-sm">@status.Localize()</div>
+                                                            <div class="col-xs-5 m-b-sm">{{item.EmailsCount['@status.ToString()']}}</div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-xs-8" colspan="@emailStatuses.Count">
+                                                            <a href="" ng-click="$ctrl.setMailSettings()">@T("Admin.Funnels.FunnelData.Emails.ConnectStatistics")</a>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div data-swipe-line-right class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                                <a
+                                    href=""
+                                    ng-click="$ctrl.deleteTrigger(trigger.Id)"
+                                    class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs">@T("Admin.Funnels.FunnelData.Emails.Delete")</a
+                                >
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="m-b-lg ng-cloak" ng-if="$ctrl.triggerEmails == null || $ctrl.triggerEmails.length == 0">
+                @T("Admin.Funnels.FunnelData.Emails.NoChainsConfigured")
+            </div>
+            <div class="ng-cloak" ng-if="$ctrl.triggerEmails.length > 0">
+                <div ng-repeat="trigger in $ctrl.triggerEmails track by $index">
+
+                    <h3 class="m-b-md">
+                        {{trigger.Name}} 
+                        <a ng-href="triggers/edit/{{trigger.Id}}" class="m-l-sm link-invert link-decoration-none fas fa-pencil-alt" title="@T("Admin.Funnels.FunnelData.Emails.Edit")"></a>
+                        <a data-ng-click="$ctrl.deleteTrigger(trigger.Id)" class="m-l-sm link-invert link-decoration-none fas fa-times" title="@T("Admin.Funnels.FunnelData.Emails.Delete")"></a>
+                    </h3>
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>@T("Admin.Funnels.FunnelData.Emails.SubjectLetter")</th>
+                            @foreach (var status in emailStatuses)
+                            {
+                                <th class="width-sm">@status.Localize()</th>
+                            }
+                        </tr>
+                        <tr ng-repeat="item in trigger.Emailings track by $index">
+                            <td>{{item.EmailSubject || '[Не указана]'}}</td>
+                            @if (SettingsMail.UseAdvantshopMail)
+                            {
+                                foreach (var status in emailStatuses)
+                                {
+                                    <td>{{item.EmailsCount['@status.ToString()']}}</td>
+                                }
+                            }
+                            else
+                            {
+                                <td colspan="@emailStatuses.Count">
+                                    <a href="" ng-click="$ctrl.setMailSettings()">@T("Admin.Funnels.FunnelData.Emails.ConnectStatistics")</a>
+                                </td>
+                            }
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

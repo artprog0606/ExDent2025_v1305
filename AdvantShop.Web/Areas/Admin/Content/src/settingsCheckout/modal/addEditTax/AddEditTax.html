@@ -1,0 +1,108 @@
+﻿<form novalidate name="addEditTaxForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{ctrl.mode == "add" ? ('Admin.Js.AddEditTax.Add'|translate) : ('Admin.Js.AddEditTax.Edit'|translate)}}</h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.form = addEditTaxForm">
+        <div class="form-horizontal">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting-label-wrap setting__label">
+                        <span class="text-required">{{'Admin.Js.AddEditTax.Name'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            data-e2e="taxName"
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.name"
+                            required
+                            validation-input-text="{{'Admin.Js.AddEditTax.Name'|translate}}"
+                            data-autofocus="!isMobile.value" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label
+                        ng-if="!isMobile.value"
+                        for="taxEnabled"
+                        class="col-xs-11 col-md-3 control-label setting-label-wrap setting__label setting--m-none">
+                        {{'Admin.Js.AddEditTax.Active'|translate}}
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <label class="adv-checkbox-label" data-e2e="taxEnabled">
+                            <input id="taxEnabled" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.enabled" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span ng-if="isMobile.value">{{'Admin.Js.AddEditTax.Active'|translate}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting-label-wrap setting__label">
+                        {{'Admin.Js.AddEditTax.Rate'|translate}}
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            data-e2e="taxRate"
+                            type="number"
+                            class="form-control input-alt"
+                            ng-model="ctrl.rate"
+                            required
+                            validation-input-text="{{'Admin.Js.AddEditTax.Rate'|translate}}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting-label-wrap setting__label">
+                        {{'Admin.Js.AddEditTax.Type'|translate}}
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <select
+                            ng-model="ctrl.taxType"
+                            ng-options="s.label for s in ctrl.TaxTypes"
+                            class="form-control input-alt"
+                            data-e2e="taxType"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label
+                        ng-if="!isMobile.value"
+                        for="taxIsDefault"
+                        class="col-xs-11 col-md-3 control-label setting-label-wrap setting__label setting--m-none">
+                        {{'Admin.Js.AddEditTax.DefaultTax'|translate}}
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <label class="adv-checkbox-label" data-e2e="taxIsDefault">
+                            <input id="taxIsDefault" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.isDefault" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span ng-if="isMobile.value">{{'Admin.Js.AddEditTax.DefaultTax'|translate}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-e2e="taxButtonSave"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            ladda="ctrl.btnSleep"
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !addEditTaxForm.modified)"
+            ng-bind="ctrl.mode == 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

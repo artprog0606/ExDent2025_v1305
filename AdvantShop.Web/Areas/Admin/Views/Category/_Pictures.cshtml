@@ -1,0 +1,111 @@
+﻿@using AdvantShop.FilePath
+@model AdvantShop.Web.Admin.Models.Catalog.Categories.AdminCategoryModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="row pictures">
+    <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+        <h2 class="category-page__title category-title">@T("Admin.Category.Pictures")</h2>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox category-block">
+            <div class="ibox-content category-content border_none">
+                <div>
+                    <div class="row">
+
+                        <div class="col-xs-12 col-md-2">
+                            <span class="form-label form-label--block">@T("Admin.Category.Index.MiniPicture")</span>
+                            <div class="m-b-sm flex middle-xs">
+                                <span class="@(isMobile ? "flex-grow" : "")">@(SettingsPictureSize.SmallCategoryImageWidth)x@(SettingsPictureSize.SmallCategoryImageHeight)px</span>
+                                <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.Pictures.MiniPicture")">
+                                    @T("Admin.Category.Pictures.MiniPictureView")<br />
+                                    <br />
+                                    @T("Admin.Category.Pictures.PictureForCategory")<br />
+                                    <br />
+                                    @T("Admin.Category.Pictures.DefaultSize")
+                                </help-trigger>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-5 m-b-md">
+                            @Html.PictureUploader(
+                               AdvantShop.Catalog.PhotoType.CategorySmall,
+                               Model.CategoryId,
+                               Model.MiniPicture.ImageSrcSmall(),
+                               "category.updateMiniImage(result)",
+                               new
+                               {
+                                   data_e2e = "SmallImg",
+                                   @class = "picture-uploader-middle"
+                               }, Model.MiniPicture.PhotoId)
+                            @Html.HiddenFor(x => x.MiniPictureId, new { ng_value = "category.MiniPictureId" })
+                        </div>
+
+                        <div class="col-xs-12 col-md-5 m-b-md">
+                            <div>
+                                <span class="form-label form-label--block">@T("Admin.Category.Index.Icon")</span>
+                                <div class="m-b-sm flex middle-xs">
+                                    <span class="@(isMobile ? "flex-grow" : "")">@(SettingsPictureSize.IconCategoryImageWidth)x@(SettingsPictureSize.IconCategoryImageHeight)px</span>
+                                    <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.Pictures.Icon")">
+                                        @T("Admin.Category.Pictures.IconForCategory")<br />
+                                        <br />
+                                        @T("Admin.Category.Pictures.RecommendedFileFormat")<br />
+                                        <br />
+                                        @T("Admin.Category.Pictures.IconSize")
+                                    </help-trigger>
+                                </div>
+                                @Html.PictureUploader(
+                                   AdvantShop.Catalog.PhotoType.CategoryIcon,
+                                   Model.CategoryId,
+                                   Model.Icon.IconSrc(true),
+                                   "category.updateIconImage(result)",
+                                   new
+                                   {
+                                       data_e2e = "IconImg",
+                                       @class = "picture-uploader-small"
+                                   }, Model.Icon.PhotoId)
+                                @Html.HiddenFor(x => x.IconId, new { ng_value = "category.IconId" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row">
+
+                        <div class="col-xs-12 col-md-2">
+                            <span class="form-label form-label--block">@T("Admin.Category.Index.Picture")</span>
+                            <div class="m-b-sm flex middle-xs">
+                                <span class="@(isMobile ? "flex-grow" : "")">@(SettingsPictureSize.BigCategoryImageWidth)x@(SettingsPictureSize.BigCategoryImageHeight)px</span>
+                                <help-trigger class="ng-cloak" data-title="@T("Admin.Category.Pictures.Picture")">
+                                    @T("Admin.Category.Pictures.MainPicture")<br />
+                                    <br />
+                                    @T("Admin.Category.Pictures.PictureDisplay")<br />
+                                    <br />
+                                    @T("Admin.Category.Pictures.DefaultSizeCategoryPicture")
+                                </help-trigger>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-10">
+
+                            @Html.PictureUploader(
+                                   AdvantShop.Catalog.PhotoType.CategoryBig,
+                                   Model.CategoryId,
+                                   Model.Picture.ImageSrcBig(),
+                                   "category.updateImage(result)",
+                                   new
+                                   {
+                                       data_e2e = "BigImg",
+                                       @class = "picture-uploader-big"
+                                   }, Model.Picture.PhotoId)
+                            @Html.HiddenFor(x => x.PictureId, new { ng_value = "category.PictureId" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

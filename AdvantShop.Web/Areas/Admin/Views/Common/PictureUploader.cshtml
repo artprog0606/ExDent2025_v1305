@@ -1,0 +1,33 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Shared.Common.PictureUploader
+@using AdvantShop.Core.Modules
+@using AdvantShop.Core.Modules.Interfaces
+@using AdvantShop.Catalog
+@{
+    var show = Model.PhotoType == PhotoType.Product || Model.PhotoType == PhotoType.CategorySmall || Model.PhotoType == PhotoType.Brand || Model.PhotoType == PhotoType.News;
+    var showImageSearch = show && SettingsCatalog.ShowImageSearchEnabled;
+    bool showGoogleImageSearch = !showImageSearch && show && AttachedModules.GetModules<IPhotoSearcher>().Any();
+}
+<picture-uploader start-src="@Model.StartSrc"
+                  picture-id="@Model.PictureId"
+                  upload-url="@Model.UploadUrl"
+                  upload-params="{'type': '@Model.PhotoType', 'objId':@Model.ObjId }"
+                  delete-url="@Model.DeleteUrl"
+                  uploadbylink-url="@Model.UploadByLinkUrl"
+                  uploader-destination="@Model.PhotoType"
+                  uploadbylink-params="{'type': '@Model.PhotoType', 'objId':@Model.ObjId }"
+                  on-update="@Model.NgOnUpdateCallback"
+                  file-types="'@string.Join(",", Model.FileTypes)'"
+                  @Model.HtmlAttributes>
+    @if (showImageSearch && Model.ObjId != 0)
+    {
+        <image-search uploadbylink-url="@Model.UploadByLinkUrl"
+                      uploadbylink-params="{'type': '@Model.PhotoType', 'objId':@Model.ObjId }"
+                      on-apply="@Model.NgOnUpdateCallback"></image-search>
+    }
+    @if (showGoogleImageSearch && Model.ObjId != 0)
+    {
+        <google-image-search uploadbylink-url="@Model.UploadByLinkUrl"
+                             uploadbylink-params="{'type': '@Model.PhotoType', 'objId':@Model.ObjId }"
+                             on-apply="@Model.NgOnUpdateCallback"></google-image-search>
+    }
+</picture-uploader>

@@ -1,0 +1,155 @@
+﻿@using AdvantShop.Trial
+@using AdvantShop.Saas
+@{ 
+    Layout = "_ModulesLayout.cshtml";
+}
+
+@Html.Header(new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel()
+{
+    Title = T("Admin.Modules.ModulesLayout.Modules").ToString(),
+    Controls = new List<IButton>()
+    {
+        new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            Link = Url.AbsoluteActionUrl("market", "modules"),
+            Icon =  new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width=16, height=16 }
+            },
+        },
+        new MoreButtonModel(){
+            Attributes = new[] { "ng-if=\"modules.modulesData.length > 0\"" },
+            Items = new List<MoreButtonPopoverItem>(){
+                new MoreButtonPopoverItem(){
+                    Text = T("Admin.Modules.Index.UpdateAllModules"),
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "refresh",
+                        Attributes = new { width = 24, height = 24 }
+                    },
+                    ColorType = eColorType.Link,
+                    Attributes = new[] { "ng-click=\"modules.updateAllModules()\"" },
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                }
+            },
+            NgTemplateId = "moreButtonRightHeaderModulesTemplate"
+        }
+    }
+})
+
+
+
+<article ng-init="modules.pageType = true; modules.filterStart = '@(Request["name"] ?? string.Empty)'; modules.onInit()" class="modules-page">
+
+    <a href="https://www.advantshop.net/help/pages/kak-ustanovity-moduli" target="_blank" class="m-b-sm link-academy link-invert inline-flex middle-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+        </svg>
+        <span>@T("Admin.Modules.LeftMenu.Instructions")</span>
+    </a>
+
+    <h2 class="modules-page__title">@T("Admin.Modules.LeftMenu.InstalledModules")</h2>
+
+    @if (TrialService.IsTrialEnabled)
+    {
+        <div class="h4 modules-page__text">
+            @T("Admin.Modules.Index.AttentionSomeModules")<br />
+            @T("Admin.Modules.Index.MoreInfo")<a href="https://www.advantshop.net/modules" target="_blank">https://www.advantshop.net/modules</a>
+        </div>
+    }
+    <div class="ng-cloak" ng-if="modules.dataLoaded == true">
+        <div ng-switch="modules.modulesMaster == null || modules.modulesMaster.length === 0">
+
+            <div class="card center-xs modules-page__empty" ng-switch-when="true">
+                <div class="modules-page__empty-text">@T("Admin.Modules.Index.HaveNotInstalledModules")</div>
+                <div>
+                    @Html.AbsoluteActionLink(T("Admin.Modules.Index.ModulesShop").ToString(), "Market", "Modules", null, new { @class = "btn btn-md btn-success modules-page__empty-btn" })
+                </div>
+            </div>
+
+            <div ng-switch-when="false">
+                <ui-grid-custom-filter grid-column-defs="modules.filterColumnDefs"
+                                       grid-params="modules.gridParams"
+                                       grid-search-text="'@(Request["name"] ?? string.Empty)'"
+                                       grid-search-placeholder="modules.gridSearchPlaceholder"
+                                       on-change="modules.filterApply(params, item)"
+                                       template-url="'@Html.GetAssetPath("ui-grid-custom-filter--mobile.html")'"
+                                       on-remove="modules.filterRemove(name, item)">
+                </ui-grid-custom-filter>
+                <div class="modules-page__modules-list">
+                    <div class="swipe-line" data-module-string-id="{{module.StringId | lowercase}}"
+                         ng-repeat="module in modules.modulesData track by $index">
+                        <div class="swipe-line__inner" data-swipe-line>
+                            <div class="swipe-line__content">
+                                <div class="card card--image-horizontal module-card module-card--link">
+                                    <a class="card__image-wrap module-card__img-wrap" ng-href="modules/details/{{module.StringId}}" title="{{module.Version}}">
+                                        <img ng-src="{{module.Icon}}" />
+
+                                        <div class="marker-list__container">
+                                            <div ng-if="module.IsCustomVersion" class="marker-list__row">
+                                                <div class="marker">
+                                                    @T("Admin.Modules.Index.Marker.CustomModule")
+                                                </div>
+                                            </div>
+                                            <div ng-if="module.IsLocalVersion && !module.IsPersonalModule" class="marker-list__row">
+                                                <div class="marker">
+                                                    @T("Admin.Modules.Index.Marker.LocalModule")
+                                                </div>
+                                            </div>
+                                            <div ng-if="module.IsPersonalModule" class="marker-list__row">
+                                                <div class="marker">
+                                                    @T("Admin.Modules.Index.Marker.PersonalModule")
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </a>
+                                    <div class="card__content">
+                                        <div class="module-card__name" ng-bind="module.Name"></div>
+
+                                        <div class="module-card__price"
+                                             ng-if="@((SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled).ToLowerString()) || module.Price != 0 || (module.Price == 0 && module.IsFree)"
+                                             ng-bind="module.PriceString"></div>
+
+                                        <div class="module-card__activity">
+                                            <switch-on-off data-id="{{module.StringId}}"
+                                                           checked="module.Enabled"
+                                                           theme="blue"
+                                                           label=""
+                                                           on-click="modules.changeEnabled(state, name)">
+                                            </switch-on-off>
+                                        </div>
+                                        <div class="module-card__description" ng-bind="module.BriefDescription"></div>
+                                        <div class="module-card__btns-wrap" ng-if="module.IsInstall && module.Active && module.Version != module.CurrentVersion && !module.IsLocalVersion && !module.IsCustomVersion">
+                                            <button type="button" class="btn btn-sm btn-success btn-block" ng-click="modules.updateModule(module)">@T("Admin.Modules.Index.Update")</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swipe-line__right" ng-show="!module.IsCustomVersion && !module.IsPersonalModule" data-swipe-line-right>
+                                <sweetalert class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                            sweet-options="{title : '@T("Admin.Modules.Index.DeleteTitle")', text: '@T("Admin.Modules.Index.DeleteText")', type: 'warning', showCancelButton: true}"
+                                            sweet-on-confirm="modules.uninstallModule(module)">
+                                    @T("Admin.Modules.ModulesLayout.Delete")
+                                </sweetalert>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+

@@ -1,0 +1,107 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.Warehouses.WarehouseModel
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="row" is-mobile>
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <h2 class="category-title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.Address")</h2>
+        <div class="category-page__description" style="@(isMobile ? "margin:-15px 0 15px 0;" : "")">
+            @T("Admin.Warehouse.AddEdit.Address.About")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox category-block">
+            <div class="ibox-content category-content border_none">
+                <div>
+                    <div class="row middle-xs category-row @(isMobile ? "form-group" : "")">
+                        <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                            @T("Admin.Warehouse.AddEdit.City")
+                        </div>
+
+                        <div class="col-xs-12 col-md-10 middle-xs">
+                            <div class="row">
+                                <div class="col-xs-12 flex">
+                                    <input type="text" class="form-control input-alt" ng-model="warehouse.city" ng-init="warehouse.city = '@Model.City'" autocompleter-address autocompleter-params="{withId: true}" on-select="warehouse.processCity(item)"/>
+                                    @Html.HiddenFor(x => x.CityId, 
+                                        new {
+                                            ng_model = "warehouse.cityId", 
+                                            ng_value = "warehouse.cityId", 
+                                            ng_init = "warehouse.cityId = " + 
+                                                      (Model.CityId.HasValue 
+                                                          ? Model.CityId.ToString()
+                                                          : "null") })
+                                </div>
+                                <div class="col-xs-12">
+                                    <span class="help-block" ng-class="{'block m-t-sm ': isMobile.value && warehouse.cityDescription}" ng-bind="warehouse.cityDescription" ng-init="warehouse.cityDescription='@Model.CityDescription'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row category-row @(isMobile ? "form-group" : "")">
+                        <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                            @T("Admin.Warehouse.AddEdit.Address")
+                        </div>
+                        <div class="col-xs-12 col-md-10 flex middle-xs">
+                            @Html.TextBoxFor(x => x.Address, new { ng_model = "warehouse.address", @class = "form-control input-alt" })
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row category-row @(isMobile ? "form-group" : "")">
+                        <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                            @T("Admin.Warehouse.AddEdit.Coordinates")
+                        </div>
+                        <div class="col-xs-12 col-md-10 middle-xs">
+                            <div class="row">
+                                <div class="col-xs-6 @(isMobile ? "m-b-sm" : "")">
+                                    @T("Admin.Warehouse.AddEdit.Latitude")
+                                </div>
+                                <div class="col-xs-6 @(isMobile ? "m-b-sm" : "")">
+                                    @T("Admin.Warehouse.AddEdit.Longitude")
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    @Html.TextBoxFor(x => x.Latitude, new
+                                    {
+                                        ng_model = "warehouse.latitude",
+                                        validation_input_float = "",
+                                        ng_model_options = "{ allowInvalid: true}",
+                                        @class = "form-control input-alt",
+                                        validation_input_text = T("Admin.Warehouse.AddEdit.Latitude")
+                                    })
+                                </div>
+                                <div class="col-xs-6 flex">
+                                    @Html.TextBoxFor(x => x.Longitude, new
+                                    {
+                                        ng_model = "warehouse.longitude", 
+                                        validation_input_float = "",
+                                        @class = "form-control input-alt",
+                                        validation_input_text = T("Admin.Warehouse.AddEdit.Longitude")
+                                    })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row category-row @(isMobile ? "form-group" : "")">
+                        <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                            @T("Admin.Warehouse.AddEdit.Commentary")
+                        </div>
+                        <div class="col-xs-12 col-md-10 flex middle-xs">
+                            @Html.TextAreaFor(x => x.AddressComment, new { ng_model = "warehouse.addressComment", @class = "form-control input-alt" })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

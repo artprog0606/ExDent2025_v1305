@@ -1,0 +1,68 @@
+﻿<div
+    bs-modifiable="false"
+    ng-class="{'ui-grid-custom--overrided' : $ctrl.overrideControlExist === true, 'ui-grid-custom--default' : !$ctrl.overrideControlExist }">
+    <ui-grid-custom-filter
+        ng-if="$ctrl.gridFilterEnabled === true"
+        grid-params="$ctrl._params"
+        grid-column-defs="$ctrl.gridOptions.columnDefs"
+        grid-search-text="$ctrl.gridSearchText"
+        grid-search-placeholder="$ctrl.gridSearchPlaceholder"
+        grid-search-visible="$ctrl.gridSearchVisible"
+        grid-options="$ctrl.gridOptions"
+        on-init="$ctrl.filterInit(filter)"
+        on-change="$ctrl.filterApply(params, item)"
+        on-remove="$ctrl.filterRemove(name, item)"
+        hidden-total-items-count="$ctrl.gridFilterHiddenTotalItemsCount"
+        template-url="$ctrl.gridFilterTemplateUrl"
+        search-autofocus="$ctrl.searchAutofocus"></ui-grid-custom-filter>
+    <ui-grid-custom-selection
+        ng-if="$ctrl.gridSelectionEnabled && $ctrl.gridApi && $ctrl.isMobile"
+        ng-show="$ctrl.selectionCustom.storageSelectedRows.length > 0"
+        class="ui-grid-custom-selection-in-header"
+        grid="$ctrl"
+        grid-menu-items="$ctrl.gridOptions.uiGridCustom.selectionOptions"
+        grid-api="$ctrl.gridApi"
+        grid-options="$ctrl.gridOptions"
+        grid-params="$ctrl._params"
+        grid-selection-on-init="$ctrl.selectionOnInit(selectionCustom)"
+        grid-selection-on-change="$ctrl.selectionOnChange(rows)"
+        grid-on-request-before="$ctrl.selectionOnRequestBefore()"
+        grid-on-action="$ctrl.selectionUpdate(response)"></ui-grid-custom-selection>
+    <div ng-switch="$ctrl.firstLoading">
+        <div ng-switch-when="true" ng-class="{'m-b-md': $ctrl.isMobile}">
+            <i class="fas fa-spinner fa-spin fa-fw fa-2x"></i> <span>{{::'Admin.Js.GridCustom.LoadingData'|translate}}</span>
+        </div>
+        <div ng-switch-when="false" ng-class="{'ui-grid-custom-processing' : $ctrl.isProcessing, 'ui-grid-custom-processed': !$ctrl.isProcessing}">
+            <div class="ui-grid-custom-wrapper" ng-class="{'ui-grid-custom-selection-wrap': $ctrl.selectionCustom.storageSelectedRows.length > 0}">
+                <div
+                    ui-grid="$ctrl.gridOptions"
+                    ui-grid-selection
+                    ui-grid-pagination
+                    ui-grid-auto-resize
+                    ui-grid-save-state
+                    ui-grid-custom-edit
+                    ng-class="{'ui-grid--mobile': $ctrl.isMobile}">
+                    <div
+                        class="ui-grid-empty-text card"
+                        ng-if="!$ctrl.gridOptions.data.length && ($ctrl.error == null || $ctrl.error.length === 0) && $ctrl.isProcessing !== true"
+                        ng-bind="$ctrl.gridEmptyText"></div>
+                    <div class="ui-grid-error-text card" ng-if="$ctrl.error != null && $ctrl.error.length > 0" ng-bind="$ctrl.error"></div>
+                    <div ng-transclude="overrideHeaderControl"></div>
+                    <div ng-transclude="overrideControl"></div>
+                </div>
+                <div ng-transclude="footer"></div>
+            </div>
+            <ui-grid-custom-pagination
+                ng-if="$ctrl.gridOptions.totalItems >= $ctrl.gridOptions.paginationPageSizes[0] && $ctrl.gridPaginationEnabled === true"
+                grid-total-items="$ctrl.gridOptions.totalItems"
+                grid-pagination-page-size="$ctrl.gridOptions.paginationPageSize"
+                grid-pagination-page-sizes="$ctrl.gridOptions.paginationPageSizes"
+                grid-pagination-current-page="$ctrl.gridOptions.paginationCurrentPage"
+                on-change="$ctrl.paginationChange(paginationCurrentPage, paginationPageSize, paginationPageSizes)">
+            </ui-grid-custom-pagination>
+            <a href="" ng-click="$ctrl.export()" class="ui-grid-custom-export-link" download ng-if="$ctrl.gridShowExport"
+                >{{'Admin.Js.GridCustom.ExportToCSV'|translate}}</a
+            >
+        </div>
+    </div>
+</div>

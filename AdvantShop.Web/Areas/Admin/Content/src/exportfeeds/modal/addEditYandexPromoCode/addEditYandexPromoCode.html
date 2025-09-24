@@ -1,0 +1,107 @@
+﻿<form name="addEditePromoCode" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddEditYandexPromo.NewPromoCode'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-horizontal">
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                            <span class="text-required">{{'Admin.Js.AddEditYandexPromo.Name'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input
+                                type="text"
+                                placeholder=""
+                                ng-model="ctrl.promo.Name"
+                                class="form-control input-alt"
+                                data-e2e="PromoAddName"
+                                required
+                                validation-input-text="{{'Admin.Js.AddEditYandexPromo.Name'|translate}}"
+                                autofocus />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                            <span>{{'Admin.Js.AddEditYandexPromo.Description'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <textarea
+                                style="resize: vertical; min-height: 3.2rem"
+                                ng-model="ctrl.promo.Description"
+                                maxlength="500"
+                                class="form-control input-alt"
+                                data-e2e="PromoAddDescription"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                            <span>{{'Admin.Js.AddEditYandexPromo.PromoUrl'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input type="text" ng-model="ctrl.promo.PromoUrl" class="form-control input-alt" data-e2e="PromoAddUrl" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row" ng-if="ctrl.warning != ''">
+                        <div class="col-xs-12 col-md-offset-3 col-xs-9">
+                            <div class="error" style="{{isMobile.value ? 'color:red;text-align:center;margin-bottom:10px;' : 'text-align:center;'}}">
+                                <span>{{ ctrl.warning }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                            <span class="text-required">{{'Admin.Js.AddEditYandexPromo.Coupon'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <select
+                                ng-disabled="ctrl.coupons.length == 0 || ctrl.promo.Coupon === undefined"
+                                ng-model="ctrl.promo.Coupon"
+                                class="form-control input-alt m-b-xs"
+                                required
+                                validation-input-text="{{'Admin.Js.AddEditYandexPromo.Coupon'|translate}}"
+                                data-e2e="ExportAddType"
+                                ng-options="item as item.Code disable when !item.Enabled for item in ctrl.coupons"></select>
+                            <ui-modal-trigger
+                                data-controller="'ModalAddEditCouponCtrl'"
+                                controller-as="ctrl"
+                                size="middle"
+                                template-url="../areas/admin/content/src/coupons/modal/addEditCoupon/addEditCoupon.html"
+                                data-on-close="ctrl.fetchCoupons()">
+                                <a ng-class="{'block m-t-sm link-decoration-none' : isMobile.value}" data-e2e="AddCoupon"
+                                    >{{'Admin.Js.AddEditYandexPromo.AddCoupon'|translate}}</a
+                                >
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            data-e2e="ButtonSave"
+            class="btn btn-save"
+            ng-class="{'btn-success' : isMobile.value, 'btn-primary' : !isMobile.value}"
+            ng-disabled="addEditePromoCode.$pristine"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation>
+            {{'Admin.Js.AddEditYandexPromo.Ok'|translate}}
+        </button>
+        <button data-e2e="ButtonCancel" class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddEditYandexPromo.Cancel'|translate}}
+        </button>
+    </div>
+</form>

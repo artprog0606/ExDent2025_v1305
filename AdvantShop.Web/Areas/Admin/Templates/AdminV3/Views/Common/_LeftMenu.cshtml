@@ -1,0 +1,292 @@
+﻿@using AdvantShop.Core.Services.SalesChannels
+@using AdvantShop.FilePath;
+
+@model  AdvantShop.Web.Admin.ViewModels.Shared.Common.LeftMenuViewModel
+@{
+    var ngClickParent = Html.Raw("data-ng-click=\"submenuContainer.showOneOnly(submenuParent, $event); $event.stopPropagation();\"");
+    var arrow = Html.Raw("<span class=\"sidebar__icon sidebar__icon--right sidebar--compact-hidden\"><span class=\"sidebar__arrow\"><span class=\"sidebar-arrow\" ng-class=\"{'sidebar-arrow--right':!submenuParent.submenu.isSubmenuVisible,'sidebar-arrow--down':submenuParent.submenu.isSubmenuVisible}\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.2\" d=\"M11 9l3 3-3 3\" /></svg></span></span></span>");
+
+}
+<nav class="sidebar" data-sidebar-menu-state ng-class="{'sidebar--compact': sidebarMenuState.isCompact, 'sidebar--default': !sidebarMenuState.isCompact}">
+    <ul class="sidebar__list sidebar__list--main" data-submenu-container="{'type': 'accordion'}">
+        @foreach (var groupItem in Model.MenuItems)
+        {
+            foreach (var rootItem in groupItem.Menu)
+            {
+                if (!rootItem.IsAccessibleToUser() || !rootItem.ActiveInSaas)
+                {
+                    continue;
+                }
+                var rootAsParent = !rootItem.HideChildsInLeftMenu && (rootItem.ChildMenuRoute != null || (rootItem.MenuItems != null && rootItem.MenuItems.Any(x => x.Visible)));
+                <li class="sidebar__item @(rootItem.Selected && rootAsParent == false ? "sidebar__item--selected" : "")" @Html.Raw(rootAsParent ? "data-submenu-parent ng-class=\"{'sidebar__item--open': submenuParent.submenu.isSubmenuVisible}\"" : "")>
+
+                    @if (rootAsParent)
+                    {
+                        <div class="sidebar__trigger sidebar__trigger--root" @ngClickParent>
+                            <a class="sidebar__link" href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))" onclick="event.stopPropagation()">
+                                <span class="sidebar__icon sidebar__icon--left">
+                                    <span class="sidebar__icon-fa @rootItem.Icon">@Html.Raw(rootItem.IconContent)</span>
+                                </span>
+                                <span class="sidebar__name sidebar--compact-hidden">@T(rootItem.Name)</span>
+                                @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                {
+                                    <span class="sidebar__counter sidebar__counter--compact sidebar--compact-visible">
+                                        <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                    </span>
+                                }
+                            </a>
+                            <div class="sidebar__part-right">
+                                @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                {
+                                    <span class="sidebar__counter">
+                                        <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                    </span>
+                                }
+                                @if (rootAsParent)
+                                {
+                                    @arrow
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="sidebar__trigger sidebar__trigger--root" href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))">
+                            <div class="sidebar__link">
+                                <span class="sidebar__icon sidebar__icon--left">
+                                    <span class="sidebar__icon-fa @rootItem.Icon">@Html.Raw(rootItem.IconContent)</span>
+                                </span>
+                                <span class="sidebar__name sidebar--compact-hidden">@T(rootItem.Name)</span>
+                                @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                {
+                                    <span class="sidebar__counter sidebar__counter--compact sidebar--compact-visible">
+                                        <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                    </span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                            {
+                                <div class="sidebar__part-right">
+                                    <span class="sidebar__counter">
+                                        <span data-statistics-count data-type="@rootItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                                    </span>
+                                </div>
+                            }
+                        </a>
+                    }
+                    @if (!rootItem.HideChildsInLeftMenu)
+                    {
+                        if (rootItem.ChildMenuRoute != null)
+                        {
+                            if (rootItem.ChildMenuRoute.Route == null)
+                            {
+                                rootItem.ChildMenuRoute.Route = new Dictionary<string, object>();
+                            }
+                            rootItem.ChildMenuRoute.Route.Add("IsOpen", rootItem.Selected);
+
+                            @Html.Action(rootItem.ChildMenuRoute.Action, rootItem.ChildMenuRoute.Controller, rootItem.ChildMenuRoute.RouteDictionary)
+                        }
+                        else if (rootAsParent)
+                        {
+                            <ul class="@rootItem.Class sidebar__list sidebar__list--subitems sidebar--compact-hidden" data-submenu data-ng-init="submenu.isSubmenuVisible = @rootItem.Selected.ToLowerString()">
+                                @foreach (var menuItem in rootItem.MenuItems.Where(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp))
+                                {
+                                    if (!menuItem.IsAccessibleToUser())
+                                    {
+                                        continue;
+                                    }
+
+                                    var hasChild = (menuItem.MenuItems != null && menuItem.MenuItems.Any(x => x.Visible && x.ActiveInSaas && x.ActiveBySetting && x.ActiveByInstanceProp)) || menuItem.ChildMenuRoute != null;
+
+                                    <li class="sidebar__item @(menuItem.Selected ? "sidebar__item--selected" : "")" @(menuItem.ChildMenuRoute != null || (hasChild && menuItem.MenuItems != null && menuItem.MenuItems.Any()) ? "data-submenu-parent" : "")>
+                                        <a class="sidebar__trigger sidebar__trigger--subitems" href="@(menuItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(menuItem.Action, menuItem.Controller, menuItem.RouteDictionary))" onclick="event.stopPropagation()">
+                                            <span class="sidebar__link sidebar__link--subitem">
+                                                <span class="sidebar__icon sidebar__icon--left"></span>
+                                                <span class="sidebar__name sidebar--compact-hidden">@T(menuItem.Name)</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                </li>
+            }
+        }
+
+        @foreach (var rootItem in Model.CustomMenuItems)
+        {
+            var hasChild = rootItem.SubItems != null && rootItem.SubItems.Any();
+
+            <li class="sidebar__item @(rootItem.Selected && !hasChild ? "sidebar__item--selected" : "")" @Html.Raw(hasChild ? "data-submenu-parent ng-class=\"{'sidebar__item--open': submenuParent.submenu.isSubmenuVisible}\"" : "")>
+                @if (hasChild)
+                {
+                    @:<div class="sidebar__trigger sidebar__trigger--root" @ngClickParent>
+                }
+                <a @Html.Raw(hasChild ? "class=\"sidebar__link\" onclick=\"event.stopPropagation()\"" : "class=\"sidebar__trigger sidebar__trigger--root\"") href="@rootItem.UrlPath">
+                    <div class="sidebar__link">
+                        <span class="sidebar__icon sidebar__icon--left">
+                            <span class="sidebar__item-icon">
+                                @if (rootItem.IconPath.IsNotEmpty())
+                                {
+                                    <img src="@FoldersHelper.GetPath(FolderType.MenuIcons, rootItem.IconPath, false)" alt="" />
+                                }
+                            </span>
+                        </span>
+                        <span class="sidebar__name sidebar--compact-hidden">@rootItem.Name</span>
+                    </div>
+                </a>
+                @if (hasChild)
+                {
+                    <div class="sidebar__part-right">
+                        @arrow
+                    </div>
+                }
+                @if (hasChild)
+                {
+                @:</div>
+                <ul class="sidebar__list sidebar__list--subitems sidebar--compact-hidden" data-submenu data-ng-init="submenu.isSubmenuVisible = @rootItem.Selected.ToLowerString()">
+                    @foreach (var item in rootItem.SubItems)
+                    {
+                        <li class="sidebar__item @(item.Selected ? "sidebar__item--selected": "")">
+                            <a class="sidebar__trigger sidebar__trigger--subitems" href="@item.UrlPath">
+                                <span class="sidebar__link sidebar__link--subitem">
+                                    <span class="sidebar__icon sidebar__icon--left">
+                                        <span class="sidebar__item-icon">
+                                            @if (item.IconPath.IsNotEmpty())
+                                            {
+                                                <img src="@FoldersHelper.GetPath(FolderType.MenuIcons, item.IconPath, false)" alt="" />
+                                            }
+                                        </span>
+                                    </span>
+                                    <span class="sidebar__name sidebar--compact-hidden">@item.Name</span>
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            </li>
+        }
+
+        <li class="sidebar__item sidebar__item-saleschannels">
+            @if (CustomerContext.CurrentCustomer.IsAdmin)
+            {
+                <ui-modal-trigger data-controller="'ModalSalesChannelsCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("salesChannels.html")"
+                                  class="sidebar-unit-modal-trigger" window-class="simple-modal modal-sales-channels">
+                    <div class="sidebar-unit sidebar__link">
+                        <span class="sideba-unit__name sidebar--compact-hidden">
+                            <span class="sidebar__name">Каналы продаж</span>
+                        </span>
+                        <span class="sidebar__icon--right sidebar--compact-hidden">
+
+                            <button class="sidebar-unit__btn" type="button">
+                                <svg class="sidebar-unit-modal-trigger__icon" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <circle stroke="currentColor" stroke-width="" fill="transparent" cx="12" cy="12" r="8.5"></circle>
+                                    <path d="M12.6,11.4 L15.4,11.4 C15.7313708,11.4 16,11.6686291 16,12 C16,12.3313709 15.7313708,12.6 15.4,12.6 L12.6,12.6 L12.6,15.4 C12.6,15.7313708 12.3313709,16 12,16 C11.6686291,16 11.4,15.7313708 11.4,15.4 L11.4,12.6 L8.60000002,12.6 C8.26862916,12.6 8,12.3313709 8,12 C8,11.6686291 8.26862916,11.4 8.60000002,11.4 L11.4,11.4 L11.4,8.60000002 C11.4,8.26862916 11.6686291,8 12,8 C12.3313709,8 12.6,8.26862916 12.6,8.60000002 L12.6,11.4 Z" id="Combined-Shape" fill="currentColor"></path>
+                                </svg>
+                            </button>
+
+                        </span>
+                        <span class="sidebar--compact-visible sidebar--compact-visible--first">
+                            <span class="sidebar__minus"></span>
+                        </span>
+                    </div>
+                </ui-modal-trigger>
+            }
+            else
+            {
+                <div>
+                    <div class="sidebar-unit">
+                        <span class="sideba-unit__name sidebar--compact-hidden">
+                            <span class="sidebar__name">Каналы продаж</span>
+                        </span>
+                    </div>
+                </div>
+            }
+            <ul class="sidebar__list">
+                @if (Model.SalesChannelsMenuItems != null)
+                {
+                    if (Model.SalesChannelsMenuItems.Count == 1)
+                    {
+                        Model.SalesChannelsMenuItems[0].Selected = true;
+                    }
+
+                    foreach (var channel in Model.SalesChannelsMenuItems)
+                    {
+                        var hasChild = !channel.HideMenuItemsInLeftMenu && ((channel.MenuItems != null && channel.MenuItems.Count(x => !x.IsHidden) > 0) || channel.ChildMenuRoute != null);
+
+                        <li class="sidebar__item @(channel.Selected && !hasChild ? "sidebar__item--selected" : "")" @Html.Raw(hasChild ? "data-submenu-parent ng-class=\"{'sidebar__item--open': submenuParent.submenu.isSubmenuVisible}\"" : "")>
+                            @if (hasChild)
+                            {
+                                @:<div class="sidebar__trigger sidebar__trigger--root" @ngClickParent>
+                                }
+                            <a @Html.Raw(hasChild ? "class=\"sidebar__link\" onclick=\"event.stopPropagation()\"" : "class=\"sidebar__trigger sidebar__trigger--root\"")
+                               href="@(channel.MenuUrlAction != null ? Url.AbsoluteActionUrl(channel.MenuUrlAction.Action, channel.MenuUrlAction.Controller, channel.MenuUrlAction.RouteDictionary) : channel.Url != null ? channel.Url : null)">
+                                <div class="sidebar__link">
+                                    <span class="sidebar__icon sidebar__icon--left">
+                                        <span class="sidebar__item-icon">
+                                            @Html.Raw(channel.MenuIcon)
+                                        </span>
+                                    </span>
+                                    <span class="sidebar__name sidebar--compact-hidden">@channel.MenuName</span>
+                                </div>
+                            </a>
+                            @if (hasChild)
+                            {
+                                <div class="sidebar__part-right">
+                                    @if (channel.Type == ESalesChannelType.Store)
+                                    {
+                                        <a class="sidebar__link--simple" href="@UrlService.GetUrl()" target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="sidebar__icon--svg">
+                                                <path fill="none" fill-rule="nonzero" stroke="currentColor" stroke-width="1.2" d="M12 7c-3.057 0-5.83 1.672-7.875 4.39a.633.633 0 0 0 0 .755c2.046 2.72 4.818 4.392 7.875 4.392 3.057 0 5.83-1.672 7.875-4.389a.633.633 0 0 0 0-.756C17.829 8.672 15.057 7 12 7zm.176 7.466a2.698 2.698 0 0 1-2.87-2.87A2.714 2.714 0 0 1 11.83 9.07a2.698 2.698 0 0 1 2.87 2.87 2.714 2.714 0 0 1-2.524 2.525z" />
+                                            </svg>
+                                        </a>
+                                    }
+                                    @arrow
+                                </div>
+                            }
+                            @if (hasChild)
+                            {
+                            @:</div>
+                        }
+                            @if (!channel.HideMenuItemsInLeftMenu)
+                            {
+                                if (channel.ChildMenuRoute != null)
+                                {
+
+                                    if (channel.ChildMenuRoute.Route == null)
+                                    {
+                                        channel.ChildMenuRoute.Route = new Dictionary<string, object>();
+                                    }
+
+                                    channel.ChildMenuRoute.Route.Add("IsOpen", channel.Selected);
+
+                                    @Html.Action(channel.ChildMenuRoute.Action, channel.ChildMenuRoute.Controller, channel.ChildMenuRoute.RouteDictionary)
+                                }
+                                else if (hasChild)
+                                {
+                                    <ul class="sidebar__list sidebar__list--subitems sidebar--compact-hidden" data-submenu data-ng-init="submenu.isSubmenuVisible = @channel.Selected.ToLowerString()">
+                                        @foreach (var item in channel.MenuItems.Where(x => !x.IsHidden))
+                                        {
+                                            <li class="sidebar__item @(item.Selected ? "sidebar__item--selected": "")">
+                                                <a class="sidebar__trigger sidebar__trigger--subitems"
+                                                   href="@(item.MenuUrlAction != null ? Url.AbsoluteActionUrl(item.MenuUrlAction.Action, item.MenuUrlAction.Controller, item.MenuUrlAction.RouteDictionary) : null)">
+                                                    <span class="sidebar__link sidebar__link--subitem">
+                                                        <span class="sidebar__icon sidebar__icon--left"></span>
+                                                        <span class="sidebar__name sidebar--compact-hidden">@item.Name</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            }
+                        </li>
+                    }
+                }
+            </ul>
+        </li>
+    </ul>
+</nav>

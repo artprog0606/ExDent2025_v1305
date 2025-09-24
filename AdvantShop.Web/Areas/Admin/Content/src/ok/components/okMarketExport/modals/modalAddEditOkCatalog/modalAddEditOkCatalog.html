@@ -1,0 +1,64 @@
+﻿<form name="addEditOKMarketCatalog" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.type != "edit" ? ('Admin.Js.addEditOkCatalog.TitleNew'|translate) : ('Admin.Js.addEditOkCatalog.TitleEdit'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-horizontal">
+                <div class="form-group row middle-xs setting__form-group">
+                    <label class="col-xs-12 col-md-4 setting__label" ng-class="{'m-b-sm' : isMobile.value}">
+                        <span class="text-required">{{'Admin.Js.addEditOkCatalog.Name'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.catalog.Name"
+                            required
+                            validation-input-text="{{'Admin.Js.addEditOkCatalog.Name'|translate}}"
+                            autofocus />
+                    </div>
+                </div>
+
+                <div class="form-group row middle-xs setting__form-group">
+                    <label class="col-xs-12 col-md-4 setting__label" ng-class="{'m-b-sm' : isMobile.value}">
+                        <span class="text-required">{{'Admin.Js.addEditOkCatalog.RelatedCategories'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-8">
+                        <span style="padding-right: 0.3rem">
+                            {{ctrl.catalog.CategoryIds == null || ctrl.catalog.CategoryIds.length == 0 ? 'Не выбраны' :
+                            ctrl.catalog.CategoryIds.length + ' категория(ий)'}}
+                        </span>
+                        <ui-modal-trigger
+                            data-controller="'ModalSelectCategoriesCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                            data-resolve="{'params': {'selectedIds': ctrl.catalog.CategoryIds}}"
+                            data-on-close="ctrl.selectCategories(result)">
+                            <a href="">({{'Admin.Js.addEditOkCatalog.Select'|translate}})</a>
+                        </ui-modal-trigger>
+                        <a
+                            ng-if="ctrl.catalog.CategoryIds != null && ctrl.catalog.CategoryIds.length != 0"
+                            ng-click="ctrl.removeCatalogs();addEditOKMarketCatalog.$setDirty();">
+                            ({{'Admin.Js.addEditOkCatalog.Clear'|translate}})
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ng-disabled="addEditOKMarketCategory.$pristine"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation>
+            {{'Admin.Js.addEditOkCatalog.Ok'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.addEditOkCatalog.Cancel'|translate}}</button>
+    </div>
+</form>

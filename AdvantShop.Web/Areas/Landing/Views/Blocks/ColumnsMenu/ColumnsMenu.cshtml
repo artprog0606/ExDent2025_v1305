@@ -1,0 +1,140 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@using AdvantShop.App.Landing.Domain.SubBlocks;
+@model BlockModel
+@{
+    var menuItems = Model.Block.TryGetSettingAsList<LpMenuItem>("menu_items");
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div>
+            @Html.BlockHeader(Model)
+        </div>
+        @if (menuItems != null)
+        {
+            float width = 100 / itemsCountInRow;
+            var widthString = width.ToInvariantString() + "%";
+            var minWidth = LpService.SiteWidthContent / itemsCountInRow;
+            <style>
+                #block_@Model.Block.Id .columns-menu__item {
+                    min-width: 100%;
+                    -webkit-flex-basis: 100%;
+                    -ms-flex-preferred-size: 100%;
+                    flex-basis: 100%;
+                    max-width: 100%;
+                }
+
+                    @@media (min-width: 48em) {
+                        #block_@Model.Block.Id .columns-menu__item {
+                            -webkit-flex-basis: 50%;
+                            -ms-flex-preferred-size: 50%;
+                            flex-basis: 50%;
+                            max-width: 50%;
+                            min-width: 50%;
+                        }
+                    }
+
+                    @@media (min-width: 64em) {
+                        #block_@Model.Block.Id .columns-menu__item {
+                            -webkit-flex-basis: @(widthString);
+                            -ms-flex-preferred-size: @(widthString);
+                            flex-basis: @(widthString);
+                            max-width: @(widthString);
+                            min-width: @(widthString);
+                        }
+                    }
+            </style>
+            <div class="row columns-menu__row @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") : "start-xs")" data-e2e="ServicesContent" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @for (var i = 0; i < menuItems.Count; i++)
+                {
+                    var menuItemsChilds = menuItems[i].Childs;
+                    var href = !string.IsNullOrEmpty(menuItems[i].Href)
+                                ? (menuItems[i].Href[0] == '#' ? UrlService.GetCurrentUrl(menuItems[i].Href) : menuItems[i].Href)
+                                : "";
+                    <div class="columns-menu__item @(Model.Block.TryGetSetting("align_text") != null ? Model.Block.TryGetSetting("align_text") : "start-xs")" data-e2e="ServicesItem">
+                        <div class="columns-menu__item-inner">
+                            @if (Model.Block.TryGetSetting("hide_photo") == false)
+                            {
+                                <div class="columns-menu__picture">
+                                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                    {
+                                        LandingPageId = Model.Block.LandingId,
+                                        BlockId = Model.Block.Id,
+                                        Current = menuItems[i].Picture != null ? menuItems[i].Picture.Src : null,
+                                        GalleryIconsEnabled = false,
+                                        OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.menu_items, result, " + i + ")",
+                                        OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.menu_items, " + i + ")",
+                                        OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.menu_items, result, " + i + ")",
+                                        OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.menuItems, result," + i + ")",
+                                        LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                        LazyLoadEnabled = menuItems[i].Picture != null ? menuItems[i].Picture.LazyLoadEnabled : true,
+                                        MaxWidthPicture = PictureLoaderImageSize.MiddleWidth,
+                                        MaxHeightPicture = PictureLoaderImageSize.MiddleWidth,
+                                        WidthPicture = menuItems[i].Picture.Width,
+                                        HeightPicture = menuItems[i].Picture.Height
+                                    })
+                                </div>
+                            }
+
+                            <div class="columns-menu__content">
+
+                                
+                                @if (!Model.Inplace)
+                                {
+                                    @:<a href="@href" class="lp-font-size--large lp-link--text columns-menu__header link-decoration-invert @(href.IsNullOrEmpty() ? "pointer-events-none" : "")">
+                                }
+                                else
+                                {
+                                    @:<div class="lp-font-size--large lp-link--text columns-menu__header" @Html.Raw(menuItems[i].Target ? " target=\"_blank\"" : "") @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "menu_items[" + i + "].text")>
+                                }
+                                    @Html.Raw(menuItems[i].Text)
+
+                                @if (!Model.Inplace)
+                                {
+                                    @:</a>
+                                }
+                                else
+                                {
+                                    @:</div>
+                                }
+
+                                @if (menuItemsChilds != null && menuItemsChilds.Count() > 0)
+                                {
+                                    <ul class="columns-menu__list">
+                                        @for (var j = 0; j < menuItemsChilds.Count; j++)
+                                        {
+                                            var submenuHref = !string.IsNullOrEmpty(menuItemsChilds[j].Href)
+                                            ? (menuItemsChilds[j].Href[0] == '#' ? UrlService.GetCurrentUrl(menuItemsChilds[j].Href) : menuItemsChilds[j].Href)
+                                            : "";
+                                            <li class="columns-menu__list-link">
+
+                                                @if (!Model.Inplace)
+                                                {
+                                                    @:<a href="@submenuHref" class="lp-link--text lp-font-size--middle link-decoration-invert @(submenuHref.IsNullOrEmpty() ? "pointer-events-none" : "")" @Html.Raw(menuItemsChilds[j].Target ? " target=\"_blank\"" : "")>
+                                                }
+                                                else
+                                                {
+                                                    @:<div class="lp-link--text lp-font-size--middle " @Html.Raw(menuItemsChilds[j].Target ? " target=\"_blank\"" : "") @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "menu_items[" + i + "].childs[" + j + "].text")>
+                                                }
+                                                    @Html.Raw(menuItemsChilds[j].Text)
+
+                                                @if (!Model.Inplace)
+                                                {
+                                                    @:</a>
+                                                }
+                                                else
+                                                {
+                                                    @:</div>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

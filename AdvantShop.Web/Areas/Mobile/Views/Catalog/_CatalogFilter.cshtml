@@ -1,0 +1,24 @@
+﻿@model  AdvantShop.Areas.Mobile.Models.Catalog.CategoryMobileViewModel
+@{
+    var category = Model.Category;
+}
+@if (SettingsDesign.FilterVisibility)
+{
+    <div>
+        <div class="catalog-filter-trigger-wrap--mobile">
+            <button type="button" class="catalog-filter-trigger--mobile icon-right-open-big-after" data-ng-click="catalogFilter.openInSidebar('catalogfilterTpl')">
+                @T("Js.CatalogFilter.Filters") <span data-ng-bind="catalogFilter.selectedFiltersCount != null && catalogFilter.selectedFiltersCount != 0 ? '(' + catalogFilter.selectedFiltersCount + ')' : ''"></span>
+            </button>
+        </div>
+        <script type="text/ng-template" id="catalogfilterTpl">
+            <div data-catalog-filter data-url="catalog/filter"
+                 data-url-count="catalog/filterproductCount"
+                 data-parameters="{categoryId : @(Model.Category.CategoryId), tagUrl: '@Model.TagView.Tags.Where(x=>x.Selected).Select(x => x.Url).FirstOrDefault()'}"
+                 data-count-visible-collapse="10"
+                 data-adv-popover-options="{position: 'top'}"
+                 data-is-mobile="true"
+                 data-footer-sticky="true">
+            </div>
+        </script>
+    </div>
+}

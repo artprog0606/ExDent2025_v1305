@@ -1,0 +1,160 @@
+﻿@{
+    var hash = SettingsGeneral.SiteVersion.GetHashCode();
+}
+<!DOCTYPE html>
+<html data-ng-strict-di data-ng-app="app" lang="@SettingsMain.Language.Split('-')[0].ToLower()" @Html.GetNgController()>
+<head>
+    <meta charset="utf-8">
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetAdminUrl()"/>
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <meta name="Description" content="@Html.GetPageDescription()"/>
+    <meta name="Keywords" content="@Html.GetPageKeywords()"/>
+    <meta name="robots" content="noindex,nofollow"/>
+    <link rel="canonical" href="@UrlService.GetCanonicalUrlAdminArea()"/>
+    <style>
+        .ng-cloak, .x-ng-cloak, .ng-hide:not(.ng-hide-animate) {
+            display: none !important;
+        }
+
+        form {
+            display: block;
+        }
+    </style>
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+        console.time('htmlPerf');
+    </script>
+    @Html.Action("Favicon", "Common", new {area = "", imgSource = "favicon.ico"})
+
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <link rel="dns-prefetch" href="//modules.advantshop.net">
+
+    @*<link rel="subresource" href="../combine/all_admin_new.js">*@
+
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-SemiBold.woff2" type="font/woff2" crossorigin/>
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-Regular.woff2" type="font/woff2" crossorigin/>
+    <link rel="preload" as="font" href="../fonts/OpenSans/OpenSans-Bold.woff2" type="font/woff2" crossorigin/>
+    @Html.Partial("~/Areas/Admin/Views/Shared/_HeaderScripts.cshtml")
+    @Html.RenderModules("admin_head")
+</head>
+<body>
+@*@Html.DisableChromeAutoFill()*@
+<div id="wrapper">
+    @Html.AntiForgeryToken()
+    @Html.Action("LeftMenu", "Common", new {area = "adminv2"})
+    <div id="page-wrapper" class="gray-bg">
+        @Html.Partial("~/Areas/Admin/Views/Common/TopMenu.cshtml")
+        @if (IsSectionDefined("NavMenu"))
+        {
+            @RenderSection("NavMenu", false)
+        }
+        else
+        {
+            @Html.Action("NavMenu", "Common", new {area = "adminv2"})
+        }
+        <div class="wrapper wrapper-content">
+            @Html.GetNotifications()
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+        @RenderSection("footer", false)
+        <footer class="site-footer">
+            <div class="container-fluid">
+                <div class="row between-xs middle-xs">
+                    <div class="site-footer__go-to-mobile" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("mobileOverlap")]}]">
+                        <a data-ng-controller="mobileOverlapCtrl as mOverlap" data-ng-click="mOverlap.goToMobile('deviceModeAdmin', 'mobile')" href="javascript:void(0);">Перейти в мобильную версию</a>
+                    </div>
+
+                    <div class="col-xs site-footer__version">
+                        @Html.Partial("~/Areas/Admin/Views/Shared/_Version.cshtml")
+                    </div>
+                    <div class="col-xs">
+                        <a href="https://www.advantshop.net?utm_source=advantshop&utm_medium=site&utm_campaign=footer" target="_blank">AdvantShop</a> <span>&copy; @DateTime.Now.Year</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        @Html.GetMiniProfiler()
+    </div>
+</div>
+@{
+    var sb = AdvantShop.CMS.StaticBlockService.GetPagePartByKeyWithCache("admin_footer");
+}
+@Html.Raw(sb != null && sb.Enabled && sb.Content != null ? sb.Content.Replace("@customerId", CustomerContext.CustomerId.ToString()) : "")
+<script>
+    console.time('jsPerf');
+</script>
+@if (IsSectionDefined("TrialUserInfo")) { @RenderSection("TrialUserInfo", false) }
+else { @Html.Action("UserInformation", "Home") }
+@Html.Partial("~/Areas/Admin/Views/Shared/_FooterScripts.cshtml")
+@Html.RenderModules("admin_body_end")
+@Html.GetNotifyMessages()
+<customer-info-container></customer-info-container>
+<partner-info-container></partner-info-container>
+@Html.Action("Counter", "Common", new {area = "adminv2"})
+<script>
+        function getNg1Hooks(selector, injectorPlease, callback) {
+            function tryEl(el) {
+                try {
+                    if (!injectorPlease && angular.getTestability) {
+                        var $$testability = angular.getTestability(el);
+                        if ($$testability) {
+
+                            if (callback != null) {
+                                callback({ $$testability: $$testability });
+                            }
+
+                            return { $$testability: $$testability };
+                        }
+                    } else {
+                        var $injector = angular.element(el).injector();
+                        if ($injector) {
+                            return { $injector: $injector };
+                        }
+                    }
+                } catch (err) {
+                    setTimeout(function () { getNg1Hooks(selector, injectorPlease, callback) }, 100);
+                }
+            }
+            function trySelector(selector) {
+                var els = document.querySelectorAll(selector);
+                for (var i = 0; i < els.length; i++) {
+                    var elHooks = tryEl(els[i]);
+                    if (elHooks) {
+                        return elHooks;
+                    }
+                }
+            }
+
+            if (selector) {
+                return trySelector(selector);
+            } else if (window.__TESTABILITY__NG1_APP_ROOT_INJECTOR__) {
+                var $injector = window.__TESTABILITY__NG1_APP_ROOT_INJECTOR__;
+                var $$testability = null;
+                try {
+                    $$testability = $injector.get('$$testability');
+                } catch (e) { }
+                return { $injector: $injector, $$testability: $$testability };
+            } else {
+                return tryEl(document.body) ||
+                    trySelector('[ng-app]') || trySelector('[ng\\:app]') ||
+                    trySelector('[ng-controller]') || trySelector('[ng\\:controller]');
+            }
+        };
+
+        getNg1Hooks('html', undefined, function (hooks) {
+            hooks.$$testability.whenStable(function () {
+                console.timeEnd('jsPerf');
+            });
+        })
+    </script>
+<script>
+        console.timeEnd('htmlPerf');
+    </script>
+</body>
+</html>

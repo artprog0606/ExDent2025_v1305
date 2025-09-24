@@ -1,0 +1,338 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.Tags.TagModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsCatalog");
+}
+
+<form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.Id)
+    @Html.HiddenFor(x => Model.IsEditMode)
+
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "SettingsCatalog") + "?catalogTab=tags",
+            NgBackTriggerCallback = "settingsCatalog.backInMobile()"
+        };
+
+        headerModel.Title = Model.IsEditMode ? T("Admin.Tags.AddEdit.Tag").ToString() + " " + Html.Raw(Model.Name) : T("Admin.Tags.AddEdit.NewTag").ToString();
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                  {
+                        eButtonModificators.OnlyIcon
+                      },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             Attributes = new[] { "ng-disabled=\"!form.modified\"", "disabled", "data-e2e=\"btnSave\"", "data-button-validation" },
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "done",
+                 Attributes = new { width = 25, height = 25 }
+             }
+         }
+        );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.CustomerSegments.AddEdit.Delete"),
+            Modificators = new List<eButtonModificators>
+        ()
+{
+                    eButtonModificators.HorizontalPaddingZero
+                    },
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Attributes = new[] { "ng-click=\"tags.deleteTag(" + Model.Id + ")\"" },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+
+    }
+
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @if (Model.IsEditMode)
+                        {
+                            <span>@T("Admin.Tags.AddEdit.Tag")</span> <strong>@Html.Raw(Model.Name)</strong>
+                        }
+                        else
+                        {
+                            <strong>@T("Admin.Tags.AddEdit.NewTag")</strong>
+                        }
+                    </h1>
+                    <ul class="breadcrumb">
+                        <li>
+                            <a class="link-invert" href="@Url.AbsoluteActionUrl("Index", "SettingsCatalog")?catalogTab=tags">@T("Admin.Tags.AddEdit.AllTags")</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <a href="" class="link-danger m-r-xs" ng-if="@Model.IsEditMode.ToString().ToLower()" ng-click="tags.deleteTag(@Model.Id)">@T("Admin.Tags.AddEdit.Delete")</a>
+                    <button data-e2e="SaveTag" type="submit" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                        <i class="fa fa-check"></i>
+                        @T("Admin.Save")
+                    </button>
+                </div>
+            }
+            @*@if (isMobile)
+        {
+            if (Model.IsEditMode)
+            {
+                <div class="flex middle-xs">
+                    <a href="" class="btn btn-sm btn-danger m-r-xs flex-grow" ng-if="@Model.IsEditMode.ToString().ToLower()" ng-click="tags.deleteTag(@Model.Id)">@T("Admin.Tags.AddEdit.Delete")</a>
+                    <button data-e2e="SaveTag" type="submit" class="btn btn-sm btn-success flex-grow" data-button-validation disabled ng-disabled="!form.modified">
+                        <i class="fa fa-check"></i>
+                        @T("Admin.Save")
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="page-name-block-item-additional">
+                    <button data-e2e="SaveTag" type="submit" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                        <i class="fa fa-check"></i>
+                        @T("Admin.Save")
+                    </button>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="page-name-block-item-additional">
+                <a href="" class="link-danger m-r-xs" ng-if="@Model.IsEditMode.ToString().ToLower()" ng-click="tags.deleteTag(@Model.Id)">@T("Admin.Tags.AddEdit.Delete")</a>
+                <button data-e2e="SaveTag" type="submit" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                    <i class="fa fa-check"></i>
+                    @T("Admin.Save")
+                </button>
+            </div>
+        }*@
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 col-lg-2 col-wl-2">
+                    <h2 class="category-title setting__subtitle setting--m-t-none">@T("Admin.Tags.AddEdit.Main")</h2>
+                    <div class="">
+                    </div>
+                </div>
+                <div class="col-xs-12 col-lg-10 col-wl-10">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                        <label for="Name" class="form-label-block setting__label">@T("Admin.Tags.AddEdit.TagName") <span class="text-required"></span></label>
+                                    </div>
+                                    <div class="col-xs-12  col-lg-10">
+                                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control required input-alt", url_generator_enabled = Model.UrlPath.IsNotEmpty() ? "false" : "true", url_generator = "", url_path = "tags.UrlPath", required = "required", ng_model = "tags.Name", validation_input_text = T("Admin.Tags.AddEdit.TagName") })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group setting--label-with-checkbox-reverse">
+                                    <div class="col-xs-11 col-lg-2">
+                                        <label for="Enabled" class="form-label-block setting__label">@T("Admin.Tags.AddEdit.Activity")</label>
+                                    </div>
+                                    <div class="col-xs-1 col-lg-10">
+                                        <label class="adv-checkbox-label form-label-block">
+                                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "tags.enabled", ng_init = "tags.enabled=" + Model.Enabled.ToString().ToLower(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group setting--label-with-checkbox-reverse">
+                                    <div class="col-xs-11 col-lg-2">
+                                        <label for="VisibilityForUsers" class="form-label-block setting__label">@T("Admin.Tags.AddEdit.VisibilityForUsers")</label>
+                                    </div>
+                                    <div class="col-xs-1 col-lg-10">
+                                        <label class="adv-checkbox-label form-label-block">
+                                            @Html.CheckBoxFor(x => x.VisibilityForUsers, new { ng_model = "tags.visibilityForUsers", ng_init = "tags.visibilityForUsers=" + Model.VisibilityForUsers.ToString().ToLower(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                        <label for="SortOrder" class="form-label-block setting__label">@T("Admin.Tags.AddEdit.Sorting")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-lg-10">
+                                        @Html.TextBoxFor(x => x.SortOrder, new { ng_model = "tags.sortOrder", @class = "form-control input-alt" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                        <span class="setting__label">@T("Admin.Tags.AddEdit.Description")</span>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextAreaFor(x => x.Description, new { @class = "wysiwyg", ckeditor = "", ng_model = "tags.Description" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                        <span class="setting__label">@T("Admin.Tags.AddEdit.ShortDescription")</span>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextAreaFor(x => x.BriefDescription, new { @class = "wysiwyg", ckeditor = "", ng_model = "tags.BriefDescription" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* SEO*@
+            <div class="row">
+                <div class="col-xs-12 col-lg-2 col-wl-2">
+                    <h2 class="category-title etting__subtitle setting--m-t-none">SEO</h2>
+                    <div class="setting--m-b">
+                        @T("Admin.Tags.AddEdit.SeoParametersAreFilledAutomatically")<br />
+                    </div>
+                </div>
+                <div class="col-xs-12 col-lg-10 col-wl-10">
+                    <div class="ibox brand-block">
+                        <div class="ibox-content brand-content border_none">
+                            <div>
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                        <label for="URL" class="form-label-block setting__label" style="@(isMobile ? "" : "display:flex;")">@T("Admin.Tags.AddEdit.Synonym") <span class="text-required"></span></label>
+                                    </div>
+                                    <div class="col-xs-12 col-lg-10">
+                                        @if (isMobile)
+                                        {
+                                        <label class="input-group form-label-block card card--form-control setting--m-b-none">
+                                            <span style="@(isMobile ? "padding-bottom:5px;" : "")" class="input-group-addon fs-xs card__label setting__input-group-addon">@UrlService.GetUrl("tags/")</span>
+                                            @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control card__input", ng_model = "tags.UrlPath", id = "URL", required = "required", validation_input_text = @T("Admin.Tags.AddEdit.Synonym") })
+                                        </label>
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control required input-alt", ng_model = "tags.UrlPath", id = "URL", required = "required", validation_input_text = @T("Admin.Tags.AddEdit.Synonym") })
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-offset-2">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(x => x.DefaultMeta, new { ng_model = "tags.defaultMeta", ng_init = "tags.defaultMeta=" + Model.DefaultMeta.ToString().ToLower(), @class = "adv-checkbox-input" })
+                                        <span class="adv-checkbox-emul" data-e2e="tagDefaultMeta"></span>
+                                        <span class="setting__label @(isMobile ? "m-l-xs" : "")">@T("Admin.Tags.AddEdit.UseDefaultMeta")</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="brand-seo-custom-block ng-cloak m-t-md" ng-if="!tags.defaultMeta">
+                                <div>
+                                    <div class="row category-row setting__form-group">
+                                        <div class="col-xs-12 col-lg-2 text-required setting-label-wrap">
+                                            <label for="SeoTitle" class="form-label-block setting__label">@T("Admin.Category.Index.SeoTitle")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-10">
+                                            @Html.TextBoxFor(x => x.SeoTitle,
+                                                new
+                                                {
+                                                    @class = "form-control input-alt",
+                                                    ng_model = "tags.SeoTitle",
+                                                    ng_disabled = "tags.defaultMeta",
+                                                    textcomplete = "",
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Tag }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoTitle").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row setting__form-group">
+                                        <div class="col-xs-12 col-lg-2 text-required setting-label-wrap">
+                                            <label for="SeoH1" class="form-label-block setting__label">@T("Admin.Category.Index.SeoH1")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-10">
+                                            @Html.TextBoxFor(x => x.SeoH1,
+                                                new
+                                                {
+                                                    @class = "form-control input-alt",
+                                                    ng_model = "tags.SeoH1",
+                                                    ng_disabled = "tags.defaultMeta",
+                                                    textcomplete = "",
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Tag }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoH1").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row setting__form-group">
+                                        <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                            <label for="SeoKeywords" class="form-label-block setting__label">@T("Admin.Category.Index.SeoKeywords")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-10">
+                                            @Html.TextBoxFor(x => x.SeoKeywords, new { @class = "form-control input-alt", ng_model = "tags.SeoKeywords", ng_disabled = "tags.defaultMeta", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Tag }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row setting__form-group">
+                                        <div class="col-xs-12 col-lg-2 setting-label-wrap">
+                                            <label for="SeoDescription" class="form-label-block setting__label">@T("Admin.Category.Index.SeoDescription")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-10">
+                                            @Html.TextBoxFor(x => x.SeoDescription, new { @class = "form-control input-alt", ng_model = "tags.SeoDescription", ng_disabled = "tags.defaultMeta", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Tag }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-offset-2">
+                                        @Html.Action("MetaVariablesDescription", "Common", new { type = AdvantShop.SEO.MetaType.Tag })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

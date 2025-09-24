@@ -1,0 +1,518 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title" ng-if="!ctrl.isTemplate()">{{'Admin.Js.AddEditCoupon.Title'|translate}}</h2>
+        <h2 class="modal-header-title" ng-if="ctrl.isTemplate()">Шаблон купона</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div ng-class="{'form-horizontal' : !isMobile.value}">
+                <div class="form-group setting__form-group" ng-if="!ctrl.isTemplate()">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            <span class="text-required">{{'Admin.Js.AddEditCoupon.CouponCode'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input
+                                type="text"
+                                class="form-control input-alt"
+                                ng-model="ctrl.Code"
+                                required
+                                validation-input-text="{{'Admin.Js.AddEditCoupon.CouponCode'|translate}}"
+                                data-autofocus="!isMobile.value"
+                                data-e2e="couponCode" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.CouponType'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <select
+                                ng-model="ctrl.Type"
+                                ng-options="s.label for s in ctrl.Types track by s.value"
+                                class="form-control input-alt"
+                                data-e2e="couponType"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group" ng-if="ctrl.Type && ctrl.Type.value == 3">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            <span class="text-required">{{'Admin.Js.AddEditCoupon.GiftProduct'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <span> {{ !ctrl.GiftOfferId ? 'Товар не выбран ' : 'Товар выбран' }} </span>
+                            <ui-modal-trigger
+                                size="xs-12"
+                                controller="'ModalOffersSelectvizrCtrl'"
+                                controller-as="ctrl"
+                                resolve="{ multiSelect: false, gridSelectionItemsSelectedFn: {
+                                                fn: ctrl.checkSelectedItem
+                                              }}"
+                                on-close="ctrl.selectOffer(result)"
+                                template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+                                <a ng-bind="!ctrl.GiftOfferId ? '(выбрать)' : '(изменить)'"></a>
+                            </ui-modal-trigger>
+                            <a ng-if="!!ctrl.GiftOfferId" ng-click="ctrl.GiftOfferId = null; ctrl.GiftOfferError = null;">(сбросить)</a>
+                            <div ng-if="ctrl.GiftOfferError != null" class="m-t-xs" style="color: red">{{ctrl.GiftOfferError}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            <span class="text-required">{{'Admin.Js.AddEditCoupon.Value'|translate}}</span>
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input
+                                type="text"
+                                class="form-control input-alt"
+                                ng-model="ctrl.Value"
+                                required
+                                validation-input-text="{{'Admin.Js.AddEditCoupon.Value'|translate}}"
+                                data-e2e="couponValue" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label"> {{'Admin.Js.AddEditCoupon.Currency'|translate}} </label>
+                        <div class="col-xs-12 col-md-9">
+                            <select
+                                ng-model="ctrl.CurrencyIso3"
+                                ng-options="s.label for s in ctrl.Currencies track by s.value"
+                                class="form-control input-alt"
+                                data-e2e="couponCurrency"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-slim col-md-3 setting__label"> {{'Admin.Js.AddEditCoupon.AddingDate'|translate}} </label>
+                        <div class="col-xs col-md-9">{{ctrl.AddingDateFormatted}}</div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs setting--label-with-checkbox-reverse">
+                        <label class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label" for="check7">
+                            {{'Admin.Js.AddEditCoupon.ForFirstOrder'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9" ng-class="{'setting--m-t-sm': !isMobile.value}">
+                            <label class="adv-checkbox-label" data-e2e="couponForFirstOrder">
+                                <input id="check7" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.ForFirstOrder" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}"
+                                    >{{'Admin.Js.AddEditCoupon.ForFirstOrder'|translate}}</span
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group" ng-if="ctrl.ShowUseStartDate">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label"> {{'Admin.Js.AddEditCoupon.StartDate'|translate}} </label>
+                        <div class="col-xs-12 col-md-9 setting--label-with-checkbox-reverse">
+                            <label class="adv-checkbox-label" data-e2e="couponStartDate">
+                                <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.UseStartDate" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span ng-class="{'m-l-sm' : isMobile.value}">{{'Admin.Js.AddEditCoupon.FromCreation'|translate}}</span>
+                            </label>
+                            <div
+                                ng-if="!ctrl.UseStartDate"
+                                ng-class="{'m-l' : !isMobile.value, 'm-t-sm' : isMobile.value,'inline' : !isMobile.value}"
+                                style="{{isMobile.value ? 'padding-left:0 !important;' : ''}}">
+                                <div
+                                    ng-if="ctrl.CouponMode == 0 || ctrl.StartDate != null"
+                                    style="{{isMobile.value ? '' : 'display: inline-block; width: 250px; position: relative; vertical-align: middle; min-height: 34px;'}}">
+                                    <div
+                                        class="input-group"
+                                        ng-class="{'flex-nowrap' : isMobile.value}"
+                                        ng-flatpickr
+                                        fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                            <input
+                                                type="text"
+                                                data-e2e="couponStartDate1"
+                                                class="form-control input-alt"
+                                                ng-flatpickr-input
+                                                ng-model="ctrl.StartDate" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.ExpirationDate'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9 setting--label-with-checkbox-reverse">
+                            <label class="adv-checkbox-label" data-e2e="couponUseExpirationDate">
+                                <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.UseExpirationDate" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span ng-class="{'m-l-sm' : isMobile.value}">{{'Admin.Js.AddEditCoupon.Indefinitely'|translate}}</span>
+                            </label>
+                            <div
+                                ng-if="!ctrl.UseExpirationDate"
+                                ng-class="{'m-l' : !isMobile.value, 'm-t-sm' : isMobile.value,'inline' : !isMobile.value}"
+                                style="{{isMobile.value ? 'padding-left:0 !important;' : ''}}">
+                                <div
+                                    ng-if="ctrl.CouponMode == 0 || ctrl.ExpirationDate != null"
+                                    style="{{isMobile.value ? '' : 'display: inline-block; width: 250px; position: relative; vertical-align: middle; min-height: 34px;'}}">
+                                    <div
+                                        class="input-group"
+                                        ng-class="{'flex-nowrap' : isMobile.value}"
+                                        ng-flatpickr
+                                        fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                            <input
+                                                type="text"
+                                                data-e2e="couponExpirationDate"
+                                                class="form-control input-alt"
+                                                ng-flatpickr-input
+                                                ng-model="ctrl.ExpirationDate" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                </div>
+
+                                <div ng-if="ctrl.CouponMode == 1 || ctrl.CouponMode == 3 || ctrl.CouponMode == 4" class="inline">
+                                    через
+                                    <input
+                                        type="text"
+                                        ng-model="ctrl.Days"
+                                        class="form-control input-alt"
+                                        style="width: 70px; display: inline-block" />
+                                    дн. с момента генерации купона
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-class="{'form-horizontal' : !isMobile.value}">
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.NumberUses'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9 setting--label-with-checkbox-reverse">
+                            <label class="adv-checkbox-label" data-e2e="couponUsePosibleUses">
+                                <input type="checkbox" class="adv-checkbox-input" ng-model="ctrl.UsePosibleUses" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span ng-class="{'m-l-sm' : isMobile.value}">{{'Admin.Js.AddEditCoupon.NoLimits'|translate}}</span>
+                            </label>
+                            <div
+                                ng-if="!ctrl.UsePosibleUses"
+                                ng-class="{'m-l-xs' : !isMobile.value,'m-t-sm' : isMobile.value}"
+                                style="{{isMobile.value ? 'padding-left:0 !important;' : 'display: inline-block; width: 250px; position:relative; vertical-align: middle; min-height: 34px;'}}">
+                                <input type="text" ng-model="ctrl.PossibleUses" class="form-control input-alt" data-e2e="couponPosibleUses" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs">
+                        <label
+                            class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label setting--label-with-checkbox-reverse"
+                            for="check8">
+                            {{'Admin.Js.AddEditCoupon.Active'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <label class="adv-checkbox-label" data-e2e="couponEnabled">
+                                <input id="check8" type="checkbox" class="adv-checkbox-input" ng-model="ctrl.Enabled" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}">{{'Admin.Js.AddEditCoupon.Active'|translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.MinimumAmount'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input
+                                ng-class="{'block m-b-sm' : isMobile.value}"
+                                type="text"
+                                ng-model="ctrl.MinimalOrderPrice"
+                                class="form-control input-alt m-b-sm"
+                                data-e2e="couponMinimalOrderPrice" />
+                            <div>
+                                <label class="adv-radio-label" ng-class="{'m-b-xs': isMobile.value}">
+                                    <input
+                                        type="radio"
+                                        class="adv-radio-input"
+                                        ng-model="ctrl.IsMinimalOrderPriceFromAllCart"
+                                        ng-value="false"
+                                        name="isMinimalOrderPriceFromAllCart" />
+                                    <span class="adv-radio-label-text">{{'Admin.Js.AddEditCoupon.ConsiderCostProducts'|translate}}</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="adv-radio-label">
+                                    <input
+                                        type="radio"
+                                        class="adv-radio-input"
+                                        ng-model="ctrl.IsMinimalOrderPriceFromAllCart"
+                                        ng-value="true"
+                                        name="isMinimalOrderPriceFromAllCart" />
+                                    <span class="adv-radio-label-text">{{'Admin.Js.AddEditCoupon.MinimalOrderPriceFromAllCart'|translate}}</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.CustomerGroup'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9 setting--label-with-checkbox-reverse">
+                            <ui-select
+                                class="input-alt"
+                                multiple
+                                sortable="true"
+                                ng-model="ctrl.CustomerGroupIds"
+                                validation-input-text="{{'Admin.Js.AddEditCoupon.CustomerGroup'|translate}}"
+                                ng-required="true"
+                                data-e2e="CustomerGroupIds">
+                                <ui-select-match placeholder="">{{$item.label}}</ui-select-match>
+                                <ui-select-choices
+                                    repeat="customerGroup.value as customerGroup in ctrl.CustomerGroupList | filter:$select.search track by $index"
+                                    minimum-input-length="1"
+                                    refresh-delay="0">
+                                    {{customerGroup.label}}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                            {{'Admin.Js.AddEditCoupon.Categories'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9">
+                            <span ng-if="ctrl.CategoryIds.length == 0" data-e2e="couponCategoriesAll"
+                                >{{'Admin.Js.AddEditCoupon.All'|translate}}</span
+                            >
+                            <span ng-if="ctrl.CategoryIds.length > 0" data-e2e="couponCategoriesList"
+                                >{{ctrl.CategoryIds.length}} {{'Admin.Js.AddEditCoupon.Category'|translate}}</span
+                            >
+
+                            <ui-modal-trigger
+                                data-controller="'ModalSelectCategoriesCtrl'"
+                                controller-as="ctrl"
+                                template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                                data-resolve="{'params': { 'selectedIds': ctrl.CategoryIds}}"
+                                data-on-close="ctrl.selectCategories(result)">
+                                <a href="" data-e2e="couponCategories">{{'Admin.Js.AddEditCoupon.Change'|translate}}</a>
+                            </ui-modal-trigger>
+
+                            <a href="" ng-if="ctrl.CategoryIds.length > 0" ng-click="ctrl.resetCategories()" data-e2e="couponCategoriesReset"
+                                >{{'Admin.Js.AddEditCoupon.Reset'|translate}}</a
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label"> {{'Admin.Js.AddEditCoupon.Products'|translate}} </label>
+                        <div class="col-xs-9" ng-show="ctrl.CouponId == 0">{{'Admin.Js.AddEditCoupon.AddProductsText'|translate}}</div>
+                        <div class="col-xs-12 col-md-9" ng-show="ctrl.CouponId != 0">
+                            <span ng-if="ctrl.ProductsIds.length == 0" data-e2e="couponProductsAll">{{'Admin.Js.AddEditCoupon.All'|translate}}</span>
+                            <span ng-if="ctrl.ProductsIds.length > 0" data-e2e="couponProductsList"
+                                >{{ctrl.ProductsIds.length}} {{'Admin.Js.AddEditCoupon.ProductProducts'|translate}}</span
+                            >
+
+                            <ui-modal-trigger
+                                data-controller="'ModalCouponProductsSelectvizrCtrl'"
+                                controller-as="ctrl"
+                                size="xs-10"
+                                data-resolve="{'value': { 'couponId': ctrl.CouponId}}"
+                                template-url="../areas/admin/content/src/coupons/modal/coupon-products-selectvizr/couponProductsSelectvizrModal.html"
+                                data-on-close="ctrl.selectProducts()"
+                                data-on-dismiss="ctrl.selectProducts()">
+                                <a href="" data-e2e="couponProducts">{{'Admin.Js.AddEditCoupon.Change'|translate}}</a>
+                            </ui-modal-trigger>
+
+                            <a href="" ng-if="ctrl.ProductsIds.length > 0" ng-click="ctrl.resetProducts()" data-e2e="couponProductsReset"
+                                >{{'Admin.Js.AddEditCoupon.Reset'|translate}}</a
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs setting--label-with-checkbox-reverse">
+                        <label class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label" for="OnlyInMobileApp">
+                            {{'Admin.Js.AddEditCoupon.OnlyInMobileApp'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9" ng-class="{'setting--m-t-sm': !isMobile.value}">
+                            <label class="adv-checkbox-label" data-e2e="couponOnlyInMobileApp">
+                                <input
+                                    id="OnlyInMobileApp"
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.OnlyInMobileApp" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}"
+                                    >{{'Admin.Js.AddEditCoupon.OnlyInMobileApp'|translate}}</span
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs setting--label-with-checkbox-reverse">
+                        <label class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label" for="ForFirstOrderInMobileApp">
+                            {{'Admin.Js.AddEditCoupon.ForFirstOrderInMobileApp'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9" ng-class="{'setting--m-t-sm': !isMobile.value}">
+                            <label class="adv-checkbox-label" data-e2e="couponForFirstOrderInMobileApp">
+                                <input
+                                    id="ForFirstOrderInMobileApp"
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.ForFirstOrderInMobileApp" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}"
+                                    >{{'Admin.Js.AddEditCoupon.ForFirstOrderInMobileApp'|translate}}</span
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs setting--label-with-checkbox-reverse">
+                        <label class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label" for="ForOnlyOnCustomerBirthday">
+                            {{'Admin.Js.AddEditCoupon.OnlyOnCustomerBirthday'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9" ng-class="{'setting--m-t-sm': !isMobile.value}">
+                            <label class="adv-checkbox-label" data-e2e="couponOnlyOnCustomerBirthday">
+                                <input
+                                    id="ForOnlyOnCustomerBirthday"
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.OnlyOnCustomerBirthday" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}"
+                                    >{{'Admin.Js.AddEditCoupon.OnlyOnCustomerBirthday'|translate}}</span
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="ctrl.OnlyOnCustomerBirthday">
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                                <span>{{'Admin.Js.AddEditCoupon.DaysBeforeBirthday'|translate}}</span>
+                            </label>
+                            <div class="col-xs-12 col-md-9">
+                                <input type="text" class="form-control input-alt" ng-model="ctrl.DaysBeforeBirthday" data-e2e="DaysBeforeBirthday" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group setting__form-group">
+                        <div class="row">
+                            <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                                <span>{{'Admin.Js.AddEditCoupon.DaysAfterBirthday'|translate}}</span>
+                            </label>
+                            <div class="col-xs-12 col-md-9">
+                                <input type="text" class="form-control input-alt" ng-model="ctrl.DaysAfterBirthday" data-e2e="DaysAfterBirthday" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row middle-xs setting--label-with-checkbox-reverse">
+                        <label class="hidden-xs visible-md col-md-3 setting-label-wrap setting__label" for="chkIsAppliedToPriceWithDiscount">
+                            {{'Admin.Js.AddEditCoupon.IsAppliedToPriceWithDiscount'|translate}}
+                        </label>
+                        <div class="col-xs-12 col-md-9 relative" ng-class="{'setting--m-t-sm': !isMobile.value, 'flex middle-xs': isMobile.value}">
+                            <label class="adv-checkbox-label" ng-class="{'flex-grow': isMobile.value}" data-e2e="couponIsAppliedToPriceWithDiscount">
+                                <input
+                                    id="chkIsAppliedToPriceWithDiscount"
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.IsAppliedToPriceWithDiscount" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="hidden-md" ng-class="{'m-l-sm' : isMobile.value}">
+                                    {{'Admin.Js.AddEditCoupon.IsAppliedToPriceWithDiscount'|translate}}
+                                </span>
+                            </label>
+                            <help-trigger class="m-l-xs p-l-sm" ng-class="{'help-trigger-icon-abs': isMobile.value}" use-template="true">
+                                <div class="help-content">{{'Admin.Js.AddEditCoupon.IsAppliedToPriceWithDiscountHint'|translate}}</div>
+                            </help-trigger>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="ctrl.TriggerActionId != null && ctrl.mode == 'edit'">
+                    <div class="row">
+                        <label class="col-xs-3"> Триггер </label>
+                        <div class="col-xs-9">
+                            <a href="triggers/edit/{{ctrl.TriggerId}}" target="_blank">{{ctrl.TriggerName}}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="ctrl.PartnerId != null && ctrl.mode == 'edit'">
+                    <div class="row">
+                        <label class="col-xs-3"> Партнер </label>
+                        <div class="col-xs-9">
+                            <a href="partners/view/{{ctrl.PartnerId}}" target="_blank">{{ctrl.PartnerName}}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-3 setting-label-wrap setting__label"> {{'Admin.Js.AddEditCoupon.Comment'|translate}} </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input
+                                ng-class="{'block m-b-sm' : isMobile.value}"
+                                type="text"
+                                ng-model="ctrl.Comment"
+                                class="form-control input-alt m-b-sm"
+                                data-e2e="couponComment" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation data-e2e="btnSave">
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

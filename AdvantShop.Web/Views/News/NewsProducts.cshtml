@@ -1,0 +1,36 @@
+﻿@model AdvantShop.ViewModel.News.NewsProductsViewModel
+@using AdvantShop.Helpers;
+@using AdvantShop.News
+
+@if (Model.HasItems)
+{
+    var isMobile = MobileHelper.IsMobileEnabled();
+    <div class="block news-block-products">
+        <div class="block-head">
+            <div class="h3">@T("News.NewsProducts.Products")</div>
+        </div>
+        <div class="block-content">
+            <div class="products-view products-view-tile @(MobileHelper.IsMobileEnabled() ? "products-view-mobile-modern-tile": "")">
+                @if (isMobile)
+                {
+                    @Html.Partial("_ProductView", Model.Products)
+                }
+                else
+                {
+                    <div class="carousel product-view-carousel">
+                        <div class="carousel-inner">
+                            <div class="product-view-carousel-list product-view-carousel-list-@(Model.HowENewsProducts == NewsItem.ENewsProductsDisplayMode.Horizontally ? "horizontal" : "vertical")"
+                                 data-carousel
+                                 data-is-vertical="@(Model.HowENewsProducts == NewsItem.ENewsProductsDisplayMode.Horizontally ? "false" : "true")"
+                                 data-visible-max="3"
+                                 data-stretch="@(Model.HowENewsProducts == NewsItem.ENewsProductsDisplayMode.Horizontally ? "true" : "false")"
+                                 @Html.Raw("data-nav-position=\"outside\"")>
+                                @Html.Partial("_ProductView", Model.Products)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,77 @@
+﻿<div is-mobile>
+    <div
+        ng-if="!isMobile.value"
+        class="aside-menu product-lists-menu navigation-item-wrap"
+        ng-class="{'m-b-lg' : $ctrl.productLists[0].Id != null}"
+        data-as-sortable="$ctrl.sortableOptions"
+        data-ng-model="$ctrl.productLists">
+        <div
+            ng-repeat="list in $ctrl.productLists"
+            data-as-sortable-item
+            ng-click="$ctrl.selectList(list)"
+            class="pointer"
+            data-e2e-product-list-id="{{list.Id}}">
+            <!--   ng-class="{'selected': list.Id == $ctrl.listId}" для десктопа     -->
+            <div class="link-invert aside-menu-row aside-menu-row-with-move" ng-class="{'selected': list.Id == $ctrl.listId}">
+                <div
+                    class="aside-menu-inner navigation-item navigation-item--horizontal card card--middle start-xs"
+                    ng-class="{'selected': list.Id == $ctrl.listId}">
+                    <div class="as-sortable-item-handle navigation-item__icon" data-as-sortable-item-handle><icon-move></icon-move></div>
+                    <div class="aside-menu-name flex-grow navigation-item__text">{{list.Name}}</div>
+
+                    <div class="aside-menu-count">
+                        <div class="links-edit text-right">
+                            <a
+                                href=""
+                                class="link-invert fas fa-times link-decoration-none"
+                                ng-click="$event.stopPropagation(); $ctrl.deleteList(list.Id)"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        ng-if="isMobile.value"
+        class="aside-menu product-lists-menu navigation-item-wrap"
+        ng-class="{'m-b-lg' : $ctrl.productLists[0].Id != null}"
+        data-as-sortable="$ctrl.sortableOptions"
+        data-ng-model="$ctrl.productLists">
+        <div
+            ng-repeat="list in $ctrl.productLists"
+            data-as-sortable-item
+            ng-click="$ctrl.selectList(list)"
+            class="pointer swipe-line"
+            data-e2e-product-list-id="{{list.Id}}">
+            <!--   ng-class="{'selected': list.Id == $ctrl.listId}" для десктопа     -->
+            <div
+                class="link-invert aside-menu-row aside-menu-row-with-move swipe-line__inner"
+                ng-class="{'selected': list.Id == $ctrl.listId}"
+                data-swipe-line>
+                <div
+                    class="swipe-line__content aside-menu-inner navigation-item navigation-item--horizontal card card--middle start-xs"
+                    ng-class="{'selected': list.Id == $ctrl.listId}">
+                    <div class="as-sortable-item-handle navigation-item__icon" data-as-sortable-item-handle><icon-move></icon-move></div>
+                    <div class="aside-menu-name flex-grow navigation-item__text">{{list.Name}}</div>
+                </div>
+                <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                    <div class="links-edit">
+                        <ui-modal-trigger
+                            data-controller="'ModalAddEditProductListCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/productlists/modal/addEditProductList/AddEditProductList.html"
+                            data-resolve="{'id': list.Id}"
+                            data-on-close="$ctrl.mainPageProducts.updateProductLists()">
+                            <a class="btn btn-sm btn-success flex center-xs middle-xs" style="height: 100%">Редактировать</a>
+                        </ui-modal-trigger>
+                    </div>
+                    <button
+                        class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                        ng-click="$event.stopPropagation(); $ctrl.deleteList(list.Id)">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

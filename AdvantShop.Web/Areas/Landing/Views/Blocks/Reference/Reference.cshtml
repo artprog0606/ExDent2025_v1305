@@ -1,0 +1,15 @@
+﻿@model BlockModel
+@{
+    var blockIds = Model.Block.TryGetSetting("blockId") as string;
+}
+@if (!String.IsNullOrEmpty(blockIds))
+{
+    foreach (var blockId in blockIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim().TryParseInt()).Where(x => x != 0 && x != Model.Block.Id))
+    {
+        @Html.Block(blockId, useCache: false, inplace: false)
+    }
+}
+else if (Model.Inplace)
+{
+    <div style="padding: 20px">Выберите в настройках блок, который будет отображаться</div>
+}

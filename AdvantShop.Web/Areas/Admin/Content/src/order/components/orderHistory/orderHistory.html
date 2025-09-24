@@ -1,0 +1,45 @@
+﻿<div class="m-t m-b-sm">{{'Admin.Js.OrderHistory.OrderChangeHistory'|translate}}</div>
+<div class="order-history" data-is-mobile="">
+    <ui-grid-custom
+        grid-unique-id="gridOrderHistory"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-filter-enabled="false"
+        grid-pagination-enabled="false"
+        grid-selection-enabled="false"
+        grid-params="{orderId:$ctrl.orderId}"
+        grid-options="$ctrl.gridOptions"
+        grid-url="'orders/getOrderHistory'"
+        grid-empty-text="'Admin.Js.OrderHistory.NoEntries'|translate"
+        grid-extend-ctrl="$ctrl">
+        <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+            <div class="card m-b-md">
+                <div class="card__row" data-ng-if="row.entity.ModificationTimeFormatted != null">
+                    <div data-ng-bind="'Admin.Js.Order.Date' | translate"></div>
+                    <div data-ng-bind="row.entity.ModificationTimeFormatted"></div>
+                </div>
+                <div class="card__row">
+                    <div data-ng-bind="'Admin.Js.Order.WhatChanged' | translate"></div>
+                    <div data-ng-bind="row.entity.Parameter"></div>
+                </div>
+                <div class="card__row">
+                    <div></div>
+                    <div data-ng-bind="row.entity.ParameterDescription" class="order-history-param-descr"></div>
+                </div>
+                <div class="card__row" data-ng-if="row.entity.OldValue != null && row.entity.NewValue.length > 0">
+                    <div data-ng-bind="'Admin.Js.Order.OldValue' | translate"></div>
+                    <div data-ng-bind="row.entity.OldValue"></div>
+                </div>
+                <div class="card__row" data-ng-if="row.entity.NewValue != null && row.entity.NewValue.length > 0">
+                    <div data-ng-bind="'Admin.Js.Order.NewValue' | translate"></div>
+                    <div data-ng-bind="row.entity.NewValue"></div>
+                </div>
+                <div class="card__row" data-ng-if="row.entity.ManagerId">
+                    <div data-ng-bind="'Admin.Js.Order.WhoChanged' | translate"></div>
+                    <sidebar-user-trigger customer-id="row.entity.ManagerId" ng-if="row.entity.IsEmployee">
+                        <a href="">{{row.entity.ManagerName}}</a>
+                    </sidebar-user-trigger>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+</div>

@@ -1,0 +1,59 @@
+﻿<ng-form name="fivePostWarehouseDeliveryTypeReference">
+    <div is-mobile>
+        <div class="form-group row m-b-md">
+            <button type="button" class="btn btn-sm btn-success" ng-click="$ctrl.newItem()">
+                <i class="fa fa-plus"></i>{{'Admin.Js.ShippingMethods.Add'|translate}}
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-xs-5 m-b-xs">{{'Admin.Js.ShippingMethods.FivePost.Warehouse'|translate}}</div>
+            <div class="col-xs-5 m-b-xs form-group">
+                <label>{{'Admin.Js.ShippingMethods.FivePost.DeliveryType'|translate}}</label>
+                <help-trigger
+                    ng-class="{'m-l-sm p-l-xs' : isMobile.value}"
+                    data-title="{{'Admin.Js.ShippingMethods.FivePost.DeliveryType'|translate}}"
+                    use-template="true">
+                    <label>{{'Admin.Js.ShippingMethods.FivePost.DeliveryType.Hint'|translate}}</label>
+                </help-trigger>
+            </div>
+            <div class="col-xs-1 m-b-xs-1"></div>
+        </div>
+
+        <div class="row middle-xs" ng-repeat="bindInfo in $ctrl.mappedData">
+            <div class="col-xs-5 m-t-xs">
+                <ui-select
+                    class="input-alt"
+                    ng-model="bindInfo.warehouseId"
+                    required
+                    validation-input-text="{{'Admin.Js.ShippingMethods.FivePost.Warehouse'|translate}}"
+                    ng-click="$ctrl.updateAvailableWarehouses()">
+                    <ui-select-match>{{$select.selected.Text}}</ui-select-match>
+                    <ui-select-choices repeat="s.Value as s in $ctrl.availableWarehouses | filter: $select.search">
+                        <div>{{s.Text}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="col-xs-5 m-t-xs">
+                <ui-select
+                    class="input-alt"
+                    ng-model="bindInfo.deliveryType"
+                    required
+                    validation-input-text="{{'Admin.Js.ShippingMethods.FivePost.DeliveryType'|translate}}"
+                    ng-click="$ctrl.updateAvailableDeliveryTypes()">
+                    <ui-select-match>{{$select.selected.Text}}</ui-select-match>
+                    <ui-select-choices repeat="s.Value as s in $ctrl.availableDeliveryTypes | filter: $select.search">
+                        <div>{{s.Text}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="col-xs-1 m-t-xs-1" style="height: 14px">
+                <a
+                    class="link link-invert link-decoration-none fas fa-times item-module-remove"
+                    ng-click="$ctrl.removeItem(bindInfo.warehouseId)"
+                    style="font-size: 20px; color: red"></a>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="WarehouseDeliveryTypeReference" value="{{$ctrl.getReference()}}" />
+</ng-form>

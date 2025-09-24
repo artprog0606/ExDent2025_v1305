@@ -1,0 +1,83 @@
+﻿<div ng-if="ctrl.allowSendNotification">
+    <div class="row" ng-class="{'form-group' : !isMobile.value}">
+        <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Заголовок уведомления</div>
+        <div class="col-xs-12 col-md-10">
+            <input
+                class="form-control input-alt"
+                ng-model="ctrl.action.NotificationTitle"
+                required
+                ng-required="!ctrl.action.NotificationBody"
+                validation-input-text="Заголовок уведомления" />
+        </div>
+    </div>
+    <div class="row" ng-class="{'form-group' : !isMobile.value}">
+        <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Текст уведомления</div>
+        <div class="col-xs-12 col-md-10">
+            <textarea
+                class="form-control input-alt"
+                ng-model="ctrl.action.NotificationBody"
+                rows="3"
+                required
+                ng-required="!ctrl.action.NotificationTitle"
+                validation-input-text="Текст уведомления"></textarea>
+        </div>
+    </div>
+    <div class="row" ng-class="{'form-group' : !isMobile.value}">
+        <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">Параметры Push уведомления</div>
+        <div class="col-xs-12 col-md-10">
+            <div
+                ng-if="ctrl.action.NotificationRequestParams != null && ctrl.action.NotificationRequestParams.length > 0"
+                ng-repeat="item in ctrl.action.NotificationRequestParams track by $index"
+                class="row middle-xs m-b"
+                ng-class="{'form-group' : !isMobile.value}">
+                <div class="col-xs-5 col-md-2">
+                    <input type="text" ng-model="item.Key" class="form-control input-alt" />
+                </div>
+                <div class="col-xs-5 col-md-4">
+                    <input type="text" ng-model="item.Value" class="form-control input-alt" />
+                </div>
+                <div class="col-xs-1 col-md-1">
+                    <a href="" ng-click="ctrl.removeParam(item.Key)" class="fa fa-times link-invert link-decoration-none p-l-xs" title="Удалить"></a>
+                </div>
+            </div>
+            <div class="form-group row middle-xs m-b-md" ng-if="!ctrl.showAddingNewParam">
+                <div class="col-xs-12">
+                    <a href="" ng-class="{'btn btn-success btn-sm' : isMobile.value}" ng-click="ctrl.showAddingNewParam = true">Добавить</a>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.showAddingNewParam" class="m-b-md">
+                <div class="row m-b-xs">
+                    <div class="col-xs-2">Ключ</div>
+                    <div class="col-xs-4">Значение</div>
+                </div>
+                <div class="form-group row middle-xs">
+                    <div class="col-xs-2">
+                        <input type="text" ng-model="ctrl.newParamKey" class="form-control" />
+                    </div>
+                    <div class="col-xs-4">
+                        <input type="text" ng-model="ctrl.newParamValue" class="form-control" />
+                    </div>
+                    <div class="col-xs-2">
+                        <a href="" class="" ng-click="ctrl.addParam()">Добавить</a>
+                    </div>
+                </div>
+            </div>
+            <div class="help-block" ng-class="{'fs-xs m-t-xs' : isMobile.value}" ng-if="ctrl.availableVariables">
+                <span>{{'Admin.Js.SettingsTasks.AvailableVariables'|translate}}</span>
+                <span ng-repeat="item in ctrl.availableVariables track by $index">
+                    {{$index != 0 ? ', ' : ''}}<span class="letter-format-key" title="{{item.Description}}" ng-bind="item.Key"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="!ctrl.allowSendNotification" class="row" ng-class="{'form-group' : !isMobile.value}">
+    <div ng-if="!ctrl.pushNotificationErrorMessage" class="col-xs-12 m-b-md">
+        {{'Admin.Js.Triggers.EditTrigger.SendPushInstallModule'|translate}}
+        <a href="modules/market?name=MobileApp" target="_blank">{{'Admin.Js.Triggers.EditTrigger.MobileApplication'|translate}}</a>
+    </div>
+    <div ng-if="ctrl.pushNotificationErrorMessage" class="col-xs-12 m-b-md">
+        <span ng-bind-html="ctrl.pushNotificationErrorMessage"></span>
+    </div>
+</div>

@@ -1,0 +1,254 @@
+﻿@model AdvantShop.Models.MyAccount.OrderDetailsModel
+
+<div class="order-history-products">
+    <div class="order-history-products-table cs-br-1">
+        @if (Model.OrderItems != null && Model.OrderItems.Any())
+        {
+            <div class="order-history-products-table__head cs-br-1 hidden-xs visible-sm">
+                <div class="row middle-xs order-history-products-table__row cs-t-3">
+                    <div class="col-xs-12 col-sm order-history-products-table__head-cell">
+                        <div class="order-history-products-table__cell-content">
+                            Название товара
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 order-history-products-table__head-cell">
+                        <div class="order-history-products-table__cell-content order-history-products-table__cell-content--right-adaptive">
+                            Количество
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 order-history-products-table__head-cell">
+                        <div class="order-history-products-table__cell-content order-history-products-table__cell-content--right-adaptive">
+                            Цена
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-history-products-table__body cs-br-1">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <div class="row order-history-products-table__row">
+                        <div class="col-xs-10 col-sm order-history-products-table__body-cell">
+                            <div class="order-history-products-table__cell-content">
+                                @if (item.Url.IsNotEmpty())
+                                {
+                                    <a href="@item.Url">
+                                        @Html.Raw(item.Name)
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>
+                                        @Html.Raw(item.Name)
+                                    </span>
+                                }
+                                @if (item.ColorName.IsNotEmpty() || item.SizeName.IsNotEmpty() || (item.CustomOptions != null && item.CustomOptions.Any()))
+                                {
+                                    <ul class="cart-full-properties">
+                                        @if (item.ColorName.IsNotEmpty())
+                                        {
+                                            <li class="cart-full-properties-item">
+                                                <div class="cart-full-properties-name">@Html.Raw(item.ColorHeader):</div>
+                                                <div class="cart-full-properties-value">@Html.Raw(item.ColorName)</div>
+                                            </li>
+                                        }
+                                        @if (item.SizeName.IsNotEmpty())
+                                        {
+                                            <li class="cart-full-properties-item">
+                                                <div class="cart-full-properties-name">@Html.Raw(item.SizeHeader):</div>
+                                                <div class="cart-full-properties-value">@Html.Raw(item.SizeName)</div>
+                                            </li>
+                                        }
+                                        @foreach (var option in item.CustomOptions)
+                                        {
+                                            <li>
+                                                <div class="cart-full-properties-name">@Html.Raw(option.CustomOptionTitle):</div>
+                                                <div class="cart-full-properties-value">@Html.Raw(option.OptionTitle)</div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-xs-2 col-sm-3 order-history-products-table__body-cell">
+                            <div class="order-history-products-table__cell-content text-align-right">
+                                @item.Amount
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-2 order-history-products-table__body-cell">
+                            <div class="order-history-products-table__cell-content order-history-products-table__cell-content--right-adaptive">
+                                @Html.Raw(item.Price)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        @if (Model.OrderCertificates != null && Model.OrderCertificates.Any())
+        {
+            <div class="order-history-products-table__footer">
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs-12 order-history-products-table__footer-cell">
+                        Товар
+                    </div>
+                    <div>
+                        Код
+                    </div>
+                    <div>
+                        Стоимость
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-history-products-table__footer">
+                @foreach (var item in Model.OrderCertificates)
+                {
+                    <div class="row order-history-products-table__row">
+                        <div class="col-xs-12 order-history-products-table__footer-cell">
+                            <div class="order-history-products-table__cell-content">
+                                <div>Сертификат</div>
+                                <div>
+                                    @Html.Raw(item.Code) @Html.Raw(item.Price)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+
+        <div class="order-history-products-table__footer cs-br-1">
+
+            <div class="row order-history-products-table__row">
+                <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content">
+                        Стоимость заказа
+                    </div>
+                </div>
+                <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content text-align-right">
+                        @Html.Raw(Model.ProductsPrice)
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.TotalDiscount != 0)
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            Скидка:
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content text-align-right">
+                            <span class="cart-full-discount">-@Html.Raw(Model.TotalDiscount)%</span> <span>@Html.Raw(Model.TotalDiscountPrice)</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="row order-history-products-table__row">
+                <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content">
+                        Стоимость доставки:
+                    </div>
+                </div>
+                <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content text-align-right">
+                        + <span>@Html.Raw(Model.ShippingPrice)</span>
+                    </div>
+                </div>
+            </div>
+
+
+            @if (Model.Coupon.IsNotEmpty())
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            Купон:
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content text-align-right">
+                            <span>@Html.Raw(Model.Coupon)</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.Bonus.IsNotEmpty())
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            Бонус:
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content text-align-right">
+                            - <span>@Html.Raw(Model.Bonus)</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.CertificatePrice.IsNotEmpty())
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            Сертификат:
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content  text-align-right">
+                            @Html.Raw(Model.CertificatePrice)
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.TaxesNames.IsNotEmpty())
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            @Html.Raw(Model.TaxesNames):
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content  text-align-right">
+                            @Html.Raw(Model.TaxesPrice)
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.PaymentPrice.IsNotEmpty())
+            {
+                <div class="row order-history-products-table__row">
+                    <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content">
+                            @Html.Raw(Model.PaymentPriceText):
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                        <div class="order-history-products-table__cell-content  text-align-right">
+                            @Html.Raw(Model.PaymentPrice)
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row order-history-products-table__row order-history-products-table__row--bold">
+                <div class="col-xs col-sm-5 col-sm-offset-5 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content">
+                        Итого:
+                    </div>
+                </div>
+                <div class="col-xs-5 col-sm-2 order-history-products-table__footer-cell">
+                    <div class="order-history-products-table__cell-content  text-align-right">
+                        @Html.Raw(Model.TotalPrice)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

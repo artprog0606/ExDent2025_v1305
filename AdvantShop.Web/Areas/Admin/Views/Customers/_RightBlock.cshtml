@@ -1,0 +1,179 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomersModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    var customerGroupId = "1";
+    if (Model.Customer != null)
+    {
+        var group = Model.CustomerGroups.Find(x => x.Value == Model.Customer.CustomerGroupId.ToString());
+        if (group != null)
+        {
+            customerGroupId = group.Value;
+        }
+    }
+}
+
+<div class="ibox category-block block-additional-parameters right-block">
+    <div class="ibox-content category-content block-additional-parameters-content border_none right-block__inner">
+        @if (Model.ShowManager)
+        {
+            <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+                <div class="block-additional-parameters-name">
+                    @T("Admin.Customers.RightBlock.Manager")
+                </div>
+                <div class="block-additional-parameters-value">
+                    @Html.DropDownListFor(x => x.Customer.ManagerId, Model.Managers, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.managerId", ng_init = "customer.instance.managerId=" + (Model.Customer != null ? "'" + Model.Customer.ManagerId.ToString() + "'" : "null") + "" })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(x => x.Customer.ManagerId, new { ng_model = "customer.instance.customer.managerId", ng_init = "customer.instance.managerId=" + (Model.Customer != null ? "'" + Model.Customer.ManagerId + "'" : "null") + "" })
+        }
+
+        <div class="block-additional-parameters-row card card--form-control @(isMobile ? "m-b-md" : "")">
+            <div class="block-additional-parameters-name card__label">
+                @T("Admin.Customer.RightBlock.AdminComment")
+            </div>
+            <div class="block-additional-parameters-value">
+                @Html.TextAreaFor(x => x.Customer.AdminComment, new { @class = "form-control card__input", @style = "height:85px", ng_model = "customer.instance.customer.adminComment", ng_init = "customer.instance.customer.adminComment=" + (Model.Customer != null ? "'" + Model.Customer.AdminComment + "'" : "null") })
+            </div>
+        </div>
+
+
+        <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+            <div class="block-additional-parameters-name">
+                @T("Admin.Customers.RightBlock.CustomerGroup")
+            </div>
+            <div class="block-additional-parameters-value">
+                @Html.DropDownListFor(x => x.Customer.CustomerGroupId, Model.CustomerGroups, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.customerGroupId", ng_init = "customer.instance.customer.customerGroupId='" + customerGroupId + "'" })
+            </div>
+        </div>
+        <div ng-init="customer.instance.customer.customerType='@Model.CustomerType'">
+            @if (Model.IsEnabledBothTypesOfCustomers)
+            {
+                <div class="m-b-md @(isMobile ? "block-additional-parameters-row" : "")">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Customers.RightBlock.CustomerType")
+                    </div>
+                    <div class="block-additional-parameters-value">
+                        @Html.DropDownListFor(x => x.CustomerType, Model.CustomerTypes, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.customerType" })
+                    </div>
+                </div>
+            }
+        </div>
+        
+
+        @if (Model.Customer != null && Model.Customer.RegistredUser)
+        {
+            <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+                <div class="block-additional-parameters-name">
+                    @T("Admin.Customers.RightBlock.RegistrationDate")
+                </div>
+                <div class="block-additional-parameters-value">
+                    @Model.Customer.RegistrationDateTime.ToString("dd.MM.yyyy HH:mm")
+                </div>
+            </div>
+            if (Model.Customer.RegisteredFrom.IsNotEmpty())
+            {
+                <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Customers.RightBlock.RegisteredFrom")
+                    </div>
+                    <div class="block-additional-parameters-value text-floating">
+                        @Model.Customer.RegisteredFrom
+                    </div>
+                </div>
+            }
+            if (Model.Customer.RegisteredFromIp.IsNotEmpty())
+            {
+                <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Customers.RightBlock.RegisteredFromIp")
+                    </div>
+                    <div class="block-additional-parameters-value text-floating">
+                        @Model.Customer.RegisteredFromIp
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+            <div class="block-additional-parameters-value">
+                <label class="adv-checkbox-label" data-e2e="SubscribedNews">
+                    @Html.CheckBoxFor(x => x.Customer.IsAgreeForPromotionalNewsletter, new
+                    {
+                        @class = "adv-checkbox-input", 
+                        ng_model = "customer.instance.customer.subscribedForNews", 
+                        ng_init = "customer.instance.subscribedForNews=" + (Model.Customer != null ? Model.Customer.IsAgreeForPromotionalNewsletter.ToLowerString() : "false"), 
+                        ng_disabled = "customer.instance.customer.email == null || customer.instance.customer.email.length == 0"
+                    })
+                    <span class="adv-checkbox-emul"></span>
+                    <span class="">@T("Admin.Customers.RightBlock.IsAgreeForPromotionalNewsletter")</span>
+                </label>
+            </div>
+            @if (Model.Customer != null 
+                 && Model.Customer.IsAgreeForPromotionalNewsletter 
+                 && Model.Customer.SubscriptionForNews != null)
+            {
+                <div class="block-additional-parameters-sub-value">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Customers.RightBlock.NewSubscription.Date")
+                    </div>
+                    <div class="block-additional-parameters-value text-floating">
+                        @Model.Customer.SubscriptionForNews.SubscribeDate.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                    @if (Model.Customer.SubscriptionForNews.SubscribeFromPage.IsNotEmpty())
+                    {
+                        <div class="block-additional-parameters-name">
+                            @T("Admin.Customers.RightBlock.NewSubscription.FromPage")
+                        </div>
+                        <div class="block-additional-parameters-value text-floating">
+                            @Model.Customer.SubscriptionForNews.SubscribeFromPage
+                        </div>
+                    }
+                    @if (Model.Customer.SubscriptionForNews.SubscribeFromIp.IsNotEmpty())
+                    {
+                        <div class="block-additional-parameters-name">
+                            @T("Admin.Customers.RightBlock.NewSubscription.FromIp")
+                        </div>
+                        <div class="block-additional-parameters-value text-floating">
+                            @Model.Customer.SubscriptionForNews.SubscribeFromIp
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.Customer != null && Model.Customer.RegistredUser &&
+             (CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator ||
+              (CustomerContext.CurrentCustomer.CustomerRole == Role.Moderator && Model.Customer.CustomerRole != Role.Administrator)))
+        {
+            <div class="block-additional-parameters-row @(isMobile ? "m-b-md" : "")">
+                <div class="block-additional-parameters-value">
+                    <ui-modal-trigger class="dropdown-menu-link js-menu-link" data-resolve="{params: {customerId: customer.instance.customer.customerId}}" data-controller="'ModalChangePasswordCtrl'" data-controller-as="ctrl" template-url="@Html.GetAssetPath("changePasswordCustomer.html")">
+                        <a href="">@T("Admin.Customers.RightBlock.ChangePassword")</a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        }
+        <div class="setting-label-wrap control-label form-group">
+            <div>
+                @T("Admin.Customers.RightBlock.Tags")
+            </div>
+        </div>
+        <div class="form-group ng-cloak">
+            <ui-select multiple
+                       tagging="customer.tagTransform"
+                       sortable="true"
+                       class="input-alt"
+                       ng-init="customer.getTags(form)"
+                       ng-model="customer.selectedTags" data-e2e="SelectTag">
+                <ui-select-match placeholder="@T("Admin.Customers.RightBlock.SelectTags")">{{$item.value}}</ui-select-match>
+                <ui-select-choices repeat="tag in customer.tags | filter:$select.search">
+                    {{tag.value}}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>

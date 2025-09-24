@@ -1,0 +1,22 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Helpers;
+@{
+    bool isHidden = CommonHelper.IsSaasWarningHidden();
+}
+@if (CustomerContext.CurrentCustomer.IsAdmin || CustomerContext.CurrentCustomer.IsVirtual)
+{
+    if (isHidden == false && SaasDataService.IsSaasEnabled && !string.IsNullOrEmpty(SaasDataService.CurrentSaasData.AllServicesRemainsFormated))
+    {
+        <div class="flex center-xs notification-balance" ng-controller="SaasWarningMessageCtrl as saasWarningMessage" ng-hide="saasWarningMessage.isHidden">
+            <div class="notification-balance__text">
+                @Html.Raw(SaasDataService.CurrentSaasData.AllServicesRemainsFormated)
+            </div>
+            <button type="button" class="notification-balance__close text-decoration-none" ng-click="saasWarningMessage.close()">
+                <svg width="10" height="10" viewBox="0 0 8 8" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.223466 0.223606C0.521421 -0.0743483 1.0045 -0.0743485 1.30246 0.223606L7.77639 6.69754C8.07435 6.9955 8.07435 7.47858 7.77639 7.77653C7.47844 8.07449 6.99536 8.07449 6.6974 7.77653L0.223466 1.3026C-0.0744887 1.00464 -0.0744887 0.521561 0.223466 0.223606Z" fill="#F79E1B" />
+                    <path d="M7.77639 0.223466C8.07435 0.521421 8.07435 1.0045 7.77639 1.30246L1.30246 7.77639C1.0045 8.07435 0.521421 8.07435 0.223467 7.77639C-0.074488 7.47844 -0.0744883 6.99536 0.223466 6.6974L6.6974 0.223466C6.99536 -0.0744886 7.47844 -0.0744888 7.77639 0.223466Z" fill="#F79E1B" />
+                </svg>
+            </button>
+        </div>
+    }
+}

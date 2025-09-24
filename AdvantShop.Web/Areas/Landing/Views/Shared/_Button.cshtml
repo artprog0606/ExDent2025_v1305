@@ -1,0 +1,90 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using AdvantShop.ViewCommon;
+@using AdvantShop.Core.Services.Landing.Pictures;
+
+@model LpButton
+@{
+    var text = Model.Text ?? "Начать работу";
+
+    string goalsFn = null;
+    string goalsDirective = null;
+    bool isManyOffers = Model.UseManyOffers != null && Model.UseManyOffers.Value && Model.ActionOfferItems != null;
+    if (Model.Goals != null && Model.Goals.Enabled)
+    {
+        string ga = Model.Goals.GaEventCategory.IsNotEmpty() && Model.Goals.GaEventAction.IsNotEmpty() ? "tracking.trackGaEvent('" + Model.Goals.GaEventCategory + "', '" + Model.Goals.GaEventAction + "');" : null;
+        string ya = Model.Goals.YaMetrikaEventName.IsNotEmpty() ? "tracking.trackYaEvent('" + Model.Goals.YaMetrikaEventName + "');" : null;
+        goalsFn = ga.IsNotEmpty() || ya.IsNotEmpty() ? String.Format("{0}{1}", ya, ga) : null;
+        goalsDirective = "data-tracking";
+    }
+
+    var icon = "";
+
+    if (Model.Picture != null && Model.Picture.Src != null)
+    {
+        icon = Model.Picture.Type == ePictureLoaderImageType.Svg ? Model.Picture.Src : String.Format("<img class=\"button-icon\" src=\"{0}\"/>", Model.Picture.Src);
+    }
+}
+
+    @if (Model.Action == LpButtonAction.Form.ToString())
+    {
+        <button type="button" data-e2e="ButtonForm"
+                data-modal-open="modal_@(Model.ActionForm)"
+                data-modal-open-callback-on-close="@Model.Callback"
+                data-modal-data-additional="@Model.AdditionalData"
+                data-modal-class="@Html.Raw(Model.ModalClass)"
+                class="lp-btn @Model.Type.StrName() @Model.Size.StrName()">
+            @Html.Raw(icon)
+            @text
+        </button>
+    }
+    else if ((Model.Action == LpButtonAction.Checkout.ToString() || Model.Action == LpButtonAction.CheckoutUpsell.ToString()) && (!string.IsNullOrEmpty(Model.ActionOfferId) || (Model.ActionOfferItems != null && Model.ActionOfferItems.Count > 0)))
+    {
+
+        @Html.Partial("_CartAdd", new CartAddViewModel()
+        {
+            Classes = "lp-btn " + Model.Type.StrName() + " " + Model.Size.StrName() +"",            
+            Amount = 1,
+            Mode = "lp",
+            LpId = LpService.CurrentLanding.Id, 
+            OfferIds = isManyOffers ? Model.ActionOfferItems.Where(x => !string.IsNullOrEmpty(x.OfferId)).Select(x => x.OfferId).ToList() : null,     
+            OfferId = !isManyOffers ? Model.ActionOfferId.TryParseInt() : (int?)null,     
+            ModeFrom = LpService.Mode != null ? LpService.Mode : "",
+            HideShipping  = Model.ActionHideShipping != null && Model.ActionHideShipping.Value ? "true" : "",                                    
+            LpEntityId = LpService.EntityId != 0 ? LpService.EntityId : (int?)null,        
+            LpEntityType = LpService.EntityId != 0 ? LpService.EntityType : "",        
+            LpBlockId = Model.BlockId,
+            LpButtonName = Model.Name,    
+            LpUpId = !string.IsNullOrEmpty(Model.ActionUpsellLpId) ? Model.ActionUpsellLpId : "",            
+            BtnContent = "<span " +  goalsDirective + " data-ng-click=\"" + @goalsFn + "\">" + @text  + "</span>",
+            Size = CardAddSize.None
+        })
+    }
+    else if (Model.Action == LpButtonAction.ModalClose.ToString())
+    {
+        <button type="button" data-e2e="ButtonForm" data-modal-close data-modal-close-callback="@Model.Callback; @Html.Raw(goalsFn)" @goalsDirective class="lp-btn @Model.Type.StrName() @Model.Size.StrName()">
+            @Html.Raw(icon)
+            @text
+        </button>
+    }
+    else if (Model.Action == LpButtonAction.Section.ToString())
+    {
+        <button type="button" data-e2e="ButtonForm" class="lp-btn @Model.Type.StrName() @Model.Size.StrName()"
+                data-scroll-to-block="@Model.ActionSection"
+                @goalsDirective
+                data-scroll-to-block-callback="@Model.Callback; @Html.Raw(goalsFn)">
+            @Html.Raw(icon)
+            @text
+        </button>
+    }
+    else
+    {
+        <a class="lp-btn @Model.Type.StrName() @Model.Size.StrName()" data-e2e="ButtonForm"
+            href="@Html.ButtonHref(Model)"
+            @Html.Raw(goalsFn != null ? goalsDirective + " data-ng-click=\"" + goalsFn + "\")" : "")
+            @Html.Raw(Model.TargetBlank ? "target=\"_blank\"" : "")>
+            @Html.Raw(icon)
+            @text
+        </a>
+    }

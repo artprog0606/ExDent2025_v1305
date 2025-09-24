@@ -1,0 +1,240 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.Categories.AdminCategoryModel
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="flex-grow-n @(!isMobile ? "block-additional-parameters-col" : "")">
+    <div class="ibox category-block block-additional-parameters category-page__ibox">
+        <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "block-additional-parameters-content--padding-mid" : "") border_none">
+            <h3 class="category-title category-page__title" style="@(isMobile ? "margin-top:20px;" : "")">@T("Admin.Category.RightPanel.Display")</h3>
+            <div class="block-additional-parameters-row category-page__form-group">
+                <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex-grow" : "")">
+                    <span class="">@T("Admin.Category.Index.SortOrder")</span>
+                </div>
+                <div class="block-additional-parameters-value flex middle-xs">
+                    @Html.TextBoxFor(x => x.SortOrder, new { @class = "form-control input-alt", required = "required", ng_model = "category.sortOrder" })
+                    <help-trigger class="ng-cloak word-spacing m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Category.RightPanel.SortingOrder")">
+                        @T("Admin.Category.RightPanel.SequenceNumberOfaCategory")
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="block-additional-parameters-row category-page__form-group">
+                <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex-grow" : "")">
+                    @T("Admin.Category.RightPanel.SubcategoryDisplayType")
+                </div>
+                <div class="block-additional-parameters-value flex middle-xs">
+                    @Html.DropDownListFor(x => x.DisplayStyle, Model.DisplayStyles, new { @class = "form-control input-alt", ng_model = "category.displayStyle", ng_init = "category.displayStyle='" + Model.DisplayStyle + "'" })
+
+                    <help-trigger class="ng-cloak word-spacing m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Category.RightPanel.SubcategoryDisplayType")">
+                        @T("Admin.Category.RightPanel.SubcategoryInThisCategory")
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="block-additional-parameters-row category-page__form-group">
+                <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex-grow" : "")">
+                    <span class="@(isMobile ? "flex-grow" : "")"> @T("Admin.Category.RightPanel.DefaultSorting")</span>
+                </div>
+                <div class="block-additional-parameters-value flex middle-xs">
+                    @Html.DropDownListFor(x => x.Sorting, Model.Sortings, new { @class = "form-control input-alt", ng_model = "category.sorting", ng_init = "category.sorting='" + (int)Model.Sorting + "'" })
+
+                    <help-trigger class="ng-cloak word-spacing m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Category.RightPanel.DefaultSorting")">
+                        @T("Admin.Category.RightPanel.DefaultOption")
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="block-additional-parameters-row form-group category-page__form-group">
+                <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex" : "")" ">
+                    <span class="@(isMobile ? "flex-grow" : "")">@T("Admin.Category.RightPanel.DisplayTwoLevels")</span>
+                    <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.RightPanel.DisplayTwoLevels")">
+                        @T("Admin.Category.RightPanel.DisplayTreeLevelsInMenu")
+                        <br />
+                        @T("Admin.Category.RightPanel.TwoLevelsMorePreferable")
+                    </help-trigger>
+                </div>
+                <div class="i-checks block-additional-parameters-value adv-radio-group adv-radio-group--horizontal">
+                    <label class="adv-radio-label">
+                        @Html.RadioButtonFor(x => x.DisplaySubCategoriesInMenu, true, new { @class = "adv-radio-input", ng_model = "category.displaySubCategoriesInMenu" })
+                        <span class="adv-radio-label-text">@T("Admin.Yes")</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label">
+                        @Html.RadioButtonFor(x => x.DisplaySubCategoriesInMenu, false, new { @class = "adv-radio-input", ng_model = "category.displaySubCategoriesInMenu" })
+                        <span class="adv-radio-label-text">@T("Admin.No")</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </div>
+            </div>
+            @if (!Model.IsEditMode || Model.CategoryId != 0)
+            {
+                <div class="block-additional-parameters-row category-page__form-group">
+                    <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex" : "")">
+                        <span class="@(isMobile ? "flex-grow" : "")">@T("Admin.Category.RightPanel.HideInTheMenu")</span>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.RightPanel.HideInTheMenu")">
+                            @T("Admin.Category.RightPanel.IfCategoryHide")<br>
+                            @T("Admin.Category.RightPanel.CategoryIsHidden")<br>
+                            @T("Admin.Category.RightPanel.TransitionURLWorks")<br>
+                            @T("Admin.Category.RightPanel.AllCategoriesGoods")<br>
+                            @T("Admin.Category.RightPanel.GoodsLinks")
+                        </help-trigger>
+                    </div>
+                    <div class="block-additional-parameters-value adv-radio-group adv-radio-group--horizontal">
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.Hidden, true, new { @class = "adv-radio-input", ng_model = "category.hidden" })
+                            <span class="adv-radio-label-text">@T("Admin.Yes")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.Hidden, false, new { @class = "adv-radio-input", ng_model = "category.hidden" })
+                            <span class="adv-radio-label-text">@T("Admin.No")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                    </div>
+                </div>
+            }
+
+            @if (!Model.IsEditMode || Model.CategoryId != 0)
+            {
+                <div class="block-additional-parameters-row category-page__form-group">
+                    <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex" : "")">
+                        <span class="@(isMobile ? "flex-grow" : "")">@T("Admin.Category.RightPanel.ShowOnMainPage")</span>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.RightPanel.ShowOnMainPageNoteTitle")">
+                            @T("Admin.Category.RightPanel.ShowOnMainPageNoteText")
+                        </help-trigger>
+                    </div>
+                    <div class="block-additional-parameters-value adv-radio-group adv-radio-group--horizontal">
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.ShowOnMainPage, true, new { @class = "adv-radio-input", ng_model = "category.showOnMainPage" })
+                            <span class="adv-radio-label-text">@T("Admin.Yes")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.ShowOnMainPage, false, new { @class = "adv-radio-input", ng_model = "category.showOnMainPage" })
+                            <span class="adv-radio-label-text">@T("Admin.No")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.ModifiedDate) || !string.IsNullOrEmpty(Model.ModifiedBy))
+            {
+                <div class="block-additional-parameters-row category-page__form-group">
+                    <div>
+                        @T("Admin.Product.Edit.Changed")
+                        <div class="m-b-xs">
+                            @Model.ModifiedDate @Model.ModifiedBy
+                        </div>
+
+                        @if (SettingsMain.TrackProductChanges)
+                        {
+                            <ui-modal-trigger size="xs-9"
+                                              data-controller="'ModalChangeHistoryCtrl'"
+                                              controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("changeHistory.html")"
+                                              data-resolve="{'params': {'objId': @Model.CategoryId, 'type': 'category'}}">
+                                <a class="" href="">@T("Admin.Category.RightBlock.HistoryChanges")</a>
+                            </ui-modal-trigger>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.IsEditMode)
+            {
+                @Html.RenderModules("admin_category_rightpanel_bottom", new { categoryId = Model.CategoryId })
+            }
+        </div>
+    </div>
+
+    @if (Model.IsTagsVisible)
+    {
+        <div class="ibox category-block block-additional-parameters ng-cloak category-page__form-group">
+            <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "block-additional-parameters-content--padding-mid" : "") border_none">
+                <h3 class="category-title category-page__title" style="@(isMobile ? "margin-top:20px;" : "")">@T("Admin.Category.RightPanel.Tags")</h3>
+                <ui-select multiple
+                           class="input-alt"
+                           tagging="category.tagTransform"
+                           sortable="true"
+                           ng-init="@(Model.IsEditMode ? "category.loadTags(" + Model.CategoryId + ", form)" : string.Empty)"
+                           ng-model="category.selectedTags">
+                    <ui-select-match placeholder="@T("Admin.Category.RightPanel.SelectTags")">{{$item.value}}</ui-select-match>
+                    <ui-select-choices repeat="tag in category.tags | filter:$select.search">
+                        {{tag.value}}
+                    </ui-select-choices>
+                </ui-select>
+                @*select для отправки данных через обычный post *@
+                <div ng-repeat="option in category.selectedTags track by $index">
+                    <input type="hidden" name="tags[{{$index}}].id" value="{{option.id}}" />
+                    <input type="hidden" name="tags[{{$index}}].value" value="{{option.value}}" />
+                </div>
+            </div>
+        </div>
+    }
+    @if (Model.ParentCategoryId == 0)
+    {
+        <div class="ibox category-block block-additional-parameters ng-cloak category-page__form-group">
+            <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "block-additional-parameters-content--padding-mid" : "") border_none">
+                <h3 class="category-title category-page__title" style="@(isMobile ? "margin-top:20px;" : "")">@T("Admin.Category.RightPanel.Brands")</h3>
+                <div class="block-additional-parameters-row category-page__form-group">
+
+                    <div class="block-additional-parameters-name form-label form-label--block @(isMobile ? "flex" : "")">
+                        <span class="@(isMobile ? "flex-grow" : "")">@T("Admin.Category.RightPanel.DisplayManufacturers")</span>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.RightPanel.DisplayManufacturers")">
+                            @T("Admin.Category.RightPanel.OptionTurnOnOf")
+                        </help-trigger>
+                    </div>
+                    <div class="block-additional-parameters-value adv-radio-group adv-radio-group--horizontal">
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.DisplayBrandsInMenu, true, new { @class = "adv-radio-input", ng_model = "category.displayBrandsInMenu" })
+                            <span class="adv-radio-label-text">@T("Admin.Yes")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                        <label class="adv-radio-label">
+                            @Html.RadioButtonFor(x => x.DisplayBrandsInMenu, false, new { @class = "adv-radio-input", ng_model = "category.displayBrandsInMenu" })
+                            <span class="adv-radio-label-text">@T("Admin.No")</span>
+                            <span class="adv-radio-emul"></span>
+                        </label>
+                    </div>
+                    <div ng-show="category.displayBrandsInMenu == 'True'">
+                        <div class="@(isMobile ? "m-b-sm m-t-sm" : "m-b-xs")">
+                            <a ng-click="category.recalculateBrands(@Model.CategoryId)">@T("Admin.Category.RightPanel.RecalculateBrands")</a>
+                        </div>
+                        <ui-select class="input-alt"
+                                   multiple
+                                   reach-infinity="category.getBrands()"
+                                   ng-init="@(Model.IsEditMode ? "category.loadBrands(" + Model.CategoryId + ", form)" : string.Empty)"
+                                   ng-click="category.firstCallBrands()"
+                                   ng-model="category.selectedBrands"
+                                   reset-search-input="true">
+                            <ui-select-match placeholder="@T("Admin.Category.RightPanel.SelectBrands")">{{$item.Name}}</ui-select-match>
+                            <ui-select-choices repeat="brand in category.brands"
+                                               refresh="category.getBrandsByName($select.search)"
+                                               refresh-delay="250">
+                                <span ng-bind="brand.Name"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                        @*select для отправки данных через обычный post *@
+                        <div ng-repeat="brand in category.selectedBrands track by $index">
+                            <input type="hidden" name="brands[{{$index}}]" value="{{brand.Id}}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="ibox category-block block-additional-parameters ng-cloak category-page__form-group">
+        <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "block-additional-parameters-content--padding-mid" : "") border_none">
+            <h3 class="category-title category-page__title" style="@(isMobile ? "margin-top:20px;" : "")">@T("Admin.Category.RightPanel.SizeChart")</h3>
+            <div class="flex middle-xs">
+                @Html.DropDownListFor(x => x.SizeChartId, Model.SizeCharts, new { @class = "form-control input-alt", ng_model = "category.SizeChartId", ng_init = "category.SizeChartId='" + Model.SizeChartId + "'" })
+                <help-trigger class="ng-cloak word-spacing m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Category.RightPanel.SizeChart")">
+                    @T("Admin.Category.RightPanel.SizeChartHint")
+                </help-trigger>
+            </div>
+        </div>
+    </div>
+    @if (Model.IsEditMode)
+    {
+        @Html.RenderModules("admin_category_right", new { categoryId = Model.CategoryId })
+    }
+</div>

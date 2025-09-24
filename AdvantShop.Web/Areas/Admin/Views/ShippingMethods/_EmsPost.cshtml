@@ -1,0 +1,52 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.EmsPostShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.EmsPost.CityOfRussia")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownList("CityFrom", Model.Cities, new { ng_model = "shippingMethod.Params.CityFrom", ng_init = "shippingMethod.Params.CityFrom='" + Model.CityFrom + "'", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.EmsPost.CityOfRussia") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.EmsPost.CityOfRussia")">
+            @T("Admin.ShippingMethods.EmsPost.CityOfRussia") <br />
+            @T("Admin.ShippingMethods.EmsPost.CheckTheCity") <a href="emspost.ru" target="_blank">emspost.ru</a>
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.EmsPost.ExtraCharge")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <div class="input-group" ng-init="shippingMethod.Params.DiscountType=@Model.DiscountType.TryParseInt()">
+            @Html.TextBoxFor(x => x.ExtraPrice, new { @class = "form-control ng-hide", ng_model = "shippingMethod.Params.ExtraPrice", ng_show = "shippingMethod.Params.DiscountType == 0" })
+            @Html.TextBoxFor(x => x.ExtraPrice, new { @class = "form-control ng-hide", ng_model = "shippingMethod.Params.ExtraPrice", ng_show = "shippingMethod.Params.DiscountType == 1" })
+            <div class="input-group-btn">
+                <span class="btn btn-default" ng-click="shippingMethod.Params.DiscountType = 0" ng-class="{'product-currency-active':shippingMethod.Params.DiscountType == 0}" data-e2e="DiscountAmount"><span>@T("Admin.ShippingMethods.EmsPost.Rub")</span></span>
+                <span class="btn btn-default" ng-click="shippingMethod.Params.DiscountType = 1" ng-class="{'product-currency-active':shippingMethod.Params.DiscountType == 1}" data-e2e="DiscountPercent"><span>%</span></span>
+                @Html.HiddenFor(x => x.DiscountType, new { ng_value = "shippingMethod.Params.DiscountType", ng_model = "shippingMethod.Params.DiscountType" })
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.EmsPost.ExtraCharge")">
+            @T("Admin.ShippingMethods.EmsPost.ExtraCharge")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.EmsPost.MaximumWeightForDelivery")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Model.MaxWeight
+        @Html.HiddenFor(x => x.MaxWeight)
+    </div>
+</div>
+

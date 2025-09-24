@@ -1,0 +1,88 @@
+<form name="formAddEditRegions" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.AddEditRegions.Add'|translate) : ('Admin.Js.AddEditRegions.Edit'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal" ng-init="ctrl.init(formAddEditRegions)">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">
+                        <span class="text-required"> {{'Admin.Js.AddEditRegions.Name'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            data-e2e="RegionName"
+                            class="form-control input-alt"
+                            ng-model="ctrl.entity.Name"
+                            required
+                            validation-input-text="{{'Admin.Js.AddEditRegions.Region'|translate}}"
+                            data-autofocus="!isMobile.value" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required setting__label"> {{'Admin.Js.AddEditRegions.Country'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <select
+                            data-e2e="RegionCountry"
+                            class="form-control input-alt"
+                            ng-model="ctrl.entity.CountryId"
+                            convert-to-number
+                            ng-options="item.Value as item.Text for item in ctrl.formData.Countries"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditRegions.RegionCode'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="text" data-e2e="RegionCode" class="form-control input-small input-alt" ng-model="ctrl.entity.RegionCode" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditRegions.SortOrder'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="number" data-e2e="RegionSort" ng-model="ctrl.entity.SortOrder" class="form-control input-alt" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            data-e2e="btnSave"
+            class="btn btn-save btn-primary"
+            type="button"
+            ladda="ctrl.btnSleep"
+            data-button-validation-success="ctrl.saveRegions(true)"
+            data-button-validation
+            ng-style="isMobile.value ? {'grid-column': '1', 'grid-row': '1'} : {}">
+            {{ctrl.mode == "add" ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button
+            ng-if="ctrl.entity.RegionId && 'RU'.localeCompare(ctrl.entity.CountryIso2, undefined, { sensitivity: 'accent' }) === 0"
+            class="btn btn-sm btn-default"
+            type="button"
+            ng-click="ctrl.openAdditionalSettings(formAddEditRegions.modified)"
+            ng-style="isMobile.value ? {'grid-column': '2', 'grid-row': '1'} : {}">
+            {{'Admin.Js.AddEditRegions.AdditionalSettigns'|translate}}
+        </button>
+        <button
+            data-e2e="btnCancel"
+            class="btn btn-default btn-cancel"
+            type="button"
+            ng-click="ctrl.close()"
+            ng-style="isMobile.value ? {'grid-column': 'span 2', 'grid-row': '2'} : {'margin-left':'5px'}">
+            {{'Admin.Js.AddEdit.Cancel'|translate}}
+        </button>
+    </div>
+</form>

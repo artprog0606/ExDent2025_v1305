@@ -1,0 +1,146 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Tasks.TasksListViewModel
+@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+
+    var pageUrl = Model.TaskGroupId.HasValue
+        ? Url.AbsoluteRouteUrl("Admin_project", new { taskGroupId = Model.TaskGroupId })
+        : Url.AbsoluteActionUrl("Index");
+    var sTaskGroupId = Model.TaskGroupId.HasValue ? Model.TaskGroupId.ToString() : "null";
+}
+
+@{
+    Html.AddAsset("tasks");
+}
+
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Title = "<span>" + Model.Title + "</span>";
+
+    headerModel.Controls = new List<IButton>();
+
+    headerModel.Controls.Add(new ButtonModel()
+    {
+        ColorType = eColorType.Secondary,
+        Modificators = new List<eButtonModificators>()
+{
+    eButtonModificators.OnlyIcon
+    },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "plus-alt",
+            Attributes = new { width = 16, height = 16 }
+        },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddTaskCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{\'taskGroupId\': " + sTaskGroupId + "}\" data-on-close=\"tasks.grid.fetchData()\" template-url=\"" + Html.GetAssetPath("addTask.html") + "\">",
+        WrapEnd = "</ui-modal-trigger>"
+    });
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    if (Model.TaskGroupId != null && CustomerContext.CurrentCustomer.IsAdmin)
+    {
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditTaskGroupCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{\'id\': " + Model.TaskGroupId.Value + "}\" data-on-close=\"tasks.editTaskGroupClose(result);tasks.reload()\" template-url=\"" + Html.GetAssetPath("addEditTaskGroup.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Редактировать текущий проект")
+        });
+
+    }
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Attributes = new string[] { "popover-class=\"more-button-popover\" uib-popover-template=\"'tasksList'\" popover-append-to-body=\"true\"" },
+        Text = T("Недавние проекты")
+    });
+
+    if (CustomerContext.CurrentCustomer.IsAdmin)
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditTaskGroupCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{\'goToProjectPage\': true}\"  template-url=\"" + Html.GetAssetPath("addEditTaskGroup.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Добавить проект")
+        });
+    }
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Link = Url.AbsoluteActionUrl("Index", "Tasks"),
+        Text = T("Все задачи")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Link = Url.AbsoluteActionUrl("Index", "SettingsTasks") + "?tasksTab=taskGroups",
+        Text = T("Все проекты")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Link = Url.AbsoluteActionUrl("Index", "SettingsTasks"),
+        Text = T("Настройки")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+    {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Link = "https://www.advantshop.net/help/pages/sozdanie-zadach",
+        Attributes = new string[] { "target=\"_blank\"" },
+        Text = T("Помощь")
+    });
+
+    headerModel.Controls.Add(moreButton);
+}
+
+@Html.Header(headerModel)
+
+<script type="text/ng-template" id="tasksList">
+    @Html.Action("NavMenu", "Tasks")
+</script>
+
+@RenderBody()                        

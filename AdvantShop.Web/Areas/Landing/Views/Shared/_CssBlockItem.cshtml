@@ -1,0 +1,205 @@
+﻿@model AdvantShop.App.Landing.Domain.ColorSchemes.LpColorScheme
+@{
+    var scheme = Model;
+    var cssBlockIdString = "#block_" + scheme.LpBlockId;
+    var cssClassColorSchemeString = "." + scheme.Class;
+    var className = scheme.LpBlockId != 0 ? cssBlockIdString : "." + scheme.Class;
+    //var className = scheme.LpBlockId != 0 ? cssBlockIdString + cssClassColorSchemeString : "." + scheme.Class;
+    var classNameCascade = scheme.LpBlockId != 0 ? ".block_" + scheme.LpBlockId + "-" + scheme.Class : "." + scheme.Class;
+}
+@classNameCascade,
+@className{
+        color:@scheme.TextColor;
+        background-color:@scheme.BackgroundColor;
+        font-weight: @scheme.TextBold;
+        }
+
+        @classNameCascade .lp-countdown__item-part,
+        @className .lp-countdown__item-part {
+        color: @scheme.BackgroundColor;
+        }
+
+        @classNameCascade .color-scheme__bg,
+        @className .color-scheme__bg{
+        background-color:@scheme.BackgroundColor;
+        }
+
+        @classNameCascade .color-scheme__bg--alt,
+        @className .color-scheme__bg--alt{
+        background-color:@scheme.BackgroundColorAlt;
+        color:@scheme.TextColorAlt;
+        }
+
+        @classNameCascade .color-scheme__bg--alt .lp-h3--color,
+        @className .color-scheme__bg--alt .lp-h3--color{
+        color:@scheme.TextColorAlt;
+        }
+
+        @classNameCascade .color-scheme__bg-opacity,
+        @className .color-scheme__bg-opacity {
+        @{
+            var isRgba = scheme.BackgroundColor.Contains("rgba");
+            var bgOpacity = string.Empty;
+
+            if (isRgba)
+            {
+                var alfaValue = scheme.BackgroundColor.Split(',').Last().Replace(")", "");
+                bgOpacity = scheme.BackgroundColor.Replace(alfaValue, "0.5");
+            }
+            else
+            {
+                bgOpacity = scheme.BackgroundColor.Replace("rgb", "rgba").Replace(")", ",.5)");
+            }
+        }
+        background-color: @bgOpacity;
+        }
+        @classNameCascade .lp-h1--color,
+        @classNameCascade h1,
+        @classNameCascade .lp-h2--color,
+        @classNameCascade h2,
+        @className .lp-h1--color,
+        @className h1,
+        @className .lp-h2--color,
+        @className h2{
+        color:@scheme.TitleColor;
+        }
+        @classNameCascade .lp-h1,
+        @classNameCascade h1,
+        @classNameCascade .lp-h2,
+        @classNameCascade h2,
+        @className .lp-h1,
+        @className h1,
+        @className .lp-h2,
+        @className h2{
+        font-weight:@scheme.TitleBold;
+        }
+
+        @classNameCascade .lp-h3,
+        @className .lp-h3{
+        font-weight:@scheme.SubTitleBold;
+        }
+
+        @classNameCascade .lp-h3--color,
+        @className .lp-h3--color{
+        color:@scheme.SubTitleColor;
+        }
+
+        @classNameCascade a,
+        @className a{
+        color:@scheme.LinkColor;
+        }
+
+        @classNameCascade a:hover
+        @className a:hover{
+        color:@scheme.LinkColorHover;
+        }
+
+        @classNameCascade a:active,
+        @className a:active{
+        color:@scheme.LinkColorActive;
+        }
+
+        @classNameCascade .lp-link--text, @classNameCascade .lp-link--text:hover, @classNameCascade .lp-link--text:active,
+        @className .lp-link--text, @className .lp-link--text:hover, @className .lp-link--text:active{
+        color:@scheme.TextColor;
+        }
+
+        @classNameCascade .lp-btn--primary,
+        @className .lp-btn--primary {
+        color:@scheme.ButtonTextColor;
+        background-color:@scheme.ButtonBackgroundColor;
+        border-color:@scheme.ButtonBorderColor;
+        border-radius:@scheme.ButtonBorderRadius;
+        border-width:@scheme.ButtonBorderWidth;
+        @if (!string.IsNullOrEmpty(scheme.ButtonTextBold))
+        {
+            @:font-weight:@scheme.ButtonTextBold;
+        }
+        }
+
+        @classNameCascade .lp-btn--primary-border-radius,
+        @className .lp-btn--primary-border-radius {
+        border-radius:@scheme.ButtonBorderRadius;
+        }
+
+        @classNameCascade .lp-btn--primary-font-weight
+        @className .lp-btn--primary-font-weight {
+        @if (!string.IsNullOrEmpty(scheme.ButtonTextBold))
+        {
+            @:font-weight:@scheme.ButtonTextBold;
+        }
+        }
+
+        @classNameCascade .lp-btn--primary:hover,
+        @className .lp-btn--primary:hover {
+        color:@scheme.ButtonTextColorHover;
+        background-color:@scheme.ButtonBackgroundColorHover;
+        }
+
+        @classNameCascade .lp-btn--primary:active,@classNameCascade .lp-btn--primary.lp-btn--primary-active,
+        @className .lp-btn--primary:active,@className .lp-btn--primary.lp-btn--primary-active{
+        color:@scheme.ButtonTextColorActive;
+        background-color:@scheme.ButtonBackgroundColorActive;
+        }
+
+        @classNameCascade .lp-btn--secondary,
+        @className .lp-btn--secondary {
+        color:@scheme.ButtonSecondaryTextColor;
+        background-color:@scheme.ButtonSecondaryBackgroundColor;
+        border-color:@scheme.ButtonSecondaryBorderColor;
+        border-radius:@scheme.ButtonSecondaryBorderRadius;
+        border-width:@scheme.ButtonSecondaryBorderWidth;
+        @if (!string.IsNullOrEmpty(scheme.ButtonSecondaryTextBold))
+        {
+            @:font-weight:@scheme.ButtonSecondaryTextBold;
+        }
+        }
+
+        @classNameCascade .lp-btn--secondary-border-radius,
+        @className .lp-btn--secondary-border-radius {
+        border-radius:@scheme.ButtonSecondaryBorderRadius;
+        }
+
+        @classNameCascade .lp-btn--secondary-font-weight,
+        @className .lp-btn--secondary-font-weight {
+        @if (!string.IsNullOrEmpty(scheme.ButtonSecondaryTextBold))
+        {
+            @:font-weight:@scheme.ButtonSecondaryTextBold;
+        }
+        }
+
+        @classNameCascade .lp-btn--secondary:hover,
+        @className .lp-btn--secondary:hover {
+        color:@scheme.ButtonSecondaryTextColorHover;
+        background-color:@scheme.ButtonSecondaryBackgroundColorHover;
+        }
+
+        @classNameCascade .lp-btn--secondary:active,@classNameCascade .lp-btn--secondary.lp-btn--secondary-active,
+        @className .lp-btn--secondary:active,@className .lp-btn--secondary.lp-btn--secondary-active {
+        color:@scheme.ButtonSecondaryTextColorActive;
+        background-color:@scheme.ButtonSecondaryBackgroundColorActive;
+        }
+
+        @(classNameCascade).color-scheme__divider,
+        @(className).color-scheme__divider
+        @classNameCascade .color-scheme__divider,
+        @className .color-scheme__divider {
+        background-color: @scheme.DelimiterColor;
+        }
+
+        @(className).color-scheme__divider--border,
+        @className .color-scheme__divider--border,
+        @className .lp-checkbox-decor::before,
+        @className .custom-input-checkbox::after {
+        border-color: @scheme.DelimiterColor;
+        }
+
+        @classNameCascade .color-scheme__bg--alt.color-scheme__text-alt,
+        @className .color-scheme__bg--alt.color-scheme__text-alt{
+        color:@scheme.TextColorAlt;
+        }
+
+        @classNameCascade .color-scheme__bg--alt .color-scheme__text-alt,
+        @className .color-scheme__bg--alt .color-scheme__text-alt{
+        color:@scheme.TextColorAlt;
+        }

@@ -1,0 +1,71 @@
+﻿@model AdvantShop.App.Landing.Models.Landing.LpFormModel
+@{
+    var form = Model.Form;
+    var offerIds = form.OfferItems != null && form.OfferItems.Count > 0 ? "[" + string.Join(",", form.OfferItems.Select(x => x.OfferId)) + "]" : "[]";
+}
+
+@if (form.IsHidden)
+{
+    @:<div data-modal-control class="ng-hide" data-modal-class="@Model.Form.ModalClass lp-form-in-modal" id="modal_@form.Id" data-callback-open="modal.lpForm.openModal(modal.modalDataAdditional)" data-callback-close="modal.lpForm.closeModal()">
+        @:<div class="modal-content">
+}
+
+<div class="lp-form @(Model.IsVertical ? "lp-form--vertical" : "lp-form--horizontal") lp-font-size--middle" data-ng-controller="lpFormCtrl as lpForm" @Html.Raw(LpService.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+    @if (form.Fields != null)
+    {
+        if (Model.IsVertical)
+        {
+            if (form.Title.IsNotEmpty())
+            {
+                <div data-ng-if="lpForm.resultData == null || lpForm.resultData.Message == null" class="lp-form__title lp-form__title--vertical lp-font-size--large" data-e2e="FormTitle" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "Title")>
+                    @Html.Raw(form.Title)
+                </div>
+            }
+            if (form.SubTitle.IsNotEmpty())
+            {
+                <div data-ng-if="lpForm.resultData == null || lpForm.resultData.Message == null" class="lp-form__subtitle lp-form__subtitle--vertical" data-e2e="FormSubTitle" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "SubTitle")>
+                    @Html.Raw(form.SubTitle)
+                </div>
+            }
+        }
+
+        <div data-ng-switch="lpForm.resultData == null || lpForm.resultData.Message == null">
+            <div data-ng-switch-when="true">
+                <form novalidate="novalidate" name="form_@form.Id" class="@(form.Fields.Count() == 1 ? "only-one-field" : "")">
+                    <div data-ng-init="lpForm.init(@form.Id, @form.BlockId, form_@form.Id, modal, '@LpService.EntityId', '@LpService.EntityType', '@form.YaMetrikaEventName', '@form.GaEventCategory', '@form.GaEventAction', '@form.OfferId', @offerIds)"
+                         class="row middle-xs lp-form__body @Model.Align.StrName() @(!Model.IsVertical ? "lp-form__body--horizontal" : "lp-form__body--vertical")" data-e2e="FormField">
+
+                        @Html.Action("FormFields", new { id = form.Id, isVertical = Model.IsVertical, ngModel = "lpForm.form", ngController = "lpForm", InputTextPosition = form.InputTextPosition })
+
+                        <div class="col-xs-12 @(!Model.IsVertical ? "col-sm-slim" : "") lp-form__submit-block">
+
+                            @if (!Model.IsVertical && form.InputTextPosition == eInputTextPosition.Outside)
+                            {
+                                <div class="lp-form__field-label hidden-xs visible-sm text-left">&nbsp;</div>
+                            }
+
+                            <button type="submit"
+                                    data-ladda="lpForm.formSubmitInProcess"
+                                    data-button-validation
+                                    data-button-validation-success="lpForm.submit()"
+                                    class="lp-btn lp-btn--primary lp-btn--md"
+                                    data-e2e="FormBtn">
+                                @form.ButtonText
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div data-ng-switch-when="false" class="ng-cloak lp-form__content--success" data-e2e="FormSuccessText">
+                <div data-ng-bind-html="lpForm.resultData.Message | sanitize" @Html.InplaceFormSettings(Model.Form.BlockId.Value, "blocksConstructorContainer.data", "PostMessageText")></div>
+            </div>
+        </div>
+
+    }
+</div>
+
+@if (form.IsHidden)
+{
+    @:</div>
+    @:</div>
+}

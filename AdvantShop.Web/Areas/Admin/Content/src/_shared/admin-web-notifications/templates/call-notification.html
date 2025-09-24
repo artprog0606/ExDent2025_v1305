@@ -1,0 +1,74 @@
+﻿<div class="telphin">
+    <a ng-if="directiveData.Exist && directiveData.hasCustomersAccess" class="telphin__customer" href="customers/view/{{directiveData.Id}}">
+        {{directiveData.LastName}} {{directiveData.FirstName}}
+    </a>
+    <span class="telphin__customer" ng-if="!directiveData.Exist || !directiveData.hasCustomersAccess">
+        {{directiveData.LastName}} {{directiveData.FirstName}} {{directiveData.StandardPhone}}
+    </span>
+    <div class="telphin__info">
+        <div class="telphin__info-item" ng-if="directiveData.lastOrder != null">
+            <span class="telphin__last-order-name">{{'Admin.Js.AdminWebNotifications.LastOrder'|translate}}</span>
+            <span class="bold">
+                <a class="" href="orders/edit/{{directiveData.lastOrder.orderId}}"> {{directiveData.lastOrder.orderNumber}} </a>
+                ({{directiveData.lastOrder.status}})
+            </span>
+            {{'Admin.Js.AdminWebNotifications.From'|translate}} {{directiveData.lastOrder.date}}
+        </div>
+        <div class="telphin__info-item" ng-if="directiveData.lastLead != null">
+            <span class="telphin__last-lead">{{'Admin.Js.AdminWebNotifications.LastLead'|translate}} </span>
+            <span class="bold">
+                <a class="" href="leads?leadIdInfo={{directiveData.lastLead.id}}"> {{directiveData.lastLead.id}} </a>
+                ({{directiveData.lastLead.status}})
+            </span>
+            {{'Admin.Js.AdminWebNotifications.From'|translate}} {{directiveData.lastLead.date}}
+        </div>
+        <div class="telphin__info-item" ng-if="directiveData.totalOrdersCount > 0">
+            <span class="telphin__total-price">{{'Admin.Js.AdminWebNotifications.TotalOrderAmountingTo'|translate}}</span><br />
+            <b>{{directiveData.totalOrdersPrice}}</b> <b>({{directiveData.totalOrdersCount}} {{'Admin.Js.AdminWebNotifications.Pieces'|translate}})</b
+            ><br />
+            <span class="telphin__total-price">{{'Admin.Js.AdminWebNotifications.PaidOrdersForAmount'|translate}}</span><br />
+            <b>{{directiveData.payedOrdersPrice}}</b>
+            <b>({{directiveData.payedOrdersCount}} {{'Admin.Js.AdminWebNotifications.Pieces'|translate}})</b>
+        </div>
+        <div class="telphin__info-item" ng-if="directiveData.totalOrdersCount == 0">{{'Admin.Js.AdminWebNotifications.NoOrders'|translate}}</div>
+        <div ng-if="directiveData.Manager != null" class="telphin__info-manager">
+            {{'Admin.Js.AdminWebNotifications.Manager'|translate}} <span>{{directiveData.Manager.Name}}</span>
+        </div>
+    </div>
+
+    <ui-modal-trigger
+        ng-if="directiveData.leadId == null && directiveData.haveCrm && directiveData.hasCRMAccess"
+        data-controller="'ModalAddLeadCtrl'"
+        controller-as="ctrl"
+        size="lg"
+        backdrop="static"
+        template-url="../areas/admin/content/src/_shared/modal/addLead/addLead.html"
+        resolve="{params: {'customerId': directiveData.Id, 'phone': directiveData.StandardPhone, 'callId': directiveData.callId}}">
+        <a href="" class="m-r-sm">{{'Admin.Js.AdminWebNotifications.CreateALead'|translate}}</a>
+    </ui-modal-trigger>
+
+    <a class="m-r-sm" href="" ng-href="leads?leadIdInfo={{directiveData.leadId}}" ng-if="directiveData.leadId != null && directiveData.hasCRMAccess">
+        {{'Admin.Js.AdminWebNotifications.GoToLead'|translate}}
+    </a>
+
+    <a
+        class="m-r-sm"
+        href=""
+        ng-href="orders/add?{{directiveData.Exist ? 'customerId=' + directiveData.Id + '&' : ''}}phone={{directiveData.StandardPhone}}"
+        ng-if="directiveData.hasOrdersAccess">
+        {{'Admin.Js.AdminWebNotificatons.CreateAnOrder'|translate}}
+    </a>
+
+    <ui-modal-trigger
+        ng-if="directiveData.hasBookingAccess"
+        data-controller="'ModalAddUpdateBookingCtrl'"
+        controller-as="ctrl"
+        size="xs-11"
+        backdrop="static"
+        window-class="modal--panel"
+        opened-class="modal-open--panel"
+        template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/addUpdateBooking.html"
+        resolve="{params: {'customerId': directiveData.Id, 'phone': directiveData.StandardPhone}}">
+        <a href="" class="m-r-sm">Создать бронь</a>
+    </ui-modal-trigger>
+</div>

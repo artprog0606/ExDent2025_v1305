@@ -1,0 +1,122 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.HermesShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Токен клиента</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+        @Html.TextBoxFor(x => x.SecuredToken, new { ng_model = "shippingMethod.Params.SecuredToken", @class = "form-control input-alt", required = "required", validation_input_text = "Токен клиента" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Публичный токен</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+        @Html.TextBoxFor(x => x.PublicToken, new { ng_model = "shippingMethod.Params.PublicToken", @class = "form-control input-alt", required = "required", validation_input_text = "Публичный токен" })
+    </div>
+</div>
+
+@Html.Hidden("ExistApi", null, new { ng_model = "shippingMethod.Params.ExistApi", ng_init = "shippingMethod.Params.ExistApi=" + (Model.SecuredToken.IsNotEmpty() && Model.PublicToken.IsNotEmpty()).ToLowerString() + "" })
+<div class="form-group row setting__form-group" ng-if="!shippingMethod.Params.ExistApi || @((Model.BusinesUnitsCode == null || Model.BusinesUnitsCode.Count == 1).ToLowerString())">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            После ввода токенов доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.ExistApi && @((Model.BusinesUnitsCode != null && Model.BusinesUnitsCode.Count > 1).ToLowerString())">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="WithInsure">Со страховкой</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && @((Model.BusinesUnitsCode != null && Model.BusinesUnitsCode.Count > 1).ToLowerString())">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Бизнес-юнит</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm ">
+        @Html.DropDownListFor(x => x.BusinesUnitCode, Model.BusinesUnitsCode, new { ng_model = "shippingMethod.Params.BusinesUnitCode", ng_init = "shippingMethod.Params.BusinesUnitCode='" + Model.BusinesUnitCode + "'", @class = "form-control input-alt", required = "required", validation_input_text = "Бизнес-юнит" })
+    </div>
+</div>
+@Html.Hidden("ExistBusinesUnit", Model.BusinesUnitCode, new { ng_model = "shippingMethod.Params.ExistBusinesUnit" })
+@Html.Hidden("OldBusinesUnitCode", Model.BusinesUnitCode, new { ng_model = "shippingMethod.Params.OldBusinesUnitCode" })
+<div class="form-group row setting__form-group" ng-if="shippingMethod.Params.ExistApi && (!shippingMethod.Params.ExistBusinesUnit || shippingMethod.Params.OldBusinesUnitCode != shippingMethod.Params.BusinesUnitCode) && @((Model.BusinesUnitsCode != null && Model.BusinesUnitsCode.Count > 1).ToLowerString())">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            После указания бизнес-юнита, необходимо сохранить настройки после чего появятся дополнительные настройки
+        </div>
+    </div>
+</div>
+@Html.Hidden("AvailableDrop", Model.AvailableDrop, new { ng_model = "shippingMethod.Params.AvailableDrop", ng_init = "shippingMethod.Params.AvailableDrop='" + Model.AvailableDrop.ToLowerString() + "'" })
+@Html.Hidden("AvailableDc", Model.AvailableDc, new { ng_model = "shippingMethod.Params.AvailableDc", ng_init = "shippingMethod.Params.AvailableDc='" + Model.AvailableDc.ToLowerString() + "'" })
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistBusinesUnit && shippingMethod.Params.OldBusinesUnitCode == shippingMethod.Params.BusinesUnitCode">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Точка передачи посылки транспортной компании:</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" value="0" ng-click="shippingMethod.Params.LocationIsDistributionCenter = 'true'" ng-class="{'product-currency-active':(shippingMethod.Params.LocationIsDistributionCenter == 'true')}" ng-disabled="shippingMethod.Params.AvailableDc == 'False'"><span>Склад</span></button>
+                <button type="button" class="btn btn-default" value="1" ng-click="shippingMethod.Params.LocationIsDistributionCenter = 'false'" ng-class="{'product-currency-active':(shippingMethod.Params.LocationIsDistributionCenter == 'false')}" ng-disabled="shippingMethod.Params.AvailableDrop == 'False'"><span>ПВЗ</span></button>
+            </span>
+            @Html.DropDownListFor(x => x.ParcelShopLocation, Model.ParcelsShop, new { ng_model = "shippingMethod.Params.ParcelShopLocation", ng_init = "shippingMethod.Params.ParcelShopLocation='" + Model.ParcelShopLocation + "'", @class = "form-control input-alt", required = "required", validation_input_text = "Точка передачи посылки транспортной компании", ng_if = "shippingMethod.Params.LocationIsDistributionCenter == 'false'" })
+            @Html.DropDownListFor(x => x.DistributionCenterLocation, Model.Distributions, new { ng_model = "shippingMethod.Params.DistributionCenterLocation", ng_init = "shippingMethod.Params.DistributionCenterLocation='" + Model.DistributionCenterLocation + "'", @class = "form-control input-alt", required = "required", validation_input_text = "Точка передачи посылки транспортной компании", ng_if = "shippingMethod.Params.LocationIsDistributionCenter == 'true'" })
+        </div>
+        <div class="adv-panel-info m-t-xs" ng-if="shippingMethod.Params.LocationIsDistributionCenter == 'false'">
+            Расчет по услуге Drop Service.
+        </div>
+        @Html.Hidden("LocationIsDistributionCenter", Model.LocationIsDistributionCenter.ToLowerString(), new { @class = "form-control", ng_model = "shippingMethod.Params.LocationIsDistributionCenter", ng_value = "shippingMethod.Params.LocationIsDistributionCenter" })
+
+        @*<div class="row">
+                <div class="col-xs">
+                    @Html.DropDownListFor(x => x.LocationIsDistributionCenter, Model.LocationIsDistributionCenterValues, new { ng_model = "shippingMethod.Params.LocationIsDistributionCenter", ng_init = "shippingMethod.Params.LocationIsDistributionCenter='" + Model.LocationIsDistributionCenter.ToLowerString() + "'", @class = "form-control" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs m-t-xs">
+                </div>
+            </div>*@
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.ExistBusinesUnit && shippingMethod.Params.OldBusinesUnitCode == shippingMethod.Params.BusinesUnitCode && shippingMethod.Params.LocationIsDistributionCenter == 'true'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '1' && shippingMethod.Params.LocationIsDistributionCenter == 'true'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+@if (Model.SecuredToken.IsNotEmpty() && Model.PublicToken.IsNotEmpty())
+{
+    @Html.Partial("_SyncStatuses", Model)
+}
+
+<input type="hidden" name="sdekMethodId" ng-model="shippingMethod.hermes.MethodId" value="@Model.ShippingMethodId" />

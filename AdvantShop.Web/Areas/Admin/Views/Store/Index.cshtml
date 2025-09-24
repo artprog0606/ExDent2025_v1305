@@ -1,0 +1,343 @@
+﻿@using AdvantShop.Design
+@using AdvantShop.Trial
+@using AdvantShop.DownloadableContent;
+@model AdvantShop.Web.Admin.ViewModels.Design.DesignModel
+@{
+    Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    var template = Model.CurrentTemplate;
+}
+
+@helper RenderTableTemplates(List<DownloadableContentObject> items)
+{
+    if (items != null && items.Any())
+    {
+        <table class="tpl-table">
+            <tr>
+                <th class="tpl-table__th">
+                    Название
+                </th>
+                <th class="tpl-table__th">
+                    @T("Admin.Design.Index.Price")
+                </th>
+                <th class="tpl-table__th">
+
+                </th>
+                <th class="tpl-table__th">
+
+                </th>
+                <th class="tpl-table__th">
+
+                </th>
+                <th class="tpl-table__th">
+
+                </th>
+            </tr>
+            @foreach (var tpl in items)
+            {
+
+                <tr ng-class="{'progress-overlay': design.templatesProgress['@(tpl.StringId)']}">
+                    <td class="tpl-table__td bold">
+                        @if (tpl.DetailsLink.IsNotEmpty())
+                        {
+                            <a href="@tpl.DetailsLink" target="_blank" class="link-invert text-decoration-invert">@tpl.Name</a>
+                        }
+                        else
+                        {
+                            <span>@tpl.Name</span>
+                        }
+                    </td>
+                    <td class="tpl-table__td">
+                        @Html.Raw(tpl.Price > 0 ? tpl.Price + " " + tpl.Currency : T("Admin.Design.Index.Free").ToString())
+                    </td>
+                    <td class="tpl-table__td">
+                        @if (tpl.DetailsLink.IsNotEmpty())
+                        {
+                            <a href="@tpl.DetailsLink" class="link-invert" target="_blank">Online demo</a>
+                        }
+                    </td>
+                    <td class="tpl-table__td">
+                        @using (Html.BeginAbsoluteUrlForm("ApplyTemplate", "Design", FormMethod.Post, new { @class = "inline" }))
+                        {
+                            @Html.Hidden("templateId", tpl.StringId)
+                            <input type="submit" class="btn btn-sm btn-info btn-outline" value="@T("Admin.Design.Index.Apply")" />
+                        }
+                    </td>
+                    <td class="tpl-table__td">
+                        @if (!string.Equals(tpl.CurrentVersion, tpl.Version) && !tpl.IsLocalVersion && !tpl.IsCustomVersion)
+                        {
+                            using (Html.BeginAbsoluteUrlForm("UpdateTemplate", "Design", FormMethod.Post, new { @class = "inline" }))
+                            {
+                                @Html.Hidden("id", tpl.Id)
+                                @Html.Hidden("stringId", tpl.StringId)
+                                <button type="submit" class="btn-link"><i class="fa fa-sync-alt link-invert link-decoration-none"></i></button>
+                            }
+                        }
+                    </td>
+                    <td class="tpl-table__td">
+                        @if (!tpl.IsCustomVersion)
+                        {
+                            using (Html.BeginAbsoluteUrlForm("DeleteTemplate", "Design", FormMethod.Post, new { @class = "inline" }))
+                            {
+                                @Html.Hidden("stringId", tpl.StringId)
+                                <button type="button" class="btn-link" ng-click="design.deleteTemplate('@(tpl.StringId)')"><i class="fa fa-times link-invert link-decoration-none"></i></button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+}
+
+<h1 class="page-name-block-text m-b-md m-t-xs">
+    @T("Admin.Design.Index.Design")
+</h1>
+
+<div class="row">
+    <div class="col-xs-3 col-lg-3 col-wl-2">
+        <h2 class="category-title">Ваш текущий шаблон</h2>
+        <div>
+            Так выглядит сейчас ваш интрнет-магазин
+        </div>
+    </div>
+    <div class="col-xs-9 col-wl-10">
+        <div class="ibox">
+            <div class="ibox-content">
+
+                <div class="info-item m-b-xs">
+                    <div class="info-item-title">@T("Admin.Design.Index.TemplateName")</div>
+                    <div class="info-item-content">
+                        @template.Name
+
+                        @if (template.Version != template.CurrentVersion && !template.IsLocalVersion && !template.IsCustomVersion)
+                        {
+                            using (Html.BeginAbsoluteUrlForm("UpdateTemplate", "Design", FormMethod.Post, new {@class = "inline"}))
+                            {
+                                @Html.Hidden("id", template.Id)
+                                @Html.Hidden("stringId", template.StringId)
+                                <button type="submit" class="btn-link line-height"><i class="fas fa-sync-alt link link-decoration-none"></i></button>
+                            }
+                        }
+                    </div>
+                </div>
+                @if (template.DeveloperSupport.IsNotEmpty())
+                {
+                    <div class="info-item m-b-xs">
+                        <div class="info-item-title">@T("Admin.Design.Index.TemplateSupport")</div>
+                        <div class="info-item-content">
+
+                            @if (template.DeveloperSupport.Contains("@"))
+                            {
+                                <a href="mailto:@template.DeveloperSupport">@template.DeveloperSupport</a>
+                            }
+                            else if (template.DeveloperSupport.StartsWith("http"))
+                            {
+                                <a href="@template.DeveloperSupport" target="_blank">@template.DeveloperSupport</a>
+                            }
+                            else
+                            {
+                                @template.DeveloperSupport
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="">
+                    <div class="tpl-ava b-n">
+                        <a href="@UrlService.GetUrl()" target="_blank" class="block">
+                            <iframe class="tpl-site-online" frameborder="0" scrolling="no" src="@UrlService.GetUrl()" onload="this.nextElementSibling.classList.add('ng-hide')"></iframe>
+                            <div class="tpl-iframe-loading">
+                                <i class="fas fa-spinner fa-spin fa-4x"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-3 col-lg-3 col-wl-2">
+        <h2 class="category-title">Доступные шаблоны</h2>
+        <div>
+            Шаблоны, которые установлены и могут быть применены
+        </div>
+    </div>
+    <div class="col-xs-9 col-wl-10">
+        <div class="ibox">
+            <div class="ibox-content">
+
+                <div class="design-last">
+
+                    @if (!Model.AvaliableTemplates.Any())
+                    {
+                        <div class="h4">@T("Admin.Design.Index.NoInstalledTemplates")</div>
+                    }
+                    else if (TrialService.IsTrialEnabled)
+                    {
+                        <div class="h4">
+                            @T("Admin.Design.Index.PaidTemplates")
+                        </div>
+                    }
+
+
+                    @if (Model.AvaliableTemplates != null && Model.AvaliableTemplates.Any())
+                    {
+                        var count = Model.AvaliableTemplates.Count;
+
+                        if (count > 5)
+                        {
+                            var columnOne = Model.AvaliableTemplates.Take((count + 1)/2).ToList();
+                            var columnTwo = Model.AvaliableTemplates.Skip((count + 1)/2).ToList();
+
+                            <div class="row">
+                                <div class="col-xs-slim">
+                                    <div class="p-r-lg">
+                                        @RenderTableTemplates(columnOne)
+                                    </div>
+                                </div>
+                                <div class="col-xs-slim">
+                                    @RenderTableTemplates(columnTwo)
+                                </div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            @RenderTableTemplates(Model.AvaliableTemplates)
+                        }
+
+                        <div class="m-t">
+                            @Html.Button(T("Admin.Design.Index.GoTemplateShop"), eButtonType.Simple, eButtonSize.XMiddle, eColorType.Success, Url.AbsoluteActionUrl("TemplateShop", "Design"))
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="ibox">
+    <div class="ibox-content" style="padding: 29px 52px 20px 25px">
+
+        <div class="design-first tpl-container">
+            
+            <div class="tpl-info">
+                <div class="tpl-info__inner">
+                    <div class="tpl-info__inner--top">
+                        <div class="design-title" style="margin: 0 0 16px;">
+                            @T("Admin.Design.Index.CurrentTemplate")
+                        </div>
+                        <div class="tpl-panel tpl-panel--limited m-b-md">
+
+
+                            
+                            <div class="info-item">
+                                <div class="info-item-title">@T("Admin.Design.Index.Domain")</div>
+                                <div class="info-item-content">
+                                    <a target="_blank" class="text-decoration-invert" href="@UrlService.GetUrl()">@UrlService.GetUrl()</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-item-title"></div>
+                                <div class="info-item-content">
+                                    <a href="@Url.AbsoluteActionUrl("Domains", "Service")" class="btn btn-sm btn-success">Привязать домен</a>
+                                    |
+                                    <a href="@Url.AbsoluteActionUrl("DomainsManage", "Service")" class="text-decoration-invert">Управление доменами</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info__inner--bottom">
+                        @Html.Button(T("Admin.Design.Index.TemplateSettings"), eButtonType.Simple, eButtonSize.XMiddle, eColorType.Success, Url.AbsoluteActionUrl("Index", "SettingsTemplate"))
+                        <a href="@UrlService.GetUrl()" class="text-decoration-invert" target="_blank" class="m-l-lg">@T("AdminMobile.Sidebar.Sidebar.ToStore")</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ibox">
+    <div class="ibox-content">
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h2 class="page-name-block-text sticky-page-name-text inline m-r-xs middle-cell" style="font-size: 21px;">@T("Admin.Design.Index.InstalledTemplates")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="design-last">
+
+            @if (!Model.AvaliableTemplates.Any())
+            {
+                <div class="h4">@T("Admin.Design.Index.NoInstalledTemplates")</div>
+            }
+            else if (TrialService.IsTrialEnabled)
+            {
+                <div class="h4">
+                    @T("Admin.Design.Index.PaidTemplates")
+                </div>
+            }
+
+
+            @if (Model.AvaliableTemplates != null && Model.AvaliableTemplates.Any())
+            {
+                var count = Model.AvaliableTemplates.Count;
+
+                if (count > 5)
+                {
+                    var columnOne = Model.AvaliableTemplates.Take((count + 1) / 2).ToList();
+                    var columnTwo = Model.AvaliableTemplates.Skip((count + 1) / 2).ToList();
+
+                    <div class="row">
+                        <div class="col-xs-slim">
+                            <div class="p-r-lg">
+                                @RenderTableTemplates(columnOne)
+                            </div>
+                        </div>
+                        <div class="col-xs-slim">
+                            @RenderTableTemplates(columnTwo)
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    @RenderTableTemplates(Model.AvaliableTemplates)
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="ibox">
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-xs-slim">
+                <div style="width: 354px;">
+                    <img src="../areas/admin/content/images/design_example.jpg" />
+                </div>
+            </div>
+            <div class="col-xs">
+                <div class="p-l-md">
+                    <div class="page-name-block">
+                        <div class="page-name-block-item-main">
+                            <h2 class="page-name-block-text sticky-page-name-text inline m-r-xs middle-cell" style="font-size: 21px;">Установить новые темы дизайна</h2>
+                        </div>
+                    </div>
+                    <div class="tpl-panel tpl-panel--limited m-t-md m-b-md">
+                        <div class="tpl-panel__header">Магазин шаблонов</div>
+                        <div class="tpl-panel__content">
+                            В магазине вы сможете найти бесплатные и платные темы дизайна на любой вкус
+                        </div>
+                    </div>
+                    @Html.Button(T("Admin.Design.Index.GoTemplateShop"), eButtonType.Simple, eButtonSize.XMiddle, eColorType.Success, Url.AbsoluteActionUrl("TemplateShop", "Design"))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@

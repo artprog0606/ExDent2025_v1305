@@ -1,0 +1,243 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Funnels/_LandingAdminLayout.cshtml";
+    if (Request["scheme"] == "true")
+    {
+        Layout = null;
+    }
+
+    var showBooking = SettingsMain.BookingActive &&
+                      AdvantShop.Saas.SaasDataService.IsEnabledFeature(AdvantShop.Saas.ESaasProperty.HaveBooking) &&
+                      CustomerContext.CurrentCustomer.HasRoleAction(RoleAction.Booking);
+}
+@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteModel
+@{
+    Html.AddAsset("funnel");
+}
+@if (Request["scheme"] != "true")
+{
+    <div class="balance__padding-page balance__padding-page--bg-white">
+        <div class="main-panel-page">
+
+            <div class="">
+
+                <div class="row between-md" style="margin-bottom:13px;">
+                    <div class="col-xs-slim">
+                        @Html.Back(T("Admin.Funnels.Site.MySites").ToString(), Url.AbsoluteActionUrl("Index", "Dashboard"))
+                    </div>
+                    <div class="col-xs-slim">
+                        <div class="flex middle-xs ng-cloak">
+                            <div class="col-xs-slim">
+                                <div class="flex middle-xs">
+                                    <div class="col-xs-slim">
+                                        <a href="" class="m-r-xs link-alternative" data-e2e="funnelCopy" ng-click="landingSite.copyLandingSite(@Model.Site.Id)">@T("Admin.Funnels.Site.CreateCopyFunnel")</a>
+                                    </div>
+                                    <a ng-href="{{landingSite.domain != null && landingSite.domain.length > 0 ? 'http://' + landingSite.domain : '@(SettingsMain.SiteUrl)/lp/' + landingSite.actualSiteUrl}}" class="link-alternative" target="_blank" data-e2e="funnelGoToSite">
+                                        @T("Admin.Funnels.Site.GoWebsite")
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-l-sm">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.707 0V2.001H8.292L0 10.293L1.414 11.707L9.706 3.415V8H11.707V0H3.707Z" fill="#2D9CEE"/>
+                                        </svg>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex middle-xs m-b-xs funnel-page__header" style="    padding-bottom: 2px;">
+                    <div class="funnel-page__name-wrap">
+                        <h1 class=" flex bold funnel-page__name">
+                            <span>@T("Admin.Funnels.Site.Funnel")&nbsp;</span>
+                            <simple-edit empty-text="" class="simple-edit" default-value="@Model.Site.Name"
+                                         ng-init="landingSite.title = '@Html.AttributeEncode(Model.Site.Name)'" on-change="landingSite.updateTitle(@Model.Site.Id, value)">
+                                <span class="input-ghost simple-edit__input" data-e2e="funnelTitle"
+                                      simple-edit-content="" contenteditable="true"
+                                      ng-bind-html="landingSite.title">
+                                    @Model.Site.Name
+                                </span>
+                                <simple-edit-trigger class="fas fa-pencil-alt landing-block__pencil p-r-sm p-l-sm"></simple-edit-trigger>
+                            </simple-edit>
+                        </h1>
+                    </div>
+                    <div class="funnel-page__links" ng-init="landingSite.siteEnabled = @Model.Site.Enabled.ToLowerString()">
+                        <div class="inline m-r-lg relative flex middle-xs">
+                            <button ng-class="{'site__enabled-toggle--on': landingSite.siteEnabled, 'site__enabled-toggle--off' :!landingSite.siteEnabled}"
+                                    data-ng-click="landingSite.setEnabled(!landingSite.siteEnabled)"
+                                    data-ng-bind="landingSite.siteEnabled ? '@T("Admin.Funnels.Site.Published")' : '@T("Admin.Funnels.Site.NotPublished")'"
+                                    class="btn site__enabled-toggle" data-e2e="funnelEnablerBtn">
+                            </button>
+                            <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Funnels.Site.Published")">
+                                <div class="help-content">
+                                    @T("Admin.Funnels.Site.VisibleFunnelPublished")
+                                </div>
+                            </help-trigger>
+                        </div>
+                        @*<a href="funnels/site/@Model.Site.Id?scheme=true" target="_blank" class="m-r-xs">Схема воронки</a>*@
+                    </div>
+                </div>
+                <div class="m-b-xs">
+                    <div class="" data-e2e="funnelDomains">
+                        <div ng-if="landingSite.domain != null && landingSite.domain.length > 0">
+                            <a ng-href="http://{{landingSite.domain}}" target="_blank" class="link-gray link-decoration-invert" ng-bind="landingSite.domain"></a>
+                        </div>
+                        <div ng-if="landingSite.domains != null && landingSite.domains.length > 0" ng-repeat="domain in landingSite.domains track by $index">
+                            <a ng-href="http://{{domain.DomainUrl}}" target="_blank" class="link-gray link-decoration-invert" ng-bind="domain.DomainUrl"></a>
+                        </div>
+                        <div ng-if="landingSite.domain == null || !landingSite.domain.length">
+                            <a ng-href="@(SettingsMain.SiteUrl + "/lp/"){{landingSite.actualSiteUrl}}" target="blank" class="link-gray link-decoration-invert" ng-bind="'@(SettingsMain.SiteUrl + "/lp/")' + landingSite.actualSiteUrl"></a>
+                        </div>
+                    </div>
+                    <div class="">
+                        <a href=""
+                           ng-click="landingSite.changeTab('settings'); landingSite.changeSettingsTab('domains')"
+                           class="link-alternative link-decoration-invert"
+                           data-e2e="funnelDomainChange">
+                            @T("Admin.Funnels.Site.ConnectYourDomain")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="balance__padding-page balance__padding-page--m-t-n">
+        <div class="balance-block balance-block--content balance-block--content-right" ng-init="landingSite.initSite(@Model.Site.Id, '@Model.Settings.SiteUrl', @Model.Settings.OrderSourceId)">
+            <div class="content-page">
+                <div class="row m-b-md middle-xs">
+                    <div class="lead-events lead-events-alternative col-xs">
+                        <label class="lead-events__item btn btn-md"
+                               ng-class="{'lead-events__item_active' : landingSite.tab == 'pages'}">
+                            <span class="lead-events__item__label">@T("Admin.Funnels.Site.Pages")</span>
+                            <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="pages"/>
+                        </label>
+                        <label class="lead-events__item btn btn-md"
+                               ng-class="{'lead-events__item_active' : landingSite.tab == 'email_sequence'}">
+                            <span class="lead-events__item__label">@T("Admin.Funnels.Site.EmailChains")</span>
+                            <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="email_sequence"/>
+                        </label>
+                        <label class="lead-events__item btn btn-md"
+                               ng-class="{'lead-events__item_active' : landingSite.tab == 'leads'}">
+                            <span class="lead-events__item__label">@T("Admin.Funnels.Site.Leads")</span>
+                            <span class="lead-events__item__count_label" ng-if="landingSite.stats.leadsCount" ng-bind=" landingSite.stats.leadsCount > 99 ? '99+':landingSite.stats.leadsCount"></span>
+                            <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="leads"/>
+                        </label>
+                        <label class="lead-events__item btn btn-md"
+                               ng-class="{'lead-events__item_active' : landingSite.tab == 'orders'}">
+                            <span class="lead-events__item__label">@T("Admin.Funnels.Site.Orders")</span>
+                            <span class="lead-events__item__count_label" ng-if="landingSite.stats.ordersCount" ng-bind=" landingSite.stats.ordersCount > 99 ? '99+':landingSite.stats.ordersCount"></span>
+                            <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="orders"/>
+                        </label>
+                        @if (showBooking)
+                        {
+                            <label class="lead-events__item btn btn-md"
+                                   ng-class="{'lead-events__item_active' : landingSite.tab == 'bookings'}">
+                                <span class="lead-events__item__label">@T("Admin.Funnels.Site.Armor")</span>
+                                <span class="lead-events__item__count_label" ng-if="landingSite.stats.bookingsCount" ng-bind=" landingSite.stats.bookingsCount > 99 ? '99+':landingSite.stats.bookingsCount"></span>
+                                <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="bookings"/>
+                            </label>
+                        }
+                        <label class="lead-events__item btn btn-md"
+                               ng-class="{'lead-events__item_active' : landingSite.tab == 'settings'}">
+                            <span class="lead-events__item__label">@T("Admin.Funnels.Site.Settings")</span>
+                            <input type="radio" name="landingSiteTab" class="lead-events-filter__input" ng-model="landingSite.tab" ng-change="landingSite.changeTab()" value="settings"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="ng-cloak">
+                    <div ng-if="landingSite.tab == 'pages'" style="padding-right:0.625rem;">
+                        <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                            <div class="page-name-block sticky-page-name-inner">
+                                <div class="page-name-block-item-main flex middle-xs" style="margin:3px 0;">
+                                    <h2 class="m-t-none m-b-none sticky-page-name-text m-r" style="margin-top:-2px;">@T("Admin.Funnels.Site.Pages")</h2>
+                                    <ui-modal-trigger data-controller="'ModalAddLandingCtrl'" controller-as="ctrl" template-url="@Html.GetAssetPath("addLanding.html")"
+                                                      data-resolve="{siteId: @Model.Site.Id}" class="pull-right">
+                                        <button class="link-alternative fs-md m-t-xs m-b-xs" data-e2e="funnelAdd" type="button">
+                                            @T("Admin.Funnels.Site.CreatePage")
+                                        </button>
+                                    </ui-modal-trigger>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ibox">
+                            <div class="ibox-content">
+                                <ui-grid-custom grid-unique-id="grid"
+                                                grid-on-init="landingSite.gridOnInit(grid)"
+                                                grid-options="landingSite.gridOptions"
+                                                grid-url="'funnels/getLandingPages'"
+                                                grid-params="{SiteId:@Model.Site.Id}"
+                                                grid-inplace-url="'funnels/landingPageInplace'"
+                                                grid-on-inplace-apply="landingSite.updateGrid()"
+                                                grid-extend-ctrl="landingSite">
+                                </ui-grid-custom>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-show="landingSite.tab == 'email_sequence'">
+                        @* ng-show - don't reload view *@
+                        <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                            <div class="page-name-block sticky-page-name-inner">
+                                <div class="page-name-block-item-main flex middle-xs">
+                                    <h2 class="m-t-none m-b-none sticky-page-name-text m-r p-b-xs">@T("Admin.Funnels.Site.EmailChains")</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <funnel-email-sequences order-source-id="@Model.Settings.OrderSourceId"></funnel-email-sequences>
+                    </div>
+                    <div ng-if="landingSite.tab == 'leads'">
+                        <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                            <div class="page-name-block sticky-page-name-inner">
+                                <div class="page-name-block-item-main flex middle-xs">
+                                    <h2 class="m-t-none m-b-none sticky-page-name-text m-r p-b-xs">@T("Admin.Funnels.Site.Leads")</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <funnel-leads order-source-id="@Model.Settings.OrderSourceId"></funnel-leads>
+                    </div>
+                    <div ng-if="landingSite.tab == 'orders'">
+                        <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                            <div class="page-name-block sticky-page-name-inner">
+                                <div class="page-name-block-item-main flex middle-xs">
+                                    <h2 class="m-t-none m-b-none sticky-page-name-text m-r p-b-xs">@T("Admin.Funnels.Site.Orders")</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <funnel-orders order-source-id="@Model.Settings.OrderSourceId"></funnel-orders>
+                    </div>
+                    @if (showBooking)
+                    {
+                        <div ng-if="landingSite.tab == 'bookings'">
+                            <div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+                                <div class="page-name-block sticky-page-name-inner">
+                                    <div class="page-name-block-item-main flex middle-xs">
+                                        <h2 class="m-t-none m-b-none sticky-page-name-text m-r p-b-xs">@T("Admin.Funnels.Site.Armor")</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <funnel-bookings order-source-id="@Model.Settings.OrderSourceId"></funnel-bookings>
+                        </div>
+                    }
+                    <div ng-show="landingSite.tab == 'settings'">
+                        @* ng-show - don't reload view *@
+                        @Html.Partial("SiteSettings", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <html>
+    <head>
+        <title>@T("Admin.Funnels.Site.FunnelFunnel") @Model.Site.Name</title>
+    </head>
+    <body>
+
+    <div class="siteId" data-id="@Model.Site.Id">
+        <div id="funnelSheme" class="funnels-scheme">
+        </div>
+    </div>
+
+    @Html.RenderAssetFilesAsHtml("funnelsScheme")
+    @Html.RenderAssetFilesAsHtml("runtime")
+    </body>
+    </html>
+}

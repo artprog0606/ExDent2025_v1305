@@ -1,0 +1,45 @@
+﻿@using AdvantShop.Core.Services.Partners;
+@model AdvantShop.Areas.Partners.ViewModels.Settings.SettingsViewModel
+
+<div data-tabs data-type="vertical" data-classes-link="">
+    <div class="container-fluid">
+        <div class="tabs tabs-vertical">
+            <ul class="tabs-headers tabs-headers--width clear">
+                <li id="common" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'active' : tabHeader.selected}">
+                    <a href="javascript:void(0)" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)">
+                        Общая информация
+                    </a>
+                </li>
+                <li id="data" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'active' : tabHeader.selected}">
+                    <a href="javascript:void(0)" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)">
+                        Данные партнера
+                    </a>
+                </li>
+                <li id="changepassword" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'active' : tabHeader.selected}">
+                    <a href="javascript:void(0)" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)">
+                        Смена пароля
+                    </a>
+                </li>
+            </ul>
+            <div class="tabs-content">
+                <div class="tab-content" data-tab-content="common" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                    @Html.Partial("_Common", Model)
+                </div>
+                <div class="tab-content" data-tab-content="data" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                    @Html.Partial("_ContractData", Model.Partner)
+                    @if (Model.Partner.Type == EPartnerType.LegalEntity)
+                    {
+                        @Html.Partial("_DataLegalEntity", Model.Partner.LegalEntity)
+                    }
+                    else if (Model.Partner.Type == EPartnerType.NaturalPerson)
+                    {
+                        @Html.Partial("_DataNaturalPerson", Model.Partner.NaturalPerson ?? new NaturalPerson())
+                    }
+                </div>
+                <div class="tab-content" data-tab-content="changepassword" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                    @Html.Action("ChangePassword")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

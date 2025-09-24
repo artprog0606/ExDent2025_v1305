@@ -1,0 +1,380 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Common
+@using Newtonsoft.Json
+@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    var orderCustomer = order != null ? order.OrderCustomer : null;
+    var isNewOrDraft = order == null || order.IsDraft;
+    var customerId = orderCustomer != null ? orderCustomer.CustomerID : Guid.Empty;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<form novalidate="" name="popupOrderCustomerForm" class="@(!isMobile ? "modal-body" : "") popup-order-customer">
+    @if (isMobile)
+    {
+        <div class="modal-header">
+            <ui-modal-cross><div class="close" ng-click="$ctrl.close()"></div></ui-modal-cross>
+            <h2 class="modal-header-title">@(orderCustomer != null ? T("Admin.Orders.OrderCustomer.Customer").ToString() : T("Admin.Orders.OrderCustomer.CreateOrFindCustomer").ToString())</h2>
+        </div>
+    }
+    else
+    {
+        <div class="sticky-page-name sticky-page-name-in-modal--panel">
+            <div class="page-name-block sticky-page-name-inner m-b-sm">
+                <div class="page-name-block-item-main">
+                    <div class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name">
+                        @(orderCustomer != null ? T("Admin.Orders.OrderCustomer.Customer").ToString() : T("Admin.Orders.OrderCustomer.CreateOrFindCustomer").ToString())
+                    </div>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <button class="btn btn-sm btn-success" type="button" data-button-validation button-validation-success="ctrl.save(); ctrl.btnLoading = true"
+                            ladda="ctrl.btnLoading" ng-disabled="!popupOrderCustomerForm.modified">
+                        <span class="fa fa-check"></span>Сохранить
+                    </button>
+                </div>
+            </div>
+            <ui-modal-cross></ui-modal-cross>
+        </div>
+    }
+
+
+
+    @if (isMobile)
+    {
+        @:<div class="modal-body">
+
+    }
+
+    <div>
+        <div class="popup-order-customer__content-container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="customersegments-custom-fields add-edit-popup-customer-fields">
+
+                                <div ng-init="ctrl.initModal(@Model.OrderId, @Model.IsEditMode.ToLowerString(), @isNewOrDraft.ToLowerString(), '@customerId', '@Model.StandardPhone')">
+                                    @if (Model.Customer != null)
+                                    {
+                                        if (!isMobile)
+                                        {
+                                            <div class="customer-status-wrap inline m-b-md" ng-init="ctrl.clientStatus='@Model.Customer.ClientStatus'">
+                                                <div data-e2e="statusVip" class="customer-status-label customer-status-label-left" ng-click="ctrl.changeStatusClient('Vip')" ng-class="{'vip':ctrl.clientStatus === 'Vip'}">
+                                                    <span>VIP</span>
+                                                </div>
+                                                <div data-e2e="statusBad" ng-click="ctrl.changeStatusClient('Bad')" class="customer-status-label customer-status-label-right customer-status-label-bad" ng-class="{'bad':ctrl.clientStatus === 'Bad'}">
+                                                    <span>@T("Admin.Customers.ViewCustomerHeader.Bad")</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    <div class="flex g-sm flex-wrap m-b-md">
+                                        @if (Model.Customer != null)
+                                        {
+                                            <a href="@Url.AbsoluteActionUrl("View", "Customers", new { id = Model.Customer.Id })" target="_blank" class="inline-block edit link-decoration-none">@T("Admin.Orders.OrderCustomer.ClientCard")</a>
+                                        }
+                                        
+                                        <div class="popup-order-customer__change-customer @(orderCustomer == null ? "" : "m-l-sm inline-block")">
+                                            <ui-modal-trigger data-controller="'ModalSelectCustomerCtrl'" controller-as="ctrl" size="middle"
+                                                              template-url="@Html.GetAssetPath("selectCustomer.html")"
+                                                              data-on-close="ctrl.selectCustomer(result)">
+                                                <a href="" class="edit link-decoration-none">@T(Model.Customer != null ? "Сменить покупателя" : "Admin.Orders.OrderCustomer.SelectCustomer")</a>
+                                            </ui-modal-trigger>
+                                            <span ng-if="ctrl.selectedFirstName != null && ctrl.selectedLastName != null" class="ng-cloak m-l-xs link-invert">
+                                                <a target="_blank" href="customers/view/{{ctrl.customerId}}">
+                                                    {{ctrl.selectedFirstName}} {{ctrl.selectedLastName}}
+                                                </a>
+                                                <a href="" ng-click="ctrl.resetOrderCustomer()" ng-if="ctrl.isDraft" class="link-invert link-decoration-none fas fa-times"></a>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                @if (Model.Customer == null && Model.IsEditMode)
+                                {
+                                    <div class="m-b">
+                                        <a target="_blank" data-e2e="SaveCustomer" href="customers/add?orderid=@Model.OrderId" class="ng-cloak@(!isMobile ? " m-l-xs": "") link-invert">
+                                            @T("Admin.Orders.OrderCustomer.CreateUserFromOrder")
+                                        </a>
+                                    </div>
+                                }
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="p-r-lg popup-order-customer__user-container">
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-4">
+                                                        <div class="row m-b-sm form-row">
+                                                            <div class="col-xs-12">
+                                                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.LastName")</label>
+                                                            </div>
+                                                            <div class="col-xs-12">
+                                                                @Html.TextBoxFor(x => x.Order.OrderCustomer.LastName, new
+                                                                {
+                                                                    @class = "form-control input-alt-mobile",
+                                                                    ng_model = "ctrl.lastName",
+                                                                    uib_typeahead = "item.LastName for item in ctrl.findCustomers($viewValue)",
+                                                                    typeahead_template_url = "../areas/admin/content/src/order/templates/autocompleteCustomers.html",
+                                                                    typeahead_on_select = "ctrl.selectCustomerByAutocomplete($item, $model, $label)",
+                                                                    typeahead_focus_first = "false"
+                                                                })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xs-12 col-md-4">
+                                                        <div class="row m-b-sm form-row">
+                                                            <div class="col-xs-12">
+                                                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.FirstName")</label>
+                                                            </div>
+                                                            <div class="col-xs-12">
+                                                                @Html.TextBoxFor(x => x.Order.OrderCustomer.FirstName, new
+                                                                {
+                                                                    @class = "form-control input-alt-mobile",
+                                                                    ng_model = "ctrl.firstName",
+                                                                    uib_typeahead = "item.FirstName for item in ctrl.findCustomers($viewValue)",
+                                                                    typeahead_template_url = "../areas/admin/content/src/order/templates/autocompleteCustomers.html",
+                                                                    typeahead_on_select = "ctrl.selectCustomerByAutocomplete($item, $model, $label)",
+                                                                    typeahead_focus_first = "false"
+                                                                })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xs-12 col-md-4">
+                                                        <div class="row m-b-sm form-row">
+                                                            <div class="col-xs-12">
+                                                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Patronymic")</label>
+                                                            </div>
+                                                            <div class="col-xs-12">
+                                                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Patronymic, new
+                                                                {
+                                                                    @class = "form-control input-alt-mobile",
+                                                                    ng_model = "ctrl.patronymic",
+                                                                    uib_typeahead = "item.Patronymic for item in ctrl.findCustomers($viewValue)",
+                                                                    typeahead_template_url = "../areas/admin/content/src/order/templates/autocompleteCustomers.html",
+                                                                    typeahead_on_select = "ctrl.selectCustomerByAutocomplete($item, $model, $label)",
+                                                                    typeahead_focus_first = "false"
+                                                                })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            @if (Model.Order.OrderCustomer != null && !string.IsNullOrEmpty(Model.Order.OrderCustomer.Organization))
+                                            {
+                                                <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Organization")</label>
+                                                        </div>
+
+                                                        <div class="col-xs-12">
+                                                            <div class="row between-xs middle-xs">
+                                                                <div class="col-xs">
+                                                                    @Html.Label(Model.Order.OrderCustomer.Organization, new
+                                                                    {
+                                                                        @class = "form-control"
+                                                                    })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+
+
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row form-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="control-label text-left">Email</label>
+                                                    </div>
+
+                                                    <div class="col-xs-12">
+                                                        <div class="row between-xs middle-xs @(isMobile ? "" : "m-b-sm")">
+                                                            <div class="col-xs-12 col-md">
+                                                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Email, new
+                                                                {
+                                                                    @class = "form-control input-alt-mobile",
+                                                                    ng_model = "ctrl.email",
+                                                                    pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)|(admin)$"
+                                                                })
+                                                            </div>
+                                                            @if (!isNewOrDraft)
+                                                            {
+                                                                <div class="col-xs flex-grow-n text-nowrap" ng-if="ctrl.email != null && ctrl.email.length > 0 && popupOrderCustomerForm['Order.OrderCustomer.Email'].$error.pattern == null">
+                                                                    <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'" controller-as="ctrl" size="lg"
+                                                                                      template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                                                                      data-resolve="{params: {@(orderCustomer != null ? "customerId: '" + orderCustomer.CustomerID + "'," : "") email: ctrl.email, firstName: ctrl.firstName, lastName: ctrl.lastName, patronymic: ctrl.patronymic, orderId: '@Model.OrderId', pageType: 'order'}}">
+                                                                        <a href="" class="edit link-decoration-none popup-order-customer__edit">@T("Admin.Orders.OrderCustomer.SendEmail")</a>
+                                                                    </ui-modal-trigger>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row m-b-sm form-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.PhoneInNumberFormat")</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <div class="row between-xs middle-xs">
+                                                            <div class="col-xs-12 col-md">
+                                                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Phone, new
+                                                                {
+                                                                    @class = "form-control input-alt-mobile",
+                                                                    mask_control = "",
+                                                                    mask_control_preset = "phone",
+                                                                    ng_model = "ctrl.phone",
+                                                                })
+                                                            </div>
+                                                            <div class="col-xs flex-grow-n text-nowrap @(isMobile ? "m-t-xs" : "")">
+                                                                @if (Model.StandardPhone != null)
+                                                                {
+                                                                    <a href="tel:@Model.StandardPhone" ng-href="tel:{{ctrl.phone}}" class="edit link-decoration-none" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Orders_CallCustomer.ToString()');">
+                                                                        @T("Admin.Orders.OrderCustomer")
+                                                                    </a>
+
+                                                                    if (orderCustomer != null)
+                                                                    {
+                                                                        <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl"
+                                                                                          data-resolve="{params: { customerId: '@orderCustomer.CustomerID', phone: ctrl.phone, orderId: '@Model.OrderId', pageType: 'order'}}"
+                                                                                          template-url="@Html.GetAssetPath("sendSms.html")">
+                                                                            <a href="" class="edit link-decoration-none m-l-xs">@T("Admin.Orders.OrderCustomer.SendSms")</a>
+                                                                        </ui-modal-trigger>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (Model.ShowCustomerType)
+                                            {
+                                                <div class="form-group">
+                                                    <div class="row  m-b-sm">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left m-b-xs">@T("Admin.Orders.OrderCustomer.CustomerType")</label>
+                                                        </div>
+
+                                                        <div class="col-xs-12">
+                                                            <div class="row between-xs middle-xs">
+                                                                <div class="col-xs">
+                                                                    @Html.DropDownListFor(x => x.Order.OrderCustomer.CustomerType, Model.CustomerTypes, new
+                                                                     {
+                                                                         @class = "form-control input-alt",
+                                                                         ng_model = "ctrl.customerType",
+                                                                         ng_change = "ctrl.getCustomerFields()"
+                                                                     })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.Order.OrderCustomer != null)
+                                            {
+                                                <span ng-model="ctrl.customerType" ng-init="ctrl.customerType='@Model.Order.OrderCustomer.CustomerType'"></span>
+                                            }
+
+                                            @Html.RenderModules("admin_order_ordercustomer_left", new { orderId = Model.OrderId })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-12 col-md-6">
+                                        @if (SettingsCheckout.IsShowCustomShippingField1 || (orderCustomer != null && !string.IsNullOrEmpty(order.OrderCustomer.CustomField1)))
+                                        {
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row m-b-sm form-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="control-label text-left">@SettingsCheckout.CustomShippingField1</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        @Html.TextBoxFor(x => x.Order.OrderCustomer.CustomField1, new
+                                                   {
+                                                       @class = "form-control input-alt-mobile",
+                                                       ng_model = "ctrl.customField1",
+                                                   })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (SettingsCheckout.IsShowCustomShippingField2 || (orderCustomer != null && !string.IsNullOrEmpty(order.OrderCustomer.CustomField2)))
+                                        {
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row m-b-sm form-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="control-label text-left">@SettingsCheckout.CustomShippingField2</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        @Html.TextBoxFor(x => x.Order.OrderCustomer.CustomField2, new
+                                                        {
+                                                            @class = "form-control input-alt-mobile",
+                                                            ng_model = "ctrl.customField2",
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (SettingsCheckout.IsShowCustomShippingField3 || (orderCustomer != null && !string.IsNullOrEmpty(order.OrderCustomer.CustomField3)))
+                                        {
+                                            <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                                <div class="row m-b-sm form-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="control-label text-left">@SettingsCheckout.CustomShippingField3</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        @Html.TextBoxFor(x => x.Order.OrderCustomer.CustomField3, new
+                                                        {
+                                                            @class = "form-control input-alt-mobile",
+                                                            ng_model = "ctrl.customField3",
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        @Html.RenderModules("admin_order_ordercustomer_right", new { orderId = Model.OrderId })
+                                    </div>
+                                </div>
+                                @if (Model.CustomerFields != null)
+                                {
+                                    if (!isMobile)
+                                    {
+                                        <div class="customer-custom-fields-divider" ng-init="ctrl.initCustomerFields(@JsonConvert.SerializeObject(Model.CustomerFields))"></div>
+                                    }
+                                    <div class="row customer-custom-fields order-customer-fields" ng-init="ctrl.initCustomerFields(@JsonConvert.SerializeObject(Model.CustomerFields))">
+                                        <customer-fields customerfields-js="ctrl.customerFields"
+                                                         customer-type="ctrl.customerType" customer-id="ctrl.customerId"
+                                                         on-init="ctrl.onCustomerFieldsInit(reloadFn)" class="flex-grow">
+                                        </customer-fields>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (isMobile)
+    {
+    @:</div>
+}
+
+    @if (isMobile)
+    {
+        <div class="modal-footer">
+            <button class="btn btn-sm btn-success" type="button" data-button-validation button-validation-success="ctrl.save(); ctrl.btnLoading = true"
+                    ladda="ctrl.btnLoading" ng-disabled="!popupOrderCustomerForm.modified">
+                {{'Admin.Js.AddEdit.Save'|translate}}
+            </button>
+            <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+        </div>
+    }
+</form>

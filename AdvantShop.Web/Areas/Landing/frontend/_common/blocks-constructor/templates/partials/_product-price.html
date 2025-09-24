@@ -1,0 +1,373 @@
+﻿<div ng-if="$ctrl.commonOptions.IsStoreClosed === true || $ctrl.IsStoreClosed === true" class="blocks-constructor-row block-constructor-icon-error">
+    Внимание! Вирина закрыта для покупателей. <a href="adminv3/settingstemplate?settingsTemplateTab=common" target="_blank">Изменить настройки</a>
+</div>
+
+<div ng-if="$ctrl.buttonOptions.show_options != null">
+    <div class="blocks-constructor-row">
+        <div class="row blocks-constructor-row">
+            <div class="col-xs-12 col-sm-6">
+                <label class="blocks-constructor-label" data-e2e="HideShipping">
+                    <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.buttonOptions.show_options" />
+                    <span class="blocks-constructor-checkbox"></span>
+                    <span class="blocks-constructor-label-text"> Один товар с выбором цвета, размера и кол-ва </span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div
+        ng-if="$ctrl.buttonOptions.show_options == true"
+        ng-init="$ctrl.getActionOfferItemsPreparedForOne($ctrl.buttonOptions)"
+        class="blocks-constructor-row">
+        <div ng-repeat="item in $ctrl.buttonOptions.action_offer_items track by $index" class="row m-b-xs middle-xs">
+            <div class="col-xs-6 col-sm-6">
+                <a
+                    ng-href="./adminv3/product/edit/{{$ctrl.getPreparedActionOfferItem(item.offerId).productId}}"
+                    data-e2e="Product_{{item.offerId}}"
+                    target="_blank">
+                    {{$ctrl.getPreparedActionOfferItem(item.offerId).name}}
+                </a>
+                <div
+                    ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                    ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).color"
+                    class="font-size-sm"></div>
+                <div
+                    ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                    ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).size"
+                    class="font-size-sm"></div>
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                <span
+                    ng-click="$ctrl.deleteActionOfferItem($ctrl.buttonOptions.action_offer_items, item, $index)"
+                    class="lp-grid__remove-control link-service--secondary link-decoration-none"
+                    data-e2e="DelProduct"
+                    title="Удалить">
+                    <svg
+                        width="16px"
+                        height="16px"
+                        viewBox="0 0 16 16"
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <path
+                            fill="currentColor"
+                            d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+        <div class="m-b-xs">
+            <a href="javascript:void(0)" data-e2e="SelectMultiProduct" ng-click="$ctrl.selectOffer($ctrl.buttonOptions, true)">Выбрать товар</a>
+        </div>
+    </div>
+</div>
+
+<div
+    is-mobile
+    class="blocks-constructor-row"
+    ng-if="$ctrl.buttonOptions.show_options == null || $ctrl.buttonOptions.show_options == false"
+    ng-init="$ctrl.initUseManyOffers($ctrl.isForm ? $ctrl.modalData.data.Form : $ctrl.buttonOptions, $ctrl.isForm)"
+    ng-switch="$ctrl.isForm == true"
+    data-e2e="OfferItems">
+    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Товары</div>
+    <div ng-switch-when="true">
+        <div ng-init="$ctrl.getOfferItemsPrepared($ctrl.modalData.data.Form)">
+            <div
+                class="row blocks-constructor-row middle-xs"
+                ng-if="$ctrl.modalData.data.Form.OfferItems != null && $ctrl.modalData.data.Form.OfferItems.length > 0 && !isMobile.value">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Название</div>
+                </div>
+                <div class="col-xs-3 col-sm-3">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Своя цена товара</div>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Кол-во товара</div>
+                </div>
+                <div class="col-xs-1 col-sm-1"></div>
+            </div>
+            <div
+                ng-if="!isMobile.value"
+                ng-repeat="item in $ctrl.modalData.data.Form.OfferItems track by $index"
+                class="row blocks-constructor-row middle-xs">
+                <div class="col-xs-6 col-sm-6">
+                    <a
+                        ng-href="./adminv3/product/edit/{{$ctrl.getPreparedOfferItem(item.offerId).productId}}"
+                        data-e2e="Product_{{item.offerId}}"
+                        target="_blank">
+                        {{$ctrl.getPreparedOfferItem(item.offerId).name}}
+                    </a>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).color"
+                        class="font-size-sm"></div>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).size"
+                        class="font-size-sm"></div>
+                </div>
+                <div class="col-xs-3 col-sm-3">
+                    <input class="blocks-constructor-input" data-e2e="NewPriceProduct{{item.offeredId}}" type="text" ng-model="item.offerPrice" />
+                </div>
+                <div class="col-xs-2 col-sm-2" ng-init="$ctrl.setDefaultMinAmount(item)">
+                    <div
+                        data-e2e="NewAmountProduct{{item.offeredId}}"
+                        data-ng-if="$ctrl.action_offer_items_prepared[$index].multiplicity != null"
+                        data-spinbox
+                        data-value="item.offerAmount"
+                        data-input-classes="'blocks-constructor-input'"
+                        data-step="$ctrl.action_offer_items_prepared[$index].multiplicity"
+                        data-max="$ctrl.action_offer_items_prepared[$index].maxAmount"
+                        data-min="$ctrl.action_offer_items_prepared[$index].minAmount"></div>
+                </div>
+                <div class="col-xs-1 col-sm-1">
+                    <span
+                        ng-click="$ctrl.deleteOfferItem($ctrl.modalData.data.Form.OfferItems, item, $index)"
+                        class="lp-grid__remove-control link-service--secondary link-decoration-none"
+                        data-e2e="DelProduct"
+                        title="Удалить">
+                        <svg
+                            width="16px"
+                            height="16px"
+                            viewBox="0 0 16 16"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <path
+                                fill="currentColor"
+                                d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div
+                ng-if="isMobile.value"
+                ng-repeat="item in $ctrl.modalData.data.Form.OfferItems track by $index"
+                class="row blocks-constructor-row middle-xs blocks-constructor__product-card">
+                <div class="col-xs-12">
+                    <a
+                        ng-href="./adminv3/product/edit/{{$ctrl.getPreparedOfferItem(item.offerId).productId}}"
+                        data-e2e="Product_{{item.offerId}}"
+                        target="_blank">
+                        {{$ctrl.getPreparedOfferItem(item.offerId).name}}
+                    </a>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).color"
+                        class="font-size-sm"></div>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).size"
+                        class="font-size-sm"></div>
+                </div>
+                <div class="col-xs-12 m-t-xs">
+                    <div class="row">
+                        <div class="col-xs-5 blocks-constructor__product-card-cell-title">Своя цена товара</div>
+                        <div class="col-xs-5 blocks-constructor__product-card-cell-title">Кол-во товара</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <input
+                                class="blocks-constructor-input"
+                                data-e2e="NewPriceProduct{{item.offeredId}}"
+                                type="text"
+                                ng-model="item.offerPrice" />
+                        </div>
+                        <div class="col-xs-5" ng-init="$ctrl.setDefaultMinAmount(item)">
+                            <div
+                                data-e2e="NewAmountProduct{{item.offeredId}}"
+                                data-ng-if="$ctrl.action_offer_items_prepared[$index].multiplicity != null"
+                                data-spinbox
+                                data-value="item.offerAmount"
+                                data-input-classes="'blocks-constructor-input'"
+                                data-step="$ctrl.action_offer_items_prepared[$index].multiplicity"
+                                data-max="$ctrl.action_offer_items_prepared[$index].maxAmount"
+                                data-min="$ctrl.action_offer_items_prepared[$index].minAmount"></div>
+                        </div>
+                        <div class="col-xs flex middle-xs end-xs">
+                            <span
+                                ng-click="$ctrl.deleteOfferItem($ctrl.modalData.data.Form.OfferItems, item, $index)"
+                                class="lp-grid__remove-control link-service--secondary link-decoration-none"
+                                data-e2e="DelProduct"
+                                title="Удалить">
+                                <svg
+                                    width="16px"
+                                    height="16px"
+                                    viewBox="0 0 16 16"
+                                    version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path
+                                        fill="currentColor"
+                                        d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0)" data-e2e="SelectMultiProduct" ng-click="$ctrl.selectOffer($ctrl.modalData.data.Form)">Выбрать товары</a>
+        </div>
+    </div>
+    <div ng-switch-when="false">
+        <div ng-init="$ctrl.getActionOfferItemsPrepared($ctrl.buttonOptions)">
+            <div
+                class="row blocks-constructor-row middle-xs"
+                ng-if="$ctrl.buttonOptions.action_offer_items != null && $ctrl.buttonOptions.action_offer_items.length > 0 && !isMobile.value">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Название</div>
+                </div>
+                <div class="col-xs-3 col-sm-3">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Своя цена товара</div>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <div class="blocks-constructor-buttons-actions__header blocks-constructor-row__name">Кол-во товара</div>
+                </div>
+                <div class="col-xs-1 col-sm-1"></div>
+            </div>
+            <div
+                ng-if="!isMobile.value"
+                ng-repeat="item in $ctrl.buttonOptions.action_offer_items track by $index"
+                class="row blocks-constructor-row middle-xs">
+                <div class="col-xs-6 col-sm-6">
+                    <a
+                        ng-href="./adminv3/product/edit/{{$ctrl.getPreparedActionOfferItem(item.offerId).productId}}"
+                        data-e2e="Product_{{item.offerId}}"
+                        target="_blank">
+                        {{$ctrl.getPreparedActionOfferItem(item.offerId).name}}
+                    </a>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).color"
+                        class="font-size-sm"></div>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).size"
+                        class="font-size-sm"></div>
+                </div>
+                <div class="col-xs-3 col-sm-3">
+                    <input class="blocks-constructor-input" data-e2e="NewPriceProduct{{item.offeredId}}" type="text" ng-model="item.offerPrice" />
+                </div>
+                <div class="col-xs-2 col-sm-2" ng-init="$ctrl.setDefaultMinAmount(item)">
+                    <div
+                        data-e2e="NewAmountProduct{{item.offeredId}}"
+                        data-ng-if="$ctrl.action_offer_items_prepared[$index].multiplicity != null"
+                        data-spinbox
+                        data-value="item.offerAmount"
+                        data-input-classes="'blocks-constructor-input'"
+                        data-step="$ctrl.action_offer_items_prepared[$index].multiplicity"
+                        data-max="$ctrl.action_offer_items_prepared[$index].maxAmount"
+                        data-min="$ctrl.action_offer_items_prepared[$index].minAmount"></div>
+                </div>
+                <div class="col-xs-1 col-sm-1">
+                    <span
+                        ng-click="$ctrl.deleteActionOfferItem($ctrl.buttonOptions.action_offer_items, item, $index)"
+                        class="lp-grid__remove-control link-service--secondary link-decoration-none"
+                        data-e2e="DelProduct"
+                        title="Удалить">
+                        <svg
+                            width="16px"
+                            height="16px"
+                            viewBox="0 0 16 16"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <path
+                                fill="currentColor"
+                                d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div
+                ng-if="isMobile.value"
+                ng-repeat="item in $ctrl.buttonOptions.action_offer_items track by $index"
+                class="row blocks-constructor-row middle-xs blocks-constructor__product-card">
+                <div class="col-xs-12">
+                    <a
+                        ng-href="./adminv3/product/edit/{{$ctrl.getPreparedActionOfferItem(item.offerId).productId}}"
+                        data-e2e="Product_{{item.offerId}}"
+                        target="_blank">
+                        {{$ctrl.getPreparedActionOfferItem(item.offerId).name}}
+                    </a>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).color"
+                        class="font-size-sm"></div>
+                    <div
+                        ng-if="$ctrl.getPreparedActionOfferItem(item.offerId).color != null"
+                        ng-bind="$ctrl.getPreparedActionOfferItem(item.offerId).size"
+                        class="font-size-sm"></div>
+                </div>
+                <div class="col-xs-12 m-t-xs">
+                    <div class="row">
+                        <div class="col-xs-5 blocks-constructor__product-card-cell-title">Своя цена товара</div>
+                        <div class="col-xs-5 blocks-constructor__product-card-cell-title">Кол-во товара</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <input
+                                class="blocks-constructor-input"
+                                data-e2e="NewPriceProduct{{item.offeredId}}"
+                                type="text"
+                                ng-model="item.offerPrice" />
+                        </div>
+                        <div class="col-xs-5" ng-init="$ctrl.setDefaultMinAmount(item)">
+                            <div
+                                data-e2e="NewAmountProduct{{item.offeredId}}"
+                                data-ng-if="$ctrl.action_offer_items_prepared[$index].multiplicity != null"
+                                data-spinbox
+                                data-value="item.offerAmount"
+                                data-input-classes="'blocks-constructor-input'"
+                                data-step="$ctrl.action_offer_items_prepared[$index].multiplicity"
+                                data-max="$ctrl.action_offer_items_prepared[$index].maxAmount"
+                                data-min="$ctrl.action_offer_items_prepared[$index].minAmount"></div>
+                        </div>
+                        <div class="col-xs flex middle-xs end-xs">
+                            <span
+                                ng-click="$ctrl.deleteActionOfferItem($ctrl.buttonOptions.action_offer_items, item, $index)"
+                                class="lp-grid__remove-control link-service--secondary link-decoration-none"
+                                data-e2e="DelProduct"
+                                title="Удалить">
+                                <svg
+                                    width="16px"
+                                    height="16px"
+                                    viewBox="0 0 16 16"
+                                    version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path
+                                        fill="currentColor"
+                                        d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0)" data-e2e="SelectMultiProduct" ng-click="$ctrl.selectOffer($ctrl.buttonOptions)">Выбрать товары</a>
+        </div>
+    </div>
+</div>
+
+<div class="blocks-constructor-row" ng-if="!$ctrl.isForm">
+    <div class="row blocks-constructor-row">
+        <div class="col-xs-12 col-sm-6">
+            <label class="blocks-constructor-label" data-e2e="HideShipping">
+                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.buttonOptions.action_hide_shipping" />
+                <span class="blocks-constructor-checkbox"></span>
+                <span class="blocks-constructor-label-text"> Скрывать доставку на оформлении заказа </span>
+            </label>
+        </div>
+    </div>
+    <div class="row blocks-constructor-row" ng-if="$ctrl.commonOptions.Settings.showShippingsMethods != null">
+        <div class="col-xs-12 col-sm-6">
+            <div class="blocks-constructor-row__name">Отображение доставки</div>
+            <div class="blocks-constructor-select">
+                <select
+                    data-e2e="showShippingMethodsList"
+                    ng-model="$ctrl.commonOptions.Settings.showShippingsMethods"
+                    ng-options="item.value as item.label for item in $ctrl.showShippingsMethodsList"></select>
+            </div>
+        </div>
+    </div>
+</div>

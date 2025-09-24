@@ -1,0 +1,34 @@
+﻿@model AdvantShop.Areas.Mobile.Models.Catalog.ProductByIdMobileModel
+
+<div class="products-by-ids">
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <div class="cs-t-9 products-by-ids__header">
+            <div class="products-by-ids__title">
+                <span>@Html.Raw(Model.Title)</span>
+            </div>
+        </div>
+    }
+
+    @if (Model.EnabledCarousel)
+    {
+        Model.Products.WrapCssClass = "cs-l-1 cs-br-1 link-text-decoration-none inked ink-dark cs-l-2 products-by-ids__item";
+        <div class="products-view-scrollable scroll-always-visible panel cs-br-1">
+            @Html.Partial("_ProductView", Model.Products)
+        </div>
+    }
+    else
+    {
+        <div class="catalog-view products-view-mobile-modern-@(Model.Products.ProductViewMode.ToString().ToLower())"
+             data-is-mobile="true"
+             data-name="mobileModern"
+             data-view-list-name="mobileModern"
+             data-product-view-mode
+             data-photo-height-by-view-mode-default="'@(Model.Products.BlockProductPhotoHeight)px'"
+             data-photo-height-by-view-mode="{viewName: 'single', value: '@(Model.Products.BlockProductPhotoMiddleHeight)px'}">
+            <div class="catalog-view__product-item-wrap">
+                @Html.Partial("_ProductView", Model.Products)
+            </div>
+        </div>
+    }
+</div>

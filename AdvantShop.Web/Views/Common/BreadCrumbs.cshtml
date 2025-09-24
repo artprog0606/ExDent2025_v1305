@@ -1,0 +1,30 @@
+﻿@model List<AdvantShop.CMS.BreadCrumbs>
+@{
+    var lastBreadCrumb = Model.Last();
+    var position = 0;
+}
+<div class="breadcrumbs breadcrumbs--desktop">
+    <div data-bread-crumbs 
+         class="breadcrumbs__inner breads"
+         itemscope itemtype="https://schema.org/BreadcrumbList">
+    @foreach (var breadCrumb in Model)
+    {
+        var isActiveElem = !string.IsNullOrEmpty(breadCrumb.Url) && breadCrumb != lastBreadCrumb;
+        <div class="breads-item breadcrumbs__item icon-right-open-before @(isActiveElem ? "" : "breads-item-current  breadcrumbs__item--current cs-t-3")"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <meta content="@position" itemprop="position"/>
+            @if (isActiveElem)
+            {
+                <a class="breads-item-link breadcrumbs__item-link cs-l-2" href="@breadCrumb.Url" itemprop="item">
+                    <span itemprop="name">@breadCrumb.Name</span>
+                </a>
+            }
+            else
+            {
+                <span class="breads-item-current cs-t-3" itemprop="name">@breadCrumb.Name</span>
+            }
+        </div>
+        position++;
+    }
+    </div>
+</div>

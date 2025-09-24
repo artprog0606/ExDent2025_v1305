@@ -1,0 +1,175 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.BoxberryShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class=" flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Boxberry.ApiUrl")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.ApiUrl, new { ng_model = "shippingMethod.Params.ApiUrl", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Boxberry.ApiUrl") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="URL-адрес для API">
+            @T("Admin.ShippingMethods.Boxberry.ApiUrl.HelpText")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Boxberry.Token")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Token, new { ng_model = "shippingMethod.Params.Token", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Boxberry.Token") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-token">
+            @T("Admin.ShippingMethods.Boxberry.GetUniqueKey")
+        </help-trigger>
+    </div>
+</div>
+
+@if (Model.Token.IsNullOrEmpty())
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "" : "display:flex;")">
+                После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @*<div class="form-group row middle-xs">
+            <div class="flex-grow-n col-fixed-size-md">
+                <span class="text-required">@T("Admin.ShippingMethods.Boxberry.ListOfCities")</span>
+            </div>
+            <div class="col-xs-6 relative">
+                @Html.DropDownListFor(x => x.ReceptionPointCity, new SelectList(Model.ListReceptionCities, "Code", "Name", Model.ReceptionPointCity), new { ng_model = "shippingMethod.Params.ReceptionPointCity", @class = "form-control", validation_input_text = "ReceptionPointCity" })
+                <help-trigger class="ng-cloak help-trigger-icon-abs" data-title="@T("Admin.ShippingMethods.Boxberry.ListOfCities")">
+                    @T("Admin.ShippingMethods.Boxberry.ListOfCities")
+                    <br />
+                    @T("Admin.ShippingMethods.Boxberry.SortindNodes")
+                </help-trigger>
+            </div>
+        </div>*@
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Boxberry.ListOfPoints")</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.DropDownListFor(x => x.ReceptionPointCode, new SelectList(Model.ListReceptionPoints, "Code", "Name", Model.ReceptionPointCode), new { ng_model = "shippingMethod.Params.ReceptionPointCode", @class = "form-control input-alt", validation_input_text = T("Admin.ShippingMethods.Boxberry.ListOfPoints"), ng_required = (Model.ListReceptionPoints.Count > 1).ToLowerString() })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Boxberry.ListOfPoints")">
+                @T("Admin.ShippingMethods.Boxberry.ListOfPoints")
+                <br />
+                @T("Admin.ShippingMethods.Boxberry.SortindNodes")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.BoxBerry.CalculateShippingMethods")</span>
+        </div>
+        @{
+            var selectedDelivery = Model.ListDeliveryTypes.FindAll(x => Model.DeliveryTypes.Any(y => x.Value == y));
+        }
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+             data-ng-init='shippingMethod.listDeliveryTypes = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.deliveryTypes = @JsonConvert.SerializeObject(selectedDelivery)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.deliveryTypes"
+                       validation-input-text="@T("Admin.ShippingMethods.BoxBerry.CalculateShippingMethods")"
+                       ng-required="true"
+                       data-e2e="SelectTariffs">
+                <ui-select-match placeholder="@T("Admin.ShippingMethods.BoxBerry.ChooseShippingMethod")">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="delivery in shippingMethod.listDeliveryTypes | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="delivery.Disabled === true"
+                                   refresh-delay="0">
+                    {{delivery.Text}}
+                </ui-select-choices>
+            </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="DeliveryTypes" id="DeliveryTypes" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.deliveryTypes" ng-repeat="option in shippingMethod.deliveryTypes track by $index"></option>
+            </select>
+            <input type="hidden" name="DeliveryTypes" value="" ng-if="!shippingMethod.deliveryTypes.length" />
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.findChoseItem(shippingMethod.deliveryTypes, '0') != null">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">Отображение ПВЗ</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.DropDownListFor(x => x.TypeOption, Model.ListTypesOption, new { ng_model = "shippingMethod.Params.TypeOption", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.findChoseItem(shippingMethod.deliveryTypes, '0') != null && shippingMethod.Params.TypeOption === '0'">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.BoxBerry.IntegrationKey")</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.TextBoxFor(x => x.IntegrationToken, new { ng_model = "shippingMethod.Params.IntegrationToken", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.BoxBerry.IntegrationKey") })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.BoxBerry.IntegrationKey")">
+                @T("Admin.ShippingMethods.Boxberry.WidgetIntegrationKey")<br />
+                @T("Admin.ShippingMethods.Boxberry.UseTheFunctionsOfCalculator")<br />
+                @T("Admin.ShippingMethods.Boxberry.FilteringTheDisplay")
+                <br /><br />
+                @T("Admin.ShippingMethods.Boxberry.YouCanGetInPersonalArea") <br />
+                @T("Admin.ShippingMethods.Boxberry.ConfigureIntegrationTools")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.DeliveryTypes.indexOf('0') != -1 && shippingMethod.Params.TypeOption === '1'">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">API-ключ яндекс.карт</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs  @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+                <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+            </help-trigger>
+        </div>
+    </div>        
+
+    <div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+            <label for="WithInsure">Со страховкой</label>
+        </div>
+        <div class="col-xs-slim col-md-6 relative">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul" data-e2e="MethodWithInsure"></span>
+            </label>
+        </div>
+    </div>
+
+    @*<div class="form-group row middle-xs">
+            <div class="flex-grow-n col-fixed-size-md">
+                @T("Admin.ShippingMethods.Boxberry.CalculateCourier")
+            </div>
+            <div class="col-xs-6 relative">
+                <label class="adv-checkbox-label form-label-block">
+                    @Html.CheckBoxFor(x => x.CalculateCourier, new { ng_model = "shippingMethod.Params.CalculateCourier", ng_init = "shippingMethod.Params.CalculateCourier=" + Model.CalculateCourier.ToLowerString(), @class = "adv-checkbox-input" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <help-trigger class="ng-cloak help-trigger-icon-abs" data-title="@T("Admin.ShippingMethods.Boxberry.CalculateCourier")">
+                    @T("Admin.ShippingMethods.Boxberry.NoticeCalculateCourier")
+                </help-trigger>
+            </div>
+        </div>*@
+
+    @Html.Partial("_SyncStatuses", Model)
+}
+<input type="hidden" name="sdekMethodId" ng-model="shippingMethod.sdek.MethodId" value="@Model.ShippingMethodId" />
+
+@*<div class="adv-panel-info ">
+        <a href="http://www.advantshop.net/help/pages/install-sdek" target="_blank">Инструкция. Подключение модуля доставки СДЭК</a>
+    </div>*@

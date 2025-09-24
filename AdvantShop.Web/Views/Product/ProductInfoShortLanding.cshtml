@@ -1,0 +1,148 @@
+﻿@using AdvantShop.Core.Services.Landing
+@using AdvantShop.App.Landing.Models
+@using AdvantShop.Core.Services.Landing.Forms
+@using AdvantShop.ViewCommon
+@model AdvantShop.ViewModel.ProductDetailsLanding.ProductDetailsViewModelLanding
+@{
+    var productModel = Model.ProductModel;
+    var product = productModel.Product;
+    var offer = productModel.Offer;
+    var available = offer != null && (offer.Amount > 0 || productModel.AllowBuyOutOfStockProducts) && (productModel.FinalPrice > 0 || (productModel.FinalPrice == 0 && productModel.FinalDiscount != null && productModel.FinalDiscount.HasValue));
+    var prodMinAmount = product.GetMinAmount();
+    var currentZone = AdvantShop.Repository.IpZoneContext.CurrentZone;
+    var showShippingVariants = Model.ProductModel.ShowShippingsMethods != SettingsDesign.eShowShippingsInDetails.Never && offer != null;
+}
+
+<div data-ng-controller="ProductCtrl as product"
+     class="row between-xs"
+     data-ng-init="product.loadData(@Model.ProductModel.Product.ProductId, @(Model.ProductModel.ColorId != null ? Model.ProductModel.ColorId.ToString() : "null"), null, false)">
+    <div class="col-xs-12 @(showShippingVariants ? "col-md-6 m-b" : "")">
+
+        <div class="lp-product-info__price-wrap" data-ng-init="product.discount=@product.Discount.Percent.ToInvariantString(); product.discountAmount=@product.Discount.Amount.ToInvariantString(); product.Price.PriceNumber=@productModel.FinalPrice.ToInvariantString();">
+            @if (!productModel.HidePrice)
+            {
+                <div>
+                    <div class="lp-product-info__price">
+                        <div data-ng-if="product.Price.PriceString == null">
+                            <div>@Html.Raw(productModel.PreparedPrice)</div>
+                        </div>
+                        <div data-ng-bind-html="product.Price.PriceString"></div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="lp-product-info__sizes">
+            @if (offer != null)
+            {
+                @Html.Action("SizeColorPicker", "Product", new { product })
+
+                if (productModel.HasCustomOptions)
+                {
+                    @Html.Action("CustomOptions", "Product", new { product.ProductId })
+                }
+
+                <div class="details-row">
+                    @Html.RenderModules("product_info", new { product, offer })
+                </div>
+            }
+        </div>
+
+        @if (offer != null)
+        {
+            <div class="lp-product-info__amount" data-ng-if="product.offerSelected.IsAvailable === true || @(productModel.AllowBuyOutOfStockProducts.ToLowerString()) && product.data.AllowPreOrder">
+                <div class="lp-product-info__amount-name">
+                    @T("Product.ProductInfo.Amount"):
+                    @if (SettingsCheckout.AmountLimitation)
+                    {
+                        <div ng-show="product.offerSelected.AmountBuy > product.offerSelected.Amount" class="ng-hide availability not-available">
+                            <span>Доступно</span>
+                            <div class="details-avalable-text" ng-bind="product.offerSelected.Amount"></div>
+                            <div class="details-avalable-unit" ng-bind="product.data.Unit"></div>
+                        </div>
+                    }
+                </div>
+                <div class="details-param-value">
+                    <div class="details-spinbox-block">
+                        <div data-spinbox
+                             data-value="product.offerSelected.AmountBuy"
+                             data-proxy="product.offerSelected"
+                             data-update-fn="product.updateAmount(value, proxy)"
+                             data-step="@product.Multiplicity.ToInvariantString()"
+                             data-max="@product.MaxAmount.ToInvariantString(1000000)"
+                             data-min="@prodMinAmount.ToInvariantString()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="product-details__button">
+            <div class="lp-btn-group">
+                @if (productModel.ShowAddButton)
+                {
+                    <div class="lp-btn-group__item--indent @(!available ? "ng-hide" : string.Empty)"
+                         @Html.Raw(productModel.BlockId != null ? "data-ng-init=\"product.lpBlockId = " + productModel.BlockId + "\"" : "")
+                         data-ng-class="{'ng-hide': product.dirty === false ? @(!available ? "true" : "false") : !product.offerSelected.IsAvailableForPurchase }">
+
+                        @if (productModel.LpButton != null && productModel.LpButton.Action == LpButtonAction.Form.ToString())
+                        {
+                            @Html.Action("Button", "Landing", new { blockId = productModel.BlockId, offerId = "product.offerSelected.OfferId", amount = "product.offerSelected.AmountBuy" })
+                        }
+                        else
+                        {
+                            @Html.Partial("_CartAdd", new CartAddViewModel()
+                            {
+                                Classes = "lp-btn lp-btn--primary lp-btn--xs",
+                                NgCartAddValid = "product.validate()",
+                                NgOfferId = "product.offerSelected.OfferId",
+                                ProductId = product.ProductId,
+                                NgAmount = "product.offerSelected.AmountBuy",
+                                NgAttributesXml = "product.customOptions.xml",
+                                HideShipping = productModel.HideShipping ? "true" : "",
+                                Mode = "lp",
+                                LpId = productModel.LandingId,
+                                ModeFrom = LpService.Mode,
+                                LpBlockId = productModel.BlockId,
+                                LpUpId = productModel.LpButton != null && productModel.LpButton.ActionUpsellLpId != null ? productModel.LpButton.ActionUpsellLpId : "",
+                                LpEntityId = LpService.EntityId != 0 ? LpService.EntityId : (int?)null,
+                                LpEntityType = LpService.EntityId != 0 ? LpService.EntityType : "",
+                                BtnContent = productModel.LpButton != null && !string.IsNullOrEmpty(productModel.LpButton.Text) ? productModel.LpButton.Text : SettingsCatalog.BuyButtonText,
+                                Size = CardAddSize.None
+                            })
+                        }
+                    </div>
+                }
+
+                @if (productModel.ShowButton2)
+                {
+                    <div class="lp-btn-group__item--indent">
+                        @Html.Action("LpButton", "Landing", new { blockId = productModel.BlockId, button = productModel.LpButton2 })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @if(showShippingVariants){
+        <div class="col-xs-12 col-md-6 m-b">
+            <article class="lp-shipping-variants">
+                <header class="lp-shipping-variants__header h3">
+                    @T("Product.Index.ShippingTo")
+                    <a class="link-dotted-invert zone-dialog-trigger-link" href="javascript:void(0)" role="link" data-zone-dialog-trigger>
+                        <span data-zone-current data-ng-bind="zone.City || '@T("Product.Index.ShippingTo.ChooseCity")'" data-start-val="{City: '@currentZone.City'}">@currentZone.City</span>
+                    </a>
+                </header>
+                @Html.Action("ProductShippingVariant", "Landing", new
+                {
+                    model = new ProductShippingVariantsModel()
+                    {
+                        OfferId = offer.OfferId,
+                        MinAmount = prodMinAmount,
+                        Zip = currentZone.Zip,
+                        ShowShippingsMethods = productModel.ShowShippingsMethods
+                    }
+                })
+            </article>
+        </div>
+    }
+</div>

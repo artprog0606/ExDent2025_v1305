@@ -1,0 +1,136 @@
+﻿<div is-mobile>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+            {{'Admin.Js.Triggers.EditTrigger.Field'|translate}}
+        </div>
+        <div class="col-xs-12 col-md-10">
+            <select
+                ng-model="ctrl.action.EditField"
+                class="form-control input-alt"
+                ng-change="ctrl.setParamValues(ctrl.action.EditField)"
+                ng-options="s.name group by s.groupName for s in ctrl.fields track by (s.type + '_' + s.objId)"
+                required
+                validation-input-text="{{'Admin.Js.SettingsTasks.Parameter'|translate}}"
+                data-e2e="EditField">
+                <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-2">
+            <div ng-if="ctrl.field.typeStr == 'bonusaccount'">
+                <select
+                    ng-model="ctrl.action.EditField.Params.BonusOperationType"
+                    class="form-control input-alt"
+                    ng-options="s.value as s.label for s in ctrl.bonusOperationTypes"></select>
+            </div>
+            <div ng-if="ctrl.field.typeStr != 'bonusaccount'" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                {{'Admin.Js.Triggers.EditTrigger.NewMeaning'|translate}}
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-10">
+            <div ng-if="!ctrl.paramValuesEmpty()">
+                <div ng-if="!ctrl.isLeadEvent() || ctrl.action.EditField.type != 15">
+                    <select
+                        ng-model="ctrl.action.EditField.EditFieldValue"
+                        ng-options="s.value as s.label for s in ctrl.compareValues"
+                        class="form-control input-alt">
+                        <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                    </select>
+                </div>
+
+                <div ng-if="ctrl.isLeadEvent() && ctrl.action.EditField.type == 15">
+                    <select
+                        ng-model="ctrl.action.EditField.EditFieldValue"
+                        convert-to-number
+                        ng-change="ctrl.changeSalesFunnel(ctrl.action.EditField.EditFieldValue)"
+                        ng-options="s.value as s.label for s in ctrl.compareValues"
+                        class="form-control input-alt">
+                        <option value="">{{'Admin.Js.SettingsTasks.ItNotSelected' | translate}}</option>
+                    </select>
+
+                    <div class="m-b-xs m-t-sm">Статус</div>
+                    <select
+                        ng-model="ctrl.action.EditField.DealStatusId"
+                        convert-to-number
+                        ng-options="s.value as s.label for s in ctrl.dealStatuses"
+                        class="form-control input-alt"
+                        ng-required="ctrl.field != null"
+                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}"></select>
+                </div>
+            </div>
+            <div ng-if="ctrl.paramValuesEmpty()">
+                <div ng-switch="ctrl.field.fieldType">
+                    <div class="input-group" ng-switch-when="date" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'd.m.Y', wrap: true}">
+                        <span class="flatpickr-custom-wrap">
+                            <input
+                                type="text"
+                                class="form-control input-alt"
+                                placeholder="{{'Admin.Js.SettingsTasks.DDMMYY'|translate}}"
+                                ng-flatpickr-input
+                                ng-model="ctrl.action.EditField.EditFieldValue"
+                                validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}" />
+                            <span class="flatpickr-custom-clear" data-close data-clear>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </span>
+                        <span class="input-group-addon" data-toggle>
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                    </div>
+
+                    <select
+                        ng-switch-when="checkbox"
+                        ng-model="ctrl.action.EditField.EditFieldValue"
+                        ng-options="s.value as s.label for s in ctrl.checkboxOptions"
+                        class="form-control input-alt"></select>
+
+                    <div ng-switch-when="datetime">
+                        <div
+                            class="input-group"
+                            ng-flatpickr
+                            fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'd.m.Y H:i', wrap: true, enableTime: true}">
+                            <span class="flatpickr-custom-wrap">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    placeholder="{{'Admin.Js.SettingsTasks.DDMMYYHHMM'|translate}}"
+                                    ng-flatpickr-input
+                                    ng-model="ctrl.action.EditFieldValue"
+                                    validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}" />
+                                <span class="flatpickr-custom-clear" data-close data-clear>
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </span>
+                            <span class="input-group-addon" data-toggle>
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                        </div>
+                        <div class="m-b-xs">{{ctrl.isLicense ? "Время сервера" : "Время Московское"}}</div>
+                    </div>
+
+                    <input
+                        ng-switch-when="number"
+                        type="text"
+                        class="form-control input-alt"
+                        ng-model="ctrl.action.EditField.EditFieldValue"
+                        validation-input-float
+                        validation-input-text="{{'Admin.Js.SettingsTasks.Value'|translate}}" />
+
+                    <input ng-switch-default type="text" class="form-control input-alt" ng-model="ctrl.action.EditField.EditFieldValue" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row setting__form-group" ng-if="ctrl.showAddBonusesByItemComparers() && ctrl.field.typeStr == 'bonusaccount'">
+        <div class="col-xs-12 col-md-2">
+            <div>{{ctrl.bonusOperationTypes[ctrl.action.EditField.Params.BonusOperationType - 1].label}} бонус за каждый товар из условия</div>
+        </div>
+        <div class="col-xs-12 col-md-10">
+            <label class="adv-checkbox-label m-t-sm">
+                <input type="checkbox" class="adv-checkbox-input" ng-model="ctrl.action.EditField.Params.AddBonusesByItemComparers" />
+                <span class="adv-checkbox-emul" data-e2e="AddBonusesByItemComparers"></span>
+            </label>
+        </div>
+    </div>
+</div>

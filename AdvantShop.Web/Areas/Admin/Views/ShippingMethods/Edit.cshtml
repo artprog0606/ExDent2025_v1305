@@ -1,0 +1,132 @@
+﻿@model AdvantShop.Core.Services.Shipping.ShippingMethodAdminModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settings");
+}
+
+<form method="POST" action="@Url.AbsoluteActionUrl("Edit")" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.ShippingMethodId)
+    @Html.HiddenFor(x => x.ModelType)
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.EnabledBack = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("ShippingMethods", "Settings"),
+            NgBackTriggerCallback = "",
+        };
+
+        headerModel.Title = "<span class=\"float-header-page\" ng-bind=\"settings.floatHeader || '" + T("Admin.ShippingsMethods.Edit.DeliveryMethod") + " " + Model.Name + "'\">" + T("Admin.ShippingsMethods.Edit.DeliveryMethod") + " " + Model.Name + "</span>";
+
+
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                            },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+    {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "go",
+                Attributes = new { width = 24, height = 24 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalTestShippingCalculationCtrl'\" controller-as=\"ctrl\" template-url=\"../areas/admin/content/src/_shared/modal/testShippingCalculation/testShippingCalculation.html\" data-resolve=\"{\'params\': { \'shippingId\' : shippingMethod.methodId, \'currency\' : '"+ @Model.CurrentCurrency.Symbol +"', \'iso3\' : '"+ @Model.CurrentCurrency.Iso3 + "', \'useWeight\': " + @Model.UseWeight.ToLowerString() +", \'useCargo\': " + @Model.UseCargo.ToLowerString() +", \'useExtracharge\': " + @Model.UseExtracharge.ToLowerString() + " }}\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.ShippingMethods.Common.TestCalculation")
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+    {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.Delete"),
+            Attributes = new string[] { "ng-click=\"shippingMethod.deleteMethod()\"" }
+        });
+
+
+        headerModel.Controls.Add(moreButton);
+        @Html.Header(headerModel)
+    }
+    <div class="ibox">
+        <div class="ibox-content">
+            @if (!isMobile)
+            {
+                <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="page-name-block-item-main">
+                            <h1 class="page-name-block-text sticky-page-name-text m-b-sm">
+                                @T("Admin.ShippingsMethods.Edit.DeliveryMethod") "@Model.Name"
+                            </h1>
+                            <div data-e2e="ShippingReturn" class="">
+                                <a class="go-back" href="@Url.AbsoluteActionUrl("ShippingMethods", "Settings")">@T("Admin.ShippingMethods.Edit.Return")</a>
+                            </div>
+                        </div>
+                        <div class="page-name-block-item-additional">
+                            <ui-modal-trigger data-controller="'ModalTestShippingCalculationCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("testShippingCalculation.html")"
+                                              data-resolve="{'params': { 'shippingId' : shippingMethod.methodId, 'currency' : '@Model.CurrentCurrency.Symbol', 'iso3' : '@Model.CurrentCurrency.Iso3', 'useWeight': @Model.UseWeight.ToLowerString(), 'useCargo': @Model.UseCargo.ToLowerString(), 'useExtracharge': @Model.UseExtracharge.ToLowerString() }}">
+                                <a href="" class="btn btn-sm btn-default">@T("Admin.ShippingMethods.Common.TestCalculation")</a>
+                            </ui-modal-trigger>
+                            <button type="submit" data-e2e="ShippingAdd" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                                <i class="fa fa-check"></i> @T("Admin.Save")
+                            </button>
+                            <a href="" class="link-danger m-l-sm" ng-click="shippingMethod.deleteMethod()">@T("Admin.Delete")</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+                <div class="m-t" ng-init="shippingMethod.init(@Model.ShippingMethodId, '@Model.Icon')">
+                    @Html.Partial("_Common", Model)
+
+                    @if (Model.ShippingViewPath != null && VirtualPathFactory.Exists(Model.ShippingViewPath))
+                    {
+                        <div class="shipping-item-settings-header inline content-header m-b-md setting__subtitle">
+                            @T("Admin.ShippingMethod.Edit.MethodSettings")
+                        </div>
+                        @Html.Partial(Model.ShippingViewPath, Model)
+                    }
+                </div>
+            </div>
+    </div>
+</form>

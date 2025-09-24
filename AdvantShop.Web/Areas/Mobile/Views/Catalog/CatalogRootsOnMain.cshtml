@@ -1,0 +1,48 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings
+@model CatalogMenuModel
+@{
+    List<CatalogMenuItem> items = Model.Items;
+}
+<div class="categories-root-wrap">
+    <div class="categories-root @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.WithIcons ? "categories-root--with-icon": "") @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode ? "categories-root--blocks-mode": "")">
+        
+        @if (Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.WithIcons)
+        {
+            <div class="categories-root__header">
+                <div class="categories-root__header-title">@Model.RootCategoryName</div>
+            </div>
+        }
+
+        <div class="categories-root__items @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode ? "categories-root__items--blocks-mode": "scroll-always-visible")">
+            @if (items != null && items.Any())
+            {
+                foreach (var item in items)
+                {
+                    <a href="@item.Url" class="categories-root__item cs-bg-4 cs-l-2 @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode ? "categories-root__item--blocks-mode": "")">
+                        <div class="categories-root__item-inner @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode ? "categories-root__item-inner--blocks-mode": "")">
+                            @if (Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode && item.SmallPicture != null)
+                            {
+                                <div class="categories-root__item-icon-wrap categories-root__item-icon-wrap--blocks-mode">
+                                    <img class="categories-root__item-icon" src="@item.SmallPicture.ImageSrcSmall()"  />
+                                </div>
+                            }
+                            else
+                            {
+                                if (item.Icon != null && !string.IsNullOrEmpty(item.Icon.IconSrc(true)) && Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.WithIcons)
+                                {
+                                    <div class="categories-root__item-icon-wrap">
+                                        <img class="categories-root__item-icon" src="@item.Icon.IconSrc(true)" width="@(Model.PhotoWidth)" height="@(Model.PhotoHeight)" />
+                                    </div>
+                                }
+                            }
+
+                            <div class="categories-root__item-name @(Model.ViewMode == SettingsMobile.eViewCategoriesOnMain.BlocksMode ? "categories-root__item-name--blocks-mode": "")">@item.Name</div>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+

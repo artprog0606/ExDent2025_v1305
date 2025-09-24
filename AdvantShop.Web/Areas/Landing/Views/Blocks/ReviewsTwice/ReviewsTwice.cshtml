@@ -1,0 +1,95 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+@using Newtonsoft.Json;
+
+@{
+    var items = Model.Block.TryGetSettingAsList<ReviewModel>("items");
+    //List<ReviewModel> items = JsonConvert.DeserializeObject<List<ReviewModel>>(Model.Block.TryGetSetting("items").ToString());
+}
+
+<div class="lp-area">
+    <div class="container-fluid">
+        <div class="lp-container">
+            @if (Model.Block.TryGetSetting("show_title") == true)
+            {
+                <div class="row center-xs">
+                    <div class="col-xs-12">
+                        <div class="lp-h2 lp-h2--color reviews-carousel__title">@Html.SubBlock(Model, "title")</div>
+                    </div>
+                </div>
+            }
+            @if (Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="row center-xs">
+                    <div class="col-xs-12">
+                        <div class="reviews-addition-text lp-h3 lp-h3--color">
+                            @Html.SubBlock(Model, "subtitle")
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (items != null)
+            {
+                var itemsCount = LpService.PreviewInAdmin ? Math.Min(items.Count, 2) : items.Count;
+
+                <div class="row center-xs">
+                    <div class="col-xs-12 col-sm-11" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                        <slick class="@(LpService.PreviewInAdmin ? "reviews-twice__carousel--preview-admin" : "")" data-settings="@Model.Block.TryGetSetting("carouselOptions")">
+                            @for (var i = 0; i < itemsCount; i++)
+                            {
+                                <div class="reviews-twice__slide">
+                                    <div class="relative reviews-twice__item">
+                                        <div class="flex top-xs center-xs reviews-twice__inner">
+
+                                            <div class="reviews-twice__picture-wrap">
+                                                @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                           {
+                                               LandingPageId = Model.Block.LandingId,
+                                               BlockId = Model.Block.Id,
+                                               OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                               OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                               OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                               OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                               Current = items[i].Picture.Src,
+                                               GalleryIconsEnabled = false,
+                                               LazyLoadType = ePictureLoaderLazyLoadType.Carousel,
+                                               LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                               CropperParams = new CropperParams()
+                                               {
+                                                   AspectRatio = "1"
+                                               },
+                                               MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                               MaxHeightPicture = PictureLoaderImageSize.XSmallHeight,
+                                               WidthPicture = items[i].Picture.Width,
+                                               HeightPicture = items[i].Picture.Height
+                                           })
+                                            </div>
+                                            <div>
+                                                <div class="flex start-xs flex-column">
+                                                    <div>
+                                                        <div class="reviews-twice__author" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].author")>
+                                                            @Html.Raw(items[i].Author)
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="reviews-twice__caption lp-h3" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].caption")>@items[i].Caption</div>
+                                                    </div>
+                                                </div>
+                                                <div class="reviews-twice__text lp-h3 lp-h3--color">
+                                                    <div class="block" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                        @Html.Raw(items[i].Text)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </slick>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

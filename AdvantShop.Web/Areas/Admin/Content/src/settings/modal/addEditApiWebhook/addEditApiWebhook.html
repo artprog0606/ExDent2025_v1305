@@ -1,0 +1,41 @@
+﻿<form novalidate name="apiWebhookAddUpdateForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">Webhook</h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.apiWebhookAddUpdateForm = apiWebhookAddUpdateForm">
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-2 control-label setting__label">
+                <span class="text-required">{{ 'Admin.Js.SettingsApiAuth.Index.Webhook.Event' | translate}}</span>
+            </div>
+            <div class="col-xs-12 col-md-10">
+                <ui-select
+                    class="input-alt"
+                    required
+                    ng-model="ctrl.apiWebhook.EventType"
+                    convert-to-number
+                    validation-input-text="{{'Admin.SettingsApiAuth.Index.Webhook.Event' | translate}}">
+                    <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.eventTypes | filter: $select.search">
+                        <div>{{s.label}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-2 control-label setting__label">
+                <span class="text-required"> Url </span>
+            </label>
+            <div class="col-xs-12 col-md-10">
+                <input type="text" class="form-control input-alt" ng-model="ctrl.apiWebhook.Url" required validation-input-text="Url" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

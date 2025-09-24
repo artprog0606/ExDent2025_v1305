@@ -1,0 +1,107 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.NavMenuModel
+@{
+    var selectedAffiliate = Model.SelectedAffiliate != null ? Model.Affiliates.FirstOrDefault(x => x.Id == Model.SelectedAffiliate.Id) : null;
+    var selectedAffiliateCountNewBooking = selectedAffiliate != null ? selectedAffiliate.CountNewBooking : 0;
+}
+
+<div class="js-header-bottom-wrap">
+    <nav id="header-bottom" class="row navbar-static-top middle-xs navbar white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="col-xs">
+            <div class="row">
+                <ul class="nav navbar-nav" data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': 'body'}">
+                    @if (Model.Affiliates.Count == 0)
+                    {
+                        <li class="dropdown dropdown_custom" data-submenu-parent>
+                            <ui-modal-trigger data-controller="'ModalAddAffiliateCtrl'" template-url="@Html.GetAssetPath("addAffiliate.html")"
+                                              resolve="{'goToAffiliatePage': true}">
+                                <a href="" class="dropdown-toggle header-bottom-menu-link">
+                                    @T("Admin.Booking.NavMenu.AddAffiliate")
+                                </a>
+                            </ui-modal-trigger>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="dropdown dropdown_custom" data-submenu-parent>
+                            <a href="@Url.AbsoluteActionUrl("Index")" class="dropdown-toggle header-bottom-menu-link @(selectedAffiliateCountNewBooking > 0 ? "header-bottom-menu-link--p-r-lg" : "" )">
+                                @Model.SelectedAffiliate.Name
+
+                                @if (selectedAffiliateCountNewBooking > 0)
+                                {
+                                    <span class="new-item new-item--vertcal-center">@(selectedAffiliateCountNewBooking <= 99 ? selectedAffiliateCountNewBooking.ToString() : "99+")</span>
+                                }
+                            </a>
+                            <ul role="menu" class="dropdown-menu submenu" data-submenu>
+                                @foreach (var affiliate in Model.Affiliates.Where(x => x.Id != Model.SelectedAffiliate.Id))
+                                {
+                                    <li class="dropdown-submenu" data-submenu-parent>
+                                        <a class="dropdown-menu-link dropdown-menu-link--p-r-lg" href="@Url.AbsoluteActionUrl("Index", "Booking", new { id = affiliate.Id})">
+                                            @affiliate.Name
+
+                                            @if (affiliate.CountNewBooking > 0)
+                                            {
+                                                <span class="new-item new-item--vertical-center">@(affiliate.CountNewBooking <= 99 ? affiliate.CountNewBooking.ToString() : "99+")</span>
+                                            }
+                                        </a>
+                                    </li>
+                                }
+                                <li class="divider divider-small">
+                                </li>
+                                <li class="dropdown dropdown_custom" data-submenu-parent>
+                                    <ui-modal-trigger data-controller="'ModalAddAffiliateCtrl'" template-url="@Html.GetAssetPath("addAffiliate.html")"
+                                                      resolve="{'goToAffiliatePage': true}">
+                                        <a href="" class="dropdown-menu-link js-menu-link">
+                                            @T("Admin.Booking.NavMenu.AddAffiliate")
+                                        </a>
+                                    </ui-modal-trigger>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown dropdown_custom" data-submenu-parent>
+                            <a href="@Url.AbsoluteActionUrl("Index")" class="dropdown-toggle header-bottom-menu-link">
+                                @T("Admin.Booking.NavMenu.JournalOfBooking")
+                            </a>
+                        </li>
+                        if (Model.AccessToEditing)
+                        {
+                            <li class="dropdown dropdown_custom" data-submenu-parent>
+                                <a href="@Url.AbsoluteActionUrl("Index", "BookingCategory")" class="dropdown-toggle header-bottom-menu-link">
+                                    @T("Admin.Booking.NavMenu.Services")
+                                </a>
+                            </li>
+                        }
+                        <li class="dropdown dropdown_custom" data-submenu-parent>
+                            <a href="@Url.AbsoluteActionUrl("Index", "BookingResources")" class="dropdown-toggle header-bottom-menu-link">
+                                @T("Admin.Booking.NavMenu.Employees")
+                            </a>
+                        </li>
+                        if (Model.AccessToAnalytic)
+                        {
+                            <li class="dropdown dropdown_custom" data-submenu-parent>
+                                <a href="@Url.AbsoluteActionUrl("Index", "BookingAnalytics")" class="dropdown-toggle header-bottom-menu-link">
+                                    @T("Admin.Booking.NavMenu.Reports")
+                                </a>
+                            </li>
+                        }
+                        if (Model.AccessToEditing)
+                        {
+                            <li class="dropdown dropdown_custom" data-submenu-parent>
+                                <a href="@Url.AbsoluteActionUrl("Settings", "BookingAffiliate")" class="dropdown-toggle header-bottom-menu-link">
+                                    Настройки филиала
+                                </a>
+                            </li>
+                        }
+                        if (Model.AccessToSettings)
+                        {
+                            <li class="dropdown dropdown_custom" data-submenu-parent>
+                                <a href="@Url.AbsoluteActionUrl("Index", "SettingsBooking")" class="dropdown-toggle header-bottom-menu-link">
+                                    @T("Admin.Booking.NavMenu.Settings")
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>

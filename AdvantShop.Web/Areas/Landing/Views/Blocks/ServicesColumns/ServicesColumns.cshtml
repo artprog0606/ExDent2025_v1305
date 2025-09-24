@@ -1,0 +1,87 @@
+﻿@model BlockModel
+@{
+    //var items = Model.Block.TryGetSettingAsList<ServicesGroupModel>("items");
+    var items = Model.Block.TryGetSettingAsList<ServicesModel>("items");
+    var itemsCountInRow = (int)Model.Block.TryGetSetting("items_in_row");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="lp-block-services-columns__content lp-font-size--middle" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                    <div class="lp-block-services-columns__content-list @(Model.Block.TryGetSetting("align_items"))">
+                        @if (items != null)
+                        {
+                            float width = 100 / itemsCountInRow;
+                            var widthString = width.ToInvariantString() + "%";
+                            var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+                            <style>
+                                #block_@Model.Block.Id .lp-block-services-columns__content-item {
+                                    min-width: @(widthString);
+                                    -webkit-flex-basis: 100%;
+                                    -ms-flex-preferred-size: 100%;
+                                    flex-basis: 100%;
+                                    max-width: 100%;
+                                    box-sizing: border-box;
+                                }
+                                @@media (min-width: 48em) {
+                                    #block_@Model.Block.Id .lp-block-services-columns__content-item {
+                                        -webkit-flex-basis: 50%;
+                                        -ms-flex-preferred-size: 50%;
+                                        flex-basis: 50%;
+                                        max-width: 50%;
+                                        min-width: 50%;
+                                    }
+                                }
+                                @@media (min-width: 64em) {
+                                    #block_@Model.Block.Id .lp-block-services-columns__content-item {
+                                        -webkit-flex-basis: @(widthString);
+                                        -ms-flex-preferred-size: @(widthString);
+                                        flex-basis: @(widthString);
+                                        max-width: @(widthString);
+                                        min-width: @(widthString);
+                                    }
+                                }
+                            </style>
+
+                            for (var i = 0; i < items.Count; i++)
+                            {
+                                <div class="lp-block-services-columns__content-item">
+                                    <div class="lp-block-services-columns__row-info">
+                                        <div class="lp-block-services-columns__row-info-text text-left">
+                                            <div class="lp-block-services-columns__row-header" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>
+                                                @Html.Raw(items[i].Header)
+                                            </div>
+                                            <div @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                @Html.Raw(items[i].Text)
+                                            </div>
+                                        </div>
+
+                                        @if (items[i].ShowPrice)
+                                        {
+                                            <div class="lp-block-services-columns__price" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].price")>
+                                                @Html.Raw(items[i].Price)
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row lp-block-columns-button @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ServicesBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

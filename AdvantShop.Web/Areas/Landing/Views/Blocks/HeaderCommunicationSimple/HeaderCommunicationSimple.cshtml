@@ -1,0 +1,38 @@
+﻿@model BlockModel
+@using System.Linq;
+
+@{
+    bool renderBlockContacts = Model.Block.TryGetSetting("show_email") == true || Model.Block.TryGetSetting("show_phone") == true || Model.Block.TryGetSetting("show_button") == true;
+
+    bool renderSocials = Model.Block.ExistSocials();
+
+    bool rightBlockEmpty = !renderBlockContacts && !renderSocials;
+}
+<header class="lp-header @(Model.Block.TryGetSetting("runDown") == true && Model.Block.TryGetSetting("fixedOnScroll") == true ? "color-scheme__bg-opacity" : "")">
+    <div class="container-fluid">
+        <div class="lp-container">
+            <div class="row middle-xs center-xs start-md lp-header__container lp-header__container--strut">
+                @if (Model.Block.TryGetSetting("show_logo") == true)
+                {
+                    <div class="col-xs lp-col--vertical-padding">
+                        <div class="lp-header-logo">
+                            @Html.SubBlock(Model, "logo")
+                        </div>
+                    </div>
+                }
+                @if (Model.Block.NeedRenderMenu() || renderSocials || renderBlockContacts)
+                {
+                    <div class="col-xs-2 col-sm lp-col--vertical-padding lp-menu-header__burger-container lp-menu-header--transform">
+                        @Html.SubBlock(Model, "menuHeader")
+                    </div>
+                }
+                @if (Model.Block.TryGetSetting("show_phone") == true)
+                {
+                    <div class="col-xs-2 hidden-md lp-col--vertical-padding lp-header__phone-col">
+                        @Html.SubBlock(Model, "phone_mobile", false)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</header>

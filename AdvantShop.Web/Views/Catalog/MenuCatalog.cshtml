@@ -1,0 +1,122 @@
+﻿@model AdvantShop.ViewModel.Common.MenuViewModel
+@{
+    var viewMode = Model.ViewMode.ToString().ToLower();
+}
+<nav class="menu-dropdown menu-dropdown-@viewMode @(Model.IsExpanded ? "menu-dropdown-expanded" : " menu-dropdown-compact")" @(Model.InLayout
+                                                                                                                                 ? "data-root-menu"
+                                                                                                                                 : "")>
+    <!--''||.icon-down-open-after-abs-->
+
+    @if (Model.IsExpanded && Model.InLayout || !Model.IsExpanded)
+    {
+        <a class="menu-dropdown-root cs-bg-2 @(Model.IsExpanded && Model.InLayout ? "icon-right-open-after-abs" : "icon-down-open-after-abs")" href="@Url.AbsoluteRouteUrl("CatalogRoot")">
+            <span class="menu-dropdown-root-text">@T("Catalog.MenuCatalog.AllProductsTitle")</span>
+        </a>
+    }
+    @if (Model.IsExpanded && !Model.InLayout || !Model.IsExpanded)
+    {
+        const int itemsPerColumn = 10;
+        const int brandCountLimit = 20;
+
+        @:
+        <style>
+                .menu-dropdown-classic .menu-dropdown-sub-columns-item, .menu-dropdown-modern .menu-dropdown-sub-columns-item  {
+                    grid-template-columns: repeat(var(--dropdownSubCountColsProductsInRow, @(Model.CountColsProductsInRow)), 1fr);
+                }
+        </style>
+
+        <div class="cs-br-1 menu-dropdown-list" data-submenu-container="{'type': '@viewMode', limitedView: @Model.LimitedCategoryMenu.ToLowerString(), limitedViewOffsetBottom: ['.toolbar-bottom']}">
+            @foreach (var categoryItem in Model.MenuItems)
+            {
+                var showBrands = !Model.IsСlickability && categoryItem.DisplayBrandsInMenu && categoryItem.Brands != null && categoryItem.Brands.Count > 0;
+                var showSubItems = categoryItem.SubItems.Count > 0;
+
+                var hasChild = categoryItem.HasChild && (showBrands || showSubItems);
+
+                var totalCountCols = Math.Min(Model.CountColsProductsInRow, categoryItem.DisplaySubItems
+                    ? categoryItem.SubItems.Count
+                    : Math.Ceiling((decimal)categoryItem.SubItems.Count / itemsPerColumn));
+
+                <div class="menu-dropdown-item cs-br-1 submenu-@viewMode @(hasChild ? "parent" : "")" data-submenu-parent>
+                    @if (hasChild)
+                    {
+                        <div class="menu-dropdown-sub ng-hide" data-ng-show="submenu.isSubmenuVisible" data-submenu
+                            @Html.Raw(Model.ViewMode != SettingsDesign.eMenuStyle.Treeview || Model.ViewMode != SettingsDesign.eMenuStyle.Accordion
+                                ? string.Format("style='--dropdownSubCountColsProductsInRow:{0}'", totalCountCols)
+                                : string.Empty)>
+
+                            <div class="menu-dropdown-sub-inner cs-bg-7 @(!Model.InLayout && categoryItem.Selected ? "cs-selected" : null)">
+                                <div class="menu-dropdown-sub-columns">
+                                    @Html.Partial("_MenuCatalogSubCategory", new AdvantShop.ViewModel.Common.MenuSubCategoryViewModel(Model, categoryItem))
+                                    @*Блок брендов*@
+                                    @if (showBrands)
+                                    {
+                                        <div class="menu-dropdown-sub-columns-item menu-dropdown-sub-columns-item-brand">
+                                            <div class="menu-dropdown-sub-block menu-dropdown-sub-block-brand">
+                                                <div class="menu-dropdown-sub-brand-title">
+                                                    <a class="link-text-decoration menu-dropdown-sub-category-link" href="@Url.AbsoluteRouteUrl("BrandRoot")">@T("Catalog.MenuCatalog.Brands")</a>
+                                                </div>
+                                                @foreach (var brand in categoryItem.Brands.Take(brandCountLimit))
+                                                {
+                                                    <div class="menu-dropdown-sub-category">
+                                                        <a class="link-text-decoration menu-dropdown-sub-link" href="@Url.AbsoluteRouteUrl("Brand", new { url = brand.UrlPath })">@Html.Raw(brand.Name)</a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="menu-dropdown-link-wrap cs-bg-i-7 @Html.Raw(Model.ViewMode != SettingsDesign.eMenuStyle.Treeview && hasChild ? "icon-right-open-after-abs" : "") @(!Model.InLayout && categoryItem.Selected ? "cs-selected" : null)"
+                        @Html.Raw(Model.ViewMode == SettingsDesign.eMenuStyle.Accordion && hasChild
+                            ? "data-ng-class=\"{'icon-right-open-after-abs': submenuParent.submenu.isSubmenuVisible === false, 'icon-down-open-after-abs submenu-opened': submenuParent.submenu.isSubmenuVisible === true }\""
+                            : "")
+                        @Html.Raw(Model.IsСlickability && hasChild
+                            ? string.Format("data-ng-click=\"{0}; $event.stopPropagation();\"", Model.ViewMode == SettingsDesign.eMenuStyle.Accordion
+                                ? "submenuContainer.showOneOnly(submenuParent, $event)"
+                                : "submenuParent.submenu.toggle()")
+                            : "")>
+
+                        @if (Model.ViewMode == SettingsDesign.eMenuStyle.Treeview && hasChild)
+                        {
+                            <div class="menu-dropdown-treeview-control">
+                                <input class="menu-dropdown-treeview-control-checkbox" data-ng-model="submenuParent.submenu.isSubmenuVisible" type="checkbox"/>
+                                <span class="cs-br-1 menu-dropdown-treeview-control-expand">
+                                    +
+                                </span>
+                                <span class="cs-br-1 menu-dropdown-treeview-control-collapse">
+                                    -
+                                </span>
+                            </div>
+                        }
+                        <a class="menu-dropdown-link" href="@categoryItem.UrlPath" @Html.Raw(Model.ViewMode == SettingsDesign.eMenuStyle.Accordion && hasChild
+                                                                                       ? "data-ng-click=\"$event.preventDefault();\""
+                                                                                       : "")>
+                            @if (!string.IsNullOrEmpty(categoryItem.IconPath))
+                            {
+                                <span class="menu-dropdown-icon">
+                                    <img alt="@categoryItem.Name" class="menu-dropdown-icon-img" height="30" src="@categoryItem.IconPath" width="30"/>
+                                </span>
+                            }
+                            <span class="menu-dropdown-link-text text-floating">
+                                @categoryItem.Name
+                                @if (Model.DisplayProductsCount)
+                                {
+                                    <span class="cs-t-1 menu-cat-count">(@categoryItem.ProductsCount)</span>
+                                }
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            }
+            <div style="@(Model.MenuItemsLimited == false ? "display:none" : "display:flex")" class="menu-dropdown-item menu-dropdown-item--give-more-link js-menu-dropdown-give-more-link cs-br-1 submenu-@viewMode">
+                <a class="menu-dropdown-link" href="@Model.RootUrlPath">
+                    <span class="menu-dropdown-link-text text-floating">@T("Catalog.MenuCatalog.ViewAll")...</span>
+                </a>
+            </div>
+
+        </div>
+    }
+</nav>

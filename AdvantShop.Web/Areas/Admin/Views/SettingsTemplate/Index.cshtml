@@ -1,0 +1,82 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.Templates.SettingsTemplateModel
+@using AdvantShop.Core.Services.Admin
+@using Newtonsoft.Json
+@{
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    //Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    Layout = isMobile ? "~/Areas/Admin/Templates/Mobile/Views/Store/_StoreLayout.cshtml" : "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+}
+@{
+    Html.AddAsset("settingsTemplate");
+}
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsTemplate", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    <div ng-init="settingsTemplate.memoryForm(form)"></div>
+    @Html.AntiForgeryToken()
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.ShowOnlySticky = !isMobile;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = isMobile ?  Url.AbsoluteActionUrl("index", "Design", new {showCommon = true }) : Url.AbsoluteActionUrl("Index", "Design")
+    };
+    headerModel.DefaultTitle = T("Admin.Settings.Template.Title").ToString();
+    headerModel.Controls = new List<IButton>()
+{
+                    new ButtonModel()
+                    {
+                        Text = T("Admin.Settings.Save"),
+                        Validation = true,
+                        Type = eButtonType.Save,
+                        Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.OnlyIcon
+                        },
+                        Attributes =  new[] { "data-e2e=\"SettingsTemplateSaveHead\"", "disabled", "ng-disabled=\"!form.modified\"" },
+                        Icon =  new ButtonIcon()
+                        {
+                            SvgName = "done",
+                            Attributes = new { width=25, height=25 }
+                        }
+                    }
+        };
+
+@Html.Header(headerModel)
+
+
+<div ng-init="settingsTemplate.HiddenSettings=@JsonConvert.SerializeObject(Model.HiddenSettings)"></div>
+
+if (!isMobile) { 
+<div class="page-name-block-item-main--without-action m-b-sm">
+    <h2 class="m-r-md m-t-none m-b-none">@T("Admin.Settings.Template.Title")</h2>
+</div>
+}
+<div class="m-b m-t-n-xs">
+    <uib-tabset uid="settingsTemplateTab"
+                ng-init="settings.headerPage = '@T("Admin.Settings.Template.Title")';"
+                on-select-batch="app.setTitle('@T("Admin.Settings.Template.Title")'@(!isMobile ? "+ ' / ' + tab.heading" : ""));settingsTemplate.scrollIntoView()"
+                @Html.Raw(isMobile ? "headers-overflow-type=\"scroll\" class=\"nav-tabs-wrap nav-tabs-wrap--chips\"" : "type=\"pills-minimalistic\"")>
+        <uib-tab index="'common'" heading="@T("Admin.Settings.Template.Common")">@Html.Partial("_Common", Model)</uib-tab>
+        <uib-tab index="'mainpage'" heading="@T("Admin.Settings.Template.MainPage")">@Html.Partial("_MainPage", Model)</uib-tab>
+        <uib-tab index="'catalog'" heading="@T("Admin.Settings.Template.Catalog")">@Html.Partial("_Catalog", Model)</uib-tab>
+        <uib-tab index="'product'" heading=" @T("Admin.Settings.Template.Product")">@Html.Partial("_Product", Model)</uib-tab>
+        <uib-tab index="'checkout'" heading="@T("Admin.Settings.Template.Checkout")">@Html.Partial("_Checkout", Model)</uib-tab>
+        <uib-tab index="'brands'" heading="@T("Admin.Settings.Template.Brands")">@Html.Partial("_Brands", Model)</uib-tab>
+        <uib-tab index="'news'" heading="@T("Admin.Settings.Template.News")">@Html.Partial("_News", Model)</uib-tab>
+        @if (Model.OtherSettingsSections != null && Model.OtherSettingsSections.Count > 0 && Model.OtherSettingsSections.Any(x => !Enum.IsDefined(typeof(ETemplateSettingSection), x.Key)))
+        {
+            <uib-tab index="'other'" heading="@T("Admin.Settings.Template.Other")">@Html.Action("OtherSettings", new { settings = Model.OtherSettingsSections})
+</uib-tab>
+        }
+        <uib-tab index="'cssEditor'" heading="@T("Admin.Settings.Template.CssEditor")">@Html.Partial("_CssEditor", Model)</uib-tab>
+        @if (!isMobile)
+        {
+            <div class="m-t-xs tab-external--right js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" data-e2e="SettingsTemplateSave" value="@T("Admin.Settings.Common.Save")"
+                       data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+</div>
+}

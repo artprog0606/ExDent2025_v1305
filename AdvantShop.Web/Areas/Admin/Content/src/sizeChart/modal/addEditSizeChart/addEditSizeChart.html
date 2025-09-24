@@ -1,0 +1,230 @@
+<form name="addEditSizeChartForm" novalidate is-mobile>
+    <div class="modal-header" ng-init="ctrl.init(addEditSizeChartForm)">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddEditSizeChart.Header'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" class="ccol-xs-12 col-xs-3 control-label">
+                {{'Admin.Js.AddEditSizeChart.Settings.Enabled'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-1 relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                <label class="adv-checkbox-label control-checkbox" ng-class="{'flex-grow' : isMobile.value}">
+                    <input type="checkbox" class="adv-checkbox-input" ng-model="ctrl.data.Enabled" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value" class="flex-grow m-l-sm">{{'Admin.Js.AddEditSizeChart.Settings.Enabled'|translate}}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label text-required"> {{'Admin.Js.AddEditSizeChart.Settings.Name'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.data.Name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditSizeChart.Settings.Name'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label text-required"> {{'Admin.Js.AddEditSizeChart.Settings.LinkText'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.data.LinkText"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditSizeChart.Settings.LinkText'|translate}}" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3"> </label>
+            <div class="col-xs-12 col-md-9">
+                <div class="block-additional-parameters-value adv-radio-group" ng-class="{'adv-radio-group--horizontal': !isMobile.value}">
+                    <label class="adv-radio-label" data-ng-class="{'m-b-sm': isMobile.value}">
+                        <input type="radio" class="adv-radio-input" ng-click="ctrl.data.SourceType = 0" ng-checked="ctrl.data.SourceType == 0" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.AddEditSizeChart.Settings.TableAsText'|translate}}</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                    <label class="adv-radio-label" data-ng-class="{'m-b-sm': isMobile.value}">
+                        <input type="radio" class="adv-radio-input" ng-click="ctrl.data.SourceType = 1" ng-checked="ctrl.data.SourceType == 1" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.AddEditSizeChart.Settings.TableAsLink'|translate}}</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" ng-model="ctrl.data.SourceType" />
+        </div>
+
+        <div ng-if="ctrl.data.SourceType == 0" class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddEditSizeChart.Settings.ModalHeader'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input type="text" class="form-control input-alt" ng-model="ctrl.data.ModalHeader" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label
+                class="col-xs-12 col-md-3 control-label text-required"
+                ng-bind="ctrl.data.SourceType == 0 ? ('Admin.Js.AddEditSizeChart.Settings.SourceType.Text'|translate) : ('Admin.Js.AddEditSizeChart.Settings.SourceType.Link'|translate)"></label>
+            <div class="col-xs-12 col-md-9">
+                <div ng-if="ctrl.data.SourceType == 0">
+                    <textarea
+                        ng-model="ctrl.textBySourceType[0]"
+                        class="wysiwyg"
+                        ckeditor
+                        required
+                        validation-input-text="{{'Admin.Js.AddEditSizeChart.Settings.SourceType.Text'|translate}}"></textarea>
+                    <div ng-class="{'m-t-sm': isMobile.value}">
+                        <a class="link-decoration-none" ng-click="ctrl.insertExample()">{{'Admin.Js.AddEditSizeChart.InsertExamlpe'|translate}}</a>
+                    </div>
+                </div>
+                <input
+                    ng-if="ctrl.data.SourceType == 1"
+                    type="text"
+                    ng-model="ctrl.textBySourceType[1]"
+                    class="form-control input-alt"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditSizeChart.Settings.SourceType.Link'|translate}}" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddEditSizeChart.Settings.Categories'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <span
+                    ng-bind="!ctrl.data.CategoryIds || ctrl.data.CategoryIds.length == 0
+                                ? ('Admin.Js.AddEditSizeChart.NotSelected'|translate)
+                                : ctrl.data.CategoryIds.length + ' ' + ('Admin.Js.AddEditSizeChart.Selected'|translate)"></span>
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCategoriesCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                    data-resolve="{'params': { 'selectedIds': ctrl.data.CategoryIds}}"
+                    data-on-close="ctrl.selectCategories(result)">
+                    <a href="" ng-bind="'Admin.Js.AddEditSizeChart.Change'|translate"></a>
+                </ui-modal-trigger>
+                <a
+                    href=""
+                    ng-if="ctrl.data.CategoryIds && ctrl.data.CategoryIds.length > 0"
+                    ng-click="ctrl.resetCategories()"
+                    ng-bind="'Admin.Js.DiscountByDatetime.DiscountCategories.Reset'|translate"></a>
+            </div>
+        </div>
+
+        <div class="form-group setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                    {{'Admin.Js.AddEditSizeChart.Settings.Brands'|translate}}
+                </label>
+                <div class="col-xs-12 col-md-9">
+                    <span ng-if="ctrl.selectedBrandsList.length == 0">{{'Admin.Js.AddEditSizeChart.NotSelected'|translate}}</span>
+                    <span ng-if="ctrl.selectedBrandsList.length > 0"
+                        >{{ctrl.selectedBrandsList.length}} {{'Admin.Js.AddEditSizeChart.Selected'|translate}}</span
+                    >
+
+                    <ui-modal-trigger
+                        controller-as="ctrl"
+                        data-controller="'ModalAddBrandCtrl'"
+                        data-on-close="ctrl.changeBrand(result)"
+                        data-resolve="{params: {'gridSelectionEnabled': true, 'selectedBrandsList':ctrl.selectedBrandsList}}"
+                        template-url="../areas/admin/content/src/_shared/modal/addBrand/AddBrand.html">
+                        <a
+                            href=""
+                            ng-if="ctrl.data.CategoryIds && ctrl.data.CategoryIds.length > 0"
+                            ng-bind="'Admin.Js.AddEditSizeChart.Change'|translate"></a>
+                    </ui-modal-trigger>
+
+                    <a href="" ng-if="ctrl.selectedBrandsList.length > 0" ng-click="ctrl.resetBrands()"
+                        >{{'Admin.Js.AddEditCoupon.Reset'|translate}}</a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                    {{'Admin.Js.AddEditSizeChart.Settings.PropertyValues'|translate}}
+                </label>
+                <div class="col-xs-12 col-md-9">
+                    <span ng-if="!ctrl.data.PropertyValues || ctrl.data.PropertyValues.length == 0"
+                        >{{'Admin.Js.AddEditSizeChart.NotSelected'|translate}}</span
+                    >
+                    <span ng-if="ctrl.data.PropertyValues && ctrl.data.PropertyValues.length > 0"
+                        >{{ctrl.data.PropertyValues.length}} {{'Admin.Js.AddEditSizeChart.Selected'|translate}}</span
+                    >
+
+                    <ui-modal-trigger
+                        data-on-close="ctrl.addProperty(result)"
+                        data-controller="'ModalAddSizeChartPropertyCtrl'"
+                        resolve="{params:{selectedPropertyValues:ctrl.data.PropertyValues}}"
+                        controller-as="ctrl"
+                        template-url="../areas/admin/content/src/sizeChart/modal/addSizeChartProperty/AddSizeChartProperty.html">
+                        <a
+                            href=""
+                            ng-if="ctrl.data.CategoryIds && ctrl.data.CategoryIds.length > 0"
+                            ng-bind="'Admin.Js.AddEditSizeChart.Change'|translate"></a>
+                    </ui-modal-trigger>
+                    <a href="" ng-if="ctrl.data.PropertyValues && ctrl.data.PropertyValues.length > 0" type="button" ng-click="ctrl.resetProperties()"
+                        >{{'Admin.Js.AddEditCoupon.Reset'|translate}}</a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                    {{'Admin.Js.AddEditSizeChart.Settings.Products'|translate}}
+                </label>
+                <div class="col-xs-12 col-md-9">
+                    <span ng-if="ctrl.data.ProductIds.length == 0">{{'Admin.Js.AddEditSizeChart.NotSelected'|translate}}</span>
+                    <span ng-if="ctrl.data.ProductIds.length > 0"
+                        >{{ctrl.data.ProductIds.length}} {{'Admin.Js.AddEditSizeChart.Selected'|translate}}</span
+                    >
+                    <ui-modal-trigger
+                        data-controller="'ModalProductsSelectvizrCtrl'"
+                        controller-as="ctrl"
+                        size="xs-11"
+                        data-resolve="{multiSelect: true,
+                                                    gridSelectionItemsSelectedFn: {fn: ctrl.checkSelectedItem},
+                                                    value:{itemsSelected: ctrl.data.ProductIds}}"
+                        template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html"
+                        data-on-close="ctrl.selectProducts(result)">
+                        <a href="" ng-bind="'Admin.Js.AddEditSizeChart.Change'|translate"></a>
+                    </ui-modal-trigger>
+
+                    <a href="" ng-if="ctrl.data.ProductIds.length > 0" ng-click="ctrl.resetProducts()"
+                        >{{'Admin.Js.AddEditCoupon.Reset'|translate}}</a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label">{{'Admin.Js.AddEditSizeChart.Settings.SortOrder'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input type="text" ng-model="ctrl.data.SortOrder" class="form-control input-alt" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            disabled
+            ladda="ctrl.saveLoading"
+            ng-disabled="!addEditSizeChartForm.modified">
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

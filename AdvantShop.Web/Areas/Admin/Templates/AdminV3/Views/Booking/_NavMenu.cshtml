@@ -1,0 +1,77 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.NavMenuModel
+@{
+    var selectedAffiliate = Model.SelectedAffiliate != null ? Model.Affiliates.FirstOrDefault(x => x.Id == Model.SelectedAffiliate.Id) : null;
+    var selectedAffiliateCountNewBooking = selectedAffiliate != null ? selectedAffiliate.CountNewBooking : 0;
+}
+
+@helper GetClassForSubmenu(string action, string controller)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = /*currentAction == action &&*/ currentController == controller ? "active" : "";
+
+    @cssClass
+}
+
+@if (Model.SelectedAffiliate != null)
+{
+    <ul class="nav nav-tabs nav-tabs--slim nav-tabs--indent-bottom">
+
+        <li class="uib-tab nav-item ng-tab @GetClassForSubmenu("index", "booking")">
+            <a href="@Url.AbsoluteActionUrl("Index")" class="nav-link">
+                @T("Admin.Booking.NavMenu.JournalOfBooking")
+            </a>
+            @if (selectedAffiliateCountNewBooking > 0)
+            {
+                <span class="nav-tabs__item-count-label">@(selectedAffiliateCountNewBooking <= 99 ? selectedAffiliateCountNewBooking.ToString() : "99+")</span>
+            }
+        </li>
+
+        @if (Model.AccessToEditing)
+        {
+            <li class="uib-tab nav-item ng-tab @GetClassForSubmenu("index", "bookingcategory")">
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingCategory")" class="nav-link">
+                    @T("Admin.Booking.NavMenu.Services")
+                </a>
+            </li>
+        }
+
+        <li class="uib-tab nav-item ng-tab @GetClassForSubmenu("index", "bookingresources")">
+            <a href="@Url.AbsoluteActionUrl("Index", "BookingResources")" class="nav-link">
+                @T("Admin.Booking.NavMenu.Employees")
+            </a>
+        </li>
+
+        @if (Model.AccessToAnalytic)
+        {
+            <li class="uib-tab nav-item ng-tab @GetClassForSubmenu("index", "bookinganalytics")">
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingAnalytics")" class="nav-link">
+                    @T("Admin.Booking.NavMenu.Reports")
+                </a>
+            </li>
+        }
+
+
+
+        @if (Model.AccessToEditing)
+        {
+
+            <li class="uib-tab nav-item ng-tab @GetClassForSubmenu("settings", "bookingaffiliate")">
+                <a href="@Url.AbsoluteActionUrl("Settings", "BookingAffiliate")" class="nav-link">
+                    Настройки филиала
+                </a>
+            </li>
+        }
+
+        @*@if (Model.AccessToSettings)
+            {
+                <label class="lead-events__item btn btn-md @GetClassForSubmenu("index", "settingsbooking")">
+                    <a href="@Url.AbsoluteActionUrl("Index", "SettingsBooking")" class="lead-events__item__label">
+                        @T("Admin.Booking.NavMenu.Settings")
+                    </a>
+                </label>
+            }*@
+
+    </ul>
+
+}

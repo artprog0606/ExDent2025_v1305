@@ -1,0 +1,64 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomerTags.CustomerTagModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Layout = null;
+}
+
+<form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.Id)
+    @Html.HiddenFor(x => Model.IsEditMode)
+
+     
+
+    <div class="modal-header">
+        @if (!isMobile)
+        {
+            <ui-modal-cross></ui-modal-cross>
+        }
+        <h2 class="modal-header-title"> @Html.Raw(Model.IsEditMode ? T("Admin.CustomerTags.AddEdit.Tag") + " \"<strong>" + Model.Name + "\"</strong>" : T("Admin.CustomerTags.AddEdit.NewTag").ToString())</h2>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-2 control-label setting__label setting-label-wrap setting__label">
+                <span class="text-required">@T("Admin.CustomerTags.AddEdit.TagName")</span>
+            </label>
+            <div class="col-xs-12 col-md-10">
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control required input-alt", required = "required", ng_model = "ctrl.item.Name", validation_input_text = T("Admin.CustomerTags.AddEdit.TagName") })
+            </div>
+        </div>
+        <div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+            <label for="Enabled" class="col-xs-11 col-md-2 control-label setting__label setting__label setting--m-none @(isMobile ? "p-l-xs" : "")">@T("Admin.CustomerTags.AddEdit.Activity")</label>
+            <div class="col-xs-1 col-sm-10">
+                <label class="adv-checkbox-label form-label-block">
+                    @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "ctrl.item.Enabled", ng_init = "ctrl.item.Enabled=" + Model.Enabled.ToString().ToLower(), @class = "adv-checkbox-input" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label for="SortOrder" class="col-xs-12 col-md-2 control-label setting__label  setting-label-wrap setting__label">
+                <span class="text-required">@T("Admin.CustomerTags.AddEdit.Sorting")</span>
+            </label>
+            <div class="col-xs-12 col-md-10">
+                @Html.TextBoxFor(x => x.SortOrder, new { ng_model = "ctrl.item.SortOrder", @class = "form-control input-alt" })
+            </div>
+        </div>
+        @if (!isMobile)
+        {
+            <div class="">
+                @*<a href="" ng-if="@Model.IsEditMode.ToLowerString()" class="link-danger m-r-xs" ng-click="customerTags.deleteTag(@Model.Id)">@T("Admin.CustomerTags.AddEdit.Delete")</a>*@
+                @Html.Button(T("Admin.Save"), eButtonType.Add, eButtonSize.Small, eColorType.Success, validation: true, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled", "ng-click=\"ctrl.save()\"" })
+            </div>
+        }
+    </div>
+    @if (isMobile)
+    {
+        <div class="modal-footer">
+            @Html.Button(T("Admin.Save"), eButtonType.Add, eButtonSize.Small, eColorType.Success, validation: true, attributes: new[] { "class=\"btn btn-save btn-primary\"", "ng-disabled=\"!form.modified\"", "disabled", "ng-click=\"ctrl.save()\"" })
+            <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+        </div>
+    }
+</form>

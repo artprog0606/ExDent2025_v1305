@@ -1,0 +1,101 @@
+﻿@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+    var itemsForRender = new List<TextModel>();
+    int itemsCountInBlock = Model.Block.TryGetSetting("rows_in_block") != null ? (int)Model.Block.TryGetSetting("rows_in_block") : 1;
+    int itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 2;
+    var itemsTotalInRowInBlock = itemsCountInRow * itemsCountInBlock;
+
+    if (items != null && items.Count > 0)
+    {
+        itemsForRender = items.Take(itemsTotalInRowInBlock).ToList();
+    }
+}
+
+<div class="container-fluid">
+    <div class="lp-container" data-ng-controller="ColumnsCtrl as columns">
+        <div class="row center-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+            @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="col-xs-12">
+                    <div class="lp-block-columns-header">
+                        @if (Model.Block.TryGetSetting("show_title") == true)
+                        {
+                            <div class="lp-h2 lp-h2--color">
+                                @Html.SubBlock(Model, "title")
+                            </div>
+                        }
+
+                        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                        {
+                            <div class="lp-h3 lp-h3--color">
+                                @Html.SubBlock(Model, "subtitle")
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="flex flex-wrap center-xs lp-block-columns-two__inner">
+            @if (itemsForRender.Any())
+            {
+                float width = 100 / itemsCountInRow;
+                var widthString = width.ToInvariantString() + "%";
+                var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+                <style>
+                    #block_@Model.Block.Id .lp-block-columns-text {
+                        min-width: 100%;
+                        -webkit-flex-basis: 100%;
+                        -ms-flex-preferred-size: 100%;
+                        flex-basis: 100%;
+                        max-width: 100%;
+                    }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .lp-block-columns-text {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width: @(minWidth)px;
+                            }
+                        }
+                </style>
+
+                for (var i = 0; i < itemsForRender.Count; i++)
+                {
+
+                    <div class="text-left lp-font-size--middle lp-block-columns-text m-b-lg">
+                        <div class="lp-block-columns-two__item" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                            @Html.Raw(items[i].Text)
+                        </div>
+                    </div>
+
+                }
+
+            }
+            <div class="text-left lp-font-size--middle lp-block-columns-text" data-ng-repeat="item in columns.columnsData track by $index">
+                <div class="lp-block-columns-two__item" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].text")
+                     data-ng-bind="item.Text">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @if (items != null && items.Count > itemsCountInBlock)
+            {
+            <div class="lp-block-columns-two__more col-xs-12 text-center" data-ng-if="@itemsTotalInRowInBlock + (columns.page * @itemsCountInRow) < @items.Count">
+                <button type="button" data-ladda="columns.inProgress" class="lp-btn lp-btn--primary" data-ng-click="columns.getItems(@Model.Block.Id, @itemsCountInRow, @itemsTotalInRowInBlock + (columns.page * @itemsCountInRow), 'TextModel')">Показать еще</button>
+            </div>
+            }
+            @if (Model.Block.TryGetSetting("show_button") == true)
+            {
+                <div class="col-xs-12 text-center lp-block-columns-button">
+                    <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ColumnsBtnRow">
+                        <div class="col-xs-12">
+                            @Html.Button(Model.Block, "button")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

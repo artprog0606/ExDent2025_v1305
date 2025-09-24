@@ -1,0 +1,70 @@
+﻿@using AdvantShop.Configuration
+@model AdminMenuModel
+<div class="lp-admin-panel-wrap">
+    <nav class="lp-admin-panel"
+         data-transformer
+         data-sort-order="10"
+         data-responsive-options="'(max-width: 980px)'">
+        <div class="lp-admin-panel-inner">
+            <div class="lp-admin-panel-item">
+                @if (HttpContext.Current.Request.IsAdminTechDomain())
+                {
+                    <a title="Вернуться"
+                       href="@Url.AbsoluteActionUrl(
+                                 "RedirectWithAuth",
+                                 "Account",
+                                 new { area = "AdminV2", domain = SettingsMain.TechDomainAdminPanel, path = "/adminv3/funnels/site/" + Model.SiteId })"
+                       data-e2e="LpAdminMenuItemBack"
+                       class="link-decoration-none lp-admin-panel-link icon-lp-left">
+                    </a>
+                }
+                else
+                {
+                    <a title="Вернуться" 
+                       href="./adminv3/funnels/site/@Model.SiteId" 
+                       data-e2e="LpAdminMenuItemBack"
+                       class="link-decoration-none lp-admin-panel-link icon-lp-left"></a>
+                }
+            </div>
+            <div class="lp-admin-panel-item">
+                <button type="button" title="Настройки" data-lp-settings-trigger ng-click="lpSettingsTrigger.showModal(@Model.LandingId)" data-e2e="LpAdminMenuItemSettings" class="link-decoration-none lp-admin-panel-link icon-lp-cog"></button>
+            </div>
+            @if (Model.Items != null && Model.Items.Count > 1)
+            {
+                <div class="lp-admin-panel-item">
+                    <ul class="lp-admin-menu lp-admin-menu--root" data-submenu-container="{'verticalOrientation': true, 'type': 'modern'}">
+                        <li class="lp-admin-menu__item" data-submenu-parent>
+                            <div class="lp-admin-panel-link lp-admin-panel-edit" data-e2e="LpAdminMenuItemPages" title="Страницы">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 612 612" fill="currentColor">
+                                    <path d="M334.688 248.625c-21.037 0-38.25-17.212-38.25-38.25V95.625h-191.25c-21.038 0-38.25 17.212-38.25 38.25V573.75c0 21.037 17.212 38.25 38.25 38.25h286.875c21.037 0 38.25-17.213 38.25-38.25V248.625h-95.625zM449.438 133.875h95.625L430.312 0v114.75c0 11.475 9.563 19.125 19.126 19.125z" />
+                                    <path d="M430.312 229.5L315.562 95.625v114.75c0 11.475 9.562 19.125 19.125 19.125h95.625z" />
+                                    <path d="M411.188 114.75V0h-191.25c-21.038 0-38.25 17.212-38.25 38.25V76.5h143.438l124.312 145.35v294.525h57.375c21.037 0 38.25-17.213 38.25-38.25V153h-95.625c-21.038 0-38.25-17.212-38.25-38.25z" />
+                                </svg>
+                            </div>
+                            <ul class="lp-admin-menu lp-admin-menu--child" data-submenu>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <li class="lp-admin-menu__item lp-admin-menu__item--child">
+                                        <a class="lp-admin-menu__link" href="@item.Href">@item.Name</a>
+                                    </li>
+                                }
+                                <li class="lp-admin-menu__item lp-admin-menu__item--child lp-admin-menu__item--separated">
+                                    <a class="lp-admin-menu__link" target="_blank" href="./adminv3/funnels/site/@Model.SiteId">Все страницы</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            }
+            <div class="lp-admin-panel-item">
+                <input type="checkbox" name="inplaceEnabled" id="inplaceEnabled" class="lp-admin-panel-state-edit"
+                       data-ng-init="inplaceLandingSwitch.inplaceEnabled=@Model.Inplace.ToLowerString()"
+                       data-ng-model="inplaceLandingSwitch.inplaceEnabled"
+                       @Html.Raw(Model.Inplace ? "checked=\"checked\"" : "")
+                       data-inplace-landing-switch
+                       data-ng-change="inplaceLandingSwitch.change(inplaceLandingSwitch.inplaceEnabled)" />
+                <label class="lp-admin-panel-link icon-lp-eye lp-admin-panel-edit" data-e2e="LpAdminMenuItemInplaceMode" for="inplaceEnabled" title="@(Model.Inplace ? "Отключить режим редактирования" : "Включить режим редактирования")"></label>
+            </div>
+        </div>
+    </nav>
+</div>

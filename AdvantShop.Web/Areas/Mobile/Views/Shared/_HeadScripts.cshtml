@@ -1,0 +1,30 @@
+﻿@using AdvantShop.Core
+@using AdvantShop.Design
+@using AdvantShop.Core.Services.Configuration.Settings;
+
+@Html.Raw(SettingsSEO.CustomMetaString)
+@Html.Partial("_Preload")
+@Html.Partial("_CriticalCSS")
+@Html.Partial("_HeadNewMobileScriptsTemplate")
+@Html.Partial("_GeneratedCSS")
+@Html.Partial("_HeadScriptsTemplate")
+
+@{
+    var prefix = !string.IsNullOrEmpty(SettingsDesign.MobileTemplate) ? "_" + SettingsDesign.MobileTemplate.ToLower() : "";
+    var bundleNameMobileCss = "mobile_head_" + prefix + ".css";
+    var bundleNameMobileExtraCss = "mobile" + prefix + ".css";
+}
+
+@Html.RenderCssBundle(bundleNameMobileCss)
+
+@Html.RenderModules("headStyles")
+
+@Html.Partial("_AdditionalHeadScripts")
+
+
+@*@Html.RenderAssetFilesAsHtml("head", "mobile")
+    @Html.RenderAssetFilesAsHtml("runtimeHead", "mobile")*@
+
+@Html.RenderModules("head")
+@Html.StaticBlock("head_mobile", onlyContent: true)
+@Html.Partial("_ExtraStyles", bundleNameMobileExtraCss)

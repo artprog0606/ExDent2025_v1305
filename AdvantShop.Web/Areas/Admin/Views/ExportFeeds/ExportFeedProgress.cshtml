@@ -1,0 +1,146 @@
+﻿@using AdvantShop.Core.Common.Extensions
+@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Statistic
+@using AdvantShop.ExportImport
+@model AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedExportModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("exportFeeds");
+    var isAdminv3 = AdminAreaTemplate.IsAdminv3();
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+        if (isAdminv3 && ExportFeedService.AllowShowExportFeedInCatalog(Model.ExportFeed.Type) && !isMobile)
+        {
+            Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Catalog/_TopContentCatalogLayout.cshtml";
+        }
+    }
+    var TypeString = Model.ExportFeed.Type.StrName();
+    var backUrl = Url.AbsoluteActionUrl(ExportFeedService.AllowShowExportFeedInCatalog(Model.ExportFeed.Type) ? "ExportFeed" : "ExportFeed" + TypeString, new { id = Model.ExportFeed.Id });
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span>" + Model.ExportFeed.Name + "</span>";
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = backUrl,
+    };
+
+    headerModel.Controls = new List<IButton>();
+}
+
+@Html.Header(headerModel)
+
+<div class="wrapper" ng-init="exportFeeds.initProgress()">
+    <div class="row">
+        <div class="col-xs">
+            @if (isAdminv3 && !isMobile)
+            {
+                <div class="m-b-xs">
+                    @Html.Back(T("Admin.ExportFeeds.ExportFeedProgress.ReturnToExport").ToString(), backUrl, "", "data-e2e=ReturnToExport")
+                </div>
+            }
+            <div class="sticky-page-name" sticky sticky-top="0">
+                <div class="page-name-block-item-main sticky-page-name-inner">
+                    <div class="page-name-block-item">
+                        @if (!isMobile)
+                        {
+                            <h1 class="page-name-block-text sticky-page-name-text m-b-xs">
+                                @Model.ExportFeed.Name
+                            </h1>
+                        }
+                        <div class="sub">
+                            Формат: @Model.ExportFeed.Type.Localize()
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-content">
+                    @if (Model.IsAlreadyRunning)
+                    {
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                @T("Admin.CommonStatistic.AlreadyRunning", CommonStatistic.CurrentProcess, CommonStatistic.CurrentProcessName.Default(CommonStatistic.CurrentProcess))
+                            </div>
+                        </div>
+                    }
+
+                    <div class="@(isMobile ? "m-t-md m-b-md" : "container-fluid")">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <uib-progressbar max="exportFeeds.progressTotal" value="exportFeeds.progressValue">
+                                    <span style="color: white; white-space: nowrap;"><span ng-bind="exportFeeds.progressValue" data-e2e="ExportCountValue"></span> / <span ng-bind="exportFeeds.progressTotal" data-e2e="ExportCountTotal"></span></span>
+                                </uib-progressbar>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "" : "container-fluid")">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                @T("Admin.ExportFeeds.ExportFeedsProgress.CurrentProcess")
+                                <a class="link-decoration-none" ng-href="{{exportFeeds.progressCurrentProcess}}" ng-bind="exportFeeds.progressCurrentProcessName"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "" : "container-fluid") ng-cloak" ng-if="!exportFeeds.IsRun && !exportFeeds.ErrorsCount">
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <div class="setting-label-wrap">
+                                    @T("Admin.ExportFeeds.ExportFeedProgress.DataSuccessfullyExported")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!Model.IsAlreadyRunning)
+                    {
+                        <div class="@(isMobile ? "" : "container-fluid") ng-cloak" ng-if="!exportFeeds.IsRun && exportFeeds.ErrorsCount > 0">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <div class="adv-panel-info">
+                                        @T("Admin.ExportFeeds.ExportFeedProgress.DataExportedWithErrors")
+                                    </div>
+                                    <a class="link-decoration-none" href="@Url.AbsoluteActionUrl("GetLogFile", "ExportImportCommon")" download>@T("Admin.ProgressData.DownloadErrorsLog")</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="@(isMobile ? "" : "container-fluid") ng-cloak" ng-if="!exportFeeds.IsRun">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a data-e2e="LinkToFile" ng-href="{{exportFeeds.FileUrl}}" target="_blank">@(Model.ExportFeed.ExportFeedSettings.FileName + "." + Model.ExportFeed.ExportFeedSettings.FileExtention)</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="@(isMobile ? "" : "container-fluid") ng-cloak" ng-if="!exportFeeds.IsRun">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a data-e2e="DownloadFile" ng-href="{{exportFeeds.FileName}}" class="btn btn-sm btn-success" target="_blank" download>@T("Admin.ExportFeeds.ExportFeedProgress.DownloadFile")</a>
+                                </div>
+                                <div class="col-xs-12" ng-if="exportFeeds.IsZip">
+                                    <a data-e2e="DownloadZipFile" ng-href="{{exportFeeds.FileName.split('?')[0]}}.zip" target="_blank" download>@T("Admin.ExportFeeds.ExportFeedProgress.DownloadZipFile")</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (!isAdminv3)
+                    {
+                        <div class="@(isMobile ? "" : "container-fluid")">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a data-e2e="ReturnToExport" class="link-decoration-none" href="@Url.AbsoluteActionUrl("ExportFeed", new {id = Model.ExportFeed.Id})">@T("Admin.ExportFeeds.ExportFeedProgress.ReturnToExport")</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

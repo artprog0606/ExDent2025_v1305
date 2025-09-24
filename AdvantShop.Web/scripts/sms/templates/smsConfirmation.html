@@ -1,0 +1,73 @@
+﻿<ng-form name="smsConfirmationForm" novalidate="novalidate">
+    <div data-ng-switch="smsConfirmation.isConfirmed()">
+        <div data-ng-switch-when="true">
+            <div class="row m-b-xs">
+                <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+                    <span class="sms-confirmation__phone-confirmed">{{ ::'Js.SmsConfirmation.PhoneConfirmed' | translate }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div data-ng-switch-when="false">
+            <div class="row">
+                <div class="col-xs-12 col-sm-4">
+                    <span class="form-field-name vertical-interval-xsmall input-required">{{ ::'Js.SmsConfirmation.Code' | translate }}</span>
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                    <span class="form-field-input vertical-interval-xsmall">
+                        <sms-confirmation-input
+                            count="4"
+                            on-init="smsConfirmation.initSmsConfirmationInput(smsConfirmationInput)"
+                            on-complete="smsConfirmation.confirmSmsCodeComplete(value)"
+                            data-disabled="!smsConfirmation.codeInputsEnabled"
+                            focus-on-start="false">
+                        </sms-confirmation-input>
+                    </span>
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                    <button
+                        type="button"
+                        class="btn btn-small btn-action vertical-interval-xsmall pointer"
+                        data-ng-click="smsConfirmation.sendSmsCode()"
+                        data-ng-disabled="!smsConfirmation.sendCodeButtonEnabled">
+                        {{ smsConfirmation.sendCodeButtonText }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="row m-b-xs" data-ng-if="smsConfirmation.codeDescription">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-4">
+                    <span class="vertical-interval-xsmall"> {{smsConfirmation.codeDescription}} </span>
+                </div>
+            </div>
+
+            <div class="row m-b-xs">
+                <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+                    <span class="sms-confirmation__phone-not-confirmed">{{ ::'Js.SmsConfirmation.PhoneNotConfirmed' | translate }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        id="modalSmsConfirmationCaptcha"
+        class="modal ng-hide"
+        data-modal-control
+        data-modal-overlay-class="sms-confirmation-code-modal"
+        data-modal-class="sms-confirmation-code-modal__form"
+        data-close-out="false">
+        <div class="modal-content">
+            <div class="sms-confirmation-code-modal__content">
+                <div class="m-b">{{ ::'Js.SmsConfirmation.EnterCaptchaCode' | translate }}</div>
+                <div class="m-b">
+                    <span class="form-field-input vertical-interval-xsmall" data-bind-html-compile="smsConfirmation.captchaHtml"></span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-small btn-action pointer" data-ng-click="smsConfirmation.checkCaptcha()">
+                        {{ ::'Js.SmsConfirmation.Confirm' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-form>

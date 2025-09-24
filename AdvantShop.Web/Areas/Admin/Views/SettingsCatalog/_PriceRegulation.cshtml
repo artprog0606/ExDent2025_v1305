@@ -1,0 +1,375 @@
+﻿@using AdvantShop.Web.Admin.Models.Settings.CatalogSettings
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="m-b-xl" ng-form="formPriceRegular" bs-modifiable="false">
+    <div class="@(isMobile ? "" : "m-t-n-xs") sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="flex middle-xs m-t-none page-name-block-item-main setting--flex-column setting--m-b-sm">
+                    <h3 class="bold sticky-page-name-text setting--align-top setting__subtitle" data-e2e="PriceSettingTitle">
+                        @T("Admin.Settings.Catalog.PriceRegulation")
+                    </h3>
+                <a class="inline-flex link-academy link-invert middle-xs p-b-xs p-l-sm setting--help-link setting--align-top" href="https://www.advantshop.net/help/pages/price-regulation" target="_blank">
+                    <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                </svg>
+                    <span>@T("Admin.Settings.Catalog.PriceRegulation.Instruction")</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-b row">
+        <div class="col-xs-12 col-md-2">
+            <select class="form-control input-alt" data-e2e="PriceRegulationSelect" name="action" ng-model="settingsCatalog.priceRegulationAction">
+                <option value="@PriceRegulationAction.Increment">@T("Admin.Settings.Catalog.PriceRegulation.Increment")</option>
+                <option value="@PriceRegulationAction.Decrement">@T("Admin.Settings.Catalog.PriceRegulation.Decrement")</option>
+                <option value="@PriceRegulationAction.IncBySupply">@T("Admin.Settings.Catalog.PriceRegulation.IncBySupply")</option>
+            </select>
+        </div>
+        @if (isMobile)
+        {
+            <div class="setting--m-t-sm col-xs-12">
+                <div class="flex between-xs middle-xs">
+                    <span class="m-r-sm">@T("Admin.Settings.Catalog.PriceRegulation.By")</span>
+                    <div class="flex m-r-sm" style="flex-grow:1">
+                        <input class="form-control inline input-alt" 
+                                data-e2e="PriceRegulationValue" 
+                                name="value" 
+                                ng-model="settingsCatalog.priceRegulationValue" 
+                                validation-input-text="@T("Admin.Settings.Catalog.PriceRegulation")" 
+                                value="0" 
+                                type="number" 
+                                min="0" 
+                                max="{{settingsCatalog.priceRegulationValueOption == 'Percent' && settingsCatalog.priceRegulationAction == '@PriceRegulationAction.Decrement' ? 100 : ''}}" />
+                    </div>
+                    <div class="">
+                        <select class="form-control input-alt" data-e2e="PriceRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.priceRegulationValueOption">
+                            <option value="@PriceRegulationValueOption.Percent">%</option>
+                            <option value="@PriceRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs">
+                <div class="flex">
+                    <div>
+                        <span class="m-r-sm">@T("Admin.Settings.Catalog.PriceRegulation.By")</span>
+                        <input class="form-control inline input-alt" 
+                                data-e2e="PriceRegulationValue" 
+                                name="value" 
+                                ng-model="settingsCatalog.priceRegulationValue" 
+                                validation-input-text="@T("Admin.Settings.Catalog.PriceRegulation")" 
+                                value="0" 
+                                style="width: 140px" 
+                                type="number" 
+                                min="0" 
+                                max="{{settingsCatalog.priceRegulationValueOption == 'Percent' && settingsCatalog.priceRegulationAction == '@PriceRegulationAction.Decrement' ? 100 : ''}}" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-wl-3">
+                        <select class="form-control input-alt" data-e2e="PriceRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.priceRegulationValueOption">
+                            <option value="@PriceRegulationValueOption.Percent">%</option>
+                            <option value="@PriceRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-md-2 setting__label">
+            @T("Admin.Settings.Catalog.PriceRegulation.SelectionOfGoods")
+        </div>
+        <div class="col-xs-12 col-md-6 setting--m-t-sm">
+            <div>
+                <label class="adv-radio-label @(isMobile ? "m-b-sm" : "m-b-xs")">
+                    <input checked class="adv-radio-input" name="chooseProducts" ng-model="settingsCatalog.priceRegulationChooseProducts" ng-value="false" type="radio" />
+                    <span class="adv-radio-label-text">@T("Admin.Settings.Catalog.PriceRegulation.AllGoods")</span>
+                    <span class="adv-radio-emul" data-e2e="PriceRegulationAllCheckbox"></span>
+                </label>
+            </div>
+            <div>
+                <label class="adv-radio-label">
+                    <input class="adv-radio-input" name="chooseProducts" ng-model="settingsCatalog.priceRegulationChooseProducts" ng-value="true" type="radio" />
+                    <span class="adv-radio-label-text">@T("Admin.Settings.Catalog.PriceRegulation.GoodsFromCategories")</span>
+                    <span class="adv-radio-emul" data-e2e="PriceRegulationCatCheckbox"></span>
+                </label>
+
+                <div class="m-t" ng-if="settingsCatalog.priceRegulationChooseProducts">
+                    <div data-js-tree
+                         data-tree-ajax="catalog/categoriestree"
+                         data-tree-core=""
+                         data-tree-events="select_node:settingsCatalog.priceRegulationTreeCallbacks.select_node;deselect_node:settingsCatalog.priceRegulationTreeCallbacks.deselect_node;"
+                         data-tree-search="{ajax: {url: 'catalog/categoriesTreeBySearchRequest'}}"
+                         tie-selection="false"
+                         tree-plugins="checkbox,search">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-sm btn-success setting--m-t-sm" data-e2e="PriceRegulationOk" ladda="settingsCatalog.priceRegulationIsRun"
+            data-button-validation="" data-button-validation-success="settingsCatalog.changePrices()">
+        @T("Admin.Settings.Catalog.PriceRegulation.ChangePrices")
+        </button>
+    </div>
+
+    <div class="m-b-xl" ng-form="formPriceRegularCategoryDiscount" bs-modifiable="false">
+        <div class="m-t-n-xs sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="m-t-none page-name-block-item-main">
+                    <div class="flex middle-xs setting--flex-column setting--m-b-sm">
+                        <h3 class="bold sticky-page-name-text setting--align-top setting__subtitle" data-e2e="CategoryDiscountSettingTitle">
+                            @T("Admin.Settings.Catalog.CategoryDiscountRegulation")
+                        </h3>
+                        <a class="inline-flex link-academy link-invert middle-xs p-b-xs p-l-sm setting--help-link setting--align-top" href="https://www.advantshop.net/help/pages/price-regulation" target="_blank">
+                            <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                        </svg>
+                            <span>@T("Admin.Settings.Catalog.CategoryDiscountRegulation.Instruction")</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="m-t-xs m-b-xs">@T("Admin.Settings.Catalog.CategoryDiscountRegulationHint")</div>
+
+        <div class="m-b row setting--m-t-sm">
+            <div class="col-xs">
+                @if (isMobile)
+                {
+                    <div class="">
+                        <div class="m-b-sm m-t-md setting__label">@T("Admin.Settings.Catalog.PriceRegulationDiscount")</div>
+                        <div class="flex between-xs middle-xs">
+                            <div class="flex-grow">
+                                <input class="form-control inline input-alt" data-e2e="CategoryDiscountRegulationValue" name="value" ng-model="settingsCatalog.categoryDiscountRegulationValue" validation-input-text="@T("Admin.Settings.Catalog.CategoryDiscountRegulation")" value="0"  type="number" min="0" max="{{settingsCatalog.categoryDiscountRegulationValueOption == 'Percent' ? 100 : ''}}" />
+                            </div>
+                            <div class="flex col-md-2 m-l-sm" style="padding-right:0;">
+                                <select class="form-control input-alt" data-e2e="CategoryDiscountRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.categoryDiscountRegulationValueOption">
+                                    <option value="@CategoryDiscountRegulationValueOption.Percent">%</option>
+                                    <option value="@CategoryDiscountRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                                </select>
+                                <help-trigger class="m-l-xs p-l-sm ng-cloak" data-title='@T("Admin.Settings.Catalog.PriceRegulationDiscount")' style="margin-top:auto; margin-bottom:auto;">
+                                    <div class="help-content">
+                                        @T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValueHelp")
+                                    </div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex">
+                        <div>
+                            <span class="m-r-sm">@T("Admin.Settings.Catalog.PriceRegulationDiscount")</span>
+                            <input class="form-control inline" data-e2e="CategoryDiscountRegulationValue" name="value" ng-model="settingsCatalog.categoryDiscountRegulationValue" value="0" style="width: 140px" type="number" min="0" max="{{settingsCatalog.categoryDiscountRegulationValueOption == 'Percent' ? 100 : ''}}" />
+                        </div>
+                        <div class="flex col-md-2 setting--m-t-sm">
+                            <select class="form-control" data-e2e="CategoryDiscountRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.categoryDiscountRegulationValueOption">
+                                <option value="@CategoryDiscountRegulationValueOption.Percent">%</option>
+                                <option value="@CategoryDiscountRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                            </select>
+                            <help-trigger class="col-xs-1 ng-cloak" data-title='@T("Admin.Settings.Catalog.PriceRegulationDiscount")' style="margin-top:auto; margin-bottom:auto;">
+                                <div class="help-content">
+                                    @T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValueHelp")
+                                </div>
+                            </help-trigger>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-md-2 setting__label">
+                @T("Admin.Settings.Catalog.PriceRegulation.SelectionOfGoods")
+            </div>
+            <div class="col-xs-12 col-md-6 setting--m-t-sm">
+                <div>
+                    <label class="adv-radio-label @(isMobile ? "m-b-sm" : "m-b-xs")">
+                        <input checked class="adv-radio-input" name="categoryDiscountRegulationChooseProducts" ng-model="settingsCatalog.categoryDiscountRegulationChooseProducts" ng-value="false" type="radio" />
+                        <span class="adv-radio-label-text">@T("Admin.Settings.Catalog.PriceRegulation.AllGoods")</span>
+                        <span class="adv-radio-emul" data-e2e="CategoryDiscountRegulationAllCheckbox"></span>
+                    </label>
+                </div>
+                <div class="relative">
+                    <div class="flex middle-xs">
+                        <label class="adv-radio-label flex-grow-1">
+                            <input class="adv-radio-input" name="categoryDiscountRegulationChooseProducts" ng-model="settingsCatalog.categoryDiscountRegulationChooseProducts" ng-value="true" type="radio"/>
+                            <span class="adv-radio-label-text @(isMobile ? "flex-grow-1" : "")">@T("Admin.Settings.Catalog.PriceRegulation.GoodsFromCategories")</span>
+                            <span class="adv-radio-emul" data-e2e="CategoryDiscountRegulationCatCheckbox"></span>
+
+                        </label>
+
+                        <help-trigger class="ng-cloak @(!isMobile ? "col-xs-1" : "")">
+                            <div class="help-content">
+                                @T("Admin.Settings.Catalog.CategoryDiscountRegulationHint")
+                            </div>
+                        </help-trigger>
+                    </div>
+
+                    <div class="m-t" ng-if="settingsCatalog.categoryDiscountRegulationChooseProducts">
+                        <div data-js-tree
+                             data-tree-ajax="catalog/categoriestree"
+                             data-tree-core=""
+                             data-tree-events="select_node:settingsCatalog.categoryDiscountRegulationTreeCallbacks.select_node;deselect_node:settingsCatalog.categoryDiscountRegulationTreeCallbacks.deselect_node;"
+                             data-tree-search="{ajax: {url: 'catalog/categoriesTreeBySearchRequest'}}"
+                             tie-selection="false"
+                             tree-plugins="checkbox,search">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-success setting--m-t-sm" data-e2e="CategoryDiscountRegulationOk" ladda="settingsCatalog.categoryDiscountRegulationIsRun"
+                data-button-validation="" data-button-validation-success="settingsCatalog.changeDiscounts()">
+            @T("Admin.Settings.Catalog.PriceRegulation.ChangeDiscounts")
+            </button>
+        </div>
+
+        <div ng-form="formPriceRegularBrandDiscount" bs-modifiable="false">
+            <div class="m-t-n-xs sticky-page-name" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="m-t-none page-name-block-item-main">
+                        <div class="flex middle-xs setting--flex-column setting--m-b-sm">
+                            <h3 class="bold sticky-page-name-text setting--align-top setting__subtitle" data-e2e="CategoryDiscountSettingTitle">
+                                @T("Admin.Settings.Catalog.BrandDiscountRegulation")
+                            </h3>
+                            <a class="inline-flex link-academy link-invert middle-xs p-b-xs p-l-sm setting--help-link setting--align-top" href="https://www.advantshop.net/help/pages/price-regulation" target="_blank">
+                                <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                </svg>
+                                <span>@T("Admin.Settings.Catalog.BrandDiscountRegulation.Instruction")</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-b">
+                <div class="@(isMobile ? "" : "flex m-b-xs")">
+                    <span class="@(isMobile ? "block m-b-sm setting__label" : "m-r-sm")">@T("Admin.Settings.Catalog.BrandDiscountRegulation.ForManufacturer")</span>
+
+                    @if (!isMobile)
+                    {
+                        <div>
+                            <span data-e2e="BrandDiscountRegulationSelectedBrand"
+                                  ng-repeat-start="brand in settingsCatalog.selectedBrandsList track by $index"
+                                  ng-bind="brand.BrandName">
+                                @T("Admin.Settings.Catalog.BrandDiscountRegulation.NotSelected")
+                            </span>
+                            <a class="fas fa-times link-decoration-none link-invert p-r-xs"
+                               ng-repeat-end
+                               data-e2e="DeleteBrand"
+                               href=""
+                               ng-click="settingsCatalog.deleteBrand(brand.BrandId)"
+                               ng-if="brand.BrandId != 0" title="Удалить"></a>
+
+                            <span ng-if="settingsCatalog.selectedBrandsList.length === 0">@T("Admin.Settings.Catalog.BrandDiscountRegulation.NotSelected")</span>
+
+                            <ui-modal-trigger controller-as="ctrl" data-controller="'ModalAddBrandCtrl'"
+                                              data-on-close="settingsCatalog.changeBrand(result)"
+                                              data-resolve="{params: {'gridSelectionEnabled': true, 'selectedBrandsList':settingsCatalog.selectedBrandsList}}"
+                                              template-url="@Html.GetAssetPath("addBrand.html")">
+                                <a data-e2e="BrandDiscountRegulationSelectBrand" href="">@T("Admin.Choose")</a>
+                            </ui-modal-trigger>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <div class="m-b-sm">
+                                <div class="inline-flex middle-xs m-b-xs" data-e2e="BrandDiscountRegulationSelectedBrand" ng-repeat="brand in settingsCatalog.selectedBrandsList track by $index">
+                                    <span ng-bind="brand.BrandName">
+                                        @T("Admin.Settings.Catalog.BrandDiscountRegulation.NotSelected")
+                                    </span>
+                                    <a class="fas fa-times link-decoration-none link-invert p-r-sm"
+                                       data-e2e="DeleteBrand"
+                                       href=""
+                                       ng-click="settingsCatalog.deleteBrand(brand.BrandId)"
+                                       ng-if="brand.BrandId != 0" title="Удалить"></a>
+                                </div>
+                                <span ng-if="settingsCatalog.selectedBrandsList.length === 0">@T("Admin.Settings.Catalog.BrandDiscountRegulation.NotSelected")</span>
+                            </div>
+                            <ui-modal-trigger controller-as="ctrl" data-controller="'ModalAddBrandCtrl'"
+                                              data-on-close="settingsCatalog.changeBrand(result)"
+                                              data-resolve="{params: {'gridSelectionEnabled': true, 'selectedBrandsList':settingsCatalog.selectedBrandsList}}"
+                                              template-url="@Html.GetAssetPath("addBrand.html")">
+                                <a data-e2e="BrandDiscountRegulationSelectBrand" href="">@T("Admin.Choose")</a>
+                            </ui-modal-trigger>
+                        </div>
+                    }
+                </div>
+                @if (isMobile)
+                {
+                    <div>
+                        <div class="m-b-sm m-t-md setting__label">@T("Admin.Settings.Catalog.BrandDiscountRegulation.Discount")</div>
+                        <div class="flex between-xs middle-xs">
+                            <div class="flex-grow">
+                                <input class="form-control inline input-alt"
+                                       data-e2e="BrandDiscountRegulationValue"
+                                       name="value"
+                                       ng-model="settingsCatalog.brandDiscountRegulation.value"
+                                       validation-input-text="@T("Admin.Settings.Catalog.BrandDiscountRegulation")" 
+                                       ng-value="0"
+                                       type="number"
+                                       min="0"
+                                       max="{{settingsCatalog.brandDiscountRegulation.valueOption == 'Percent' ? 100 : ''}}" />
+                            </div>
+                            <div class="col-md-2 m-l-sm">
+                                <select class="form-control input-alt" data-e2e="BrandDiscountRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.brandDiscountRegulation.valueOption">
+                                    <option value="@PriceRegulationValueOption.Percent">%</option>
+                                    <option value="@PriceRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex">
+                        <div>
+                            <span class="m-r-sm">@T("Admin.Settings.Catalog.BrandDiscountRegulation.Discount")</span>
+                            <input class="form-control inline"
+                                   data-e2e="BrandDiscountRegulationValue"
+                                   name="value"
+                                   ng-model="settingsCatalog.brandDiscountRegulation.value"
+                                   validation-input-text="@T("Admin.Settings.Catalog.BrandDiscountRegulation")" 
+                                   ng-value="0"
+                                   style="width: 140px"
+                                   type="number"
+                                   min="0"
+                                   max="{{settingsCatalog.brandDiscountRegulation.valueOption == 'Percent' ? 100 : ''}}" />
+                        </div>
+                        <div class="col-md-2 setting--m-t-sm">
+                            <select class="form-control" data-e2e="BrandDiscountRegulationSelectOption" name="valueOption" ng-model="settingsCatalog.brandDiscountRegulation.valueOption">
+                                <option value="@PriceRegulationValueOption.Percent">%</option>
+                                <option value="@PriceRegulationValueOption.AbsoluteValue">@T("Admin.Settings.Catalog.PriceRegulation.AbsoluteValue")</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+
+                <button type="button" class="btn btn-sm btn-success m-t-md setting--m-t-sm" data-e2e="BrandDiscountRegulationOk" ladda="settingsCatalog.brandDiscountRegulationIsRun"
+                        data-button-validation="" data-button-validation-success="settingsCatalog.brandDiscountRegulationChangeDiscounts()"
+                        disabled="disabled" ng-disabled="settingsCatalog.selectedBrandsList.length === 0">
+                    @T("Admin.Settings.Catalog.PriceRegulation.ChangeDiscounts")
+                </button>
+            </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="adv-panel-info setting__mobile-adv-panel-info">
+                        <span>@T("Admin.Settings.Catalog.BrandDiscountRegulation.ResetDiscount")</span>
+                    </div>
+                </div>
+            </div>

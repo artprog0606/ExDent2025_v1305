@@ -1,0 +1,139 @@
+﻿<div class="container-fluid" ng-if="!$ctrl.isMobileMode">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="inline product-setting-title content-header">{{'Admin.Js.ProductReviews.Title'|translate}}</h2>
+        </div>
+    </div>
+</div>
+<div ng-class="{'container-fluid': !$ctrl.isMobileMode}">
+    <div ng-form="" name="formRatio" class="product-reviews" ng-class="{'form-group': $ctrl.isMobileMode}" id="ratio" bs-modifiable="false">
+        <div class="properties-group form-control-title">
+            <div class="properties-group-name cs-t-5">{{'Admin.Js.ProductReviews.Ratio'|translate}}</div>
+        </div>
+        <div class="row m-n middle-xs">
+            <div class="col-xs-12" ng-class="{'m-b-xs': $ctrl.isMobileMode}">
+                <div class="row middle-xs">
+                    <input
+                        class="col-xs-slim m-n custom-input-native"
+                        type="radio"
+                        id="real"
+                        name="RatioType"
+                        value="current"
+                        ng-checked="$ctrl.ratioType == 'current'"
+                        ng-model="ctrl.ratioType"
+                        ng-change="$ctrl.changeType('current')" />
+                    <label for="real" class="custom-input-radio input-alt-mobile"></label>
+                    <div class="col-xs-slim">
+                        <label for="real" ng-click="$ctrl.changeType('current')">
+                            {{'Admin.Js.ProductReviews.CurrentRatio'|translate}}: {{$ctrl.productRatio}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="row middle-xs" style="min-height: 40px">
+                    <input
+                        class="m-n col-xs-slim custom-input-native"
+                        id="manual"
+                        type="radio"
+                        name="RatioType"
+                        value="manual"
+                        ng-checked="$ctrl.ratioType == 'manual'"
+                        ng-model="ctrl.ratioType"
+                        ng-change="$ctrl.changeType('manual')" />
+                    <label for="manual" class="custom-input-radio input-alt-mobile"></label>
+                    <div class="col-xs-11">
+                        <div class="row middle-xs">
+                            <label for="manual" class="col-xs-slim" ng-click="$ctrl.changeType('manual')">
+                                {{'Admin.Js.ProductReviews.ManualRatio'|translate}}:
+                            </label>
+                            <div ng-if="!$ctrl.isMobileMode" class="col-xs-slim">
+                                <input
+                                    type="number"
+                                    pattern="[0-9]*"
+                                    class="form-control input-alt"
+                                    style="max-width: 50px"
+                                    ng-model="$ctrl.productManualRatio"
+                                    ng-hide="$ctrl.ratioType != 'manual'" />
+                            </div>
+                            <div
+                                class="col-xs-slim p-r-none"
+                                ng-if="$ctrl.productManualRatio != $ctrl.productPrevManualRatio && $ctrl.ratioType == 'manual' && !$ctrl.isMobileMode">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-action"
+                                    ng-disabled="$ctrl.productManualRatio == undefined"
+                                    ng-click="$ctrl.changeManualRatio()"
+                                    ng-bind="'Admin.Js.ProductReviews.SetManualRatio'|translate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                ng-if="$ctrl.isMobileMode && $ctrl.ratioType == 'manual'"
+                class="m-t-sm"
+                ng-class="{'col-xs-12 row': !$ctrl.isMobileMode, 'flex flex-grow' : $ctrl.isMobileMode}">
+                <div class="col-xs col-md-2" style="padding-left: 0">
+                    <input
+                        type="number"
+                        min="0"
+                        pattern="[0-9]*"
+                        class="form-control input-alt"
+                        style="{{$ctrl.isMobileMode ? '' : 'max-width: 50px;'}}"
+                        ng-model="$ctrl.productManualRatio"
+                        ng-hide="$ctrl.ratioType != 'manual'" />
+                </div>
+                <div class="" ng-if="$ctrl.productManualRatio != $ctrl.productPrevManualRatio && $ctrl.ratioType == 'manual'">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-action"
+                        ng-disabled="$ctrl.productManualRatio == undefined"
+                        ng-click="$ctrl.changeManualRatio()"
+                        ng-bind="'Admin.Js.ProductReviews.SetManualRatio'|translate" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-class="{'properties-group': !$ctrl.isMobileMode, 'm-t-n-xs': $ctrl.isMobileMode && $ctrl.ratioType != 'manual'}">
+        <div class="properties-group-name cs-t-5" ng-class="{'control-label': $ctrl.isMobileMode}">
+            {{'Admin.Js.ProductReviews.Reviews'|translate}}
+        </div>
+    </div>
+    <ui-grid-custom
+        grid-unique-id="grid"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-options="$ctrl.gridOptions"
+        grid-params="{ProductId:$ctrl.productId}"
+        grid-url="'reviews/getreviews'"
+        grid-extend-ctrl="$ctrl"
+        grid-filter-search-autofocus="false"
+        grid-selection-enabled="true"
+        grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card card--gap-row-sm card--break-all">
+                <div class="row m-b-md">
+                    <div class="col-xs-7">
+                        <div class="control-label">{{row.entity.Name}}</div>
+                        <div class="fs-sm">{{row.entity.Email}}</div>
+                    </div>
+                    <div class="col-xs-5 text-right">
+                        <div class="fs-xs m-b-xs">{{row.entity.AddDateFormatted}}</div>
+                        <div class="fs-xs" ng-style="{'color': row.entity.Checked ? 'green' : 'red'}">
+                            {{row.entity.Checked ? 'Проверен': 'Непроверен'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="m-b-md flex" ng-if="row.entity.ProductId != null">
+                    <div class="control-label flex-shrink-n">Товар:</div>
+                    <div class="m-l-xs">{{row.entity.ProductName}}</div>
+                </div>
+                <div>
+                    <div class="control-label m-b-xs">Текст отзыва :</div>
+                    <div class="product-reviews__text-overflow">{{row.entity.Text}}</div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.grid.gridOptions.TotalString"> </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>

@@ -1,0 +1,945 @@
+﻿@model AdvantShop.Core.Services.Shipping.ShippingMethodAdminModel
+
+@using System.Linq
+@using AdvantShop.Payment
+@using AdvantShop.Repository.Currencies
+
+@{
+    var baseCurrency = CurrencyService.GetAllCurrencies().FirstOrDefault(x => x.Rate == 1f);
+    var baseCurrencySymbol = baseCurrency != null ? baseCurrency.Symbol : "BaseCurrency";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var availableWarehouses = AdvantShop.Saas.SaasDataService.IsEnabledFeature(saas => saas.HasWarehouses);
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Common.ShippingMethodName")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs m-t-sm" : "")">
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control input-alt", ng_model = "shippingMethod.name", required = "required", validation_input_text = T("Admin.ShippingMethods.Common.ShippingMethodName") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ShippingMethodName")">
+            <p>@T("Admin.ShippingMethods.Common.NameInClientPart")</p>
+            <p>@T("Admin.ShippingMethods.Common.ForExamplePickUp")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md setting__label">
+            @T("Admin.ShippingMethods.Common.Active")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "shippingMethod.enabled", ng_init = "shippingMethod.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+            <span data-e2e="ShippingEnabled" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="Enabled" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.Active")
+            </label>
+        }
+        @if (!Model.Enabled)
+        {
+            <span class="link-danger">@T("Admin.ShippingMethods.Common.NotActive")</span>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.Active")">
+            @T("Admin.ShippingMethods.Common.MethodOnOrOff")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 flex-grow-n  @(isMobile ? "flex middle-xs" : "col-fixed-size-md")">
+        <span class="@(isMobile ? "flex-grow setting__label" : "")">@T("Admin.ShippingMethods.Common.ActivityOfTheMethod")</span>
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.CitiesAndCountries")">
+            <div class="help-content">
+                @T("Admin.ShippingMethods.Common.SpecifyListOfCountreisAndCities")
+            </div>
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md-8 relative setting--m-t-sm">
+
+        <div class="m-b-sm ng-cloak" ng-if="shippingMethod.AvailableCountries != null && shippingMethod.AvailableCountries.length != 0">
+            <div data-e2e="ShippingCountry" ng-repeat="item in shippingMethod.AvailableCountries track by $index" class="ng-cloak shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteAvailableCountry(item.CountryId)" data-e2e="ShippingCountryDel" class="link-invert link-decoration-none fas fa-times"></a>
+            </div>
+        </div>
+
+        <div class="m-b-sm ng-cloak" ng-if="shippingMethod.AvailableRegions != null && shippingMethod.AvailableRegions.length != 0">
+            <div data-e2e="ShippingRegion" ng-repeat="item in shippingMethod.AvailableRegions track by $index" class="ng-cloak shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteAvailableRegion(item.RegionId)" data-e2e="ShippingRegionDel" class="link-invert link-decoration-none fas fa-times"></a>
+            </div>
+        </div>
+
+        <div class="m-b-sm ng-cloak" ng-if="shippingMethod.AvailableCities != null && shippingMethod.AvailableCities.length != 0">
+            <div data-e2e="ShippingCity" ng-repeat="item in shippingMethod.AvailableCities track by $index" class="ng-cloak shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteAvailableCity(item.CityId)" data-e2e="ShippingCityDel" class="link-invert link-decoration-none fas fa-times"></a>
+            </div>
+        </div>
+
+        <div class="m-b-sm ng-cloak @(isMobile ? "" : "bold")" ng-if="(shippingMethod.AvailableCountries == null || shippingMethod.AvailableCountries.length == 0) && (shippingMethod.AvailableRegions == null || shippingMethod.AvailableRegions.length == 0) && (shippingMethod.AvailableCities == null || shippingMethod.AvailableCities.length == 0)">
+            <span class="relative p-r-xs">
+                @T("Admin.ShippingMethods.Common.AllCountriesAllCities")
+            </span>
+        </div>
+
+        @if (!SettingsDesign.AutodetectCity && (!SettingsCheckout.IsShowCountry || !SettingsCheckout.IsShowState))
+        {
+            <div class="row m-b-sm ng-cloak" ng-if="(shippingMethod.AvailableCountries != null && shippingMethod.AvailableCountries.length != 0) || (shippingMethod.AvailableRegions != null && shippingMethod.AvailableRegions.length != 0)">
+                <div class="col-xs-12 col-md-9">
+                    <div class="adv-panel-info">
+                        Для корректной работы фильтра необходимо, чтобы было подключено авто-определение города либо активирован вывод области (для фильтра по области) и страны (для фильтра по страны) в полях оформления заказа
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label">@T("Admin.ShippingMethods.Common.Countries")</div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingCountryName" type="text" class="form-control input-alt" ng-model="shippingMethod.newAvailableCountry" style="@(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")" autocompleter on-type="country" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingCountryAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableCountry" ng-click="shippingMethod.addAvailableCountry()">Добавить</button>
+                }
+                else
+                {
+                    <button data-e2e="ShippingCountryAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableCountry" ng-click="shippingMethod.addAvailableCountry()">@T("Admin.ShippingMethods.Common.AddACountry")</button>
+                }
+
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label @(isMobile ? "flex middle-xs" : "")">
+                <span class="@(isMobile ? "flex-grow" : "")">Регионы</span>
+                <help-trigger class="ng-cloak" data-title="Список городов федерального значения">
+                    <div class="help-content">
+                        Обратите внимание: Москва, Санкт-Петербург и Севастополь являются городами федерального значения и не входят в состав областей, поэтому их необходимо прописывать в поле региона отдельно.<br /><br />
+                        Например, если метод доставки активен для Москвы и Московской области, необходимо задать 2 региона: Московская область и Москва.
+                    </div>
+                </help-trigger>
+            </div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingRegionName" type="text" class="form-control input-alt" style="@(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")"
+                       ng-model="shippingMethod.newAvailableRegion.name"
+                       uib-typeahead="item for items in shippingMethod.findRegion($viewValue)"
+                       typeahead-template-url="find-region.html"
+                       typeahead-on-select="shippingMethod.selectAvailableRegion($item)"
+                       typeahead-focus-first="false"
+                       ng-change="shippingMethod.newAvailableRegion.id = undefined" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingRegionAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableRegion.name" ng-click="shippingMethod.addAvailableRegion()">Добавить</button>
+                }
+                else
+                {
+                    <button data-e2e="ShippingRegionAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableRegion.name" ng-click="shippingMethod.addAvailableRegion()">Добавить регион</button>
+                }
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label">@T("Admin.ShippingMethods.Common.Cities")</div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingCityName" type="text" class="form-control input-alt" style=" @(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")"
+                       ng-model="shippingMethod.newAvailableCity.name"
+                       uib-typeahead="item for items in shippingMethod.findCity($viewValue)"
+                       typeahead-template-url="find-city.html"
+                       typeahead-on-select="shippingMethod.selectAvailableCity($item)"
+                       typeahead-focus-first="false"
+                       ng-change="shippingMethod.newAvailableCity.id = undefined" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingCityAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableCity.name" ng-click="shippingMethod.addAvailableCity()">Добавить</button>
+                }
+                else
+                {
+                    <button data-e2e="ShippingCityAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newAvailableCity.name" ng-click="shippingMethod.addAvailableCity()">@T("Admin.ShippingMethods.Common.AddACity")</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 flex-grow-n  @(isMobile ? "flex middle-xs setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="@(isMobile ? "flex-grow setting__label" : "")">@T("Admin.ShippingMethods.Common.MethodsIsNotAvailableFor")</span>
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.ShippingMethods.Common.CitiesOfExclusion")">
+            <div class="help-content">
+                @T("Admin.ShippingMethods.Common.ListOfDeliveryNotAvailable")
+            </div>
+        </help-trigger>
+    </div>
+
+    <div class="col-xs-12 col-md-8 relative">
+
+        <div ng-if="shippingMethod.isNoExceptions()" class="m-b-sm ng-cloak @(isMobile ? "" : "bold")">
+            @T("Admin.ShippingMethods.Common.NoExceptions")
+        </div>
+        <div>
+            <div data-e2e="ShippingEnCountryList" ng-repeat="item in shippingMethod.ExcludedCountry track by $index" class="ng-cloak m-b-sm shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteExcludedCountry(item.CountryId)" class="link-invert link-decoration-none fas fa-times" data-e2e="ShippingEnCountryDel"></a>
+            </div>
+        </div>
+        <div>
+            <div data-e2e="ShippingEnRegionList" ng-repeat="item in shippingMethod.ExcludedRegions track by $index" class="ng-cloak m-b-sm shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteExcludedRegion(item.RegionId)" class="link-invert link-decoration-none fas fa-times" data-e2e="ShippingEnRegionDel"></a>
+            </div>
+        </div>
+        <div>
+            <div data-e2e="ShippingEnCityList" ng-repeat="item in shippingMethod.ExcludedCities track by $index" class="ng-cloak m-b-sm shipping-location-item">
+                {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteExcludedCity(item.CityId)" class="link-invert link-decoration-none fas fa-times" data-e2e="ShippingEnCityDel"></a>
+            </div>
+        </div>
+
+        @if (!SettingsDesign.AutodetectCity && (!SettingsCheckout.IsShowCountry || !SettingsCheckout.IsShowState))
+        {
+            <div class="row m-b-sm ng-cloak" ng-if="(shippingMethod.ExcludedCountry != null && shippingMethod.ExcludedCountry.length != 0) || (shippingMethod.ExcludedRegions != null && shippingMethod.ExcludedRegions.length != 0)">
+                <div class="col-xs-12 col-md-9">
+                    <div class="adv-panel-info">
+                        Для корректной работы фильтра необходимо, чтобы было подключено авто-определение города либо активирован вывод области (для фильтра по области) и страны (для фильтра по страны) в полях оформления заказа
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label">@T("Admin.ShippingMethods.Common.Countries")</div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingEnCountry" type="text" class="form-control input-alt" ng-model="shippingMethod.newExcludedCountry" style=" @(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")" autocompleter on-type="country" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingEnCountryAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedCountry" ng-click="shippingMethod.addExcludedCountry()">Добавить</button>
+                }
+                else
+                {
+                    <button data-e2e="ShippingEnCountryAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedCountry" ng-click="shippingMethod.addExcludedCountry()">@T("Admin.ShippingMethods.Common.AddACountry")</button>
+                }
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label @(isMobile ? "flex middle-xs" : "")">
+                <span class="@(isMobile ? "flex-grow" : "")">Регионы</span>
+                <help-trigger class="ng-cloak" data-title="Список городов федерального значения">
+                    <div class="help-content">
+                        Обратите внимание: Москва, Санкт-Петербург и Севастополь являются городами федерального значения и не входят в состав областей, поэтому их необходимо прописывать в поле региона отдельно.<br /><br />
+                        Например, если метод доставки активен для Москвы и Московской области, необходимо задать 2 региона: Московская область и Москва.
+                    </div>
+                </help-trigger>
+            </div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingEnRegion" type="text" class="form-control input-alt" style=" @(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")"
+                       ng-model="shippingMethod.newExcludedRegion.name"
+                       uib-typeahead="item for items in shippingMethod.findRegion($viewValue)"
+                       typeahead-template-url="find-region.html"
+                       typeahead-on-select="shippingMethod.selectExcludedRegion($item)"
+                       typeahead-focus-first="false"
+                       ng-change="shippingMethod.newExcludedRegion.id = undefined" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingEnRegionAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedRegion.name" ng-click="shippingMethod.addExcludedRegion()">Добавить</button>
+
+                }
+                else
+                {
+                    <button data-e2e="ShippingEnRegionAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedRegion.name" ng-click="shippingMethod.addExcludedRegion()">Добавить регион</button>
+
+                }
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm")">
+            <div class="col-xs-12 col-md-2 setting__label">@T("Admin.ShippingMethods.Common.Cities")</div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm  @(isMobile ? "flex middle-xs" : "")">
+                <input data-e2e="ShippingEnCity" type="text" class="form-control input-alt" style=" @(!isMobile ? "width: 250px; display: inline-block; vertical-align: top;" : "")"
+                       ng-model="shippingMethod.newExcludedCity.name"
+                       uib-typeahead="item for items in shippingMethod.findCity($viewValue)"
+                       typeahead-template-url="find-city.html"
+                       typeahead-on-select="shippingMethod.selectExcludedCity($item)"
+                       typeahead-focus-first="false"
+                       ng-change="shippingMethod.newExcludedCity.id = undefined" />
+                @if (isMobile)
+                {
+                    <button data-e2e="ShippingEnCityAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedCity.name" ng-click="shippingMethod.addExcludedCity()">Добавить</button>
+
+                }
+                else
+                {
+                    <button data-e2e="ShippingEnCityAdd" type="button" class="btn btn-sm btn-action" ng-disabled="!shippingMethod.newExcludedCity.name" ng-click="shippingMethod.addExcludedCity()">@T("Admin.ShippingMethods.Common.AddACity")</button>
+
+                }
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "form-group" : "m-b-sm") ng-cloak">
+            <div class="col-xs-12 col-md-2 setting__label">
+                @T("Admin.ShippingMethods.Common.Categories")
+            </div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm">
+                <div class="@(isMobile ? "m-b-sm" : "inline")" style=" @(!isMobile ? "width: 250px;" : "")">
+                    <span ng-if="shippingMethod.ExcludedCategories.length == 0">@T("Admin.ShippingMethods.Common.Empty")</span>
+                    <span ng-if="shippingMethod.ExcludedCategories.length > 0">{{shippingMethod.ExcludedCategories.length}} @T("Admin.ShippingMethods.Common.CategoriesCount")</span>
+                </div>
+
+                <ui-modal-trigger data-controller="'ModalSelectCategoriesCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("selectCategories.html")"
+                                  data-resolve="{'params': { 'selectedIds': shippingMethod.ExcludedCategories}}"
+                                  data-on-close="shippingMethod.selectExcludedCategories(result)">
+                    <a href="" class="btn btn-sm btn-action">@T("Admin.ShippingMethods.Common.CategoriesChange")</a>
+                </ui-modal-trigger>
+
+                <a href="" class="btn btn-sm btn-action" ng-if="shippingMethod.ExcludedCategories.length > 0" ng-click="shippingMethod.resetExcludedCategories()">@T("Admin.ShippingMethods.Common.CategoriesReset")</a>
+            </div>
+        </div>
+
+        <div class="row @(isMobile ? "" : "m-b-sm") ng-cloak">
+            <div class="col-xs-12 col-md-2 setting__label">
+                @T("Admin.ShippingMethods.Common.Products")
+            </div>
+            <div class="col-xs-12 col-md-9 setting--m-t-sm">
+                <div class="@(isMobile ? "m-b-sm" : "inline")" style=" @(!isMobile ? "width: 250px;" : "")">
+                    <span ng-if="shippingMethod.CountExcludedProducts == 0">@T("Admin.ShippingMethods.Common.Empty")</span>
+                    <span ng-if="shippingMethod.CountExcludedProducts > 0">{{shippingMethod.CountExcludedProducts}} @T("Admin.ShippingMethods.Common.ProductsCount")</span>
+                </div>
+
+                <ui-modal-trigger data-controller="'ModalShippingProductsSelectvizrCtrl'" controller-as="ctrl" size="xs-11"
+                                  template-url="@Html.GetAssetPath("shippingProductsSelectvizrModal.html")"
+                                  data-on-close="shippingMethod.selectExcludedProducts(result)"
+                                  data-on-dismiss="shippingMethod.selectExcludedProducts(result)"
+                                  data-resolve="{'value': { 'shippingId' : shippingMethod.methodId, 'typeRef': 'Exclude'}}">
+                    <a href="" class="btn btn-sm btn-action">@T("Admin.ShippingMethods.Common.ProductsChange")</a>
+                </ui-modal-trigger>
+
+                <a href="" class="btn btn-sm btn-action" ng-if="shippingMethod.CountExcludedProducts > 0" ng-click="shippingMethod.resetExcludedProducts()">@T("Admin.ShippingMethods.Common.ProductsReset")</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@if (availableWarehouses)
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 flex-grow-n  @(isMobile ? "flex middle-xs setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="@(isMobile ? "flex-grow setting__label" : "")">Контролировать наличие по складам</span>
+            <help-trigger class="ng-cloak m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="Наличие по складам">
+                <div class="help-content">
+                    Тут вы можете указать список складов, по которым будет проверяться наличие позиций
+                </div>
+            </help-trigger>
+        </div>
+
+        <div class="col-xs-12 col-md-8 relative">
+            <div>
+                <div ng-if="shippingMethod.warehouses == null || shippingMethod.warehouses.length === 0" class="m-b-sm ng-cloak @(isMobile ? "" : "bold")">
+                    @T("Admin.ShippingMethods.Common.Empty")
+                </div>
+                <div ng-repeat="item in shippingMethod.warehouses track by $index" class="ng-cloak m-b-sm shipping-location-item">
+                    {{$index != 0 ? ", " : ""}} {{item.Name}} <a href="" ng-click="shippingMethod.deleteWarehouse(item.Id)" class="link-invert link-decoration-none fas fa-times"></a>
+                </div>
+            </div>
+            <div>
+                <ui-modal-trigger data-controller="'ModalSelectWarehouseCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("selectWarehouse.html")"
+                                  size="lg" data-resolve="{'params': { 'multiSelect': true }}"
+                                  data-on-close="shippingMethod.selectWarehouses(result)">
+                    <a href="" class="btn btn-sm btn-action">Добавить</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.Type")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Model.ShippingTypeLocalized
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.Description")
+    </div>
+    <div class="col-xs-12 col-md-6  relative setting--m-t-sm  @(isMobile ? "flex middle-xs" : "")">
+        <span class="@(isMobile ? "flex-grow" : "")">@Html.TextAreaFor(x => x.Description, new { @class = "form-control input-alt", ng_model = "shippingMethod.description" })</span>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.Description")">
+            <p>@T("Admin.ShippingMethods.Common.DeliveryDescription")</p>
+            <p>@T("Admin.ShippingMethods.Common.DeliveryToTheDoor")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.TextAtZeroCost")
+    </div>
+    <div class="col-xs-12 col-md-6  relative setting--m-t-sm  @(isMobile ? "flex middle-xs" : "")">
+        <span class="@(isMobile ? "flex-grow" : "")">@Html.TextBoxFor(x => x.ZeroPriceMessage, new { @class = "form-control input-alt", ng_model = "shippingMethod.zeroPriceMessage" })</span>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.TextAtZeroCost")">
+            <p>@T("Admin.ShippingMethods.Common.TextShownIfCostIsZero")</p>
+            <p>@T("Admin.ShippingMethods.Common.ForExampleFree")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.SortingOrder")
+    </div>
+    <div class="col-xs-12 col-md-6  relative setting--m-t-sm  @(isMobile ? "flex middle-xs" : "")">
+        <span class="@(isMobile ? "flex-grow" : "")">@Html.TextBoxFor(x => x.SortOrder, new { @class = "form-control input-alt", ng_model = "shippingMethod.sortOrder" })</span>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.SortingOrder")">
+            @T("Admin.ShippingMethods.Common.ZeroAtTop")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Common.ShowAdditionalFields")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6  relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.DisplayCustomFields, new { ng_model = "shippingMethod.displayCustomFields", ng_init = "shippingMethod.displayCustomFields=" + Model.DisplayCustomFields.ToLowerString(), @class = "adv-checkbox-input" })
+            <span data-e2e="ShippingAddittional" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="DisplayCustomFields" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.ShowAdditionalFields")
+            </label>
+        }
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ShowAdditionalFields")">
+            <p>@T("Admin.ShippingMethods.Common.AdditionalFieldsForDeliveryMethods")</p>
+            <p>@T("Admin.ShippingMethods.Common.SettingsFieldsInOrder")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Common.ShowZip")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6  relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.DisplayIndex, new { ng_model = "shippingMethod.displayIndex", ng_init = "shippingMethod.displayIndex=" + Model.DisplayIndex.ToLowerString(), @class = "adv-checkbox-input" })
+            <span data-e2e="ShippingIndex" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="DisplayIndex" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.ShowZip")
+            </label>
+        }
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ShowZip")">
+            @T("Admin.ShippingMethods.Common.ShowZip")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Common.ShowInProductCard")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6  relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowInDetails, new { ng_model = "shippingMethod.showInDetails", ng_init = "shippingMethod.showInDetails=" + Model.ShowInDetails.ToLowerString(), @class = "adv-checkbox-input" })
+            <span data-e2e="ShippingDetais" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="ShowInDetails" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.ShowInProductCard")
+            </label>
+        }
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ShowInProductCard")">
+            <p>@T("Admin.ShippingMethods.Common.ShowDeliveryMethodInDeliveryBlock")</p>
+            <p>@T("Admin.ShippingMethods.Common.OptionToAdjustMethodsToDisplay")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Common.MoveToEnd")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6  relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.MoveToEnd, new { ng_model = "shippingMethod.MoveToEnd", ng_init = "shippingMethod.MoveToEnd=" + Model.MoveToEnd.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="MoveToEnd" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.MoveToEnd")
+            </label>
+        }
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.MoveToEnd")">
+            <p>Методы доставки с данной опцией будут всегда перемещаться в конец списка доставок</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Common.ShowIfNoOtherShippings")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6  relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowIfNoOtherShippings, new { ng_model = "shippingMethod.ShowIfNoOtherShippings", ng_init = "shippingMethod.ShowIfNoOtherShippings=" + Model.ShowIfNoOtherShippings.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="ShowIfNoOtherShippings" class="col-xs setting__label">
+                @T("Admin.ShippingMethods.Common.ShowIfNoOtherShippings")
+            </label>
+        }
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ShowIfNoOtherShippings")">
+            <p>Методы доставки, отмеченные данной опцией, будут отображаться, только в случае отсутствия, по ряду причин, доставок без данной опции.</p>
+            <p>
+                Применяя данную опцию, можно повысить конверсию оформления заказов, предоставив общий метод доставки на случай, когда для клиента не доступна ни одна доставка.<br />
+                Например: в силу отсутствия возможности доставить в указанный населённый пункт другими доставками.
+            </p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.Icon")
+    </div>
+    <div class="col-xs-12 col-md-6 setting--m-t-sm relative @(isMobile ? "flex middle-xs" : "")" ng-class="{'setting__upload-picture-grid': shippingMethod.icon != null && shippingMethod.icon.length > 0}">
+        @if (isMobile)
+        {
+            <figure class="picture-uploader-wrap setting--m-none" ng-if="shippingMethod.icon != null && shippingMethod.icon.length > 0">
+                <img class="picture-uploader-img" ng-src="{{shippingMethod.icon}}" />
+            </figure>
+            <div class="@(isMobile ? "picture-uploader-buttons" : "m-l-md")">
+                <div>
+                    <a href=""
+                       accept="image/*"
+                       ngf-max-size="15MB"
+                       ngf-select=""
+                       ngf-change="shippingMethod.uploadIcon($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                       class="picture-uploader-buttons-add">
+                        @T("Admin.ShippingMethods.Common.AddAnImage")
+                    </a>
+                </div>
+                <div class="ng-cloak m-t-xs" ng-if="shippingMethod.icon == null || shippingMethod.icon.length == 0">
+                    @T("Admin.ShippingMethods.Common.RecommendedSize")<br>@T("Admin.ShippingMethods.Common.FormatCanOnlyBe")
+                </div>
+                <div class="ng-cloak" ng-if="shippingMethod.icon != null && shippingMethod.icon.length > 0">
+                    <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="shippingMethod.deleteIcon()">@T("Admin.ShippingMethods.Common.DeleteImage")</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <img ng-if="shippingMethod.icon != null && shippingMethod.icon.length > 0" ng-src="{{shippingMethod.icon}}" class="m-b-sm" />
+            <div class="">
+                <div>
+                    <a href=""
+                       accept="image/*"
+                       ngf-max-size="15MB"
+                       ngf-select=""
+                       ngf-change="shippingMethod.uploadIcon($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                       class="picture-uploader-buttons-add">
+                        @T("Admin.ShippingMethods.Common.AddAnImage")
+                    </a>
+                </div>
+                <div class="ng-cloak m-t-xs" ng-if="shippingMethod.icon == null || shippingMethod.icon.length == 0">
+                    @T("Admin.ShippingMethods.Common.RecommendedSize")<br>@T("Admin.ShippingMethods.Common.FormatCanOnlyBe")
+                </div>
+                <div class="ng-cloak" ng-if="shippingMethod.icon != null && shippingMethod.icon.length > 0">
+                    <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="shippingMethod.deleteIcon()">@T("Admin.ShippingMethods.Common.DeleteImage")</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.UseTax)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.Tax")
+        </div>
+        <div class="col-xs-12 col-md-6 setting--m-t-sm relative @(isMobile ? "flex middle-xs" : "")">
+            <span class="@(isMobile ? "flex-grow" : "")">@Html.DropDownListFor(x => x.TaxId, Model.Taxes, new { @class = "form-control input-alt", ng_model = "shippingMethod.TaxId" })</span>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.Tax")">
+                <p>@T("Admin.ShippingMethods.Common.ShippingTax")</p>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.UsePaymentMethodAndSubjectTypes)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            Предмет расчета
+        </div>
+        <div class="col-xs-12 col-md-6 setting--m-t-sm relative @(isMobile ? "flex middle-xs" : "")">
+            <span class="@(isMobile ? "flex-grow" : "")">@Html.DropDownListFor(x => x.PaymentSubjectType, Model.PaymentSubjectTypes, new { @class = "form-control input-alt", ng_model = "shippingMethod.PaymentSubjectType", ng_init = "shippingMethod.PaymentSubjectType='" + Model.PaymentSubjectType + "'" })</span>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Предмет расчета">
+                <p>Данный параметр будет передаваться для печати чеков</p>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            Способ расчета
+        </div>
+        <div class="col-xs-12 col-md-6 setting--m-t-sm relative @(isMobile ? "flex middle-xs" : "")">
+            <span class="@(isMobile ? "flex-grow" : "")">@Html.DropDownListFor(x => x.PaymentMethodType, Model.PaymentMethodTypes, new { @class = "form-control input-alt", ng_model = "shippingMethod.PaymentMethodType", ng_init = "shippingMethod.PaymentMethodType='" + Model.PaymentMethodType + "'" })</span>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Способ расчета">
+                <p>Данный параметр будет передаваться для печати чеков</p>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+<div class="row form-group">
+    <div class="col-xs-12 flex-grow-n setting__label @(isMobile ? "m-b-sm" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Common.AvailablePaymentMethodsAtThisDeliveryMethod")
+    </div>
+    <div class="col-xs-12 col-md-6 relative" is-mobile>
+        <div ng-class="{'m-b-sm p-b-xs' : isMobile.value && $index != shippingMethod.payments.length - 1,'m-b-sm' : !isMobile.value && $index != shippingMethod.payments.length - 1}" ng-repeat="item in shippingMethod.payments track by $index">
+            <label class="adv-checkbox-label form-label-block setting--m-t-sm" ng-class="{'method-notactive' : !item.Enabled}">
+                <input type="checkbox" checklist-model="shippingMethod.selectedPaymentMethods" checklist-value="item.PaymentMethodId" class="adv-checkbox-input" />
+                <span data-e2e="PaymentMethods" class="adv-checkbox-emul"></span>
+                <span class="">{{item.Name}}</span>
+            </label>
+        </div>
+
+        <input type="hidden" name="payments" value="{{shippingMethod.selectedPaymentMethods}}" />
+    </div>
+</div>
+
+@if (Model.UseExtracharge)
+{
+    <div class="row middle-xs">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.Extracharge")
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            <div class="row middle-xs">
+                <div class="col-xs-5">
+                    <div class="input-group setting__price-margin-in-numbers">
+                        @Html.TextBoxFor(x => x.ExtrachargeInPercents, new
+                        {
+                            ng_model = "shippingMethod.ExtrachargeInPercents",
+                            @class = "form-control",
+                            type = "number",
+                            ng_max = "100",
+                            ng_min = "-100",
+                            validation_input_text = T("Admin.ShippingMethods.Common.Extracharge")
+                        })
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" value=""><span>%</span></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-1 text-center">
+                    +
+                </div>
+                <div class="col-xs-6">
+                    <div class="input-group setting__price-margin-in-numbers">
+                        @Html.TextBoxFor(x => x.ExtrachargeInNumbers, new
+                        {
+                            ng_model = "shippingMethod.ExtrachargeInNumbers",
+                            @class = "form-control",
+                            type = "number",
+                            validation_input_text = T("Admin.ShippingMethods.Common.Extracharge")
+                        })
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" value=""><span>@baseCurrencySymbol</span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.Extracharge")">
+                <p>@T("Admin.ShippingMethods.Common.ExtrachargeFixedNumber")</p>
+                <p>@T("Admin.ShippingMethods.Common.ExtrachargePercentage")</p>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n col-fixed-size-md">&nbsp;</div>
+        <div class="col-xs-12 col-md-3">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.ExtrachargeFromOrder, new { ng_model = "shippingMethod.ExtrachargeFromOrder", ng_init = "shippingMethod.ExtrachargeFromOrder=" + Model.ExtrachargeFromOrder.ToLowerString(), @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul" data-e2e="ExtrachargeFromOrder"></span>
+                <span>@T("Admin.ShippingMethods.Common.ExtrachargeFromOrder")</span>
+            </label>
+        </div>
+        <div class="co-xs"></div>
+    </div>
+}
+@if (Model.UseExtraDeliveryTime)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.ExtraDeliveryTime")
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            <div class="input-group setting__price-margin-in-numbers">
+                @Html.TextBoxFor(x => x.ExtraDeliveryTime, new { ng_model = "shippingMethod.ExtraDeliveryTime", @class = "form-control", type = "number" })
+                <div class="input-group-btn">
+                    <span class="btn btn-default"><span>@T("Admin.ShippingMethods.Common.ExtraDeliveryTimeDays")</span></span>
+                </div>
+            </div>
+
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.ExtraDeliveryTime")">
+                @T("Admin.ShippingMethods.Common.ExtraDeliveryTimeHint")
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.UseWeight)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.WeightExtracharge")
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            <div class="input-group setting__btns-with-textbox-left">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" value="0" ng-click="shippingMethod.WeightExtrachargeType = '@ExtrachargeType.Fixed'" ng-class="{'product-currency-active':(shippingMethod.WeightExtrachargeType == '@ExtrachargeType.Fixed')}"><span>@T("Admin.ShippingMethods.Common.Kg")</span></button>
+                    <button type="button" class="btn btn-default" value="1" ng-click="shippingMethod.WeightExtrachargeType = '@ExtrachargeType.Percent'" ng-class="{'product-currency-active':(shippingMethod.WeightExtrachargeType == '@ExtrachargeType.Percent')}"><span>%</span></button>
+                </span>
+                @Html.TextBoxFor(x => x.WeightExtracharge, new
+                {
+                    ng_model = "shippingMethod.WeightExtracharge",
+                    @class = "form-control",
+                    type = "number",
+                    ng_max = "shippingMethod.WeightExtrachargeType == '" + ExtrachargeType.Percent + "' ? 100 : null",
+                    ng_min = "shippingMethod.WeightExtrachargeType == '" + ExtrachargeType.Percent + "' ? -100 : null",
+                    validation_input_text = T("Admin.ShippingMethods.Common.WeightExtracharge")
+                })
+            </div>
+            @Html.HiddenFor(x => x.WeightExtrachargeType, new { @class = "form-control", ng_model = "shippingMethod.WeightExtrachargeType", ng_value = "shippingMethod.WeightExtrachargeType" })
+
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.WeightExtracharge")">
+                <p>@T("Admin.ShippingMethods.Common.WeightExtrachargeFixedNumber")</p>
+                <p>@T("Admin.ShippingMethods.Common.WeightExtrachargePercentage")</p>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.UseCargo)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.CargoExtracharge")
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            <div class="input-group setting__btns-with-textbox-left">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" value="0" ng-click="shippingMethod.CargoExtrachargeType = '@ExtrachargeType.Fixed'" ng-class="{'product-currency-active':(shippingMethod.CargoExtrachargeType == '@ExtrachargeType.Fixed')}"><span>@T("Admin.ShippingMethods.Common.Mm")</span></button>
+                    <button type="button" class="btn btn-default" value="1" ng-click="shippingMethod.CargoExtrachargeType = '@ExtrachargeType.Percent'" ng-class="{'product-currency-active':(shippingMethod.CargoExtrachargeType == '@ExtrachargeType.Percent')}"><span>%</span></button>
+                </span>
+                @Html.TextBoxFor(x => x.CargoExtracharge, new
+                {
+                    ng_model = "shippingMethod.CargoExtracharge",
+                    @class = "form-control",
+                    type = "number",
+                    ng_max = "shippingMethod.CargoExtrachargeType == '" + ExtrachargeType.Percent + "' ? 100 : null",
+                    ng_min = "shippingMethod.CargoExtrachargeType == '" + ExtrachargeType.Percent + "' ? -100 : null",
+                    validation_input_text = T("Admin.ShippingMethods.Common.CargoExtracharge")
+                })
+            </div>
+            @Html.HiddenFor(x => x.CargoExtrachargeType, new { @class = "form-control", ng_model = "shippingMethod.CargoExtrachargeType", ng_value = "shippingMethod.CargoExtrachargeType" })
+
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.CargoExtracharge")">
+                <p>@T("Admin.ShippingMethods.Common.CargoExtrachargeFixedNumber")</p>
+                <p>@T("Admin.ShippingMethods.Common.CargoExtrachargePercentage")</p>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.UseWeight || Model.UseCargo)
+{
+    <div class="m-t">
+        <div class="form-group row middle-xs">
+            <div class="col-xs-12">
+                @T("Admin.ShippingMethods.Common.DefaultProductParametersValue")
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.UseWeight)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Common.DefaultWeight")</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            <div class="input-group setting__price-margin-in-numbers">
+                @Html.TextBoxFor(x => x.BaseDefaultWeight, new { @class = "form-control", ng_model = "shippingMethod.DefaultWeight", required = "required", type = "number", validation_input_text = T("Admin.ShippingMethods.Common.DefaultWeight") })
+                <div class="input-group-btn">
+                    <span class="btn btn-default"><span>@T("Admin.ShippingMethods.Common.Kg")</span></span>
+                </div>
+            </div>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.DefaultWeight")">
+                @T("Admin.ShippingMethods.Common.ProductWeightWillAssumeValue")<br><br>
+                @T("Admin.ShippingMethods.Common.ValueIsSpecifiedInKg")<br><br>
+                @T("Admin.ShippingMethods.Common.ForExample1or02")
+            </help-trigger>
+        </div>
+    </div>
+}
+@if (Model.UseCargo)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Common.DefaultCargo")</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+            <div class="row">
+                <div class="col-xs-12 col-md-4 setting--m-t-sm">
+                    <div class="input-group setting__price-margin-in-numbers">
+                        @Html.TextBoxFor(x => x.BaseDefaultLength, new { @class = "form-control", ng_model = "shippingMethod.DefaultLength", required = "required", type = "number", validation_input_text = T("Admin.ShippingMethods.Common.Length") })
+                        <div class="input-group-btn">
+                            <span class="btn btn-default"><span>@T("Admin.ShippingMethods.Common.Mm")</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 setting--m-t-sm">
+                    <div class="input-group setting__price-margin-in-numbers">
+                        @Html.TextBoxFor(x => x.BaseDefaultHeight, new { @class = "form-control", ng_model = "shippingMethod.DefaultHeight", required = "required", type = "number", validation_input_text = T("Admin.ShippingMethods.Common.Height") })
+                        <div class="input-group-btn">
+                            <span class="btn btn-default"><span>@T("Admin.ShippingMethods.Common.Mm")</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 setting--m-t-sm">
+                    <div class="input-group setting__price-margin-in-numbers">
+                        @Html.TextBoxFor(x => x.BaseDefaultWidth, new { @class = "form-control", ng_model = "shippingMethod.DefaultWidth", required = "required", type = "number", validation_input_text = T("Admin.ShippingMethods.Common.Width") })
+                        <div class="input-group-btn">
+                            <span class="btn btn-default"><span>@T("Admin.ShippingMethods.Common.Mm")</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.ShippingMethods.Common.DefaultCargo")">
+                @T("Admin.ShippingMethods.Common.LengthOfProductWillTakeSpecifiedValue")<br><br>
+                @T("Admin.ShippingMethods.Common.ValueIsIndicatedInMm")<br><br>
+                @T("Admin.ShippingMethods.Common.ForExample120")
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.UseCurrency)
+{
+    <div class="form-group row middle-xs">
+        <div class="col-xs-12 flex-grow-n setting__label @(isMobile ? "" : "col-fixed-size-md")">
+            Валюта, в которой производится расчет доставки
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+            @Html.DropDownListFor(x => x.CurrencyId, Model.Currencies, new { ng_model = "shippingMethod.currencyId", ng_init = "shippingMethod.currencyId='" + Model.CurrencyId + "'", required = "required", @class = "form-control input-alt", validation_input_text = "Валюта, в которой производится расчет доставки" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs  @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Валюта, в которой производится расчет доставки">
+                <p>Данная опция отвечает за назначение валюты, в которой работает данный метод доставки.</p>
+                <p>В списке содержится только валюты поддерживаемые данным методом доставки.</p>
+            </help-trigger>
+        </div>
+    </div>
+    if (Model.CurrencyAllAvailable == false && Model.Currencies.Count(x => x.Value.IsNotEmpty()) <= 0)
+    {
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-8">
+                <div class="adv-panel-danger">
+                    <p>Внимание! В списке валют нет поддерживаемой, данным методом доставки, валюты. Из-за этого метод будет работать не корректно.</p>
+                    <p>
+                        Необходимо создать валюту с ISO3 равным
+                        @(Model.CurrencyIso3Available != null ? string.Join(", ", Model.CurrencyIso3Available) : "[Метод использует валюту и не реализовал список поддерживаемых валют]").
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@if (Model.RequiresSpecifyingTypeOfDelivery)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.TypeOfDelivery")
+        </div>
+        <div class="col-xs-12 col-md-6 setting--m-t-sm relative @(isMobile ? "flex middle-xs" : "")">
+            <span class="@(isMobile ? "flex-grow" : "")">@Html.DropDownListFor(x => x.TypeOfDelivery, Model.TypesOfDelivery, new {@class = "form-control input-alt", required = "required", ng_model = "shippingMethod.TypeOfDelivery", ng_init = "shippingMethod.TypeOfDelivery='" + Model.TypeOfDelivery + "'", validation_input_text = T("Admin.ShippingMethods.Common.TypeOfDelivery")})</span>
+        </div>
+    </div>
+}
+else 
+{
+    @Html.HiddenFor(x => x.TypeOfDelivery, new { @class = "form-control", ng_model = "shippingMethod.CargoExtrachargeType" })
+}
+@if (Model.UseDeliveryInterval)
+{
+    <div class="form-group row middle-xs">
+        <div class="col-xs-12 flex-grow-n setting__label @(isMobile ? "" : "col-fixed-size-md")">
+            @T("Admin.ShippingMethods.Common.DeliveryIntervals")
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            <shipping-with-interval-settings delivery-intervals-str="shippingMethod.Params.DeliveryIntervalsStr" time-zone-id="shippingMethod.Params.TimeZoneId" min-delivery-time="shippingMethod.Params.MinDeliveryTime"
+                                             time-zones="@Model.TimeZones" count-visible-delivery-day="shippingMethod.Params.CountVisibleDeliveryDay" show-soonest="shippingMethod.Params.ShowSoonest" 
+                                             count-hidden-delivery-day="shippingMethod.Params.CountHiddenDeliveryDay" order-processing-deadline="shippingMethod.Params.OrderProcessingDeadline">
+            </shipping-with-interval-settings>
+        </div>
+        <input type="hidden" name="DeliveryIntervalsStr" ng-model="shippingMethod.Params.DeliveryIntervalsStr" ng-init="shippingMethod.Params.DeliveryIntervalsStr = '@Model.DeliveryIntervalsStr'"
+               value="{{shippingMethod.Params.DeliveryIntervalsStr}}" />
+        <input type="hidden" name="CountVisibleDeliveryDay" ng-model="shippingMethod.Params.CountVisibleDeliveryDay" ng-init="shippingMethod.Params.CountVisibleDeliveryDay = '@Model.CountVisibleDeliveryDay'"
+               value="{{shippingMethod.Params.CountVisibleDeliveryDay}}" />
+        <input type="hidden" name="TimeZoneId" ng-model="shippingMethod.Params.TimeZoneId" ng-init="shippingMethod.Params.TimeZoneId = '@Model.TimeZoneId'"
+               value="{{shippingMethod.Params.TimeZoneId}}" />
+        <input type="hidden" name="MinDeliveryTime" ng-model="shippingMethod.Params.MinDeliveryTime" ng-init="shippingMethod.Params.MinDeliveryTime = '@Model.MinDeliveryTime'"
+               value="{{shippingMethod.Params.MinDeliveryTime}}" />
+        <input type="hidden" name="ShowSoonest" ng-model="shippingMethod.Params.ShowSoonest" ng-init="shippingMethod.Params.ShowSoonest = @Model.ShowSoonest.ToLowerString()"
+               value="{{shippingMethod.Params.ShowSoonest}}" />
+        <input type="hidden" name="CountHiddenDeliveryDay" ng-model="shippingMethod.Params.CountHiddenDeliveryDay" ng-init="shippingMethod.Params.CountHiddenDeliveryDay = '@Model.CountHiddenDeliveryDay'"
+               value="{{shippingMethod.Params.CountHiddenDeliveryDay}}" />
+        <input type="hidden" name="OrderProcessingDeadline" ng-model="shippingMethod.Params.OrderProcessingDeadline" ng-init="shippingMethod.Params.OrderProcessingDeadline = '@Model.OrderProcessingDeadline'"
+               value="{{shippingMethod.Params.OrderProcessingDeadline}}" />
+    </div>
+}
+
+<script type="text/ng-template" id="find-region.html">
+    <a><span>{{match.model.Region}}</span> <span ng-if="match.model.CountryName.length">({{match.model.CountryName}})</span></a>
+</script>
+<script type="text/ng-template" id="find-city.html">
+    <a><span>{{match.model.City}}</span><span ng-if="match.model.District.length">, {{match.model.District}}</span> <span ng-if="match.model.Region.length">({{match.model.Region}})</span></a>
+</script>

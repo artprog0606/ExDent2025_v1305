@@ -1,0 +1,153 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Saas
+
+@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settings");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsApi", FormMethod.Post, new { name = "form", enctype = "multipart/form-data", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.SettingsAPI").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settings.onSelectTab(null)"
+    };
+
+    headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Save,
+            Attributes = new[] { "ng-if=\"settings.tabActiveIndex == 'api' || settings.tabActiveIndex == 'apiAuth'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\""},
+            Icon = new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new {width = 25, height = 25}
+            }
+        }
+    );
+
+    headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Save,
+            Attributes = new[] {"ng-if=\"settings.tabActiveIndex == '1c'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\""},
+            Icon = new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new {width = 25, height = 25}
+            }
+        }
+    );
+
+    headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-if=\"settings.tabActiveIndex === 'webhooks'\"" },
+            WrapStart = " <ui-modal-trigger ng-if=\"settings.tabActiveIndex === 'webhooks'\" data-controller=\"'ModalAddEditApiWebhookCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/addEditApiWebhook/addEditApiWebhook.html\" data-on-close=\"settings.apiWebhooks.addApiWebhookModal(result)\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new {width = 16, height = 16},
+            }
+        }
+    );
+
+    @Html.Header(headerModel)
+
+    if(!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    @*<input type="submit" class="btn btn-sm btn-success" value="Сохранить" data-button-validation disabled ng-disabled="!form.modified" />
+                        @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" })*@
+                </div>
+            </div>
+        </div>
+    }
+
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.Commonpage.SettingsAPI.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text"> @T("Admin.Settings.Commonpage.SettingsAPI")</h1>
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.SettignsApi.Index.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset uid="apiTab"
+                on-select-batch="settings.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.API)
+        {
+            <uib-tab index="'api'" classes="ng-tab" heading="@T("Admin.Settings.API")" removable="false">
+                @Html.Partial("_ApiSettings", Model)
+            </uib-tab>
+        }
+        @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.NativeMobileApp)
+        {
+            <uib-tab index="'apiAuth'" classes="ng-tab" heading="@T("Admin.Settings.APIAuth")" removable="false">
+                @Html.Partial("_ApiSettingsAuth", Model)
+            </uib-tab>
+        }
+        @if (Model.ShowOneC)
+        {
+            <uib-tab index="'1c'" classes="ng-tab" heading="1C">
+                @Html.Partial("_1CSettings", Model)
+            </uib-tab>
+        }
+        <uib-tab index="'webhooks'" classes="ng-tab" heading="@T("Admin.Settings.Webhooks")" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_WebhooksSettings")
+            </div>
+        </uib-tab>
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.SettignsApi.Index.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+}

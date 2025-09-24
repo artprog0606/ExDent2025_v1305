@@ -1,0 +1,72 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="DiscountsPriceRangeCtrl as discountsPriceRange" @Html.Raw(isMobile ? "ng-init=\"settingsCoupons.discountsPriceRange = discountsPriceRange; settingsCoupons.setTabData('discounts', discountsPriceRange);\"" : "ng-init=\"settingsCoupons.setTabData('discounts', discountsPriceRange);\"")>
+    <div class="sticky-page-name @(isMobile ? "" : " m-t-n-xs") p-n" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main flex middle-xs">
+                    <h2 class="sticky-page-name-text m-t-none setting--align-top" data-e2e="DiscountsTitle">
+                        @T("Admin.DiscountsPriceRange.Index.Title")
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalAddEditDiscountsPriceRangeCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("AddEditDiscountsPriceRange.html")"
+                                      data-on-close="discountsPriceRange.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="DiscountsAdd">
+                            <span class="fa fa-plus"></span>@T("Admin.Add")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div>
+        <label class="adv-checkbox-label category-label" data-e2e="enableDiscounts">
+            <input type="checkbox" class="adv-checkbox-input"
+                   ng-model="discountsPriceRange.enableDiscounts"
+                   ng-init="discountsPriceRange.enableDiscounts= settingsCoupons.tabData != null ? settingsCoupons.tabData.enableDiscounts : @SettingsCheckout.EnableDiscountModule.ToLowerString()"
+                   ng-change="discountsPriceRange.changeDiscountsState()"/>
+            <span class="adv-checkbox-emul"></span>
+            <span class="setting__label @(isMobile ? "m-l-xs" : "")">@T("Admin.DiscountsPriceRange.Index.EnableDiscountModule")</span>
+        </label>
+        <p class="m-b-sm m-t-sm">
+            @T("Admin.DiscountsPriceRange.Index.Hint")
+        </p>
+    </div>
+
+    <ui-grid-custom grid-unique-id="gridPriceRange"
+                    grid-on-init="discountsPriceRange.gridOnInit(grid)"
+                    grid-options="discountsPriceRange.gridOptions"
+                    grid-url="'discountsPriceRange/getItems'"
+                    grid-inplace-url="'discountsPriceRange/updateItem'"
+                    grid-extend-ctrl="discountsPriceRange"
+                    grid-swipe-line="true">
+        <ui-grid-custom-override-header-control>
+            <span class="ui-grid-custom-override-header__cell">Сумма заказа свыше</span>
+            <span class="ui-grid-custom-override-header__cell">Скидка (%)</span>
+        </ui-grid-custom-override-header-control>
+        <ui-grid-custom-override-control class="ng-cloak">
+            <ui-modal-trigger data-controller="'ModalAddEditDiscountsPriceRangeCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("AddEditDiscountsPriceRange.html")"
+                              data-resolve="{'OrderPriceDiscountId': row.entity.OrderPriceDiscountId}"
+                              data-on-close="grid.appScope.$ctrl.fetchData()">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div class="flex between-xs center-xs">
+                        <div class="card__col m-r-xs flex middle-xs">
+                            {{row.entity.PriceRange}}
+                        </div>
+                        <div class="card__col card__col--end setting--align-center">
+                            {{row.entity.PercentDiscount}} %
+                        </div>
+                    </div>
+                </div>
+            </ui-modal-trigger>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+
+</div>

@@ -1,0 +1,49 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+<div class="container-fluid">
+    <div class="lp-container">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+
+        <div class="row middle-xs">
+            <div class="col-xs-12 col-sm-5">
+                @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                {
+                    DeletePicture = false,
+                    GalleryIconsEnabled = false,
+                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                    MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                    MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                }, Model.Inplace)
+            </div>
+            <div class="col-xs-12 col-sm-7 first-sm">
+                <div class="lp-block-team-details-reverse__col-data">
+                    <div class="lp-font-size--large lp-block-team-details-reverse__header">@Html.SubBlock(Model, "header")</div>
+                    <div class="lp-h3--color lp-block-team-details-reverse__subheader">@Html.SubBlock(Model, "subheader")</div>
+                    <div class="lp-font-size--middle  lp-block-team-details-reverse__content">@Html.SubBlock(Model, "text")</div>
+
+                    @if (Model.Block.TryGetSetting("show_button") == true)
+                    {
+                        <div class="row @Model.Block.TryGetSetting("align_btns")">
+                            <div class="col-xs-12">
+                                @Html.Button(Model.Block, "button")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

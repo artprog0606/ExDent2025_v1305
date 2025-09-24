@@ -1,0 +1,41 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+}
+@if (AdminAreaTemplate.Current == null || AdminAreaTemplate.IsAdminv3())
+{
+    @section NavMenu {
+
+        @Html.Action("NavMenu", "Booking")
+    }
+}
+
+@if (AdminAreaTemplate.Current != null)
+{
+    //adminv3
+    @section TopContent {
+        <div class="balance__padding-page balance__padding-page--bg-white">
+            <div class="main-panel-page">
+                <div class="sticky-page-name p-b-n" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="page-name-block-item-main">
+                            @Html.Action("AffiliatesMenu", "Booking")
+                        </div>
+                        @if (IsSectionDefined("BlockAdditional"))
+                        {
+                            <div class="page-name-block-item-additional">
+                                @RenderSection("BlockAdditional", false)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@RenderBody()

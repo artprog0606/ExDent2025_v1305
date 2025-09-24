@@ -1,0 +1,76 @@
+﻿@model SubBlockModel
+@{
+    string src = Model.SubBlock.TryGetSetting("src");
+    string alt = Model.SubBlock.TryGetSetting("alt");
+    string widthPicture = Model.SubBlock.TryGetSetting("width");
+    string heightPicture = Model.SubBlock.TryGetSetting("height");
+    bool isCustomSizeFull = widthPicture.IsNotEmpty() && heightPicture.IsNotEmpty();
+    bool lazyLoadEnabled = Model.SubBlock.TryGetSetting("lazyLoadEnabled") != null ? Model.SubBlock.TryGetSetting("lazyLoadEnabled") : true;
+    int maxWidth = 400;
+    int maxHeight = 200;
+    string sizeImage = "";
+    if(isCustomSizeFull){
+        sizeImage = String.Format("style=\"width:{0}px; height:{1}px\"", widthPicture, heightPicture);
+    }else if(widthPicture.IsNotEmpty()){
+        sizeImage = String.Format("style=\"width:{0}px;\" height=\"{1}\"", widthPicture, maxHeight);
+    }else if(heightPicture.IsNotEmpty()){
+        sizeImage = String.Format("style=\"height:{1}px;\" width=\"{0}\"", maxWidth, heightPicture);
+    }
+}
+
+@if (Model.InPlace)
+{
+    var logogeneratorId = "logogenerator_" + Guid.NewGuid();
+    var landingPageId = LpService.CurrentLanding.Id;
+    var noPhotoSrc = "areas/landing/frontend/images/nophoto.jpg";
+    <div class="logo-generator-wrap" data-oc-lazy-load="[{serie:true, files: [@Html.RenderAssetFilesList("logogeneratorFunnel")]}]">
+        <div data-ng-init="blocksConstructorContainer.data.logogeneratorId = '@logogeneratorId'; blocksConstructorContainer.lazyLoadEnabled = @lazyLoadEnabled.ToString().ToLower();">
+            <logo-generator-preview class="logo-generator-preview ng-cloak"
+                                    data-edit-on-page-load="false"
+                                    data-logo-generator-id="@logogeneratorId">
+                <picture-loader-trigger lp-id="@landingPageId"
+                                        block-id="@Model.SubBlock.LandingBlockId"
+                                        delete-picture="false"
+                                        gallery-icons-enabled="false"
+                                        current="@(src != null ? "'" + UrlService.GetUrl(src) + "'" : "")"
+                                        max-width-picture="@maxWidth"
+                                        max-height-picture="@maxHeight"
+                                        width-picture="@widthPicture"
+                                        height-picture="@heightPicture"
+                                        no-photo="@noPhotoSrc"
+                                        on-apply="subblockInplace.savePicture(result)"
+                                        on-resize="subblockInplace.resizePicture(result)"
+                                        on-lazy-load-change="subblockInplace.onLazyLoadChange(result); blocksConstructorContainer.lazyLoadEnabled = result"
+                                        lazy-load-enabled="{{blocksConstructorContainer.lazyLoadEnabled}}">
+                    <img ng-src="{{pictureLoaderTrigger.imgSrc}}" ng-style="{'width': pictureLoaderTrigger.widthPicture, 'height': pictureLoaderTrigger.heightPicture}" alt="@alt" data-logo-generator-preview-img @Html.Raw(sizeImage)>
+                    <div class="inplace-buttons inplace-buttons-confirm inplace-image-buttons inplace-image-buttons-rendered picture-loader-trigger__controls">
+                        <a href="javascript:void(0)" picture-loader-element-trigger class="icon-plus-circled-before link-text-decoration-none inplace-buttons-item" title="Загрузить логотип"></a>
+                        <logo-generator-trigger logo-generator-id="@logogeneratorId"
+                                                url-save="landing/landingInplace/LogoGeneratorProcessPicture"
+                                                logo-generator-params="{
+                                                lpId: @landingPageId,
+                                                blockId: @Model.SubBlock.LandingBlockId
+                                            }"
+                                                logo-generator-success-fn="subblockInplace.savePicture({picture: src})"
+                                                logo-generator-fonts-options="{itemClass: '@(Model.ParentBlock.TryGetSetting("color_scheme_custom") == null ? Model.ParentBlock.TryGetSetting("color_scheme") : "")', itemStyle: { 'background-color': @(Model.ParentBlock.TryGetSetting("color_scheme_custom") == null ? "null" : "'" + Model.ParentBlock.TryGetSetting("color_scheme_custom").BackgroundColor + "'") }}"
+                                                logo-generator-options="{disableAlign: true}">
+                            <a href="javascript:void(0)"
+                               title="{{ ::'Js.Inplace.EditLogoPicture' | translate }}"
+                               class="icon-pencil-before link-text-decoration-none inplace-buttons-item"></a>
+                        </logo-generator-trigger>
+                        <a href="javascript:void(0)"
+                           title="{{ ::'Js.Inplace.DeletePricture' | translate }}"
+                           class="icon-trash-before link-text-decoration-none inplace-buttons-item"
+                           ng-click="subblockInplace.savePicture({picture: null}); pictureLoaderTrigger.imgSrc = '@noPhotoSrc'"></a>
+                    </div>
+                </picture-loader-trigger>
+            </logo-generator-preview>
+        </div>
+    </div>
+}
+else if (src != null)
+{
+    <a href="@(new LpService().GetLpLinkByMain(LpService.CurrentLanding))">
+        <img src="@UrlService.GetUrl(src.ToString())" alt="@alt" @Html.Raw(sizeImage)>
+    </a>
+}

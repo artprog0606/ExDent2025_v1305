@@ -1,0 +1,240 @@
+﻿<div class="row" is-mobile ng-class="{'form-group' : !isMobile.value}">
+    <div class="col-xs-12 col-md-2" ng-class="{'setting__form-group' : isMobile.value}">
+        <div class="m-b-xs" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+            {{'Admin.Js.Triggers.TriggerActionSendRequest.Method'|translate}}
+        </div>
+        <select
+            ng-model="ctrl.action.SendRequestData.RequestMethod"
+            class="form-control input-alt"
+            ng-options="s.value as s.label for s in ctrl.methodOptions"></select>
+    </div>
+    <div class="col-xs-12 col-md" ng-class="{'setting__form-group' : isMobile.value}">
+        <div class="m-b-xs" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">URL</div>
+        <input type="text" ng-model="ctrl.action.SendRequestData.RequestUrl" class="form-control input-alt" required validation-input-text="URL" />
+    </div>
+</div>
+
+<div ng-if="ctrl.action.SendRequestData.RequestMethod == 1" data-is-mobile>
+    <div class="row" ng-class="{'setting__form-group' : isMobile.value}">
+        <div class="col-xs-12 bold adv-radio-group" ng-class="{'adv-radio-group--horizontal' : !isMobile.value}">
+            <span ng-class="{'block setting-label-wrap setting__label m-b-sm' : isMobile.value, 'm-b-xs' : !isMobile.value}">Параметры</span>
+            <label class="adv-radio-label" ng-class="{'block setting-label-wrap m-b-sm' : isMobile.value, 'm-b-xs' : !isMobile.value}">
+                <input class="adv-radio-input" ng-model="ctrl.action.SendRequestData.RequestParamsType" type="radio" value="0" />
+                <span class="adv-radio-label-text">Форма</span>
+                <span class="adv-radio-emul"></span>
+            </label>
+            <label class="adv-radio-label" ng-class="{'block setting-label-wrap m-b-sm' : isMobile.value, 'm-b-xs' : !isMobile.value}">
+                <input class="adv-radio-input" ng-model="ctrl.action.SendRequestData.RequestParamsType" type="radio" value="1" />
+                <span class="adv-radio-label-text">Текст</span>
+                <span class="adv-radio-emul"></span>
+            </label>
+        </div>
+    </div>
+
+    <div ng-if="ctrl.action.SendRequestData.RequestParamsType == '1'">
+        <div class="form-group row middle-xs m-b-md">
+            <div class="col-xs-12">
+                <textarea rows="12" class="form-control input-alt" ng-model="ctrl.action.SendRequestData.RequestParamsJson"></textarea>
+            </div>
+        </div>
+    </div>
+    <div ng-if="ctrl.action.SendRequestData.RequestParamsType == '0'">
+        <div
+            ng-if="ctrl.action.SendRequestData.RequestParams != null && ctrl.action.SendRequestData.RequestParams.length > 0"
+            ng-repeat="item in ctrl.action.SendRequestData.RequestParams track by $index"
+            class="form-group row middle-xs m-b">
+            <div class="col-xs-5 col-md-2">
+                <input type="text" ng-model="item.Key" class="form-control input-alt" />
+            </div>
+            <div class="col-xs-5 col-md-4">
+                <input type="text" ng-model="item.Value" class="form-control input-alt" />
+            </div>
+            <div class="col-xs-1 col-md-1">
+                <a href="" ng-click="ctrl.removeParam(item)" class="fa fa-times link-invert link-decoration-none p-l-xs" title="Удалить"></a>
+            </div>
+        </div>
+        <div class="form-group row middle-xs m-b-md" ng-if="!ctrl.showAddingNewParam">
+            <div class="col-xs-12">
+                <a href="" ng-class="{'btn btn-success btn-sm' : isMobile.value}" ng-click="ctrl.showAddingNewParam = true"
+                    >{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a
+                >
+            </div>
+        </div>
+    </div>
+</div>
+<div is-mobile>
+    <div ng-if="ctrl.action.SendRequestData.RequestMethod == 1 && ctrl.showAddingNewParam && !isMobile.value" class="m-b-md">
+        <div class="row m-b-xs">
+            <div class="col-xs-2">{{'Admin.Js.Triggers.TriggerActionSendRequest.Name'|translate}}</div>
+            <div class="col-xs-2">{{'Admin.Js.Triggers.TriggerActionSendRequest.Meaning'|translate}}</div>
+        </div>
+        <div class="form-group row middle-xs">
+            <div class="col-xs-2">
+                <input type="text" ng-model="ctrl.newParamKey" class="form-control" />
+            </div>
+            <div class="col-xs-4">
+                <input type="text" ng-model="ctrl.newParamValue" class="form-control" />
+            </div>
+            <div class="col-xs-2">
+                <a href="" ng-click="ctrl.addParam()">{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="ctrl.action.SendRequestData.RequestMethod == 1 && ctrl.showAddingNewParam && isMobile.value">
+        <div class="row setting__form-group">
+            <div class="col-xs-12 setting-label-wrap setting__label">{{'Admin.Js.Triggers.TriggerActionSendRequest.Name'|translate}}</div>
+            <div class="col-xs-12">
+                <input type="text" ng-model="ctrl.newParamKey" class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="row setting__form-group">
+            <div class="col-xs-12 setting-label-wrap setting__label">{{'Admin.Js.Triggers.TriggerActionSendRequest.Meaning'|translate}}</div>
+            <div class="col-xs-12">
+                <input type="text" ng-model="ctrl.newParamValue" class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="setting__form-group">
+            <a href="" class="btn btn-success btn-sm" ng-click="ctrl.addParam()">{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a>
+        </div>
+    </div>
+
+    <div ng-if="ctrl.action.SendRequestData.RequestMethod == 1">
+        <div class="row m-b-xs">
+            <div class="col-xs-12 bold setting__subtitle">{{'Admin.Js.Triggers.TriggerActionSendRequest.Headlines'|translate}}</div>
+        </div>
+        <div
+            ng-if="ctrl.action.SendRequestData.RequestHeaderParams != null && ctrl.action.SendRequestData.RequestHeaderParams.length > 0"
+            ng-repeat="item in ctrl.action.SendRequestData.RequestHeaderParams track by $index"
+            class="form-group row middle-xs m-b">
+            <div class="col-xs-5 col-md-2">
+                <input type="text" ng-model="item.Key" class="form-control input-alt" />
+            </div>
+            <div class="col-xs-5 col-md-4">
+                <input type="text" ng-model="item.Value" class="form-control input-alt" />
+            </div>
+            <div class="col-xs-1 col-md-1">
+                <a href="" ng-click="ctrl.removeHeaderParam(item)" class="fa fa-times link-invert link-decoration-none p-l-xs" title="Удалить"></a>
+            </div>
+        </div>
+        <div class="form-group row middle-xs m-b-md" ng-if="!ctrl.showAddingNewHeaderParam">
+            <div class="col-xs-12">
+                <a href="" ng-class="{'btn btn-success btn-sm' : isMobile.value}" ng-click="ctrl.showAddingNewHeaderParam = true"
+                    >{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a
+                >
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="ctrl.action.SendRequestData.RequestMethod == 1 && ctrl.showAddingNewHeaderParam && !isMobile.value" class="m-b-md">
+        <div class="row m-b-xs">
+            <div class="col-xs-2">{{'Admin.Js.Triggers.TriggerActionSendRequest.Name'|translate}}</div>
+            <div class="col-xs-4">{{'Admin.Js.Triggers.TriggerActionSendRequest.Meaning'|translate}}</div>
+        </div>
+        <div class="form-group row middle-xs">
+            <div class="col-xs-2">
+                <input type="text" ng-model="ctrl.newHeaderParamKey" class="form-control" />
+            </div>
+            <div class="col-xs-4">
+                <input type="text" ng-model="ctrl.newHeaderParamValue" class="form-control" />
+            </div>
+            <div class="col-xs-2">
+                <a href="" class="" ng-click="ctrl.addHeaderParam()">{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="ctrl.action.SendRequestData.RequestMethod == 1 && ctrl.showAddingNewHeaderParam && isMobile.value">
+        <div class="row setting__form-group">
+            <div class="col-xs-12 setting-label-wrap setting__label">{{'Admin.Js.Triggers.TriggerActionSendRequest.Name'|translate}}</div>
+            <div class="col-xs-12">
+                <input type="text" ng-model="ctrl.newHeaderParamKey" class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="row setting__form-group">
+            <div class="col-xs-12 setting-label-wrap setting__label">{{'Admin.Js.Triggers.TriggerActionSendRequest.Meaning'|translate}}</div>
+            <div class="col-xs-12">
+                <input type="text" ng-model="ctrl.newHeaderParamValue" class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="setting__form-group">
+            <a href="" class="btn btn-success btn-sm" ng-click="ctrl.addHeaderParam()"
+                >{{'Admin.Js.Triggers.TriggerActionSendRequest.Add'|translate}}</a
+            >
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12" ng-class="{'fs-xs' : isMobile.value}">
+            {{'Admin.Js.Triggers.TriggerActionSendRequest.AvailableVariables'|translate}} {{ctrl.getSendRequestParameters()}}
+        </div>
+        <div ng-if="ctrl.eventType == 1" class="col-xs-12 m-t-xs m-b-xs">
+            <a ng-click="ctrl.showRequestHint[ctrl.eventType]=!ctrl.showRequestHint[ctrl.eventType]" href="" class="link-dotted link-dashed">
+                Пример запроса
+            </a>
+            <div class="m-t" ng-if="ctrl.showRequestHint[ctrl.eventType]">
+                <div class="api-item post">
+                    <span class="method">POST</span>
+                    <span class="path">https://site.ru/api/order/add?apikey={apikey}</span>
+                </div>
+                <pre>
+{
+    "OrderCustomer": {
+        "CustomerId": "#ClientId#",
+        "FirstName": "#ClientFirstName#",
+        "LastName": "#ClientLastName#",
+        "Patronymic": "#ClientPatronymic#",
+        "Organization": "#ClientOrganization#",
+        "Email": "#ClientEmail#",
+        "Phone": "#ClientPhone#",
+        "Country": "#ClientCountry#",
+        "Region": "#ClientRegion#",
+        "City": "#ClientCity#",
+        "District": "#ClientDistrict#",
+        "Zip": "#ClientZip#",
+        "CustomField1": "#ClientCustomField1#",
+        "CustomField2": "#ClientCustomField2#",
+        "CustomField3": "#ClientCustomField3#",
+        "Street": "#ClientStreet#",
+        "House": "#ClientHouse#",
+        "Apartment": "#ClientApartment#",
+        "Structure": "#ClientStructure#",
+        "Entrance": "#ClientEntrance#",
+        "Floor": "#ClientFloor#"
+    },
+    "Number": "#Number#",
+    "OrderPrefix": "prefix-",
+    "OrderSource": "#OrderSource#",
+    "Currency": "#Currency#",
+    "CustomerComment": "#Comments#",
+    "AdminComment": "#AdminComment#",
+    "ShippingName": "#ShippingMethod#",
+    "PaymentName": "#PaymentMethod#",
+    "DeliveryTime": "#DeliveryTime#",
+    "DeliveryDate": "#DeliveryDate#",
+    "ShippingCost": #ShippingCost#,
+    "PaymentCost": #PaymentCost#,
+    "BonusCost": #BonusCost#,
+    "BonusCardNumber": #BonusCardNumber#,
+    "OrderDiscount": #OrderDiscountPercent#,
+    "OrderDiscountValue": #OrderDiscountValue#,
+    "TrackNumber": "#TrackNumber#",
+    "TotalWeight": "#TotalWeight#",
+    "TotalLength": "#TotalLength#",
+    "TotalWidth": "#TotalWidth#",
+    "TotalHeight": "#TotalHeight#",
+    "OrderStatusName": "#Status#",
+    "IsPaied": #IsPaid#,
+    "OrderItems": #Products#,
+
+    "CheckOrderItemExist": false,
+    "CheckOrderItemAvailable": false,
+    "ValidateBonusCost": false,
+    "SkipBusinessProcessesAfterCreatingOrder": true,
+    "SkipBonusPurchase": false
+}</pre
+                >
+            </div>
+        </div>
+    </div>
+</div>

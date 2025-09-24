@@ -1,0 +1,55 @@
+﻿<div class="container-fluid" ng-if="!ctrl.isMobileMode">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="inline product-setting-title content-header">{{'Admin.Js.AddEditVideo.Title'|translate}}</h2>
+        </div>
+    </div>
+</div>
+<div ng-class="{'container-fluid' : !ctrl.isMobileMode}">
+    <div class="form-group row">
+        <div class="col-xs-12">
+            <div class="m-b">
+                {{'Admin.Js.ProductVideos.AttachFromYoutube'|translate}}
+                <ui-modal-trigger
+                    data-controller="'ModalAddEditVideoCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/product/components/productVideos/modal/addEditVideo/AddEditVideo.html"
+                    data-resolve="{'productId': ctrl.productId }"
+                    data-on-close="ctrl.gridVideos.fetchData()">
+                    <a href="" data-e2e="ProductVideoAdd">{{'Admin.Js.AddEditVideo.Attach'|translate}}</a>
+                </ui-modal-trigger>
+            </div>
+            <div id="gridProductVideos">
+                <ui-grid-custom
+                    ng-if="ctrl.showGridVideos"
+                    grid-unique-id="gridVideos"
+                    grid-on-init="ctrl.gridOnInit(grid)"
+                    grid-on-fetch="ctrl.gridOnFetch(grid)"
+                    grid-filter-enabled="false"
+                    grid-pagination-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{ProductId:ctrl.productId}"
+                    grid-options="ctrl.gridOptions"
+                    grid-url="'product/getVideos'"
+                    grid-inplace-url="'product/updateVideo'"
+                    grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div class="card card--gap-row-sm card--p-18">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddEditVideoCtrl'"
+                                controller-as="ctrl"
+                                template-url="../areas/admin/content/src/product/components/productVideos/modal/addEditVideo/AddEditVideo.html"
+                                data-resolve="{'productVideoId': row.entity.ProductVideoId, 'productId': row.entity.ProductId}"
+                                window-class="product-modal-video"
+                                data-on-close="grid.appScope.$ctrl.fetchData()">
+                                <div class="flex between-xs center-xs">
+                                    <div>{{row.entity.Name || ('Admin.Js.ProductVideos.NameNotSpecified'|translate)}}</div>
+                                </div>
+                            </ui-modal-trigger>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿@model AdvantShop.Web.Admin.Models.Bonuses.Rules.CancellationsBonusRuleModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n col-xs-12 col-md-3">
+        <span class="text-required setting__label">@T("Admin.Rules.CancellationBonuses.CancellationAfter")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.AgeCard, new { @class = "form-control input-alt", ng_model = "rule.Rule.AgeCard", required = "required", validation_input_text = T("Admin.Rules.CancellationBonuses.CancellationAfter").ToString() })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile) {
+    <div class="flex-grow-n col-xs-12 col-md-3">
+        <span class="setting__label">@T("Admin.Rules.CancellationsBonus.DoNotSend")</span>
+    </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex middle-xs" : "")">
+            @Html.CheckBoxFor(x => x.NotSendSms, new { @class = "adv-checkbox-input", ng_model = "rule.Rule.NotSendSms" })
+            <span class="adv-checkbox-emul" data-e2e="NotSendSms"></span>
+            @if (isMobile)
+            {
+                <span class="setting__label flex-grow m-l-sm">@T("Admin.Rules.CancellationsBonus.DoNotSend")</span>
+            }
+        </label>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="!rule.Rule.NotSendSms">
+    <div class="flex-grow-n col-xs-12 col-md-3">
+        <span class="text-required setting__label">@T("Admin.Rules.CancellationsBonus.SmsWarning")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.SmsDayBefore, new { @class = "form-control input-alt", ng_model = "rule.Rule.SmsDayBefore", required = "required", validation_input_text = T("Admin.Rules.CancellationsBonuses.SmsWarn").ToString() })
+    </div>
+</div>

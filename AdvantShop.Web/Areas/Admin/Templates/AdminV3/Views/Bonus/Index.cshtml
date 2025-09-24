@@ -1,0 +1,91 @@
+﻿@{
+    Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_Layout.cshtml";
+
+    @model AdvantShop.Core.Services.SalesChannels.SalesChannel
+
+    Html.AddAsset("exportFeeds");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">Бонусная программа</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Home")
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        Attributes = new[] { "ng-click=\"exportFeeds.deleteSaleChannel('Bonus')\"" },
+        Text = T("Отключить канал"),
+        Icon = new ButtonIcon()
+        {
+            SvgName = "on",
+            Attributes = new { width = 24, height = 24 }
+        }
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+}
+
+<div class="tabs-navigation tabs--template">
+    <ul class="nav nav-tabs nav-tabs--slim nav-tabs--indent-bottom">
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("cards")">
+                Бонусные карты
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("grades")">
+                Грейды
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("rules")">
+                Правила
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("notificationtemplates")">
+                Шаблоны уведомлений
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("notificationtemplates/notificationlog")">
+                История уведомлений
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@UrlService.GetAdminUrl("settingsbonus")">
+                Настройки
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+        <li class="uib-tab nav-item ng-tab">
+            <a class="nav-link" href="@Url.AbsoluteActionUrl("Index", "Analytics", new { analyticsReportTab ="bonus" })">
+                Аналитика
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black" /></svg>
+            </a>
+        </li>
+    </ul>
+</div>

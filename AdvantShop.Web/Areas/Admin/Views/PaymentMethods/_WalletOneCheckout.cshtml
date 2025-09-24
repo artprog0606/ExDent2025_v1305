@@ -1,0 +1,95 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.WalletOneCheckoutPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            <div>
+                Если у вас нет учетной записи в сервисе Единая Касса, вы можете зарегистрироваться по <a href="https://go.advantshop.net/walletone" target="_blank">ссылке</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.WalletOneCkeckout.OnlineStoreID")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.MerchantId, new { ng_model = "paymentMethod.Parameters.MerchantId", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.WalletOneCkeckout.OnlineStoreID").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.WalletOneCkeckout.OnlineStoreID")">
+            @T("Admin.PaymentMethods.WalletOneCkeckout.NumberOfYourStore")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.WalletOneCheckout.SecretKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.WalletOneCheckout.SecretKey").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.WalletOneCheckout.SecretKey")">
+            @T("Admin.PaymentMethods.WalletOneCheckout.NumericalAndAlphabeticCode")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.WalletOneCheckout.UsedPaymentSystems")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="@(isMobile ? "flex-grow" : "")">
+            @Html.TextAreaFor(x => x.PayWaysEnabled, new { ng_model = "paymentMethod.Parameters.PayWaysEnabled", @class = "form-control input-alt", style = "height: 80px" })
+            <div class="m-t-sm">
+                <a href="http://www.walletone.com/ru/merchant/documentation/#step4" onclick="this.target='_blank'">@T("Admin.PaymentMethods.WalletOneCheckout.ListOfAvailableMethods")</a>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.WalletOneCheckout.UsedPaymentSystems")">
+            @T("Admin.PaymentMethods.WalletOneCheckout.TransferOfTheMethods")<br><br>
+            <a href="http://www.walletone.com/ru/merchant/documentation/#step4" onclick="this.target='_blank'">@T("Admin.PaymentMethods.WalletOneCheckout.ListOfMethods")</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.WalletOneCheckout.ProhibitedPaymentSystems")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="@(isMobile ? "flex-grow" : "")">
+            @Html.TextAreaFor(x => x.PayWaysDisabled, new { ng_model = "paymentMethod.Parameters.PayWaysDisabled", @class = "form-control input-alt", style = "height: 80px" })
+            <div class="m-t-sm">
+                <a href="http://www.walletone.com/ru/merchant/documentation/#step4" onclick="this.target='_blank'">@T("Admin.PaymentMethods.WalletOneCheckout.ListOfMethods")</a>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.WalletOneCheckout.ProhibitedPaymentSystems")">
+            @T("Admin.PaymentMethods.WalletOneCheckout.EnumerationOfPaymentMethod")<br><br>
+            <a href="http://www.walletone.com/ru/merchant/documentation/#step4" onclick="this.target='_blank'">@T("Admin.PaymentMethods.WalletOneCheckout.ListOfMethods")</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    @if (!isMobile)
+    {
+        <div class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            @T("Admin.PaymentMethods.WalletOneCheckout.SendDataForCheck")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.PaymentMethods.WalletOneCheckout.SendDataForCheck")</span>
+            }
+        </label>
+    </div>
+</div>
+

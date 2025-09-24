@@ -1,0 +1,167 @@
+﻿@model AdvantShop.Web.Admin.Models.Crm.Leads.LeadModel
+@{
+    var source = Model.TrafficSource;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox">
+    <div class="ibox-content block-additional-parameters-content block-additional-parameters-content--padding-mid">
+        <div class="form-horizontal container-fluid">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.SalesFunnel")
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        @Html.DropDownListFor(x => x.Lead.SalesFunnelId, Model.SalesFunnels, new { @class = "form-control input-alt", ng_model = "lead.instance.lead.salesFunnelId", ng_init = "lead.instance.lead.salesFunnelId='" + Model.Lead.SalesFunnelId + "'", ng_change = "lead.changeSalesFunnel()" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.DealStage")
+                    </div>
+                    <div class="col-xs-12 col-md-8"
+                         ng-init="lead.finalStatusId='@Model.FinalStatusId';
+                                  lead.canceledStatusId='@Model.CanceledStatusId';
+                                  lead.finalSuccessAction=@(Model.SalesFunnel != null ? (int) Model.SalesFunnel.FinalSuccessAction : 0);
+                                  lead.statuses=@Model.SerializedStatuses;
+                                  lead.instance.lead.dealStatusId='@Model.Lead.DealStatusId';">
+                        <select class="form-control input-alt"
+                                ng-model="lead.instance.lead.dealStatusId"
+                                ng-init="lead.instance.lead.dealStatusId='@Model.Lead.DealStatusId'"
+                                ng-change="lead.changeLeadStatus('{{lead.instance.lead.dealStatusId}}')"
+                                ng-options="s.value as s.label for s in lead.statuses"
+                                data-e2e="lead_DealStatus">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Order != null)
+            {
+
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <a href="orders/edit/@Model.Order.OrderID" target="_blank">@T("Admin.Leads.Description.OrderNumber")@Model.Order.Number</a>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.Budget")
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        <div class="flex middle-xs">
+                            <div class="flex-grow m-r-sm">
+                                <input type="text" name="leadSum" data-e2e="Lead_Sum" class="form-control input-alt" ng-model="lead.instance.lead.sum" ng-readonly="lead.hasProducts || lead.readOnly" validation-input-float="" value="@Model.Lead.Sum" ng-blur="leadForm.leadSum.modified && lead.saveLead(lead.instance)" ng-model-options="{debounce: 500}" />
+                                <input type="hidden" id="Lead_Sum" name="Lead.Sum" value="{{lead.sum | numbergreedy}}" />
+                            </div>
+                            <div class="">
+                                @(Model.Lead.LeadCurrency != null ? Model.Lead.LeadCurrency.CurrencySymbol : Model.LeadCurrency.Symbol)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.Manager")
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        @Html.DropDownListFor(x => x.Lead.ManagerId, Model.Managers, new { @class = "form-control input-alt", ng_model = "lead.instance.lead.managerId", ng_init = "lead.instance.lead.managerId='" + Model.Lead.ManagerId + "'", ng_change = "lead.saveLead(lead.instance)", ng_model_options = "{debounce: 500}", ng_disabled = "lead.readOnly" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.Source")
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        @Html.DropDownListFor(x => x.Lead.OrderSourceId, Model.LeadSources, new { @class = "form-control input-alt", ng_model = "lead.instance.lead.orderSourceId", ng_init = "lead.instance.lead.orderSourceId='" + Model.Lead.OrderSourceId + "'", ng_change = "lead.saveLead(lead.instance)", ng_model_options = "{debounce: 500}", ng_disabled = "lead.readOnly" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">
+                        @T("Admin.Leads.Description.Description")
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        @Html.TextAreaFor(x => x.Lead.Description, new { elastic_text = "", data_elastic_max_height = "300", ng_model = "lead.instance.lead.description", @class = "form-control input-alt r-v", ng_blur = "leadForm['Lead.Description'].modified && lead.saveLead(lead.instance)", ng_readonly = "lead.readOnly" })
+                    </div>
+                </div>
+            </div>
+
+            <lead-fields leadfields-js="lead.instance.leadfieldsJs" lead-id="lead.instance.lead.Id" class="block custom-fields-two-columns" on-init="lead.leadFieldsReloadFn = reloadFn"
+                         on-lead-fields-change="lead.saveLeadField()"></lead-fields>
+
+            @Html.RenderModules("admin_lead_description", new { leadId = Model.Lead.Id })
+
+            @if (source != null)
+            {
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <div class="col-xs-12 m-b-sm">
+                            @T("Admin.Leads.Description.UTMtags")
+                        </div>
+                        <div class="col-xs-12 text-floating text-break">
+                            @if (!string.IsNullOrEmpty(source.Referrer))
+                            {
+                                <div class="m-b-sm word-break">@T("Admin.Leads.Description.Referral")@source.Referrer</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.Url))
+                            {
+                                <div class="m-b-sm">@T("Admin.Leads.Description.LoginPage")@source.Url</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.Ip))
+                            {
+                                <div class="m-b-sm">@T("Admin.Leads.Description.IP"): @source.Ip</div>
+                            }
+                            <div class="m-b-sm">@T("Admin.Leads.Description.Date")@source.CreateOn.ToString("dd.MM.yyyy HH:mm")</div>
+                            @if (!string.IsNullOrEmpty(source.utm_source))
+                            {
+                                <div class="m-b-sm">UTM Source: @source.utm_source</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.utm_medium))
+                            {
+                                <div class="m-b-sm">UTM Medium: @source.utm_medium</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.utm_campaign))
+                            {
+                                <div class="m-b-sm">UTM Campaign: @source.utm_campaign</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.utm_content))
+                            {
+                                <div class="m-b-sm">UTM Content: @source.utm_content</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.utm_term))
+                            {
+                                <div class="m-b-sm">UTM Term: @source.utm_term</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.GoogleClientId))
+                            {
+                                <div class="m-b-sm">Google client id: @source.GoogleClientId</div>
+                            }
+                            @if (!string.IsNullOrEmpty(source.YandexClientId))
+                            {
+                                <div class="m-b-sm">Yandex client id: @source.YandexClientId</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

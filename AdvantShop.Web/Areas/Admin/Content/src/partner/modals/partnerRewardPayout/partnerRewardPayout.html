@@ -1,0 +1,69 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.PartnerBalance.RewardPayout'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label"> Период от </label>
+                    <div class="col-xs-12 col-md-9 ng-cloak">{{ctrl.rewardPeriodFrom}}</div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required">Период до (включительно)</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9 ng-cloak">
+                        <div class="input-group" ng-flatpickr fp-opts="ctrl.fpOptions" fp-on-change="ctrl.getFormData()">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                <input class="form-control input-alt" ng-flatpickr-input ng-model="ctrl.rewardPeriodTo" type="text" />
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required">{{'Admin.Js.PartnerBalance.Amount'|translate}}</span>
+                        <help-trigger ng-if="!isMobile.value" class="ng-cloak word-spacing" data-title="Сумма">
+                            Сумма вознаграждения высчитывается за период от предыдущей выплаты вознаграждения (если выплат не было - с момента
+                            регистрации) до даты, указанной в поле "Период до"
+                        </help-trigger>
+                    </label>
+                    <div class="col-xs-12 col-md-9" ng-class="{'flex middle-xs' : isMobile.value}">
+                        <input
+                            type="number"
+                            ng-model="ctrl.amount"
+                            class="form-control input-alt"
+                            required="required"
+                            validation-input-text="{{'Admin.Js.PartnerBalance.Amount'|translate}}"
+                            autofocus />
+                        <help-trigger ng-if="isMobile.value" class="ng-cloak word-spacing m-l-sm col-xs-1" data-title="Сумма">
+                            Сумма вознаграждения высчитывается за период от предыдущей выплаты вознаграждения (если выплат не было - с момента
+                            регистрации) до даты, указанной в поле "Период до"
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.PartnerBalance.Basis'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <textarea ng-model="ctrl.basis" class="form-control r-v input-alt"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.submit()" data-button-validation>
+            {{'Admin.Js.PartnerBalance.Pay'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

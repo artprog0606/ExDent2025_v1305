@@ -1,0 +1,59 @@
+﻿@using AdvantShop.Saas;
+@model AdvantShop.Web.Admin.ViewModels.Booking.MenuJsonModel
+
+@helper GetClassForSubmenu(string action, string controller)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = currentAction == action && currentController == controller ? "sidebar__item--selected" : "";
+    
+    @cssClass
+}
+
+@if (Model.SelectedAffiliate != null && (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveBooking))
+{
+    <ul role="menu" class="side-menu-submenu dropdown-menu submenu vertical-menu" data-submenu data-ng-init="submenu.isSubmenuVisible = @Model.IsOpen.ToLowerString()">
+        <li class="dropdown-submenu @GetClassForSubmenu("index", "booking")" data-submenu-parent>
+            <a href="@Url.AbsoluteActionUrl("Index")" class="dropdown-menu-link">
+                @T("Admin.Booking.NavMenu.JournalOfBooking")
+            </a>
+        </li>
+        @if (Model.AccessToEditing)
+        {
+            <li class="dropdown-submenu @GetClassForSubmenu("index", "bookingcategory")" data-submenu-parent>
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingCategory")" class="dropdown-menu-link">
+                    @T("Admin.Booking.NavMenu.Services")
+                </a>
+            </li>
+        }
+        <li class="dropdown-submenu @GetClassForSubmenu("index", "bookingresources")" data-submenu-parent>
+            <a href="@Url.AbsoluteActionUrl("Index", "BookingResources")" class="dropdown-menu-link">
+                @T("Admin.Booking.NavMenu.Employees")
+            </a>
+        </li>
+        @if (Model.AccessToAnalytic)
+        {
+            <li class="dropdown-submenu @GetClassForSubmenu("index", "bookinganalytics")" data-submenu-parent>
+                <a href="@Url.AbsoluteActionUrl("Index", "BookingAnalytics")" class="dropdown-menu-link">
+                    @T("Admin.Booking.NavMenu.Reports")
+                </a>
+            </li>
+        }
+        @if (Model.AccessToEditing)
+        {
+            <li class="dropdown-submenu @GetClassForSubmenu("settings", "bookingaffiliate")" data-submenu-parent>
+                <a href="@Url.AbsoluteActionUrl("Settings", "BookingAffiliate")" class="dropdown-menu-link">
+                    Настройки филиала
+                </a>
+            </li>
+        }
+        @if (Model.AccessToSettings)
+        {
+            <li class="dropdown-submenu @GetClassForSubmenu("index", "settingsbooking")" data-submenu-parent>
+                <a href="@Url.AbsoluteActionUrl("Index", "SettingsBooking")" class="dropdown-menu-link">
+                    @T("Admin.Booking.NavMenu.Settings")
+                </a>
+            </li>
+        }
+    </ul>
+}

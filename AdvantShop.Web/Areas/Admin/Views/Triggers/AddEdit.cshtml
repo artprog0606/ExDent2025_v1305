@@ -1,0 +1,90 @@
+﻿@model AdvantShop.Web.Admin.Models.Triggers.TriggerEditModel
+@{
+    Layout = "~/Areas/Admin/Views/Triggers/_TriggersLayout.cshtml";
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    Html.AddAsset("triggers");
+}
+
+@if (isMobile)
+{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel
+    {
+        Title = "<span class=\"float-header-page\" ng-bind=\"triggers.triggerEditCtrl.name\"></span>",
+        ShowOnlySticky = true,
+        Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "Triggers") + "?triggersTab=triggers"
+        }
+    };
+
+    headerModel.Controls.Add(new ButtonModel()
+    {
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.OnlyIcon
+        },
+        ColorType = eColorType.Secondary,
+        Type = eButtonType.Save,
+        Attributes = new[] {"ng-click=\"triggers.triggerEditCtrl.save()\""},
+        Icon = new ButtonIcon()
+        {
+            SvgName = "done",
+            Attributes = new {width = 25, height = 25}
+        }
+    });
+
+    var moreButton = new MoreButtonModel
+    {
+        ColorType = eColorType.Secondary,
+        NgTemplateId = "moreButtonHeaderTemplate",
+        Items = new List<MoreButtonPopoverItem>
+        {
+            new MoreButtonPopoverItem()
+            {
+                Type = eButtonType.Link,
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Attributes = new[] {"ng-click=\"triggers.getTriggeremailings()\""},
+                RowAttributes = new {ng_if = "triggers.triggerEditCtrl.id"},
+                Text = T("Аналитика email рассылки"),
+            },
+            new MoreButtonPopoverItem()
+            {
+                Type = eButtonType.Link,
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Attributes = new[] {"ng-click=\"triggers.triggerEditCtrl.copyTrigger()\""},
+                RowAttributes = new {ng_if = "triggers.triggerEditCtrl.id"},
+                Text = T("Копировать триггер"),
+            },
+            new MoreButtonPopoverItem()
+            {
+                Type = eButtonType.Link,
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                WrapStart = " <ui-modal-trigger data-controller=\"'ModalChangeTriggerNameCtrl'\" template-url=\"../areas/admin/content/src/triggers/modal/changeTriggerName/changeTriggerName.html\" data-on-close=\"triggers.setName(result)\"  data-resolve=\"{\'triggerCtrl\': triggers.triggerEditCtrl}\">",
+                WrapEnd = "</ui-modal-trigger>",
+                RowAttributes = new {ng_if = "triggers.triggerEditCtrl.id"},
+                Text = T("Переименовать"),
+            }
+        }
+    };
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+}
+
+<trigger-edit on-init="triggers.getTriggerEditCtrl(triggerEditCtrl)" id="@(Model.Id != null ? Model.Id.ToString() : "")" event-type="@((int)Model.EventType)"></trigger-edit>
+

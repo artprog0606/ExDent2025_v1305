@@ -1,0 +1,165 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+
+    var itemsForRender = new List<TextModel>();
+
+    var itemsCountInBlock = Model.Block.TryGetSetting("rows_in_block") != null ? (int)Model.Block.TryGetSetting("rows_in_block") : 1;
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+    var itemsTotalInRowInBlock = itemsCountInRow * itemsCountInBlock;
+
+    if (items != null && items.Count > 0)
+    {
+        itemsForRender = items.Take(itemsTotalInRowInBlock).ToList();
+    }
+
+    string alignItems = Model.Block.TryGetSetting("align_items");
+}
+
+@if (itemsForRender.Any())
+{
+    float width = 100F / itemsCountInRow;
+    var widthString = width.ToInvariantString() + "%";
+    var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+    <style>
+                    #block_@Model.Block.Id .lp-block-columns-text {
+                        min-width: 100%;
+                        -webkit-flex-basis: 100%;
+                        -ms-flex-preferred-size: 100%;
+                        flex-basis: 100%;
+                        max-width: 100%;
+                    }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .lp-block-columns-text {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width: @(minWidth)px;
+                            }
+                        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="lp-container" data-ng-controller="ColumnsCtrl as columns">
+        <div class="row center-xs lp-block-columns-three__row">
+            @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="col-xs-12">
+                    <div class="lp-block-columns-header">
+                        @if (Model.Block.TryGetSetting("show_title") == true)
+                        {
+                            <div class="lp-h2 lp-h2--color" data-e2e="columnsThreeIconsTitle">
+                                @Html.SubBlock(Model, "title")
+                            </div>
+                        }
+                        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                        {
+                            <div class="lp-h3 lp-h3--color" data-e2e="columnsThreeIconsSubtitle">
+                                @Html.SubBlock(Model, "subtitle")
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="flex flex-wrap lp-block-columns-three-icons__row @alignItems" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+
+            @if (itemsForRender.Any())
+            {
+                for (var i = 0; i < itemsForRender.Count; i++)
+                {
+
+                    <div class="lp-font-size--middle lp-block-columns-text lp-block-columns-three__col">
+                        <div class="lp-block-columns-three__item">
+                            <div class="@(Model.Block.TryGetSetting("columnBackground") == true ? "color-scheme__bg--alt color-scheme__text-alt lp-block-columns-three__item-inner--paddings" : "") lp-block-columns-three__item-inner">
+                                <div class="lp-block-columns-three-icons__icon @alignItems" data-e2e="columnsThreeIconsIcon">
+                                    <div>
+                                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                   {
+                                       LandingPageId = Model.Block.LandingId,
+                                       BlockId = Model.Block.Id,
+                                       OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                       OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                       Current = itemsForRender[i].Picture.Src,
+                                       Type = itemsForRender[i].Picture.Type,
+                                       DeletePicture = true,
+                                       GalleryIconsEnabled = true,
+                                       LazyLoadEnabled = itemsForRender[i].Picture.LazyLoadEnabled,
+                                       LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                       MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                                       MaxHeightPicture = PictureLoaderImageSize.SmallWidth,
+                                       WidthPicture = itemsForRender[i].Picture.Width,
+                                       HeightPicture = itemsForRender[i].Picture.Height
+                                   })
+                                    </div>
+                                </div>
+                                <div class="lp-block-columns-three__header" data-e2e="columnsThreeIconsHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                    @Html.Raw(itemsForRender[i].Title)
+                                </div>
+                                <div class="lp-h3--color" data-e2e="columnsThreeIconsText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                    @Html.Raw(itemsForRender[i].Text)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="lp-font-size--middle lp-block-columns-text lp-block-columns-three__col"
+                     data-ng-repeat="item in columns.columnsData track by $index">
+                    <div class="lp-block-columns-three__item">
+                        <div class="@(Model.Block.TryGetSetting("columnBackground") == true ? "color-scheme__bg--alt" : "") lp-block-columns-three__item-inner">
+                            <div class="lp-block-columns-three-icons__icon  @alignItems" data-e2e="columnsThreeIconsIcon">
+                                <div>
+                                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                               {
+                                   LandingPageId = Model.Block.LandingId,
+                                   BlockId = Model.Block.Id,
+                                   OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + itemsTotalInRowInBlock + " + $index)",
+                                   OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + " + $index)",
+                                   OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + "+ $index," + Model.Block.Id + ", result)",
+                                   NgCurrent = "item.Picture.Src",
+                                   NgType = "item.Picture.Type",
+                                   DeletePicture = true,
+                                   GalleryIconsEnabled = true,
+                                   LazyLoadType = ePictureLoaderLazyLoadType.Angular,
+                                   MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                   MaxHeightPicture = PictureLoaderImageSize.XSmallHeight,
+                                   NgWidthPicture = "item.Picture.Width",
+                                   NgHeightPicture = "item.Picture.Height",
+                               })
+                                </div>
+                            </div>
+                            <div class="lp-block-columns-three__header" data-e2e="columnsThreeIconsHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].title")
+                                 data-ng-bind="item.Title">
+                            </div>
+                            <div class="lp-h3--color" data-e2e="columnsThreeIconsText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].text")
+                                 data-ng-bind="item.Text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                if (items != null && items.Count > itemsCountInBlock)
+                {
+                    <div class="lp-block-columns-three__more col-xs-12" data-ng-if="@itemsTotalInRowInBlock + (columns.page * @itemsCountInRow) < @items.Count">
+                        <button type="button" data-ladda="columns.inProgress" class="lp-btn lp-btn--primary" data-ng-click="columns.getItems(@Model.Block.Id, @itemsCountInRow, @itemsTotalInRowInBlock + (columns.page * @itemsCountInRow), 'TextModel')">Показать еще</button>
+                    </div>
+                }
+
+            }
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs") lp-block-columns-button" data-e2e="ColumnsBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

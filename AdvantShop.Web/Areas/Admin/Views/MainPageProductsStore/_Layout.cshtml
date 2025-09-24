@@ -1,0 +1,124 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("mainPageProducts");
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Shared/_Layout.cshtml";
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = "<span class=\"float-header-page\" ng-bind=\"mainpageproducts.selectedList.Name\"></span>";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("index", "Design", new {showCommon = true })
+        };
+
+        headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            WrapStart = "<ui-modal-trigger ng-if=\"mainpageproducts.selectedList.TypeStr != 'sale' && mainpageproducts.showMode != 'list' && mainpageproducts.selectedList != null\" class=\"header-subtext\" data-controller=\"'ModalProductsSelectvizrCtrl'\" controller-as=\"ctrl\" size=\"xs-11\" on-close=\"mainpageproducts.addProductsModal(result)\" template-url=\"" + Html.GetAssetPath("productsSelectvizrModal.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        }
+        );
+
+        var moreButtonDefaultList = new MoreButtonModel();
+        moreButtonDefaultList.ColorType = eColorType.Secondary;
+        moreButtonDefaultList.NgTemplateId = "mainPageProductsMoreButtonHeaderTemplate";
+        moreButtonDefaultList.Attributes = new string[] { "ng-if=\"mainpageproducts.showMode != 'list' && mainpageproducts.selectedList != null\"" };
+        moreButtonDefaultList.Items = new List<MoreButtonPopoverItem>();
+        moreButtonDefaultList.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.MainPageProducts.Index.Edit"),
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            ColorType = eColorType.Link,
+            WrapStart = " <ui-modal-trigger  controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{data: {'typeStr': mainpageproducts.selectedList.TypeStr}}\" data-controller=\"'ModalEditMainPageListCtrl'\" template-url=\"" + Html.GetAssetPath("editMainPageList.html") + "\" data-on-close=\"mainpageproducts.getItemByType(mainpageproducts.selectedList.TypeStr, null)\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+
+        var moreButtonCustomList = new MoreButtonModel();
+        moreButtonCustomList.ColorType = eColorType.Secondary;
+        moreButtonCustomList.NgTemplateId = "mainPageProductsCustomListMoreButtonHeaderTemplate";
+        moreButtonCustomList.Attributes = new string[] { "ng-if=\"mainpageproducts.showMode == 'list' && mainpageproducts.selectedList != null\"" };
+        moreButtonCustomList.Items = new List<MoreButtonPopoverItem>();
+        moreButtonCustomList.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.MainPageProducts.Index.Edit"),
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            ColorType = eColorType.Link,
+            WrapStart = " <ui-modal-trigger  controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{'id': mainpageproducts.selectedList.Id}\" data-controller=\"'ModalAddEditProductListCtrl'\" template-url=\"" + Html.GetAssetPath("addEditProductList.html") + "\" data-on-close=\"mainpageproducts.updateProductLists()\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                WrapStart = "<ui-modal-trigger ng-if=\"mainpageproducts.showMode == 'list' && mainpageproducts.selectedList != null && mainpageproducts.selectedList.TypeStr != 'sale'\" class=\"header-subtext\" data-controller=\"'ModalProductsSelectvizrCtrl'\" controller-as=\"ctrl\" size=\"xs-11\" on-close=\"mainpageproducts.productlistsCtrl.addProductsModal(result)\" template-url=\"" + Html.GetAssetPath("productsSelectvizrModal.html") + "\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            }
+        );
+
+        headerModel.Controls.Add(moreButtonDefaultList);
+        headerModel.Controls.Add(moreButtonCustomList);
+
+        @Html.Header(headerModel)
+        
+    } else
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+
+}
+<div class="row">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        @Html.Partial("CatalogLeftMenu")
+
+        <product-lists-menu on-init="mainpageproducts.initProductLists(productLists)"
+                            on-change="mainpageproducts.onChangeList(list)"
+                            main-page-products="mainpageproducts">
+        </product-lists-menu>
+        <div class="m-b-lg">
+            <ui-modal-trigger data-controller="'ModalAddEditProductListCtrl'" controller-as="ctrl" size="lg"
+                              template-url="@Html.GetAssetPath("addEditProductList.html")"
+                              data-on-close="mainpageproducts.onAddList(result)">
+                <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="productListAdd">
+                    <span class="fa fa-plus"></span> @T("Admin.ProductLists.Index.AddList")
+                </button>
+            </ui-modal-trigger>
+        </div>
+
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox">
+            <div class="ibox-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>

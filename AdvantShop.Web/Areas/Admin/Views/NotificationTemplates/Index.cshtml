@@ -1,0 +1,105 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+        var isMobile = SettingsDesign.IsMobileTemplate;
+
+        if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+        {
+            Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+        }
+
+        Html.AddAsset("notificationtemplates");
+
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.SmsTemplates.Index.Title") + "</span>";
+        headerModel.ShowOnlySticky = true;
+        headerModel.EnabledBack = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "Bonus")
+        };
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+          {
+                eButtonModificators.OnlyIcon
+                      },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Add,
+               WrapStart = " <ui-modal-trigger data-controller=\"'ModalAddEditNotificationTemplateCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/_shared/modal/bonus/notificationtemplate/addeditnotificationtemplate.html\" on-close=\"notificationtemplates.gridUpdate()\" resolve=\"{params:{ IsNew:\'true\' }}\">",
+               WrapEnd = "</ui-modal-trigger>",
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "plus-alt",
+                   Attributes = new { width = 16, height = 16 },
+               }
+       }
+  );
+
+    @Html.Header(headerModel)
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }    
+}
+
+ @if (!isMobile)
+ {
+<div class="sticky-page-name m-t-n-xs m-b-xs " sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main flex middle-xs">
+            <h2 class="m-r-xs  sticky-page-name-text m-t-none">
+                @T("Admin.SmsTemplates.Index.Title")
+            </h2>
+        </div>
+        <div class="page-name-block-item-additional">
+            <ui-modal-trigger data-controller="'ModalAddEditNotificationTemplateCtrl'"
+                              controller-as="ctrl" size="md" backdrop="static"
+                              template-url="@Html.GetAssetPath("addeditnotificationtemplate.html")"
+                              resolve="{params:{ IsNew:'true'}}"
+                              on-close="notificationtemplates.gridUpdate()">
+                <a data-e2e="Add" class="btn btn-sm btn-success btn--margin-left" href="">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.SmsTemplates.Index.Add")
+                </a>
+            </ui-modal-trigger>
+        </div>
+    </div>
+</div>
+ }
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-extend-ctrl="notificationtemplates"
+                        grid-row-identificator="'NotificationId'"
+                        grid-on-init="notificationtemplates.gridOnInit(grid)"
+                        grid-options="notificationtemplates.gridOptions"
+                        grid-url="'notificationtemplates/getnotificationtemplates'"
+                        grid-filter-enabled="true"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <ui-modal-trigger data-controller="'ModalAddEditNotificationTemplateCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                                  template-url="@Html.GetAssetPath("addeditnotificationtemplate.html")"
+                                  on-close="notificationtemplates.gridUpdate()"
+                                  resolve="{params:{ NotificationTypeId:row.entity.NotificationType, BonusNotificationMethod:row.entity.NotificationMethod, NotificationTemplateId:row.entity.NotificationId, NotificationBody:row.entity.NotificationBody }}">
+                    <div class="card card--gap-row-sm">
+                        <div>
+                            @T("Admin.NotificationsTemplates.Index.TemplateType") - {{row.entity.NotificationTypeName}}
+                        </div>
+                        <div>
+                            @T("Admin.NotificationsTemplates.Index.NotificationMethod") - {{row.entity.NotificationMethodName}}
+                        </div>
+                        <div>
+                            @T("Admin.NotificationsTemplates.Index.Message") - {{row.entity.NotificationBody}}
+                        </div>
+                    </div>
+                </ui-modal-trigger>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="sponsorsLevel.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

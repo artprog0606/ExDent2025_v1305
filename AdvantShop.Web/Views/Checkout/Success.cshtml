@@ -1,0 +1,82 @@
+﻿@using AdvantShop.Core.Services.Catalog
+@model AdvantShop.ViewModel.Checkout.CheckoutSuccess
+@{ 
+    Html.AddAsset("checkoutSuccess");
+    if (Model.IsEmptyLayout)
+    {
+        Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+    }
+}
+
+@Html.Raw(Model.GoogleAnalyticsString)
+
+<div class="site-body-cell mobile-content-padding checkout-success @(Model.IsEmptyLayout ? "checkout-success--layout-empty" : "checkout-success--layout-default")">
+    <div class="checkout-success-content">
+        <div class="page-title-row checkout-success-title-row">
+            <div class="checkout-success-title page-title">
+                <h1>@T("Checkout.Success.Success")</h1>
+            </div>
+        </div>
+        <div>
+            <div class="checkout-success-content-top vertical-interval-small">
+                @Html.Raw(Model.OrderSuccessTopText)
+                @if (SettingsCheckout.ManagerConfirmed)
+                {
+                    <div>@T("Checkout.Success.TextConfirmByManager")</div>
+                }
+            </div>
+            <div class="vertical-interval-small">
+                <div data-ng-init="checkoutSuccess.getPayInfo(@Model.Order.OrderID)" class="ng-cloak">
+                    <div class="vertical-interval-small checkout-success" data-ng-show="checkoutSuccess.payment.proceedToPayment === true && checkoutSuccess.payment.willProceedToPayment && checkoutSuccess.isPaymentProceeded !== true">
+                        @T("Checkout.Success.ProceedToPayment")
+                    </div>
+                    <div class="js-checkout-success">
+                        @Html.Action("GetOrderPay", new { area = "", orderCode = Model.Order.Code, pageWithPaymentButton = AdvantShop.Payment.PageWithPaymentButton.orderconfirmation, validationDisabled = true})
+                    </div>
+                </div>
+            </div>
+            <div class="vertical-interval-small">
+                <a href="@Url.RouteUrl("PrintOrder", new {code = Model.Order.Code})" target="blank">@T("Checkout.Success.PrintOrder")</a>
+            </div>
+            @if (Model.Order.PaymentMethod != null && Model.Order.PaymentMethod.PaymentKey == "GiftCertificate")
+            {
+                @Html.StaticBlock("ordersuccess-withgiftcertificate")
+            }
+            @if (!Model.IsLanding)
+            {
+                @Html.Action("ThankYouPage", new {area = "", orderId = Model.Order.OrderID})
+            }
+            @if (!Model.IsLanding && Model.NewBonusAmount != null && Model.Order.BonusCardNumber != null && Model.NewBonusAmount.Value > 0)
+            {
+                <div class="vertical-interval-small checkout-success-bonus-card-block">
+                    <span class="bonus-card-block bonus-card-icon bonus-card-icon-center cs-l-2"></span>
+                    <h2 class="checkout-success-bonus-title">@Model.NewBonusAmount.Value.FormatPriceInvariant() @Strings.Numerals(Model.NewBonusAmount.Value, T("Bonuses.Bonuses0"), T("Bonuses.Bonuses1"), T("Bonuses.Bonuses2"), T("Bonuses.Bonuses5"))</h2>
+                    @T("Checkout.Success.WillCreditedToBonusCard") <b>@Model.Order.BonusCardNumber</b> @T("Checkout.Success.WillCreditedToBonusCard.After payment")
+                </div>
+            }
+            @Html.StaticBlock("ordersuccess")
+
+            <script>
+                window.addEventListener('load', function () {
+                    setTimeout(function () {
+                        window.PubSub.publish("order.add");
+                    }, 2000);
+                });
+            </script>
+
+            @if (!Model.IsLanding)
+            {
+                @Html.RenderModules("order_success", new {area = "", order = Model.Order})
+            }
+            else 
+            {
+                @Html.Action("YandexMetrikaCheckoutFinalStep", "LandingTracking", new { area = "Landing", order = Model.Order })
+                @Html.Action("GaCheckoutFinalStep", "LandingTracking", new { area = "Landing", orderId = Model.Order.OrderID })
+                @Html.Action("GtmCheckoutFinalStep", "LandingTracking", new { area = "Landing", orderId = Model.Order.OrderID })
+                @Html.RenderModules("order_success_landing", new {area = "", order = Model.Order})
+            }
+            @Html.Raw(Model.SuccessScript)
+        </div>
+
+    </div>
+</div>

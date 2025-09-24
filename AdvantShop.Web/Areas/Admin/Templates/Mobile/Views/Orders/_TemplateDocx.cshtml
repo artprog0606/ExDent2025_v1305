@@ -1,0 +1,42 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+
+<div class="order-info__generation-docx">
+    <div class="order-info__title">@T("Admin.Settings.SystemSettings.DocumentGeneration")</div>
+
+    @if (Model.TemplatesDocx.Count > 0)
+    {
+
+        <div class="order-info__row order-info__row--m-b-sm order-info__row--full">
+            <div class="order-info__text">@T("Admin.Settings.SystemSettings.SelectTemplates"):</div>
+        </div>
+        <div class="m-b-md">
+        @foreach (var template in Model.TemplatesDocx)
+        {
+            <div class="order-info__row order-info__row--m-b-sm order-info__row--full">
+                <label class="adv-checkbox-label form-label-block">
+                    <input type="checkbox" checklist-model="order.selectedTemplatesDocx" checklist-value="@template.Id" class="adv-checkbox-input" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@template.Name</span>
+                </label>
+            </div>
+        }
+        </div>
+        <button class="btn btn-success btn-sm order-info__btn" type="button" ladda="order.creatingDocxs"
+                disabled ng-disabled="!order.selectedTemplatesDocx || order.selectedTemplatesDocx.length === 0"
+                ng-click="order.createDocx()">
+            <span class="fa fa-download" ng-class="{'fa-plus': order.templatesDocxAttach, 'fa-download': !order.templatesDocxAttach}"></span> @T("Admin.Settings.SystemSettings.CreateDocuments")
+        </button>
+        <label class="adv-checkbox-label">
+            <input id="OrderTemplatesDocxAttach" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="order.templatesDocxAttach" />
+            <span class="adv-checkbox-emul"></span>
+            @T("Admin.Settings.SystemSettings.AttachToFiles")
+        </label>
+
+    }
+    else
+    {
+        <p class="order-info__text">
+            @T("Admin.Settings.SystemSettings.NoTemplates")
+        </p>
+    }
+</div>

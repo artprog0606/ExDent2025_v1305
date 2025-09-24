@@ -1,0 +1,61 @@
+﻿@model AdvantShop.ViewModel.Cart.CartViewModel
+@{ 
+    Html.AddAsset("cart");
+}
+<div class="col-p-v cart">
+    <div class="cart-title page-title">
+        <div class="row between-xs m-b-md middle-xs">
+            <h1 class="m-b-none col-xs">
+                @T("Cart.Index.ShoppingCart")
+            </h1>
+            <div ng-if="cartPage.cartData != null && cartPage.cartData.CartProducts.length > 0" class="col-xs-slim">
+                <div class="cart-page__cart-btns-wrap">
+                    <button data-clear-cart="" data-ng-click="cartFull.clear($event)" class="btn btn-small btn-action btn--two-column">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.2929 3.29289C19.6834 2.90237 20.3166 2.90237 20.7071 3.29289C21.0976 3.68342 21.0976 4.31658 20.7071 4.70711L13.4142 12L20.7071 19.2929C21.0976 19.6834 21.0976 20.3166 20.7071 20.7071C20.3166 21.0976 19.6834 21.0976 19.2929 20.7071L12 13.4142L4.70711 20.7071C4.31658 21.0976 3.68342 21.0976 3.29289 20.7071C2.90237 20.3166 2.90237 19.6834 3.29289 19.2929L10.5858 12L3.29289 4.70711C2.90237 4.31658 2.90237 3.68342 3.29289 3.29289C3.68342 2.90237 4.31658 2.90237 4.70711 3.29289L12 10.5858L19.2929 3.29289Z" fill="currentColor"/>
+                        </svg>
+                        <span class="cart__clear-cart-text">@T("Js.Cart.ClearBasket")</span>
+                    </button>
+                    <button type="button" class="btn btn-small btn-submit btn--two-column" data-ng-click="cartPage.getUrlShareCart()" uib-tooltip-template="'UrlShare.html'" tooltip-trigger="'click'" tooltip-class="cart-page__url-share" tooltip-placement="bottom-right">
+                        <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+                            <path d="M10.1645 3.56157C10.4214 4.00116 10.8984 4.29646 11.4443 4.29646C12.2625 4.29646 12.9258 3.63318 12.9258 2.81498C12.9258 1.99678 12.2625 1.3335 11.4443 1.3335C10.6261 1.3335 9.96286 1.99678 9.96286 2.81498C9.96286 3.08724 10.0363 3.34235 10.1645 3.56157ZM10.1645 3.56157L3.83534 7.25357M3.83534 7.25357C3.57836 6.81398 3.10139 6.51868 2.55546 6.51868C1.73726 6.51868 1.07397 7.18196 1.07397 8.00016C1.07397 8.81836 1.73726 9.48164 2.55546 9.48164C3.10139 9.48164 3.57836 9.18634 3.83534 8.74676M3.83534 7.25357C3.96349 7.47279 4.03694 7.7279 4.03694 8.00016C4.03694 8.27243 3.96349 8.52754 3.83534 8.74676M3.83534 8.74676L10.1645 12.4388M10.1645 12.4388C10.4214 11.9992 10.8984 11.7039 11.4443 11.7039C12.2625 11.7039 12.9258 12.3671 12.9258 13.1853C12.9258 14.0035 12.2625 14.6668 11.4443 14.6668C10.6261 14.6668 9.96286 14.0035 9.96286 13.1853C9.96286 12.9131 10.0363 12.658 10.1645 12.4388Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="cart__share-link-text">@T("Cart.Index.ShoppingCart.Share")</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-module data-key="fullcartmessage" class="fullcartmessage">
+        @Html.RenderModules("fullcartmessage")
+    </div>
+    @if (Model.ShowPriceAmountNextDiscountsInCart)
+    {
+        <div data-price-amount-cart></div>
+    }
+    <div class="row">
+        <div class="col-xs">
+            <div data-cart-full data-photo-width="@Model.PhotoWidth"></div>
+        </div>
+        @Html.RenderModules("cart_right_column")
+    </div>
+
+    @Html.StaticBlock("shoppingcart")
+    @Html.RenderModules("shoppingcart")
+
+    @if (Model.IsDemo)
+    {
+        <div class="cart-full-error">@T("Cart.Index.FakeShop")</div>
+    }
+
+    @Html.RenderModules("shoppingcart_after")
+</div>
+
+<script type="text/ng-template" id="UrlShare.html">
+    <div class="cart-page__url-share-block">
+        <input class="input-small" id="urlShareCart" ng-model="cartPage.urlShareCart"/>
+        <button class="btn btn-small" data-ng-click="cartPage.copyToClipboard()">
+            <svg aria-hidden="true" focusable="false" class="octicon octicon-copy" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path></svg>
+        </button>
+    </div>
+</script>

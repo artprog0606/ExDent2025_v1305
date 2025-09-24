@@ -1,0 +1,47 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+
+<div class="bonus-card-client">
+    <div class="text-color-alt m-t-md m-b-xs bonus-card-client__title">@T("Admin.Orders.ClientBonuseCard.Bonuses")</div>
+
+    @if (Model.BonusCard != null)
+    {
+        <div class="block-additional-parameters-row bonus-card-client__row">
+            <div class="bonus-card-client__text bonus-card-client__text--alt">
+                @T("Admin.Orders.ClientBonusCard.CardNumber")
+            </div>
+            <div class="block-additional-parameters-value bonus-card-client__text">
+                <a data-e2e="numberBonusCart" target="_blank" href="@Url.AbsoluteActionUrl("Edit", "Cards", new {id = Model.BonusCard.CardId})">@Model.BonusCard.CardNumber</a>
+                @if (Model.BonusCard.Blocked)
+                {
+                    <div class="link-danger">@T("Admin.Orders.ClientBonusCard.CardBlocked")</div>
+                }
+            </div>
+        </div>
+        <div class="block-additional-parameters-row bonus-card-client__row">
+            <div data-e2e="countBonus" class="bonus-card-client__text bonus-card-client__text--alt">
+                @T("Admin.Orders.ClientBonusCard.Points")
+            </div>
+            <div class="block-additional-parameters-value bonus-card-client__text" data-e2e="percentBonus">
+                @Model.BonusCard.BonusesTotalAmount.ToInvatiant() (@Model.BonusCard.Grade.Name @Model.BonusCard.Grade.BonusPercent.ToInvatiant() %)
+            </div>
+        </div>
+    }
+    else if (Model.Customer != null)
+    {
+        <ui-modal-trigger data-controller="'ModalAddCardCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                          template-url="@Html.GetAssetPath("addcard.html")"
+                          data-resolve="{params:{customerId:'@Model.Customer.Id', firstName:'@Model.Customer.FirstName', lastName:'@Model.Customer.LastName', noredirect:true}}"
+                          data-on-close="order.updateOrderBonusCard()">
+            <a data-e2e="AddCard" class="btn btn-sm btn-success btn--margin-left" href="">
+                <span class="fa fa-plus"></span>
+                @T("Admin.Cards.Index.AddCard")
+            </a>
+        </ui-modal-trigger>
+    }
+    else
+    {
+        <div>
+            @T("Admin.Orders.ClientBonusCard.CreateUser")
+        </div>
+    }
+</div>

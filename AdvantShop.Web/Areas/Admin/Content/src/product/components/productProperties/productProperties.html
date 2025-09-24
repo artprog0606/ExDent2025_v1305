@@ -1,0 +1,159 @@
+<div class="container-fluid" ng-if="!$ctrl.isMobileMode">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="inline product-setting-title content-header">{{'Admin.Js.ProductProperties.Title'|translate}}</h2>
+        </div>
+    </div>
+</div>
+<div ng-class="{'container-fluid': !$ctrl.isMobileMode}" is-mobile>
+    <div ng-form="" name="formProductProperties" class="properties" id="properties" bs-modifiable="false">
+        <div ng-switch="$ctrl.dropDownList">
+            <div ng-switch-when="true" data-ng-repeat="group in $ctrl.groups">
+                <details ng-if="group.Name" class="properties-group__drop-down-list">
+                    <summary>
+                        <div class="properties-group form-control-title">
+                            <div class="properties-group-name cs-t-5" ng-bind="group.Name"></div>
+                        </div>
+                    </summary>
+                    <div data-ng-repeat="property in group.Properties" class="properties-item">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3">
+                                <div class="properties-item-name" ng-bind="property.Name"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-9">
+                                <div class="properties-item-value">
+                                    <ui-select
+                                        ng-if="property.Type != 4"
+                                        class="input-alt"
+                                        multiple
+                                        append-to-body="isMobile.value ? false : true"
+                                        tagging="$ctrl.propertyValueTransform"
+                                        tagging-label="true"
+                                        on-select="$ctrl.addPropertyValue(property, $item, $model)"
+                                        on-remove="$ctrl.removePropertyValue(property.PropertyId, $item, $model, property.GroupId)"
+                                        reach-infinity="$ctrl.getMoreValuesForExistProperty(property, 100)"
+                                        ng-click="$ctrl.firstCallValuesForExistProperty(property, 100)"
+                                        uis-open-close="$ctrl.closeSelectPropertyExit(isOpen, property)"
+                                        ng-model="property.SelectedPropertyValues">
+                                        <ui-select-match placeholder="">{{$item.Value}}</ui-select-match>
+                                        <ui-select-choices
+                                            repeat="propertyValue in property.PropertyValues"
+                                            minimum-input-length="1"
+                                            refresh="$ctrl.getPropertyValuesByProperty(property, $select.search)"
+                                            refresh-delay="0">
+                                            <span
+                                                ng-bind="(propertyValue.Name ? propertyValue.Name + ' - ' + propertyValue.Value : propertyValue.Value)"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                    <div ng-if="property.Type == 4">
+                                        <div ng-if="property.SelectedPropertyValues.length == 0">
+                                            <textarea
+                                                class="form-control input-alt"
+                                                rows="3"
+                                                ng-model-options="{ updateOn: 'blur'}"
+                                                ng-model="property.SelectedPropertyValues[0].Value"
+                                                ng-change="$ctrl.addPropertyValue(property, property.SelectedPropertyValues[0], property.SelectedPropertyValues[0])"
+                                                validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                                data-e2e="inputPropertyValue"></textarea>
+                                        </div>
+                                        <div ng-repeat="propertyValue in property.SelectedPropertyValues track by $index" class="m-b-xs">
+                                            <textarea
+                                                class="form-control input-alt"
+                                                rows="3"
+                                                ng-model-options="{ updateOn: 'blur'}"
+                                                ng-model="propertyValue.Value"
+                                                ng-change="$ctrl.updatePropertyValue(property.PropertyId, propertyValue)"
+                                                validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                                data-e2e="inputPropertyValue"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div ng-switch-when="false" data-ng-repeat="group in $ctrl.groups">
+                <!--<div class="properties-group-name" ng-if="group.Title != null" ng-bind="group.Title"></div>-->
+
+                <div class="properties-group form-control-title">
+                    <div class="properties-group-name cs-t-5" ng-bind="group.Name"></div>
+                </div>
+
+                <div data-ng-repeat="property in group.Properties" class="properties-item">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-3">
+                            <div class="properties-item-name" ng-bind="property.Name"></div>
+                        </div>
+                        <div class="col-xs-12 col-md-9">
+                            <div class="properties-item-value">
+                                <ui-select
+                                    ng-if="property.Type != 4"
+                                    class="input-alt"
+                                    multiple
+                                    tagging="$ctrl.propertyValueTransform"
+                                    tagging-label="true"
+                                    on-select="$ctrl.addPropertyValue(property, $item, $model)"
+                                    on-remove="$ctrl.removePropertyValue(property.PropertyId, $item, $model, property.GroupId)"
+                                    reach-infinity="$ctrl.getMoreValuesForExistProperty(property, 100)"
+                                    ng-click="$ctrl.firstCallValuesForExistProperty(property, 100)"
+                                    uis-open-close="$ctrl.closeSelectPropertyExit(isOpen, property)"
+                                    ng-model="property.SelectedPropertyValues">
+                                    <ui-select-match placeholder="">{{$item.Value}}</ui-select-match>
+                                    <ui-select-choices
+                                        repeat="propertyValue in property.PropertyValues track by $ctrl.trackByPropertyValue(propertyValue)"
+                                        minimum-input-length="1"
+                                        refresh="$ctrl.getPropertyValuesByProperty(property, $select.search)"
+                                        refresh-delay="0">
+                                        <span
+                                            ng-bind="(propertyValue.Name ? propertyValue.Name + ' - ' + propertyValue.Value : propertyValue.Value)"></span>
+                                    </ui-select-choices>
+                                </ui-select>
+                                <div ng-if="property.Type == 4">
+                                    <div ng-if="property.SelectedPropertyValues.length == 0">
+                                        <textarea
+                                            class="form-control input-alt"
+                                            rows="3"
+                                            ng-model-options="{ updateOn: 'blur'}"
+                                            ng-model="property.SelectedPropertyValues[0].Value"
+                                            ng-change="$ctrl.addPropertyValue(property, property.SelectedPropertyValues[0], property.SelectedPropertyValues[0])"
+                                            validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                            data-e2e="inputPropertyValue"></textarea>
+                                    </div>
+                                    <div ng-repeat="propertyValue in property.SelectedPropertyValues track by $index" class="m-b-xs">
+                                        <textarea
+                                            class="form-control input-alt"
+                                            rows="3"
+                                            ng-model-options="{ updateOn: 'blur'}"
+                                            ng-model="propertyValue.Value"
+                                            ng-change="$ctrl.updatePropertyValue(property.PropertyId, propertyValue)"
+                                            validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                            data-e2e="inputPropertyValue"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-switch="$ctrl.isMobileMode">
+            <div ng-switch-when="false">
+                <product-properties-form
+                    close="$ctrl.getCurrentProperties()"
+                    resolve="{data: {productId: $ctrl.productId}}"
+                    is-mobile-mode="$ctrl.isMobileMode"></product-properties-form>
+            </div>
+            <div ng-switch-when="true">
+                <ui-modal-trigger
+                    component="productPropertiesForm"
+                    on-close="$ctrl.getCurrentProperties()"
+                    resolve="{data: {productId: $ctrl.productId, isMobileMode: $ctrl.isMobileMode, asModal: true}}">
+                    <button class="btn btn-sm btn-success btn--full-width" type="button">Добавить новое свойство</button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+</div>

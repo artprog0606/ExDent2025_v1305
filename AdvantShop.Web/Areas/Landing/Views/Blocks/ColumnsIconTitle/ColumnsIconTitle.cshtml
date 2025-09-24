@@ -1,0 +1,68 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+
+        @Html.SubBlock(Model, "header")
+
+        <div class="row middle-xs around-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+
+            @if (items != null)
+            {
+                for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="lp-font-size--middle lp-block-columns-icon-title__item">
+                            <div class="lp-block-columns-icon-title__header">
+                                @if (items[i].Picture != null && items[i].Picture.Src.IsNotEmpty())
+                                {
+                                    <div class="lp-block-columns-icon-title__icon">
+                                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                   {
+                                       LandingPageId = Model.Block.LandingId,
+                                       BlockId = Model.Block.Id,
+                                       OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                       OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                       OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                       Current = items[i].Picture.Src,
+                                       Type = items[i].Picture.Type,
+                                       DeletePicture = true,
+                                       GalleryIconsEnabled = true,
+                                       LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                       LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                       MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                       MaxHeightPicture = PictureLoaderImageSize.XSmallHeight,
+                                       WidthPicture = items[i].Picture.Width,
+                                       HeightPicture = items[i].Picture.Height
+                                   })
+                                    </div>
+                                }
+                                <div @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                    @Html.Raw(items[i].Title)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            }
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs") lp-block-columns-button" data-e2e="ColumnsBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

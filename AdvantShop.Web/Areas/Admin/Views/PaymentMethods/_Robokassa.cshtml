@@ -1,0 +1,241 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.RobokassaPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info adv-panel-info--icon-top-20 setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            <div>
+                <div>Подключите модуль Robokassa и принимайте оплаты всеми возможными способами: карты различных банков, СБП, терминалы мгновенной оплаты, банкоматы.</div>
+
+                <span class="">Если у вас нет учетной записи в сервисе Robokassa, вы можете</span>
+                <ui-modal-trigger data-controller="'ModalRobokassaRegistrationCtrl'" controller-as="ctrl" size="lg" backdrop="static"
+                                  window-class="modal--iframe"
+                                  template-url="@Html.GetAssetPath("robokassaRegistration.html")"
+                                  on-close="paymentMethod.Parameters.MerchantLogin = result.shopId; paymentMethod.Parameters.Password = result.key1; paymentMethod.Parameters.PasswordNotify = result.key2;"
+                                  resolve="{params: {'notificationUrl': '@Model.NotificationUrl', 'cancelUrl': '@Model.CancelUrl', 'returnUrl': '@Model.SuccessUrl', 'siteUrl': '@SettingsMain.SiteUrl'}}">
+                    @if (!isMobile)
+                    {
+                        <button class="btn btn-sm btn-success" type="button">
+                            зарегистрироваться
+                        </button>
+                    }
+                    else
+                    {
+                        <a>
+                            зарегистрироваться
+                        </a>
+                    }
+
+                </ui-modal-trigger>
+                @*  по <a href="https://go.advantshop.net/robokassa" target="_blank">ссылке</a> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Шлюз api</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.GatewayCountry, Model.Gateways, new { ng_model = "paymentMethod.Parameters.GatewayCountry", ng_init = "paymentMethod.Parameters.GatewayCountry='" + Model.GatewayCountry + "'", @class = "form-control input-alt" })
+
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Шлюз api">
+            Россия - для продавцов из России.<br />
+            Казахстан - для продавцов из Казахстана.
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Robokassa.SellerLogin")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.MerchantLogin, new { ng_model = "paymentMethod.Parameters.MerchantLogin", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.Robokassa.SellerLogin") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Robokassa.SellerLogin")">
+            @T("Admin.PaymentMethods.Robokassa.EnterVendorLoginSpecifiedInRobokassa")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.Robokassa.Protocol")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.Protocol, Model.Protocols, new { ng_model = "paymentMethod.Parameters.Protocol", ng_init = "paymentMethod.Parameters.Protocol='" + Model.Protocol + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Robokassa.Protocol")">
+            @T("Admin.PaymentMethods.Robokassa.ProtocolHint")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Robokassa.Password1")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "paymentMethod.Parameters.Password", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.Robokassa.Password1") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Robokassa.Password1")">
+            @T("Admin.PaymentMethods.Robokassa.Password1Used")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Robokassa.Password2")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.PasswordNotify, new { ng_model = "paymentMethod.Parameters.PasswordNotify", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.Robokassa.Password2") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Robokassa.Password2")">
+            @T("Admin.PaymentMethods.Robokassa.Password2UsedByPaymentNotification")
+        </help-trigger>
+    </div>
+</div>
+@Html.HiddenFor(x => x.MerchantLogin, new { ng_model = "paymentMethod.Parameters.CurrentMerchantLogin" })
+
+@if (Model.MerchantLogin.IsNotEmpty())
+{
+    <div class="form-group row middle-xs  setting__form-group" ng-if="paymentMethod.Parameters.CurrentMerchantLogin != paymentMethod.Parameters.MerchantLogin">
+        <div class="col-xs-12">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+                Сохраните настройки метода для обновления списка способов оплаты
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-group row middle-xs  setting__form-group">
+        <div class="col-xs-12">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+                Укажите @T("Admin.PaymentMethods.Robokassa.SellerLogin") и сохраните настройки метода для отображения дополнительных настроек
+            </div>
+        </div>
+    </div>
+}
+
+<div class="form-group row middle-xs  setting__form-group" ng-if="@Model.MerchantLogin.IsNotEmpty().ToLowerString()">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Предлагаемый способ оплаты
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm middle-xs flex" ng-init="paymentMethod.currencyLabels = @Model.CurrencyLabelsJsonString; paymentMethod.currencyLabelSelectListItems = @Model.CurrencyLabelSelectListItems">
+        <div class="flex-grow">
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="paymentMethod.currencyLabels">
+                <ui-select-match placeholder="Выберите способ оплаты">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="curLabel.Value as curLabel in paymentMethod.currencyLabelSelectListItems | filter:$select.search"
+                                   minimum-input-length="1"
+                                   group-by="paymentMethod.uiSelectGroupByFn"
+                                   refresh-delay="0">
+                    {{curLabel.Text}}
+                </ui-select-choices>
+            </ui-select>
+            <select name="CurrencyLabels" id="CurrencyLabels" multiple hidden ng-if="paymentMethod.currencyLabels.length">
+                <option selected value="{{option}}" ng-model="paymentMethod.currencyLabels" ng-repeat="option in paymentMethod.currencyLabels track by $index"></option>
+            </select>
+            <input type="hidden" name="CurrencyLabels[]" ng-if="!paymentMethod.currencyLabels.length" />
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Предлагаемый способ оплаты">
+            Предлагаемый способ оплаты, если не задано, то открывается способ по умолчанию от Robokassa
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'AlwaysYes') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'OTP') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'Podeli')">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Минимальная стоимость</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MinimumPrice, new { ng_model = "paymentMethod.Parameters.MinimumPrice", @class = "form-control", required = "required", validation_input_text = "Минимальная стоимость" })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Минимальная стоимость">
+            Кнопка "Купить в кредит" будет отображаться у товаров превышающих это значение
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'AlwaysYes') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'OTP') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'Podeli')">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12 control-label" : "col-fixed-size-md")">
+        Максимальная стоимость
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MaximumPrice, new { ng_model = "paymentMethod.Parameters.MaximumPrice", @class = "form-control", validation_input_text = "Минимальная стоимость", type = "number" })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Максимальная стоимость">
+            Кнопка "Купить в кредит" будет отображаться у товаров не превышающих это значение.<br />
+            Оставьте поле пустым, если это ограничение не нужно.
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'AlwaysYes') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'OTP') || paymentMethod.containsInArrayElement(paymentMethod.currencyLabels, 'Podeli')">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Сумма первого платежа(%)</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.FirstPayment, new { ng_model = "paymentMethod.Parameters.FirstPayment", @class = "form-control input-alt", required = "required", validation_input_text = "Сумма первого платежа(%)" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Сумма первого платежа(%)">
+            % от стоимости товара составит первый платеж
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="IsTest">@T("Admin.PaymentMethods.Robokassa.TestMode")</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.IsTest, new { ng_model = "paymentMethod.Parameters.IsTest", ng_init = "paymentMethod.Parameters.IsTest=" + Model.IsTest.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="SendReceiptData">@T("Admin.PaymentMethods.Robokassa.SendDataForCheck")</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs  setting__form-group" ng-if="@((Model.Fee > 0).ToLowerString())">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Уменьшать стоимость заказа на сумму комиссии
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group">
+            <div>
+                @Html.TextBoxFor(x => x.Fee, new { ng_model = "paymentMethod.Parameters.Fee", @class = "form-control input-alt", type = "number" })
+                @Html.HiddenFor(x => x.Fee, new { Value = "0", ng_if = "!paymentMethod.Parameters.Fee" })
+                <span class="input-group-btn">
+                    <span type="button" class="btn btn-default"><span>%</span></span>
+                </span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Для физ. лиц">
+            Комиссия с покупателя взиматься будет все равно, но сумма заказа будет уменьшена на эту сумму.
+        </help-trigger>
+    </div>
+</div>

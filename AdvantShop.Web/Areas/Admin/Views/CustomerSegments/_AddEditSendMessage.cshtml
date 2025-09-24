@@ -1,0 +1,43 @@
+﻿<div class="dropdown m-r-sm">
+    <button class="btn btn-sm btn-success dropdown-toggle" id="communicationDropdown" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @T("Admin.CustomerSegments.AddEdit.SendMessage")
+        <span class="caret"></span>
+    </button>
+
+
+    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="communicationDropdown">
+        <li>
+            <a ng-click="customerSegment.export()">@T("Admin.CustomerSegments.AddEdit.ExportCustomers")</a>
+        </li>
+        <li>
+            <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'"
+                              controller-as="ctrl"
+                              size="lg"
+                              template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                              data-resolve="{params: {customerIds: customerSegment.customerIds, pageType: 'customerSegment'}}">
+                <a href="">@T("Admin.CustomerSegments.AddEdit.WriteEmail")</a>
+            </ui-modal-trigger>
+        </li>
+        @if (Model.IsEditMode)
+        {
+            <li ng-init="customerSegment.getCustomerIds(@Model.Id)" class="inline m-r-xs">
+                <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl"
+                                  data-resolve="{params: { customerIds: customerSegment.customerIds, pageType: 'customerSegment'}}"
+                                  template-url="@Html.GetAssetPath("sendSms.html")">
+                    <a href="" class="edit link-decoration-none m-l-xs">@T("Admin.CustomerSegments.AddEdit.SendSMS")</a>
+                </ui-modal-trigger>
+            </li>
+        }
+
+        @if (Model.IsEditMode && Model.SegmentFilter != null && Model.SegmentFilter.IsVkUser)
+        {
+            <li>
+                <ui-modal-trigger data-controller="'ModalSendSocialMessageCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("sendSocialMessage.html")"
+                                  data-resolve="{params: {customerSegmentId: @Model.Id, type: 'vk'}}">
+                    <a href="">@T("Admin.CustomerSegments.AddEdit.SendMessageToVkontakte")</a>
+                </ui-modal-trigger>
+            </li>
+        }
+    </ul>
+</div>

@@ -1,0 +1,111 @@
+﻿<form novalidate is-mobile name="additionalWorkingTime">
+    <div class="modal-header" ng-init="ctrl.init(additionalWorkingTime)">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title" ng-if="ctrl.date">
+            {{'Admin.Js.WorkingTime.Settings.AdditionalTimeFor'|translate}} {{ctrl.toLocaleDateString(ctrl.date)}}
+        </h2>
+        <h2 class="modal-header-title" ng-if="ctrl.startDate && ctrl.endDate">
+            {{'Admin.Js.WorkingTime.Settings.AdditionalTimeFrom'|translate}} {{ctrl.toLocaleDateString(ctrl.startDate)}}
+            {{'Admin.Js.WorkingTime.Settings.AdditionalTimeTo'|translate}} {{ctrl.toLocaleDateString(ctrl.endDate)}}
+        </h2>
+    </div>
+    <div class="modal-body task-modal-content-new-item">
+        <div class="form-horizontal" ng-class="{'m-r m-l': !isMobile.value}">
+            <div ng-class="{'form-group': !isMobile.value}">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div class="btn-group">
+                            <input type="hidden" ng-model="ctrl.isWork" />
+                            <button
+                                class="btn btn-sm"
+                                ng-class="{'btn-default': !ctrl.isWork, 'btn-success': ctrl.isWork}"
+                                type="button"
+                                ng-click="ctrl.isWork = true">
+                                {{'Admin.Js.WorkingTime.Settings.WorkingDay'|translate}}
+                            </button>
+                            <button
+                                class="btn btn-sm"
+                                ng-class="{'btn-red-white btn-default': ctrl.isWork, 'btn-success': !ctrl.isWork}"
+                                type="button"
+                                ng-click="ctrl.isWork = false">
+                                {{'Admin.Js.WorkingTime.Settings.Weekend'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div class="row" ng-show="ctrl.isWork">
+                            <div class="col-xs-4" data-ng-class="{'col-xs-12 form-group': isMobile.value}">
+                                <span class="form-field-input vertical-interval-middle">
+                                    <span
+                                        class="input-group date-time-filter-block__input-group"
+                                        data-ng-flatpickr
+                                        fp-opts="{appendTo: '.js-time-from-wrap', enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                                        <span class="flatpickr-custom-wrap js-time-from-wrap">
+                                            <input
+                                                type="text"
+                                                id="timeFrom"
+                                                autocomplete="off"
+                                                class="input-small"
+                                                data-ng-flatpickr-input
+                                                ng-model="ctrl.timeFrom"
+                                                placeholder="От" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-xs-1" style="text-align: center" data-ng-if="!isMobile.value">
+                                <span>&mdash;</span>
+                            </div>
+                            <div class="col-xs-4" data-ng-class="{'col-xs-12 form-group': isMobile.value}">
+                                <span class="form-field-input vertical-interval-middle">
+                                    <span
+                                        class="input-group date-time-filter-block__input-group"
+                                        data-ng-flatpickr
+                                        fp-opts="{appendTo: '.js-time-to-wrap', enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                                        <span class="flatpickr-custom-wrap js-time-to-wrap">
+                                            <input
+                                                type="text"
+                                                id="timeTo"
+                                                autocomplete="off"
+                                                class="input-small"
+                                                data-ng-flatpickr-input
+                                                ng-model="ctrl.timeTo"
+                                                placeholder="До" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div data-ng-class="{'col-xs-12': isMobile.value, 'col-xs-2': !isMobile.value}">
+                                <a class="btn btn-sm btn-success" ng-click="ctrl.addInterval()">
+                                    <span class="fa fa-plus"></span>
+                                    <span ng-bind="('Admin.Js.WorkingTime.Settings.AddInterval'|translate)"> </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row" ng-show="ctrl.isWork">
+                    <div class="col-xs-12">
+                        <div style="font-size: 20px" ng-repeat="interval in ctrl.workingTimes track by $index">
+                            <span ng-bind="interval.TimeFrom + '-' + interval.TimeTo"></span>
+                            <a class="fa-times fas link link-decoration-none link-invert" ng-click="ctrl.deleteInterval($index)"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-red-white btn-default" ng-click="ctrl.delete()">{{'Admin.Js.AddEdit.Delete'|translate}}</button>
+        <button class="btn btn-save btn-primary" disabled ng-disabled="!additionalWorkingTime.modified" ng-click="ctrl.save()">
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,21 @@
+﻿@model AdvantShop.Core.Services.SalesChannels.SalesChannel
+@{
+    var items = Model != null ? Model.MenuItems.Where(x => !x.IsHidden).ToList() : null;
+}
+
+@if (items != null && items.Count > 0 && items.Any(x => x.Selected))
+{
+    <ul class="nav nav-tabs nav-tabs--slim nav-tabs--indent-bottom">
+        @foreach (var menuItem in items)
+        {
+            <li class="uib-tab nav-item ng-tab @(menuItem.Selected ? "active" : "")">
+                <a class="nav-link" href="@(menuItem.MenuUrlAction != null ? Url.AbsoluteActionUrl(menuItem.MenuUrlAction.Action, menuItem.MenuUrlAction.Controller, menuItem.MenuUrlAction.RouteDictionary) : null)">
+                    @T(menuItem.Name)
+                </a>
+            </li>
+        }
+    </ul>
+}
+
+
+

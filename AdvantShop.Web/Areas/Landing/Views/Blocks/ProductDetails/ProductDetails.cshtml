@@ -1,0 +1,205 @@
+﻿@using AdvantShop.Catalog
+@using AdvantShop.Core.Services.Landing.Blocks;
+@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<GalleryItemModel, OldGalleryItemModel>("items");
+
+    var carouselOptionsFor = Model.Block.TryGetSetting("carouselOptionsFor");
+    //carouselOptionsFor.asNavFor = "#block_" + Model.Block.Id + " .product-details__carousel-nav";
+    var carouselOptionsNav = Model.Block.TryGetSetting("carouselOptionsNav");
+    carouselOptionsNav.asNavFor = "#block_" + Model.Block.Id + " .product-details__carousel-for";
+
+    if (items != null && items.Count < 3)
+    {
+        carouselOptionsNav.slidesToShow = items.Count;
+    }
+    
+    var subblockVideo = new LpBlockService().GetSubBlock(Model.Block.Id, "video");
+
+    var showVideo = subblockVideo != null ? (subblockVideo.TryGetSetting("show_video") != null && subblockVideo.TryGetSetting("show_video") == true) : false; 
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row between-sm"  @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+            <div class="col-xs-12 col-sm-5">
+                <div class="picture-loader-trigger full-width">
+                    @if (items != null && items.Count > 1)
+                    {
+                        var itemsCountMain = LpService.PreviewInAdmin ? Math.Min(items.Count, 1) : items.Count;
+                        var itemsCount = LpService.PreviewInAdmin ? Math.Min(items.Count, 3) : items.Count;
+
+                        <slick settings="@(carouselOptionsFor)" class="ng-cloak product-details__carousel-for">
+                            @for (var i = 0; i < itemsCountMain; i++)
+                            {
+                                <div class="text-center">
+                                    <img @(i == 0 ? "src": "data-lazy")="@items[i].Picture.Src" alt="@Html.AttributeEncode(items[i].Text)" />
+                                </div>
+                            }
+                        </slick>
+
+                        if (showVideo)
+                        {
+                            <div class="modal-video-trigger" data-e2e="ContentModalVideo">
+                                @Html.SubBlock(Model, "video", false)
+                            </div>
+                        }
+
+                        <slick settings="@(carouselOptionsNav)" class="ng-cloak product-details__carousel-nav @(LpService.PreviewInAdmin ? "product-details__carousel--preview-admin" : "")">
+                            @for (var i = 0; i < itemsCount; i++)
+                            {
+                                <div class="product-details__image-wrap product-details__image-wrap--center">
+                                    <div class="flex center-xs middle-xs full-height">
+                                        <div class="product-details__image-limit-height">
+                                            <img @(i < 4 ? "src" : "data-lazy")="@(items[i].Picture.Preview ?? items[i].Picture.Src)" alt="@Html.AttributeEncode(items[i].Text)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </slick>
+                    }
+                    else if (items != null && items.Count == 1)
+                    {
+
+                        <div class="text-center">
+                            <img src="@items[0].Picture.Src" data-qazy alt="@Html.AttributeEncode(items[0].Text)" />
+                        </div>
+
+                        if (showVideo != null && showVideo == true)
+                        {
+                            <div class="modal-video-trigger" data-e2e="ContentModalVideo">
+                                @Html.SubBlock(Model, "video", false)
+                            </div>
+                        }
+
+                    }
+                    @if (Model.Inplace)
+                    {
+                        <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                                            data-block-id="@Model.Block.Id"
+                                            data-name="@Model.Block.Name"
+                                            data-type="@Model.Block.Type"
+                                            data-is-show-options="::true"
+                                            data-template-custom="true">
+
+                            <i class="subblock-inplace-image-trigger" ng-click="blocksConstructor.showOptionsBlock('tabPictures')"></i>
+                            @*<button type="button" class="lp-btn lp-btn--primary" >Добавить товары</button>*@
+                        </blocks-constructor>
+                    }
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-7">
+                <div class="product-details__content">
+                    <div class="lp-h2--color product-details__name">
+                        @Html.SubBlock(Model, "product_name")
+                    </div>
+                    <div class="row center-xs product-details__addition-block-wrap">
+                        <div class="col-xs-6 product-details__addition-block product-details__addition-block--border-right">
+                            <div class="product-details__icon">
+                                @Html.SubBlockPicture(Model.Block, "icon1", new PictureLoaderTriggerModel()
+                                {
+                                    DeletePicture = false,
+                                    GalleryIconsEnabled = true,
+                                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                    MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                    MaxHeightPicture = PictureLoaderImageSize.XSmallHeight
+                                }, Model.Inplace)
+                            </div>
+                            <div class="product-details__addition-text lp-h3--color">
+                                @Html.SubBlock(Model, "text_additinal1")
+                            </div>
+                        </div>
+                        <div class="col-xs-6 product-details__addition-block">
+                            <div class="product-details__icon">
+                                @Html.SubBlockPicture(Model.Block, "icon2", new PictureLoaderTriggerModel()
+                                {
+                                    DeletePicture = false,
+                                    GalleryIconsEnabled = true,
+                                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                    MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                    MaxHeightPicture = PictureLoaderImageSize.XSmallHeight
+                                }, Model.Inplace)
+                            </div>
+                            <div class="product-details__addition-text lp-h3--color">
+                                @Html.SubBlock(Model, "text_additinal2")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lp-h3--color product-details__text">
+                        @Html.SubBlock(Model, "text")
+                    </div>
+
+                    @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                    {
+                        var button = Model.Block.TryGetSetting<LpButton>("button");
+                        var offers = button != null ? button.ActionOfferItems : null;
+                        if (offers != null && offers.Count == 1 && button.ShowOptions != null && button.ShowOptions.Value)
+                        {
+                            var offer = OfferService.GetOffer(offers[0].OfferId.TryParseInt());
+                            if (offer != null)
+                            {
+                                <div class="row middle-xs">
+                                    <div class="col-xs-slim">
+                                        <div class="product-details__old-price">@Html.SubBlock(Model, "old_price")</div>
+                                    </div>
+                                    <div class="col-xs-slim">
+                                        <div class="product-details__discount">@Html.SubBlock(Model, "discount")</div>
+                                    </div>
+                                </div>
+
+                                @Html.Action("ProductInfoShortLanding", "Product", new
+                                {
+                                    area = "",
+                                    productId = offer.ProductId,
+                                    showButton = Model.Block.TryGetSetting("show_buybutton") == true,
+                                    landingId = LpService.CurrentLanding.Id,
+                                    blockId = Model.Block.Id,
+                                    button = Model.Block.TryGetSetting<LpButton>("button"),
+                                    showButton2 = Model.Block.TryGetSetting("show_button2") == true,
+                                    button2 = Model.Block.TryGetSetting<LpButton>("button2"),
+                                    showShippingsMethods = Model.Block.TryGetSetting("showShippingsMethods")
+                                })
+                            }
+                        }
+                        else
+                        {
+                            <div class="row middle-xs">
+                                <div class="col-xs-slim">
+                                    <div class="product-details__old-price">@Html.SubBlock(Model, "old_price")</div>
+                                </div>
+                                <div class="col-xs-slim">
+                                    <div class="product-details__discount">@Html.SubBlock(Model, "discount")</div>
+                                </div>
+                            </div>
+                            <div class="product-details__price">@Html.SubBlock(Model, "price")</div>
+
+                            <div class="product-details__button">
+                                <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ProductBtnRow">
+                                    <div class="col-xs-12">
+                                        <div class="lp-btn-group @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")">
+                                            @if (Model.Block.TryGetSetting("show_button") == true)
+                                            {
+                                                <div class="lp-btn-group__item--indent">
+                                                    @Html.Button(Model.Block, "button")
+                                                </div>
+                                            }
+                                            @if (Model.Block.TryGetSetting("show_button2") == true)
+                                            {
+                                                <div class="lp-btn-group__item--indent">
+                                                    @Html.Button(Model.Block, "button2")
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

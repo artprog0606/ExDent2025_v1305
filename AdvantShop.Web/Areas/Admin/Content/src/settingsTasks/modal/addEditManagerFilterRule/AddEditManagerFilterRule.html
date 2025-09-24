@@ -1,0 +1,61 @@
+﻿<form novalidate name="addEditRuleForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.SettingsTasks.NewCondition'|translate) : ('Admin.Js.SettingsTasks.EditingCondition'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.addEditRuleForm = addEditRuleForm">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                <span class="text-required">{{'Admin.Js.SettingsTasks.Employee'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <select
+                    ng-model="ctrl.filterType"
+                    ng-options="s.label for s in ctrl.filterTypes track by s.value"
+                    class="form-control input-alt"
+                    required
+                    validation-input-text="{{'Admin.Js.SettingsTasks.Employee'|translate}}"
+                    data-e2e="BizRuleManager">
+                    <option value="">{{'Admin.Js.SettingsTasks.HeNotSelected'|translate}}</option>
+                </select>
+            </div>
+        </div>
+        <div ng-if="ctrl.filterType.type != null && ctrl.filterType.type != 2 && ctrl.filterType.type != 3">
+            <div class="form-group row setting__form-group">
+                <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.SettingsTasks.RoleWithCapital'|translate}}</label>
+                <div class="col-xs-12 col-md-9">
+                    <select
+                        ng-model="ctrl.managerRole"
+                        ng-options="s.label for s in ctrl.managerRoles track by s.value"
+                        class="form-control input-alt"
+                        data-e2e="BizRuleManagerRole">
+                        <option value="">{{'Admin.Js.SettingsTasks.SheNotSelected'|translate}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row setting__form-group">
+                <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.SettingsTasks.CityWithCapital'|translate}}</label>
+                <div class="col-xs-12 col-md-9">
+                    <input type="text" class="form-control input-alt" ng-model="ctrl.city" data-e2e="BizRuleManagerCity" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.apply()"
+            data-button-validation
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !addEditRuleForm.modified)"
+            data-e2e="BizRuleManagerOk">
+            {{'Admin.Js.SettingsTasks.Apply'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()" data-e2e="BizRuleManagerCancel">
+            {{'Admin.Js.SettingsTasks.Cancel'|translate}}
+        </button>
+    </div>
+</form>

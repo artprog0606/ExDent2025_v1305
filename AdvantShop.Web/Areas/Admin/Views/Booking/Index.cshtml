@@ -1,0 +1,140 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Booking.Journal
+@using AdvantShop.Core.Services.Admin
+
+@model JournalModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Booking/_BookingLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Booking/_BookingLayout.cshtml";
+    }
+}
+
+@if (Model.SelectedAffiliate != null)
+{
+    if (AdminAreaTemplate.Current == null)
+    {
+        //adminv2
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text inline m-r-xs bottom-cell">
+                        @T("Admin.Booking.NavMenu.JournalOfBooking")
+                    </h1>
+
+                    @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingJournal.affiliateId" })
+                </div>
+                <div class="page-name-block-item-additional">
+                    @Html.Partial("_BlockAdditional", Model)
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        //adminv3
+        @section BlockAdditional {
+            @Html.Partial("_BlockAdditional", Model)
+        }
+        @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingJournal.affiliateId" })
+    }
+<div ng-init="bookingJournal.init('@Model.GetViewModeValue(Model.ViewMode)', @((!Model.AccessToEditing).ToLowerString()), @((Model.AccessToViewBooking).ToLowerString()))">
+    @if (isMobile)
+    {
+        <div ng-init="app.bookingJournal = bookingJournal"></div>
+        <booking-sheduler sheduler-column-defs="[]"
+                          calendar-options="bookingJournal.shedulerCalendarOptions"
+                          fetch-url="'booking/getJournal'"
+                          fetch-column-url="'booking/getJournalColumn'"
+                          sheduler-on-init="bookingJournal.shedulerOnInit(sheduler)"
+                          extend-ctrl="bookingJournal"
+                          sheduler-params="{affiliateFilterId : bookingJournal.affiliateId}"
+                          sheduler-scrollable="true"
+                          sheduler-draggable="false"
+                          slot-height-px="50"
+                          min-slot-height-px="20"
+                          compact-view="true"
+                          empty-text="'Нет ресурсов бронирования'"
+                          uid="journal">
+        </booking-sheduler>
+    }
+    else
+    {
+        if (Model.ViewMode == JournalViewMode.Sheduler || Model.ViewMode == JournalViewMode.ShedulerCompact)
+        {
+            <booking-sheduler sheduler-column-defs="[]"
+                              calendar-options="bookingJournal.shedulerCalendarOptions"
+                              fetch-url="'booking/getJournal'"
+                              fetch-column-url="'booking/getJournalColumn'"
+                              sheduler-on-init="bookingJournal.shedulerOnInit(sheduler)"
+                              extend-ctrl="bookingJournal"
+                              sheduler-params="{affiliateFilterId : bookingJournal.affiliateId}"
+                              sheduler-scrollable="true"
+                              sheduler-draggable="false"
+                              slot-height-px="50"
+                              min-slot-height-px="20"
+                              compact-view="@((Model.ViewMode == JournalViewMode.ShedulerCompact).ToLowerString())"
+                              empty-text="'Нет ресурсов бронирования'"
+                              uid="journal">
+            </booking-sheduler>
+        }
+        else if (Model.ViewMode == JournalViewMode.Grid)
+        {
+            <div class="ibox">
+                <div class="m-n">
+                    <div class="tasks-navbar">
+                        <ul class="nav nav-tabs nav-collapse-tab" collapse-tab>
+                            <li class="nav-item ng-tab" ng-class="{'active': bookingJournal.gridParams['status'] == null}">
+                                <a href="" ng-click="bookingJournal.changeStatusParam(null)">
+                                    <span class="fa"></span> Все
+                                </a>
+                            </li>
+                            @foreach (var status in Model.BookingStatuses)
+                            {
+                                <li class="nav-item  ng-tab" ng-class="{'active': bookingJournal.gridParams['status'] == @(status.Key)}" data-e2e="@status.Value">
+                                    <a href="" ng-click="bookingJournal.changeStatusParam(@(status.Key))">
+                                        <span class="fa"></span> @status.Value
+                                        <span class="leads-count-label">
+                                            @* ng-if глубже, чтобы нормально скрывались непомещающиеся названия табов *@
+                                            <span ng-if="bookingJournal.gridJournal.gridOptions.BookingsCount['@status.Key']" ng-bind="bookingJournal.gridJournal.gridOptions.BookingsCount['@status.Key']" data-e2e="BookingsCount"></span>
+                                        </span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-content no-top-border">
+                        <ui-grid-custom grid-unique-id="grid"
+                                        grid-row-identificator="'Id'"
+                                        grid-on-init="bookingJournal.gridBookingOnInit(grid)"
+                                        grid-options="bookingJournal.gridBookingOptions"
+                                        grid-url="'booking/getlist'"
+                                        grid-params="bookingJournal.gridParams"
+                                        grid-extend-ctrl="bookingJournal">
+                            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="bookingJournal.gridJournal.gridOptions.TotalString">
+                            </ui-grid-custom-footer>
+                        </ui-grid-custom>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <booking-sheduler-days fetch-url="'booking/getJournalDays'"
+                                   sheduler-on-init="bookingJournal.shedulerDaysOnInit(sheduler)"
+                                   extend-ctrl="bookingJournal"
+                                   sheduler-params="{affiliateFilterId : bookingJournal.affiliateId}"
+                                   empty-text="'Нет данных'"
+                                   uid="journaldays">
+            </booking-sheduler-days>
+        }
+    }
+</div>
+}

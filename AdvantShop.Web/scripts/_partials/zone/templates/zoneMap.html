@@ -1,0 +1,57 @@
+﻿<div class="geo-location">
+    <search>
+        <form class="flex m-b-md">
+            <div
+                data-autocompleter
+                class="flex-grow geo-location__search-wrap"
+                data-params="{}"
+                data-apply-fn="zoneMap.onApplySuggestionAddress(value, obj, event)"
+                data-template-path="scripts/_common/autocompleter/templates/location.html"
+                data-request-url="dadata/GetAddressSuggestions">
+                <!--                data-request-url="dadata/GetFullAddressSuggestions">-->
+                <!--            data-template-path="./scripts/_common/autocompleter/templates/common.html"-->
+                <input
+                    type="search"
+                    value=""
+                    placeholder="Введите адрес"
+                    data-autocompleter-input
+                    class="geo-location__address-input input-middle"
+                    data-ng-search="zoneMap.change($event)"
+                    data-ng-model="zoneMap.address.Value" />
+                <svg
+                    class="geo-location__clear-search-input-icon"
+                    data-ng-if="zoneMap.address.Value.length > 0"
+                    data-ng-click="zoneMap.clearGeoLocationSearch()">
+                    <path
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        d="M18.646 6.754a.5.5 0 0 0 0-.708l-.692-.692a.5.5 0 0 0-.708 0L12 10.6 6.754 5.354a.5.5 0 0 0-.708 0l-.692.692a.5.5 0 0 0 0 .708L10.6 12l-5.246 5.246a.5.5 0 0 0 0 .708l.692.692a.5.5 0 0 0 .708 0L12 13.4l5.246 5.246a.5.5 0 0 0 .708 0l.692-.692a.5.5 0 0 0 0-.708L13.4 12l5.246-5.246Z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <button
+                type="button"
+                data-ng-disabled="zoneMap._disabledSetAddressBtn"
+                data-ng-click="zoneMap.setAddress()"
+                class="btn btn-middle btn-submit geo-location__address-btn">
+                ок
+            </button>
+        </form>
+    </search>
+    <div class="relative">
+        <div class="geo-location__spinner" data-ng-if="!zoneMap.isLoadedMap">
+            <div class="icon-spinner-before icon-animate-spin-before"></div>
+        </div>
+        <ya-map
+            class="geo-location__map"
+            data-ya-options="{suppressMapOpenBlock: true}"
+            data-ya-before-init="zoneMap.beforeInit($event)"
+            data-ya-center="{{zoneMap.center}}"
+            data-ya-event-actionend="zoneMap.onActionEndMap($event)"
+            data-ya-after-init="zoneMap.onInitMap($target)"
+            data-ya-map-key="zoneMap.mapApiKey"
+            data-ya-zoom="{{zoneMap.mapZoom}}"
+            data-ya-controls="{{zoneMap.mapControls}}">
+        </ya-map>
+    </div>
+</div>

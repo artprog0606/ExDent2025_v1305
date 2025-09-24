@@ -1,0 +1,5 @@
+﻿EXEC [Settings].[sp_AddUpdateLocalization] 1, 'Admin.Settings.Template.UseAdaptiveRootCategoryHint', 'Если настройка <b>включена</b>, то в качестве корневой категории будет использоваться первая по дереву категория, у которой больше одной подкатегории (по умолчанию Каталог), либо первая по дереву категория с товарами.<br/><br/>Настройку рекомендуется <b>выключить</b>, если необходимо выводить в меню единственную категорию первого уровня (с родителем Каталог).'
+EXEC [Settings].[sp_AddUpdateLocalization] 2, 'Admin.Settings.Template.UseAdaptiveRootCategoryHint', 'If the setting is <b>enabled</b>, then the first category in the tree that has more than one subcategory (by default Catalog) will be used as the root category, or the first category in the tree with goods.<br/><br/>It is recommended to <b>turn off</b> the setting. If you need to display a single first-level category in the menu (with a parent Catalog).'
+
+EXEC [Settings].[sp_AddUpdateLocalization] 1, 'Core.ExportImport.MultiOrder.GroupName', 'Группа покупателя'
+EXEC [Settings].[sp_AddUpdateLocalization] 2, 'Core.ExportImport.MultiOrder.GroupName', 'Customer group'

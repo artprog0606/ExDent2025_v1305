@@ -1,0 +1,42 @@
+﻿@{ 
+    Layout = null;
+}
+@*<div class="row m-b">
+    <div class="col-xs-12">
+        <div class="breadcrumb--admin">
+            <a class="breadcrumb__item--admin breadcrumb__link--admin" href="emailings/manualemailings">@T("Admin.ManualEmailings.Title")</a>
+            <span class="breadcrumb__item--admin breadcrumb__separator--admin">></span>
+            <span class="breadcrumb__item--admin breadcrumb__item--admin">@T("Admin.Analytics.EmailingAnalytics")</span>
+        </div>
+    </div>
+</div>*@
+
+<div class="sticky-page-name" sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main">
+            <h1 class="page-name-block-text sticky-page-name-text">
+                @T("Admin.Analytics.EmailingAnalytics")
+            </h1>
+        </div>
+    </div>
+</div>
+
+@if (!SettingsMail.UseAdvantshopMail)
+{
+    @Html.Partial("AnalyticsUnavailable")
+}
+else
+{
+    <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+        <div ng-init="$ctrl.emailWithoutDateFrom = $ctrl.emailWithoutDateFrom || '@ViewBag.DateFrom'; $ctrl.emailWithoutDateTo = $ctrl.emailWithoutDateTo || '@ViewBag.DateTo';">
+            <emailing-analytics emailing-id="@ViewBag.Id"
+                                email-subject="@ViewBag.Name"
+                                email-log-click="$ctrl.changeView('log', @(ViewBag.Id != null ? ViewBag.Id : "null"), logGridParams)"
+                                email-date-from="$ctrl.emailWithoutDateFrom"
+                                email-date-to="$ctrl.emailWithoutDateTo"
+                                on-change-date="$ctrl.emailWithoutDateFrom = dateFrom; $ctrl.emailWithoutDateTo = dateTo;"
+                                email-data-url="emailings/getManualWithoutEmailingAnalytics"
+                                email-come-back-click="$ctrl.changeView('default')"></emailing-analytics>
+        </div>
+    </div>
+}

@@ -1,0 +1,61 @@
+﻿@using AdvantShop.Core
+@{
+    var staticUrl = UrlService.GetUrl("areas/admin/content/");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var pageTitle = Html.GetPageTitle();
+}
+<!DOCTYPE html>
+<html class="auth-root" data-ng-app="error" data-ng-controller="ErrorCtrl as error" style="min-width: 0; height: var(--min-full-height);">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <title>@(pageTitle.ToHtmlString().IsNotEmpty() ? pageTitle : T("Admin.Account.Authorization"))</title>
+    <base href="@UrlService.GetAdminUrl()"/>
+    @Html.Action("Favicon", "Common", new {area = "", imgSource = "favicon.ico"})
+    @Html.Partial("~/Areas/Admin/Views/Shared/_HeaderScripts.cshtml", new {area = "adminv3"})
+    @Html.RenderAssetFilesAsHtml("login", AssetsTool.AssetFileType.Link)
+</head>
+<body class="auth-body  white-bg" data-full-height-mobile>
+
+<picture class="auth-picture">
+    <source  srcset="https://img.advstatic.ru/advantshop/2024-03_5/admin/auth/girl-mobile.webp 768w, https://img.advstatic.ru/advantshop/2024-03_5/admin/auth/girl-pc.webp 1920w, https://img.advstatic.ru/advantshop/2024-03_5/admin/auth/girl-4k.webp 4096w" sizes="(max-width: 4096px) 100vw, 4096px" type="image/webp"/>
+    <img alt="" height="512" src="https://img.advstatic.ru/advantshop/2024-03_5/admin/auth/girl-mobile-fallback.jpg" width="768"/>
+</picture>
+<div class="flex center-xs end-sm auth-container auth-container-wrap">
+    <div class="loginscreen animated fadeInDown full-width login__blocks-wrap">
+        <article class="admin-login-block">
+            <div class="admin-login-title-block auth-bg">
+                <h1 class="admin-login-block__title">@T("Admin.Account.Logo")</h1>
+                <div class="admin-login-block__project">
+                    <span>Проект:</span>
+                    <br />
+                    @{ var url = SettingsMain.SiteUrl.StartsWith("http://") || SettingsMain.SiteUrl.StartsWith("https://") ? SettingsMain.SiteUrl : "http://" + SettingsMain.SiteUrl; }
+                    <a href="@url" target="_blank" class="admin-login-block__project-link">@Model.MainSiteName</a>
+                </div>
+            </div>
+            @RenderBody()
+        </article>
+        <div class="flex flex-column login__copyright">
+            <span class="login__copyright-text">&copy; @DateTime.Now.Year <a href="@T("Admin.Account.Copyright.Link")" target="_blank">@T("Admin.Account.Copyright.Text")</a></span>
+            @if (!isMobile)
+            {
+                <span class="admin-login__version">
+                    @Html.Partial("~/Areas/Admin/Views/Shared/_Version.cshtml")
+                </span>
+            }
+        </div>
+    </div>
+
+</div>
+@Html.GetNotifyMessages()
+<script>
+    window.baseUrl = '@UrlService.GetUrl()';
+    window.applicationName = '@AdvantShop.Helpers.CommonHelper.GetParentDomain(UrlService.GetUrl()).RemoveSymvolsExt("")'; @* for iwc *@
+</script>
+<script src="@UrlService.GetAbsoluteLink("vendors/jquery/jquery.min.js?v=3.7.1")"></script>
+@Html.RenderAssetFilesAsHtml("login", AssetsTool.AssetFileType.Script)
+<script src="@UrlService.GetUrl("vendors/signalr/signalr-hubs.js")"></script>
+</body>
+</html>

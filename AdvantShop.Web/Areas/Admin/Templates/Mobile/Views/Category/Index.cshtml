@@ -1,0 +1,205 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.Categories.AdminCategoryModel
+@{
+    Html.AddAsset("category");
+}
+
+<article class="category-page">
+    <h1 hidden>@(Model.IsEditMode ? Model.Name : T("Admin.Category.Index.NewCategory").ToString())</h1>
+    <form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" name="form">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.CategoryId)
+        @Html.HiddenFor(x => x.ExternalId)
+        @Html.HiddenFor(x => x.IsEditMode)
+        @{
+            var Items = new List<MoreButtonPopoverItem>();
+
+            var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+            headerModel.Title = Model.IsEditMode ? Model.Name : T("Admin.Category.Index.NewCategory").ToString();
+            headerModel.EnabledBack = true;
+            headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+            {
+                Url = Url.AbsoluteActionUrl("Index", "Catalog", new { categoryId = Model.ParentCategoryId })
+            };
+            headerModel.Controls = new List<IButton>() {
+                new ButtonModel()
+                {
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+                    ColorType = eColorType.Secondary,
+                    Type = eButtonType.Save,
+                    Attributes = new[] { "ng-disabled=\"!form.modified\"", "disabled" },
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "done",
+                        Attributes = new { width = 25, height = 25 }
+                    }
+                }
+            };
+
+            if (Model.IsEditMode && SettingsMain.StoreActive)
+            {
+                Items.Add(
+                    new MoreButtonPopoverItem()
+                    {
+                        Text = T("Admin.View"),
+                        ColorType = eColorType.Link,
+                        Modificators = new List<eButtonModificators>()
+                        {
+                        eButtonModificators.HorizontalPaddingZero
+                                                                        },
+                        Link = (Model.CategoryId != 0 ? Url.AbsoluteRouteUrl("category", new { url = Model.UrlPath }) : Url.AbsoluteRouteUrl("CatalogRoot"))
+                    }
+                );
+            }
+
+            if (Model.CategoryId != 0)
+            {
+                Items.Add(
+                    new MoreButtonPopoverItem()
+                    {
+                        HtmlElement = "<a href=\"\" class=\"btn btn--link  btn-danger btn--simple btn--horizontal-padding-zero\" ng-click=\"category.deleteCategory(" + Model.CategoryId + ")\">" + T("Admin.Mobile.Category.Index.Delete") + "</a>",
+                        Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.HorizontalPaddingZero
+                        }
+                    }
+                );
+            }
+
+            if (Items.Count > 0)
+            {
+                headerModel.Controls.Add(new MoreButtonModel()
+                {
+                    Items = Items,
+                    NgTemplateId = "moreButtonHeaderCategoryTemplate"
+                });
+            }
+        }
+
+        @Html.Header(headerModel)
+        @Html.ValidationSummary()
+
+        <section>
+            <h2 class="category-page__title">@T("Admin.Category.Index.Main")</h2>
+            <div class="category-page__description">
+                @T("Admin.Category.Index.EnterNameCategory")
+            </div>
+
+            <div class="form-group category-page__form-group">
+                <label for="categoryName" class="text-required form-label form-label--block">@T("Admin.Category.Index.Name")</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(x => x.Name, new { @class = "form-control input-alt", id = "categoryName", url_generator = "", url_generator_enabled = Model.UrlPath.IsNotEmpty() ? "false" : "true", url_path = "category.UrlPath", required = "required", ng_model = "category.urlPath", validation_input_text = T("Admin.Category.Index.Name") })
+                    <span class="flex middle-xs">
+                        <help-trigger class="ng-cloak m-l-sm p-l-xs" data-title="@T("Admin.Category.Index.NameCategory")">
+                            @T("Admin.Category.Index.NameCategoryExample")
+                        </help-trigger>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group flex middle-xs category-page__form-group">
+                <label class="adv-checkbox-label form-label-block">
+                    @if (!Model.IsEditMode || Model.CategoryId != 0)
+                    {
+                        @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "category.enabled", ng_init = "category.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(x => x.Enabled, new { @class = "adv-checkbox-input", disabled = "disabled" });
+                    }
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+                <div class="flex middle-xs flex-grow">
+                    <label for="Enabled" class="form-label-block flex-grow">@T("Admin.Category.Index.Activity")</label>
+
+                    <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Category.Index.Activity")">
+                        @T("Admin.Category.Index.CategoryNotActive")<br />
+                        @T("Admin.Category.Index.CategoryHide")<br />
+                        @T("Admin.Category.Index.UrlCategory404")<br />
+                        @T("Admin.Category.Index.AllGoods404")
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group category-page__form-group">
+                <label class="form-label form-label--block">
+                    @T("Admin.Category.Index.ParentCategory")
+                </label>
+                <div class="flex middle-xs">
+                    <span data-ng-bind-html="category.ParentCategoryName | sanitize" data-ng-init="category.ParentCategoryName='@Html.AttributeEncode(Model.ParentCategoryName)'">
+                        @Html.Raw(Model.ParentCategoryName)
+                    </span>
+                    @if (!Model.IsEditMode || Model.CategoryId != 0)
+                    {
+
+                        <ui-modal-trigger data-controller="'ModalChangeParentCategoryCtrl'" controller-as="ctrl"
+                                          data-on-close="category.changeCategory(result)"
+                                          class="flex-grow m-l-xs"
+                                          data-resolve="{showRoot: true, selected:@Model.ParentCategoryId, @(Model.CategoryId != 0 ? "currentId:" + Model.CategoryId : "")}"
+                                          template-url="@Html.GetAssetPath("ChangeParentCategory.html")">
+                            <a href="" class="edit">@T("Admin.Category.Index.CahngeCategory")</a>
+                        </ui-modal-trigger>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.Index.CategoryParent")">
+                            @T("Admin.Category.Index.CategoryInCategory")
+                        </help-trigger>
+
+                    }
+                    @Html.HiddenFor(x => x.ParentCategoryId, new { ng_value = "category.ParentCategoryId", ng_init = "category.ParentCategoryId=" + Model.ParentCategoryId, ng_model = "category.ParentCategoryId" })
+                </div>
+            </div>
+
+        </section>
+
+        @Html.RenderModules("admin_category_top", new { categoryId = Model.CategoryId })
+
+        <section>
+            <h2 class="category-page__title">@T("Admin.Category.Index.DescriptionOfCategory")</h2>
+
+            <div class="form-group category-page__form-group">
+                <div class="category-page__text m-b-sm flex middle-xs">
+                    <span class="flex-grow">@T("Admin.Category.Index.BriefDescription")</span>
+                    <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.Index.BriefCategory")">
+                        @T("Admin.Category.Index.CategoryTopViewPage")
+                    </help-trigger>
+                </div>
+                @Html.TextAreaFor(x => x.BriefDescription, new { @class = "wysiwyg", ckeditor = "", ng_model = "category.briefDescription" })
+            </div>
+
+            <div class="form-group category-page__form-group">
+
+                <div class="m-b-sm relative flex middle-xs">
+                    <span class="flex-grow">@T("Admin.Category.Index.Description")</span>
+                    <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.Index.DescriptionOfCategory")">
+                        @T("Admin.Category.Index.CategoryBottomViewPage")
+                    </help-trigger>
+                </div>
+
+                <div class="">
+                    @Html.TextAreaFor(x => x.Description, new { @class = "wysiwyg", ckeditor = "", ng_model = "category.description" })
+                </div>
+            </div>
+
+        </section>
+
+
+        @Html.Partial("_Pictures", Model)
+
+        @Html.Partial("_Seo", Model)
+
+        @if (Model.IsEditMode)
+        {
+            @Html.Partial("_PropertyGroups", Model)
+            @Html.Partial("_CategoryAutomap", Model)
+
+            @Html.RenderModules("admin_category_bottom", new { categoryId = Model.CategoryId })
+        }
+
+
+        @Html.Partial("_RightPanel", Model)
+
+        @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" })
+
+    </form>
+</article>

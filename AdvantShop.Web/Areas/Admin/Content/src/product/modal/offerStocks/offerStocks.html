@@ -1,0 +1,45 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.OfferStocks.Title' | translate}} <span ng-bind="ctrl.offerInfo"></span></h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row" ng-repeat="stock in ctrl.stocks track by $index">
+            <label class="col-xs-12 col-md-6 control-label setting--m-b-sm"> {{stock.warehouseName}} </label>
+            <div class="col-xs-12 col-md-6">
+                <input
+                    type="number"
+                    class="form-control input-alt"
+                    ng-model="stock.Quantity"
+                    required
+                    max="1000000"
+                    validation-input-text="{{stock.warehouseName}}" />
+            </div>
+        </div>
+        <div class="setting-title-top" ng-if="ctrl.notUsedWarehouses.length">
+            <h3>{{'Admin.Js.OfferStocks.AddStock' | translate}}</h3>
+        </div>
+        <div class="form-group row" ng-if="ctrl.notUsedWarehouses.length">
+            <label class="col-xs-12 col-md-6 control-label setting--m-b-sm">
+                <select
+                    class="form-control input-alt"
+                    ng-model="ctrl.newWarehouse"
+                    ng-options="item.Id as item.Name for item in ctrl.notUsedWarehouses"></select>
+            </label>
+            <div class="col-xs-12 col-md-3">
+                <input type="number" class="form-control input-alt" ng-model="ctrl.newQuantity" />
+            </div>
+            <div class="col-xs-12 col-md-3" ng-class="{'m-t-sm' : isMobile.value}">
+                <button class="btn btn-sm btn-success" data-button-validation-success="ctrl.addStock()" type="button" data-button-validation>
+                    {{'Admin.Js.AddEdit.Add'|translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation>
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

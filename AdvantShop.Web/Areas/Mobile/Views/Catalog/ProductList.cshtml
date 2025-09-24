@@ -1,0 +1,112 @@
+﻿@model  AdvantShop.Areas.Mobile.Models.Catalog.ProductListMobileViewModel
+@using Newtonsoft.Json;
+@{
+    Html.AddAsset("productList");
+}
+
+<div id="content">
+
+    <div class="no-borders main-product-cell">
+        <h1 class="category-title-mobile page-title main-title" itemprop="name">@Model.Title</h1>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description) && Model.Pager.CurrentPage == 1)
+    {
+        <div class="category-description">
+            @Html.Raw(Model.Description)
+        </div>
+    }
+
+    <div class="panel no-borders catalog-sort-block cs-br-1 cs-bg-4">
+        <div class="catalog-sort-pnl catalog__sort-panel" data-ng-controller="CatalogFilterMobileCtrl as catalogFilter">
+            @if (Model.HasProducts)
+            {
+                @Html.Partial("_Sorting", Model.SortingList)
+            }
+            @if (Model.Filter != null && SettingsDesign.FilterVisibility)
+            {
+                <div>
+                    <div class="catalog-filter-trigger-wrap--mobile">
+                        <button type="button" class="catalog-filter-trigger--mobile icon-right-open-big-after" data-ng-click="catalogFilter.openInSidebar('catalogfilterTpl')">
+                            @T("Js.CatalogFilter.Filters") <span data-ng-bind="catalogFilter.selectedFiltersCount != null && catalogFilter.selectedFiltersCount != 0 ? '(' + catalogFilter.selectedFiltersCount + ')' : ''"></span>
+                        </button>
+                    </div>
+                    <script type="text/ng-template" id="catalogfilterTpl">
+                        <div data-catalog-filter data-url="catalog/filterproductlist"
+                             data-url-count="catalog/filterproductlistCount"
+                             data-parameters="{type : '@(Model.Type)', list: @Model.ListId , tagUrl:'' }"
+                             data-count-visible-collapse="10"
+                             data-adv-popover-options="{position: 'top'}"
+                             data-is-mobile="true"
+                             data-footer-sticky="true">
+                        </div>
+                    </script>
+                </div>
+            }
+        </div>
+    </div>
+    @if (Model.HasProducts)
+    {
+        <div class="panel catalog-sort-view-mode cs-br-1">
+            <div class="catalog-sort-pnl">
+                <div class="catalog-sort__count">@T("Mobile.Category.Index.ProductsCount"): @Model.Pager.TotalItemsCount</div>
+                @if (Model.Filter.AllowChangeViewMode)
+                {
+                    @Html.Partial("_ViewMode", Model.Filter.ViewMode)
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.HasProducts)
+    {
+        <div class="catalog-view products-view-mobile-modern-@(Model.Products.ProductViewMode.ToString().ToLower())"
+             data-product-view-mode
+             data-name="mobileModern"
+             data-view-list-name="mobileModern"
+             data-is-mobile="true"
+             data-default-view-mode="@Model.Filter.ViewMode"
+             data-photo-height-by-view-mode-default="'@(Model.Products.BlockProductPhotoHeight)px'"
+             data-photo-height-by-view-mode="{viewName: 'single', value: '@(Model.Products.BlockProductPhotoMiddleHeight)px'}">
+            <div data-show-more
+                 data-request-url="/mobile/catalog/getproductlist"
+                 data-data-params="{type: '@(Model.Type)', 
+                                    list: @Model.ListId , 
+                                    tagUrl: '', 
+                                    page: @Model.Pager.CurrentPage, 
+                                    priceFrom: @(Model.Filter.PriceFrom != null ? Model.Filter.PriceFrom.ToInvariantString() : "null"), 
+                                    priceTo: @(Model.Filter.PriceTo != null ? Model.Filter.PriceTo.ToInvariantString() : "null"), 
+                                    brand:@JsonConvert.SerializeObject(Model.Filter.BrandIds), 
+                                    color:@JsonConvert.SerializeObject(Model.Filter.ColorIds), 
+                                    prop: @JsonConvert.SerializeObject(Model.Filter.PropertyIds), 
+                                    size: @JsonConvert.SerializeObject(Model.Filter.SizeIds), 
+                                    sort: '@Model.Filter.Sorting'}">
+
+                <div class="catalog-view__product-item-wrap"
+                     data-show-more-init-html>
+                    @Html.Partial("_ProductView", Model.Products)
+                </div>
+                <div class="catalog-view__product-item-wrap"
+                     data-bind-html-compile="showMore.products">
+                </div>
+                <div data-ng-if="showMore.isShowSpinner"
+                     class="spinner-after spinner text-align-center">
+                </div>
+
+                <div class="panel no-borders pagination-block-wrap cs-br-1">
+                    <div class="text-align-center js-get-more-btn-wrap">
+                        <button type="button"
+                                data-ng-click="showMore.getMore()"
+                                class="btn btn-middle btn-action btn-block"
+                                data-ng-if="showMore.page < @Model.Pager.TotalPages">
+                            @T("Mobile.Catalog.ShowMore")
+                        </button>
+                    </div>
+                    @Html.Paging(Model.Pager, "center-aligner", "showMore", true)
+                </div>
+            </div>
+        </div>
+    }
+
+
+</div>

@@ -1,0 +1,227 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Common
+@using Newtonsoft.Json
+@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    var orderCustomer = order != null ? order.OrderCustomer : null;
+    var isNewOrDraft = order == null || order.IsDraft;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="order-customer">
+    <div class="m-b-sm @(isMobile ? "order-content__header" : "")">
+        <h2 class="inline order-customer__title">
+            @T("Admin.Orders.OrderCustomer.Address")
+        </h2>
+    </div>
+    <div ng-switch="order.hasContacts === true">
+        <div ng-switch-when="true">
+            <div data-address-list data-type="change"
+                 data-init-address-fn="order.changeAddress(address)"
+                 data-delete-address-fn="order.deleteAddress(items, itemRemoved, addressSelected, isItemSeletedRemoved)"
+                 data-change-address-fn="order.changeAddress(address)"
+                 data-save-address-fn="order.changeAddress(address)"
+                 data-customer-id="order.customerId"
+                 data-is-show-full-address="true"
+                 @(Model.IsOrderContactExistInAddressList ? "data-contact-id=\"" + Model.ContactId + "\"" : "")></div>
+            <input type="hidden" name="Order.OrderCustomer.Country" id="Order_OrderCustomer_Country" value="{{order.country}}" />
+            <input type="hidden" name="Order.OrderCustomer.Region" id="Order_OrderCustomer_Region" value="{{order.region}}" />
+            <input type="hidden" name="Order.OrderCustomer.District" id="Order_OrderCustomer_District" value="{{order.district}}" />
+            <input type="hidden" name="Order.OrderCustomer.City" id="Order_OrderCustomer_City" value="{{order.city}}" />
+            <input type="hidden" name="Order.OrderCustomer.Zip" id="Order_OrderCustomer_Zip" value="{{order.zip}}" />
+            <input type="hidden" name="Order.OrderCustomer.Address" id="Order_OrderCustomer_Address" value="{{order.address}}" />
+            <input type="hidden" name="Order.OrderCustomer.Street" id="Order_OrderCustomer_Street" value="{{order.street}}" />
+            <input type="hidden" name="Order.OrderCustomer.House" id="Order_OrderCustomer_House" value="{{order.house}}" />
+            <input type="hidden" name="Order.OrderCustomer.Apartment" id="Order_OrderCustomer_Apartment" value="{{order.apartment}}" />
+            <input type="hidden" name="Order.OrderCustomer.Structure" id="Order_OrderCustomer_Structure" value="{{order.structure}}" />
+            <input type="hidden" name="Order.OrderCustomer.Entrance" id="Order_OrderCustomer_Entrance" value="{{order.entrance}}" />
+            <input type="hidden" name="Order.OrderCustomer.Floor" id="Order_OrderCustomer_Floor" value="{{order.floor}}" />
+        </div>
+        <ng-form ng-switch-when="false" novalidate="" class="order-customer__form order-customer-form" name="orderCustomerForm">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="row order-customer-form__row form-group">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.City")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.Order.OrderCustomer.City, new
+                            {
+                                @class = "form-control input-alt-mobile",
+                                ng_model = "order.city",
+                                //ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.City'].modified === true && order.changeCustomer(orderCustomerForm)",
+                                autocompleter_address = "",
+                                on_select = "order.processCity(orderCustomerForm, item)",
+                                ng_blur = "orderCustomerForm['Order.OrderCustomer.City'].modified === true && order.processCity(orderCustomerForm)"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="row order-customer-form__row form-group">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Region")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Region, new
+                            {
+                                @class = "form-control input-alt-mobile",
+                                ng_model = "order.region",
+                                ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Region'].modified === true && order.changeCustomer(orderCustomerForm)",
+                                autocompleter = "",
+                                on_type = "region"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="row order-customer-form__row form-group">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Country")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Country, new
+                            {
+                                @class = "form-control input-alt-mobile",
+                                ng_model = "order.country",
+                                ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Country'].modified === true && order.changeCustomer(orderCustomerForm)",
+                                autocompleter = "",
+                                on_type = "country"
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-4">
+                        <div class="row order-customer-form__row form-group">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.District")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Order.OrderCustomer.District, new
+                                {
+                                    @class = "form-control input-alt-mobile",
+                                    ng_model = "order.district",
+                                    ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.District'].modified === true && order.changeCustomer(orderCustomerForm)"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-5">
+                        <div class="row form-group">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">
+                                    @T("Admin.Orders.OrderCustomer.Street")
+                                </label>
+                                <a href="//maps.yandex.ru/?text={{order.getMapAddress()}}" target="_blank">
+                                    <i class="fa fa-map-marker"></i>
+                                </a>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Street, new
+                                {
+                                    @class = "form-control input-alt-mobile",
+                                    ng_model = "order.street",
+                                    //ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Street'].modified === true && order.changeCustomer(orderCustomerForm)",
+                                    autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                                    autocompleter_url = Model.AddressSuggestionsUrl,
+                                    autocompleter_params = "{part: 'Street', city: order.city, district: order.district, region: order.region, inAdminPart: true}",
+                                    on_select = Model.UseAddressSuggestions.ToLowerString() + " && order.processAddress(orderCustomerForm, item)",
+                                    ng_blur = Model.UseAddressSuggestions
+                                        ? "order.processAddress(orderCustomerForm)"
+                                        : "order.isDraft && orderCustomerForm['Order.OrderCustomer.Street'].modified === true && order.changeCustomer(orderCustomerForm)"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md">
+
+                        <div class="row form-group">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Zip")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Zip, new
+                                {
+                                    @class = "form-control input-alt-mobile",
+                                    ng_model = "order.zip",
+                                    ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Zip'].modified === true && order.changeCustomer(orderCustomerForm)"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="row between-xs">
+                    <div class="col-xs-12 col-md-2 form-group">
+                        <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.House")</label>
+                        @Html.TextBoxFor(x => x.Order.OrderCustomer.House, new
+                        {
+                            @class = "form-control input-alt-mobile",
+                            ng_model = "order.house",
+                            maxlength = "50",
+                            //ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.House'].modified === true && order.changeCustomer(orderCustomerForm)",
+                            autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                            autocompleter_url = Model.AddressSuggestionsUrl,
+                            autocompleter_params = "{part: 'House', street: order.street, city: order.city, district: order.district, region: order.region, inAdminPart: true}",
+                            on_select = Model.UseAddressSuggestions.ToLowerString() + " && order.processAddress(orderCustomerForm, item)",
+                            ng_blur = Model.UseAddressSuggestions
+                                ? "order.processAddress(orderCustomerForm)"
+                                : "order.isDraft && orderCustomerForm['Order.OrderCustomer.House'].modified === true && order.changeCustomer(orderCustomerForm)"
+                        })
+                    </div>
+                    <div class="col-xs-12 col-md">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-5 form-group">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Structure")</label>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        @Html.TextBoxFor(x => x.Order.OrderCustomer.Structure, new
+                                        {
+                                            @class = "form-control input-alt-mobile",
+                                            ng_model = "order.structure",
+                                            maxlength = "10",
+                                            ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Structure'].modified === true && order.changeCustomer(orderCustomerForm)"
+                                        })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4 form-group">
+                                <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Apartament")</label>
+                                @Html.TextBoxFor(x => x.Order.OrderCustomer.Apartment, new
+                                {
+                                    @class = "form-control input-alt-mobile",
+                                    ng_model = "order.apartment",
+                                    maxlength = "50",
+                                    ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Apartment'].modified === true && order.changeCustomer(orderCustomerForm)"
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-2 form-group">
+                        <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Entrance")</label>
+                        @Html.TextBoxFor(x => x.Order.OrderCustomer.Entrance, new
+                        {
+                            @class = "form-control input-alt-mobile",
+                            ng_model = "order.entrance",
+                            maxlength = "10",
+                            ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Entrance'].modified === true && order.changeCustomer(orderCustomerForm)"
+                        })
+                    </div>
+                    <div class="col-xs-12 col-md-2 form-group">
+                        <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Floor")</label>
+                        @Html.TextBoxFor(x => x.Order.OrderCustomer.Floor, new
+                        {
+                            @class = "form-control input-alt-mobile",
+                            ng_model = "order.floor",
+                            maxlength = "10",
+                            ng_blur = "order.isDraft && orderCustomerForm['Order.OrderCustomer.Floor'].modified === true && order.changeCustomer(orderCustomerForm)"
+                        })
+                    </div>
+                </div>
+            </div>
+        </ng-form>
+    </div>
+</div>

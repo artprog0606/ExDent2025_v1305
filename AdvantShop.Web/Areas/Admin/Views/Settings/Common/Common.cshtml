@@ -1,0 +1,401 @@
+﻿@using AdvantShop.Helpers
+
+@model AdvantShop.Web.Admin.Models.Settings.CommonSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var tourGroup = "'settingsCommon'";
+}
+
+<div class="setting setting--m-t-sm">
+    <div class="setting-title m-t-none hidden-xs visible-md">
+        <h2 class="page-name-block-text sticky-page-name-text m-b-none">О магазине</h2>
+    </div>
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.StoreName, T("Admin.Settings.Index.StoreName"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8 relative setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.StoreName, new { @class = "form-control input-alt", required = "required", ng_model = "settings.storeName", validation_input_text = T("Admin.Settings.Common.Common.StoreName") })
+            @Html.ValidationMessageFor(model => model.StoreName)
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.StoreName")">
+                <div class="help-content">
+                    @T("Admin.Settings.Common.Common.VarStoreName")
+                    <br><br>
+                    @T("Admin.Settings.Common.Common.UseSmallDescription")
+                    <br>
+                    <i>@T("Admin.Settings.Common.Common.ProductsForAnimals")</i>
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.StoreUrl, T("Admin.Settings.Index.StoreUrl"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8 relative setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.StoreUrl, new { @class = "form-control input-alt", required = "required", ng_model = "settings.storeUrl", validation_input_text = T("Admin.Settings.Common.Common.StoreURL") })
+            @Html.ValidationMessageFor(model => model.StoreUrl)
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.StoreUrl")">
+                @T("Admin.Settings.Common.Common.WhichAdressPurchased")
+                <br><br>
+                @T("Admin.Settings.Common.Common.ParameterIndicates")
+                <br>
+                <br>
+                @T("Admin.Settings.Common.Common.DomainDetails")
+                <br>
+                <a href="http://www.advantshop.net/help/pages/svoy-domen" target="_blank">@T("Admin.Settings.Common.Common.InstructionsAttachStore")</a>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap setting__label">
+                @T("Admin.Settings.Index.Logo")
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-9">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class=" @(isMobile ? "":"flex")">
+                        <div class="setting-logo-wrap" data-ng-tg-tour="'@T("Admin.Tour.Settings.Common.Logo")'" data-ng-tg-group="@tourGroup" data-ng-tg-order="0">
+                            @Html.PictureUploader(AdvantShop.Catalog.PhotoType.Logo, 0, Model.LogoImgSrc, fileTypes: EFileType.Image | EFileType.Svg)
+                        </div>
+                        @if (CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator && !isMobile || Demo.IsDemoEnabled && !isMobile)
+                        {
+                        <div class="flex p-l-md" style="flex-direction:column;"  data-ng-tg-tour="'@T("Admin.Tour.Settings.Common.LogoCreate")'" data-ng-tg-group="@tourGroup"  data-ng-tg-order="1">
+                            <div class="p-b-sm">
+                                @if (SettingsMain.IsTechDomainsReady)
+                                {
+                                    @Html.AbsoluteActionLink(T("Admin.Settings.Common.Common.CreateLogo").ToString(), "RedirectWithAuth", "Account", new
+                                    {
+                                        domain = SettingsMain.SiteUrl,
+                                        path = "/?logoGeneratorEditOnPageLoad=true"
+                                    }, new
+                                    {
+                                        @class = "btn btn-md btn-submit",
+                                        target = "_blank"
+                                    })
+                                }
+                                else
+                                {
+                                    <a class="btn btn-md btn-submit" data-e2e="btnLogo" href="../?logoGeneratorEditOnPageLoad=true" target="_blank">@T("Admin.Settings.Common.Common.CreateLogo")</a>
+                                }
+                            </div>
+
+                            <a href="https://www.advantshop.net/help/pages/logo" target="_blank" class=" link-academy link-invert inline-flex middle-xs"
+                               data-ng-tg-tour="'@T("Admin.Tour.Settings.Common.LogoInstruction")'" data-ng-tg-group="@tourGroup"  data-ng-tg-order="3">
+                                <svg version="1.1" viewBox="0 0 512 512" width="18" height="18" fill="#989a9b" class="m-r-xs custom-svg_mobile">
+                                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                </svg>
+                                <span>@T("Admin.Settings.Index.LogoInstruction")</span>
+                            </a>
+                        </div>
+                        }
+                    </div>
+                    <div class="setting-size-text m-t-xs">
+                        @T("Admin.Settings.Index.LogoImgSizeRecommendations")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Index.LogoOnBlog")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="flex">
+                    <div class="setting-logo-wrap">
+                        @Html.PictureUploader(AdvantShop.Catalog.PhotoType.LogoBlog, 0, Model.LogoBlogImgSrc, fileTypes: AdvantShop.Helpers.EFileType.Image)
+                    </div>
+                </div>
+                <div class="setting-size-text m-t-xs">
+                    @T("Admin.Settings.Index.LogoBlogImgSizeRecommendations")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.LogoImgAlt, T("Admin.Settings.SystemSettings.LogoImageAlt"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8 relative setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.LogoImgAlt, new { @class = "form-control input-alt", ng_model = "settingsSystem.LogoImageAlt" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title='@T("Admin.Settings.SystemSettings.LogoImageAlt")'>
+                @T("Admin.Settings.SystemSettings.LogoImageAltNote")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group row">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap setting__label">
+                @T("Admin.Settings.Index.Favicon")
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8 setting-form-input-wrap__mobile setting-form__picture-uploader-wrap">
+            <div class="setting-favicon-wrap">
+                @Html.PictureUploader(AdvantShop.Catalog.PhotoType.Favicon, 0, Model.FaviconSrc, fileTypes: EFileType.Favicon | EFileType.Svg)
+            </div>
+            <div class="setting-size-text setting-size-text--max-content">
+                @T("Admin.Settings.Index.FaviconRecommendations")
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.CountryId, T("Admin.Settings.Index.Country"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 relative setting-form-input-wrap__mobile">
+            @Html.DropDownListFor(x => x.CountryId, Model.Countries, new { @class = "form-control input-alt form-select", ng_model = "settings.countryId", ng_init = "settings.countryId= '" + Model.CountryId + "'", ng_on_change = "settings.loadRegions('')" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.Country")">
+                <div class="help-content">
+                    @T("Admin.Settings.Common.Common.SpecifyTheCountry")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    @*@if (Model.HasRegions)
+        {*@
+    <div ng-init="settings.loadRegions('@Model.RegionId')">
+        <div class="form-group setting__form-group row middle-xs" ng-if="settings.hasRegions">
+            <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+                <div class="setting-label-wrap">
+                    @Html.LabelFor(x => x.RegionId, T("Admin.Settings.Index.Region"), new { @class = "required setting__label" })
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4 relative setting-form-input-wrap__mobile">
+                <select id="RegionSelect" name="RegionSelect" data-e2e="RegionSelect" class="form-control form-select input-alt" ng-model="settings.regionId">
+                    <option ng-selected="{{item.Selected}}"
+                            ng-repeat="item in settings.regions"
+                            value="{{item.Value}}">
+                        {{item.Text}}
+                    </option>
+                </select>
+                <input type="hidden" name="RegionId" id="RegionId" value="{{settings.regionId}}" />
+                @*<select class="form-control" ng-model="settings.regionId" ng-init="settings.regionId=@Html.Raw(Model.RegionId)" ng-options="region.Text  for region in settings.regions"></select>*@
+
+                @*@Html.DropDownListFor(x => x.RegionId, Model.Regions, new { @class = "form-control", ng_model = "settings.regionId", ng_init = "settings.regionId= '" + Model.RegionId + "'" })*@
+                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.Region")">
+                    <div class="help-content">
+                        @T("Admin.Settings.Common.Common.SpecifyTheRegion")
+                    </div>
+                </help-trigger>
+            </div>
+        </div>
+    </div>
+    @*}*@
+    <input type="hidden" name="HasRegions" id="HasRegions" value="{{settings.hasRegions}}" />
+
+    @*@Html.HiddenFor(x => x.HasRegions)*@
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.City, T("Admin.Settings.Index.City"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 relative setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.City, new { @class = "form-control input-alt", ng_model = "settings.city" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.City")">
+                <div class="help-content">
+                    @T("Admin.Settings.Common.Common.SpecifyTheCity")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap flex @(isMobile ? "" : "p-t-xs")">
+                @Html.LabelFor(x => x.Phone, T("Admin.Settings.Index.Phone"), new { @class = "required setting__label" })
+                @*<a href="https://www.advantshop.net/help/pages/phone-change" target="_blank" class=" link-academy link-invert inline-flex middle-xs p-t-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z" />
+
+                    </svg>
+                                    <span>@T("Admin.Settings.Index.PhoneInstruction")</span>
+                                </a>*@
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 relative p-b-xs setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.Phone, new { @class = "form-control setting__label input-alt", ng_model = "settings.phone", ng_change = "settings.formatMobilePhone(settings.phone)" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs") p-b-xs" data-title="@T("Admin.Settings.Index.Phone")">
+                <div class="help-content">
+                    @T("Admin.Settings.Common.Common.MainStorePhoneNumber")<br>
+                    <br>
+                    @T("Admin.Settings.Common.Common.YouCanSpecify2OrMoreNumbers")
+                    <br /><br />
+                    Подробнее:<br />
+                    <a href="http://www.advantshop.net/help/pages/phone-change" target="_blank">Телефон</a>
+                </div>
+            </help-trigger>
+        </div>
+        <div class="col-xs-12 col-md-offset-2 col-md-10">
+            <a class="link-decoration-none block @(isMobile ? "m-t-xs" : "")" target="_blank" data-e2e="ChooseOtherCityPhonesLink" href="settingssystem/?systemTab=countries&locationType=city&gridCity=%7B%22cityCountrys%22:@Model.CountryId%7D">@T("Admin.Settings.Index.ChooseOtherCityPhones")</a>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group row middle-xs">
+        <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.MobilePhone, T("Admin.Settings.Index.MobilePhoneStandard"), new { @class = "required setting__label" })
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 relative setting-form-input-wrap__mobile">
+            @Html.TextBoxFor(x => x.MobilePhone, new { @class = "form-control input-alt", ng_model = "settings.mobilePhone" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "m-l-xs")" data-title="@T("Admin.Settings.Index.Phone")">
+                <div class="help-content">
+                    @*@T("Admin.Settings.Common.Common.UseMobilePhone")<br />*@
+                    @T("Admin.Settings.Common.Common.UseMobilePhoneExample")
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="setting-title setting-title__m-t-md">
+        <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.CustomersNotifications")</h3>
+    </div>
+    
+    
+    <div class="form-group setting__form-group">
+        <div class="row middle-xs @(isMobile ? "" : "control-label")">
+            <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow control-label setting--m-b-none" : "")">
+                <label for="settingsTemplateShowUserAgreementTextField" class="setting__font-weight--xs">@T("Admin.Settings.Checkout.ShowUserAgreementTextField")</label>
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.ShowUserAgreementText, new { id = "settingsTemplateShowUserAgreementTextField", @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowUserAgreementText" })
+                    <span data-e2e="ShowUserAgreementText" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+            <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.Checkout.ShowUserAgreementTextField")'>
+                @T("Admin.Settings.SystemSettings.ShowUserAgreementTextNote")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group">
+        <div class="row control-label @(isMobile ? "middle-xs" : "")">
+            <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow setting__font-weight--xs" : "")">
+                @Html.LabelFor(x => x.AgreementDefaultChecked, T("Admin.Settings.Checkout.AgreementDefaultChecked"))
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.AgreementDefaultChecked, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.AgreementDefaultChecked" })
+                    <span data-e2e="AgreementDefaultChecked" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+            <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.Checkout.AgreementDefaultChecked")'>
+                @T("Admin.Settings.Checkout.AgreementDefaultCheckedHint")
+            </help-trigger>
+        </div>
+    </div>
+
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="control-label">
+                @Html.LabelFor(x => x.UserAgreementText, T("Admin.Settings.Checkout.UserAgreementText"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-9">
+            @Html.TextAreaFor(x => x.UserAgreementText, new { @class = "wysiwyg input-alt-mobile", ckeditor = "", ng_model = "settingsTemplate.UserAgreementText" })
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group">
+        <div class="row middle-xs @(isMobile ? "" : "control-label")">
+            <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow control-label setting--m-b-none" : "")">
+                <label for="settingsShowUserAgreementForPromotionalNewsletter" class="setting__font-weight--xs">@T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletter")</label>
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.ShowUserAgreementForPromotionalNewsletter, new { id = "settingsShowUserAgreementForPromotionalNewsletter", @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowUserAgreementForPromotionalNewsletter" })
+                    <span data-e2e="ShowUserAgreementForPromotionalNewsletter" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+            <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletter")'>
+                @T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletterNote")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group">
+        <div class="row control-label @(isMobile ? "middle-xs" : "")">
+            <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow setting__font-weight--xs" : "")">
+                @Html.LabelFor(x => x.SetUserAgreementForPromotionalNewsletterChecked, T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterChecked"))
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.SetUserAgreementForPromotionalNewsletterChecked, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.SetUserAgreementForPromotionalNewsletterChecked" })
+                    <span data-e2e="SetUserAgreementForPromotionalNewsletterChecked" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+            <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterChecked")'>
+                @T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterCheckedHint")
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="control-label">
+                @Html.LabelFor(x => x.UserAgreementForPromotionalNewsletter, T("Admin.Settings.SystemSettings.UserAgreementForPromotionalNewsletter"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-9">
+            @Html.TextAreaFor(x => x.UserAgreementForPromotionalNewsletter, new { @class = "wysiwyg input-alt-mobile", ckeditor = "", ng_model = "settingsTemplate.UserAgreementForPromotionalNewsletter" })
+        </div>
+    </div>
+    
+    <div class="form-group @(isMobile ? "setting__form-group" : "control-label")">
+        <div class="row flex-nowrap middle-xs @(isMobile ? "flex-nowrap" : "")">
+            <div class="col-xs-slim col-md-3 col-wl-2 flex-shrink-1 @(isMobile ? "control-label setting--m-b-none flex-grow setting__font-weight--xs" : "")">
+                @Html.LabelFor(x => x.ShowCookiesPolicyMessage, T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessage"))
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.ShowCookiesPolicyMessage, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowCookiesPolicyMessage" })
+                    <span data-e2e="ShowCookiesPolicyMessage" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+            <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "m-r-sm")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessage")'>
+                @T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessageNote")
+            </help-trigger>
+        </div>
+    </div>
+    
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="control-label">
+                @Html.LabelFor(x => x.CookiesPolicyMessage, T("Admin.Settings.SystemSettings.CookiesPolicyMessage"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-9">
+            @Html.TextAreaFor(x => x.CookiesPolicyMessage, new { @class = "wysiwyg", ckeditor = "", ng_model = "settingsTemplate.CookiesPolicyMessage" })
+            <p class="m-b-none">@T("Admin.SettingsSystem.SystemCommon.VariableStoreUrl")</p>
+        </div>
+    </div>
+</div>

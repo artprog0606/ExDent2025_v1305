@@ -1,0 +1,132 @@
+<form name="intervalsByRange" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.ShippingWithInterval.Settings.Header'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row middle-xs">
+            <div class="col-xs-12 col-md-3 flex-grow-n setting__label">{{'Admin.Js.ShippingWithInterval.Settings.DayOfWeek'|translate}}</div>
+            <div class="col-xs-12 col-md-8 relative setting--m-t-sm">
+                <ui-select
+                    ng-model="ctrl.selectedDays"
+                    multiple
+                    required
+                    class="input-alt"
+                    validation-input-text="{{'Admin.Js.ShippingWithInterval.Settings.DayOfWeek'|translate}}">
+                    <ui-select-match placeholder="{{'Admin.Js.ShippingWithInterval.Settings.DayOfWeek'|translate}}">{{$item.value}}</ui-select-match>
+                    <ui-select-choices repeat="day.idx as (idx, day) in ctrl.daysOfWeek | filter: $select.search">
+                        <div>{{day.value}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <div class="form-group row middle-xs">
+            <div class="col-xs-12 col-md-3 flex-grow-n setting__label">{{'Admin.Js.ShippingWithInterval.Settings.TimeRange'|translate}}</div>
+            <div class="col-xs-12 col-md-8 relative setting--m-t-sm">
+                <div class="row middle-xs">
+                    <div class="col-xs-5">
+                        <span class="form-field-input vertical-interval-middle">
+                            <span
+                                ng-class="{'flex': isMobile.value}"
+                                data-ng-flatpickr
+                                fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                                <span class="flatpickr-custom-wrap">
+                                    <input
+                                        type="text"
+                                        id="timeFrom"
+                                        autocomplete="off"
+                                        class="form-control input-alt"
+                                        data-ng-flatpickr-input
+                                        ng-model="ctrl.timeFrom"
+                                        placeholder="От" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col-xs col-md-2" style="text-align: center">
+                        <span>&mdash;</span>
+                    </div>
+                    <div class="col-xs-5">
+                        <span class="form-field-input vertical-interval-middle">
+                            <span
+                                ng-class="{'flex': isMobile.value}"
+                                data-ng-flatpickr
+                                fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true, minuteIncrement: 1}">
+                                <span class="flatpickr-custom-wrap">
+                                    <input
+                                        type="text"
+                                        id="timeTo"
+                                        autocomplete="off"
+                                        class="form-control input-alt"
+                                        data-ng-flatpickr-input
+                                        ng-model="ctrl.timeTo"
+                                        placeholder="До" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-3 flex-grow-n setting__label">{{'Admin.Js.ShippingWithInterval.Settings.IntervalLength'|translate}}</div>
+            <div class="col-xs-12 col-md-8 relative setting--m-t-sm" ng-class="{'flex middle-xs': isMobile.value}">
+                <div class="input-group setting__price-margin-in-numbers">
+                    <input
+                        class="form-control"
+                        type="number"
+                        ng-model="ctrl.intervalLength"
+                        min="1"
+                        pattern="[0-9]*"
+                        required
+                        validation-input-text="{{'Admin.Js.ShippingWithInterval.Settings.IntervalLength'|translate}}" />
+                    <div class="input-group-btn">
+                        <span class="btn btn-default"><span>мин.</span></span>
+                    </div>
+                </div>
+                <help-trigger
+                    class="ng-cloak help-trigger-icon-abs"
+                    ng-class="{'m-l-sm p-l-xs': isMobile.value}"
+                    data-title="{{'Admin.Js.ShippingWithInterval.Settings.IntervalLength'|translate}}"
+                    use-template="true">
+                    <div class="help-content">Размер промежутка в интервале будет {{ctrl.intervalLength || 0}} мин.</div>
+                </help-trigger>
+            </div>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-3 flex-grow-n setting__label">{{'Admin.Js.ShippingWithInterval.Settings.СreationStep'|translate}}</div>
+            <div class="col-xs-12 col-md-8 relative setting--m-t-sm" ng-class="{'flex middle-xs': isMobile.value}">
+                <div class="input-group setting__price-margin-in-numbers">
+                    <input
+                        class="form-control"
+                        type="number"
+                        ng-model="ctrl.creationStep"
+                        ng-min="1"
+                        pattern="[0-9]*"
+                        required
+                        validation-input-text="{{'Admin.Js.ShippingWithInterval.Settings.СreationStep'|translate}}" />
+                    <div class="input-group-btn">
+                        <span class="btn btn-default"><span>мин.</span></span>
+                    </div>
+                </div>
+                <help-trigger
+                    class="ng-cloak help-trigger-icon-abs"
+                    ng-class="{'m-l-sm p-l-xs': isMobile.value}"
+                    data-title="{{'Admin.Js.ShippingWithInterval.Settings.СreationStep'|translate}}"
+                    use-template="true">
+                    <div class="help-content">Будут созданы интервалы через каждые {{ctrl.creationStep || 0}} мин.</div>
+                </help-trigger>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.generate()" data-button-validation>
+            {{'Admin.Js.ShippingWithInterval.Settings.GenerateInterval'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.ShippingMethods.Cancel'|translate}}</button>
+    </div>
+</form>

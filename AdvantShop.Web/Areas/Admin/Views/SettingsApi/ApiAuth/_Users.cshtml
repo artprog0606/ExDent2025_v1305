@@ -1,0 +1,727 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/signin</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.EmailAuthorization")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/signin")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "email": "my@email.com",
+    "password": "password"
+}</pre>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "userKey": "userkey",
+    "userId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "customer": {
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "email": "admin",
+        "phone": 74958002000,
+        "firstName": "Имя",
+        "lastName": "Фамилия",
+        "patronymic": "",
+        "organization": "",
+        "subscribedForNews": false,
+        "birthday": null,
+        "adminComment": "",
+        "managerId": null,
+        "groupId": 1,
+        "group": {
+            "id": 1,
+            "name": "Обычный покупатель",
+            "discountPercent": 0.0
+        },
+        "customerType": "PhysicalEntity",
+        "contacts": [
+            {
+                "contactId": "00000000-0000-0000-0000-000000000000",
+                "name": "Ivanov Ivan",
+                "country": "Россия",
+                "city": "Москва",
+                "district": "",
+                "region": "Москва",
+                "zip":"",
+                "street": "Ленина",
+                "house": "1",
+                "apartment": "1",
+                "structure": "",
+                "entrance": "",
+                "floor": "",
+                "dadataJson": null,
+                "isMain": true
+            },
+            {
+                "contactId": "00000000-0000-0000-0000-000000000001",
+                "name": "Ivanov2 Ivan2",
+                "country": "Россия",
+                "city": "Казань",
+                "district": "",
+                "region": "",
+                "zip": "",
+                "street": "Лениная",
+                "house": "5",
+                "apartment": "234",
+                "structure": "",
+                "entrance": "",
+                "floor": "",
+                "dadataJson": null,
+                "isMain": false
+            },
+        ],
+        "fields": [
+            {
+                "id": 1,
+                "name": "Test",
+                "value": null,
+                "customerType": "All",
+                "fieldAssignment": "None",
+                "required": false,
+                "showInRegistration": true,
+                "showInCheckout": true,
+                "disableEditing": false
+            },
+            {
+                "id": 2,
+                "name": "Test 2",
+                "value": null,
+                "value": null,
+                "customerType": "PhysicalEntity",
+                "fieldAssignment": "None",
+                "required": false,
+                "showInRegistration": true,
+                "showInCheckout": true,
+                "disableEditing": false
+            }
+        ],
+        "fcmToken": null
+    }
+}
+        </pre>       
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Не верный логин или пароль"
+}</pre>
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/signinbyphone</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.SMSCodeAuthorization")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/signinbyphone")
+        </div>
+        <div class="m-b">
+            <p>@T("Admin.SettingsApiAuth.Index.Users.SMSCodeAuthorization.TwoRequests")</p> 
+            <p>@T("Admin.SettingsApiAuth.Index.Users.SMSCodeAuthorization.FirstRequest")</p>
+            <p>@T("Admin.SettingsApiAuth.Index.Users.SMSCodeAuthorization.SecondRequest")</p>
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "phone": "7(912)3456789",  // обяз., телефон 
+    "signUp": true             // не обяз. параметр, передается, если нужно зарегистрировать покупателя. По умолчанию false
+    "addHash": true             // не обяз. параметр, добавляет хеш приложения для автоматического подтверждения смс-кода. По умолчанию false
+}</pre>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "isCodeSended": true
+}
+        </pre>       
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь с телефоном 7(912)3456789 не зарегистрирован"
+}</pre>
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/signinbyphoneconfirmcode</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.SMSAuthorizationChecking")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/signinbyphoneconfirmcode")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "phone": "7(912)3456789", // обяз., телефон
+    "code": "1234",           // обяз., проверочный код
+    "signUp": true            // не обяз. параметр, передается, если нужно зарегистрировать покупателя. По умолчанию false
+}</pre>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "userKey": "userkey",
+    "userId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "customer": {
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "email": "admin",
+        "phone": 79123456789,
+        "firstName": "Имя",
+        "lastName": "Фамилия",
+        "patronymic": "",
+        "organization": "",
+        "subscribedForNews": false,
+        "birthday": null,
+        "adminComment": "",
+        "managerId": null,
+        "groupId": 1,
+        "group": {
+            "id": 1,
+            "name": "Обычный покупатель",
+            "discountPercent": 0.0
+        },
+        "customerType": "PhysicalEntity",
+        "contacts": [
+            {
+                "contactId": "00000000-0000-0000-0000-000000000000",
+                "name": "Ivanov Ivan",
+                "country": "Россия",
+                "city": "Москва",
+                "district": "",
+                "region": "Москва",
+                "zip":"",
+                "street": "Ленина",
+                "house": "1",
+                "apartment": "1",
+                "structure": "",
+                "entrance": "",
+                "floor": "",
+                "dadataJson": null,
+                "isMain": true
+            },
+            {
+                "contactId": "00000000-0000-0000-0000-000000000001",
+                "name": "Ivanov2 Ivan2",
+                "country": "Россия",
+                "city": "Казань",
+                "district": "",
+                "region": "",
+                "zip": "",
+                "street": "Лениная",
+                "house": "5",
+                "apartment": "234",
+                "structure": "",
+                "entrance": "",
+                "floor": "",
+                "dadataJson": null,
+                "isMain" : false
+            },
+        ],
+        "fields": [
+            {
+                "id": 1,
+                "name": "Test",
+                "value": null,
+                "customerType": "All",
+                "fieldAssignment": "None",
+                "required": false,
+                "showInRegistration": true,
+                "showInCheckout": true,
+                "disableEditing": false
+            },
+            {
+                "id": 2,
+                "name": "Test 2",
+                "value": null,
+                "value": null,
+                "customerType": "PhysicalEntity",
+                "fieldAssignment": "None",
+                "required": false,
+                "showInRegistration": true,
+                "showInCheckout": true,
+                "disableEditing": false
+            }
+        ],
+        "fcmToken": null
+    }
+}
+        </pre>      
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Не правильный sms-код"
+}</pre>
+    </div>
+</div>
+
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/users/me</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.GetCurrentBuyer")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/users/me")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}</pre>
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.ChangeCurrentBuyer")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}</pre>
+    </div>
+</div>
+
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/smsphoneconfirmation</span>
+        <span class="description">@T("Admin.SettingsApi.Index.CustomerConfirm")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/smsphoneconfirmation")
+        </div>
+
+        Посылает смс-код по номеру телефона для подтверждения. Код действителен в течении 10 мин.
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        <pre class="m-t-sm">{
+    "addHash": true //  не обяз. параметр. По умолчанию false. Добавляет в конец смс-кода хэш приложения.
+}
+</pre>
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "isCodeSended": true
+}
+</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Не подключен модуль sms"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/smsphoneconfirmationcode</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.CheckSMSCode")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/smsphoneconfirmationcode")
+        </div>
+
+        @T("Admin.SettingsApiAuth.Index.Users.CheckSMSCodeByUser")
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        <pre class="m-t-sm">{
+    "code": "1234"
+}</pre>
+
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "confirmed": true
+}
+</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Не правильный sms-код"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/users/me/bonuses</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.BuyersBonusCard")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/users/me/bonuses")
+        </div>
+
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "cardId": 961640,        // номер бонусной карты   (long)
+    "amount": 200,           // кол-во бонусов         (decimal)
+    "percent": 3,            // процент карты          (decimal)
+    "gradeName": "Гостевой", // название грейда        (string)
+    "gradeId": 1,            // id грейда              (int)            
+    "isBlocked": false       // заблокирована ли карта (bool)
+}
+</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "У покупателя нет бонусной карты"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/users/me/customer-fields</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.AdditionalBuyerFields")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/users/me/customer-fields")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">
+api/users/customer-fields?type=LegalEntity
+</pre>
+        <div class="row-tb m-t m-b">
+            <div class="row m-b-xs">
+                <div class="col-xs-2">type</div>
+                <div class="col-xs-1">enum</div>
+                <div class="col-xs">
+                    Не обяз. поле. Если не приходит в запросе, то вернутся все доп поля покупателя. 
+                    Возможные значения: all, physicalEntity, legalEntity.
+                </div>
+            </div>    
+        </div>
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/remove-account</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.DeleteUserAccount")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/remove-account")
+        </div>
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "result": true
+}
+</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не найден"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/fcmtoken</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.UpdateFirebaseCloudMessaging")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/fcmtoken")
+        </div>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        <pre class="m-t-sm">{
+    "token": "qwerty"
+}</pre>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "result": true
+}
+</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не найден"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApiAuth.Index.Users.BuyersContacts")</h3>
+</div>
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/users/me/contacts</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.GetBuyersContacts")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/users/me/contacts")
+        </div>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">[
+    {
+        "contactId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        "name": "Ivanov Ivan",
+        "country": "Россия",
+        "city": "Москва",
+        "district": "",
+        "region": "Москва",
+        "zip": "101000",
+        "street": "Ленина",
+        "house": "1",
+        "apartment": "",
+        "structure": "",
+        "entrance": "",
+        "floor": "",
+        "dadataJson": null,
+        "isMain" : true
+    },
+    {
+        "contactId": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyy",
+        "name": "Surname Firstname",
+        "country": "",
+        "city": "",
+        "district": "",
+        "region": "",
+        "zip": "",
+        "street": "",
+        "house": "",
+        "apartment": "",
+        "structure": "",
+        "entrance": "",
+        "floor": "",
+        "dadataJson": null,
+        "isMain" : false
+    }
+]</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/contacts/add</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.AddNewContact")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/contacts/add")
+        </div>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        <pre class="m-t-sm">{
+    "name": "Ivanov2 Ivan",
+    "country": "Россия",
+    "city": "Казань",
+    "district": "",
+    "region": "",
+    "zip": "",
+    "street": "",
+    "house": "",
+    "apartment": "",
+    "structure": "",
+    "entrance": "",
+    "floor": "",
+    "dadataJson": null,
+    "isMain" : true
+}</pre>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "contactId": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyy"
+}</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/contacts/{contactId}/update</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.UpdateNewContact")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/contacts/{contactId}/update")
+        </div>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        <pre class="m-t-sm">{
+    "name": "Ivanov2 Ivan",
+    "country": "Россия",
+    "city": "Самара",
+    "district": "",
+    "region": "",
+    "zip": "",
+    "street": "Ленина",
+    "house": "2",
+    "apartment": "123",
+    "structure": "",
+    "entrance": "9",
+    "floor": "3",
+    "dadataJson": null,
+    "isMain" : true
+}</pre>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "contactId": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyy"
+}</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/users/me/contacts/{contactId}/delete</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.DeleteNewContact")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/users/me/contacts/{contactId}/delete")
+        </div>
+        
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <pre class="m-t-sm">{
+    "status": "ok"
+}</pre>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Пользователь не авторизован"
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/users/me/statistics</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Users.UserStatistics")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/users/me/statistics")
+        </div>
+                
+        <h3 class="m-t-sm">@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        <div class="m-t-sm">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+            <pre class="m-t-sm">{
+    "ordersSum": "1 000 руб.",
+    "ordersCount": 1,
+    "averageCheck": "1 000 руб.",
+    "durationOfWorkWithClient": "3м. 3д.",
+    "addressesCount": 1,
+    "wishListCount": 0,
+    "activeOrdersCount": 1,
+}</pre>
+        </div>
+
+    </div>
+</div>

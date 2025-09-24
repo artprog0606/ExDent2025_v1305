@@ -1,0 +1,73 @@
+<div is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddRecomProperty.Properties' | translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <form name="addPropertyForm">
+            <div class="add-size-chart-property-container-selected-values">
+                <div class="add-size-chart-property-container-selected-values__row" ng-repeat="value in ctrl.selectedPropertyValues">
+                    <span>{{value.PropertyName}} - {{value.PropertyValueName}}</span>
+                    <button
+                        type="button"
+                        ng-click="ctrl.deletePropertyValue(value.PropertyValueId)"
+                        class="btn-link link-invert link-decoration-none m-l-xs"
+                        title="{{'Admin.Js.AddEdit.Delete'|translate}}">
+                        <span class="fas fa-times"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="row grid">
+                <div class="col-xs-12 col-md-6 m-b">
+                    <div class="m-b" ng-class="{'category-page__label' : isMobile.value}">
+                        {{'Admin.Js.AddRecomProperty.SelectProperty' | translate}}
+                    </div>
+                    <select
+                        ng-model="ctrl.property"
+                        ng-options="s.Name for s in ctrl.properties"
+                        class="form-control input-alt"
+                        ng-change="ctrl.changeProperty()"
+                        validation-input-text="{{::'Admin.Js.AddRecomProperty.Property'|translate}}"
+                        required>
+                        <option value="">-</option>
+                    </select>
+                </div>
+                <div class="col-xs-12 col-md-6 m-b">
+                    <div class="m-b" ng-class="{'category-page__label' : isMobile.value}">
+                        {{'Admin.Js.AddRecomProperty.SelectValue' | translate}}
+                    </div>
+                    <div class="m-b">
+                        <select
+                            ng-model="ctrl.propertyValue"
+                            ng-options="s.Value for s in ctrl.propertyValues"
+                            class="form-control input-alt"
+                            validation-input-text="{{::'Admin.Js.AddRecomProperty.PropertyValue'|translate}}"
+                            required
+                            style="{{isMobile.value ? '' : 'width: 200px; display: inline-block;'}}">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row grid">
+                <div class="col-xs-12 col-md-6 g-col-12">
+                    <button
+                        data-button-validation=""
+                        data-button-validation-success="ctrl.addProperty()"
+                        type="button"
+                        class="btn btn-sm btn-success"
+                        disabled
+                        ng-disabled="!addPropertyForm.modified || !ctrl.propertyValue || !ctrl.propertyValue.PropertyValueId || !ctrl.propertyValue.Value">
+                        {{'Admin.Js.AddProperty.Add' | translate}}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="submit" ng-click="ctrl.saveProperty()" disabled ng-disabled="!ctrl.propertiesModified">
+            {{'Admin.Js.AddEdit.Save' | translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.Category.Cancel' | translate}}</button>
+    </div>
+</div>

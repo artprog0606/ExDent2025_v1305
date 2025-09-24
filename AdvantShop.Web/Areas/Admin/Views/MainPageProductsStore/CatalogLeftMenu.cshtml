@@ -1,0 +1,66 @@
+﻿@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="setting" is-mobile>
+    <div class="clearfix">
+        <div class="pull-left header-alt setting__subtitle">@T("Admin.MainPageProducts.CatalogLeftMenu.Title")</div>
+    </div>
+    <div class="aside-menu navigation-item-wrap m-b-lg">
+        @*<div class="navigation-item navigation-item--horizontal card card--block aside-menu-row aside-menu-row-with-move pointer" ng-class="{'selected': mainpageproducts.selectedList.TypeStr == 'best'}">
+            <div ng-click="mainpageproducts.changeByType('best')" class="navigation-item__text">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        @T("Admin.Catalog.CatalogLeftMenu.BestProductsCount")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navigation-item navigation-item--horizontal card card--block aside-menu-row aside-menu-row-with-move pointer" ng-class="{'selected': mainpageproducts.selectedList.TypeStr == 'new'}">
+            <div ng-click="mainpageproducts.changeByType('new')" class="navigation-item__text">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name navigation-item__text">
+                        @T("Admin.Catalog.CatalogLeftMenu.NewProductsCount")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navigation-item navigation-item--horizontal card card--block aside-menu-row aside-menu-row-with-move pointer" ng-class="{'selected': mainpageproducts.selectedList.TypeStr == 'sale'}">
+            <div ng-click="mainpageproducts.changeByType('sale')" class="navigation-item__text">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name navigation-item__text">
+                        @T("Admin.Catalog.CatalogLeftMenu.SaleProductsCount")
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div ng-repeat="type in mainpageproducts.types" class="@(isMobile ? "swipe-line" : "navigation-item navigation-item--horizontal card card--block aside-menu-row aside-menu-row-with-move") pointer ng-cloak" ng-class="{'selected': mainpageproducts.selectedList.TypeStr == type && !isMobile.value}">
+            <div ng-click="mainpageproducts.changeByType(type)" class="@(isMobile ? "swipe-line__inner" : "navigation-item__text")"  @Html.Raw(isMobile ? "data-swipe-line" : "")>
+                <div class="aside-menu-inner @(isMobile ? "swipe-line__content navigation-item navigation-item--horizontal card card--block" : "")" ng-class="{'selected': mainpageproducts.selectedList.TypeStr == type && isMobile.value}">
+                    <div ng-if="type === 'best'" class="aside-menu-name navigation-item__text">
+                        @T("Admin.Catalog.CatalogLeftMenu.BestProductsCount")
+                    </div>
+                    <div ng-if="type === 'new'" class="aside-menu-name navigation-item__text">
+                        @T("Admin.Catalog.CatalogLeftMenu.NewProductsCount")
+                    </div>
+                    <div ng-if="type === 'sale'" class="aside-menu-name navigation-item__text">
+                        @T("Admin.Catalog.CatalogLeftMenu.SaleProductsCount")
+                    </div>
+                </div>
+                @if (isMobile)
+                {
+                    <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                        <div class="links-edit">
+                            <ui-modal-trigger data-controller="'ModalEditMainPageListCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("editMainPageList.html")"
+                                              data-resolve="{data: {'typeStr': type}}"
+                                              data-on-close="mainpageproducts.getItemByType(type, null)">
+                                <a class="btn btn-sm btn-success flex center-xs middle-xs" style="height:100%;">Редактировать</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

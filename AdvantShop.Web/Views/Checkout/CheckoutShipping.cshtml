@@ -1,0 +1,116 @@
+﻿@using AdvantShop.Customers
+@model AdvantShop.Models.Checkout.CheckoutModel
+@{
+    var customer = CustomerContext.CurrentCustomer;
+
+    bool checkFilledZone = false;
+
+    List<string> checkFilledZonengSwitch = new List<string>();
+
+    if (!SettingsDesign.AutodetectCity && (!customer.RegistredUser || !customer.Contacts.Any()))
+    {
+        if (SettingsCheckout.IsShowCountry && SettingsCheckout.IsRequiredCountry)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Country != null && checkout.contact.Country.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowState && SettingsCheckout.IsRequiredState)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Region != null && checkout.contact.Region.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowCity && SettingsCheckout.IsRequiredCity)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.City != null && checkout.contact.City.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowDistrict && SettingsCheckout.IsRequiredDistrict)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.District != null && checkout.contact.District.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowZip && SettingsCheckout.ZipDisplayPlace && SettingsCheckout.IsRequiredZip)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Zip != null && checkout.contact.Zip.length > 0");
+        }
+
+        checkFilledZone = checkFilledZonengSwitch.Any();
+    }
+}
+<article class="checkout-block">
+    <div class="checkout-block-title h-inline h2">
+        @T("Checkout.CheckoutShipping.ShippingMethods")
+    </div>
+    @if (SettingsDesign.AutodetectCity && (!customer.RegistredUser || !Model.CheckoutData.ShowContacts()))
+    {
+        <a class="link-dotted-invert checkout-shipping__zone" href="javascript:void(0)" role="link" data-zone-dialog-trigger>
+            <span data-zone-current data-ng-bind-template="{{zone.CountryName }}{{zone.Region != null && zone.Region.length ? ', ' +  zone.Region: ''}}{{zone.District != null && zone.District.length ? ', ' +  zone.District: ''}}{{zone.City != null && zone.City.length ?', ' +  zone.City : ''}}"></span>
+        </a>
+    }
+    @if (SettingsCheckout.SplitShippingByType)
+    {
+        <div class="m-b">
+            <div class="btn-group btn-group-large">
+                <button data-ng-click="checkout.changeShippingType('courier')" type="button" class="btn"
+                        data-ng-class="{'btn-confirm': checkout.typeCalculationVariants === 'courier',
+                                        'btn--inactive': checkout.typeCalculationVariants !== 'courier'}">
+                    @T("Checkout.CheckoutShipping.Delivery")
+                </button>
+                <button data-ng-click="checkout.changeShippingType('self-delivery')" type="button" class="btn"
+                        data-ng-class="{'btn-confirm': checkout.typeCalculationVariants === 'self-delivery',
+                                        'btn--inactive': checkout.typeCalculationVariants !== 'self-delivery'}">
+                    @T("Checkout.CheckoutShipping.SelfDelivery")
+                </button>
+            </div>
+        </div>
+    }
+
+    <div class="checkout-block-content ng-cloak">
+        <div class="checkout-block-content-inner"
+             data-ng-switch="@Html.Raw(checkFilledZone ? checkFilledZonengSwitch.AggregateString("&&") : "true")">
+
+            <div data-ng-switch-when="false">
+                @T("Checkout.CheckoutShipping.RequiredAddress")
+            </div>
+
+            <div data-ng-switch-when="true">
+                <div data-shipping-list
+                     data-anchor="checkoutshippings"
+                     data-items="checkout.Shipping.option"
+                     data-select-shipping="checkout.ngSelectShipping"
+                     data-count-visible-items="::7"
+                     data-change="checkout.changeShipping(shipping)"
+                     data-is-progress="checkout.shippingLoading"
+                     data-contact="checkout.contact"
+                     data-is-can-add-custom="false"
+                     data-icon-height="@(SettingsPictureSize.ShippingIconHeight)px"
+                     data-icon-width="@(SettingsPictureSize.ShippingIconWidth)px"
+                     data-update-delivery-interval="checkout.updateDeliveryInterval(shipping)">
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (SettingsCheckout.ShowReceivingMethod)
+    {
+        <div ng-if="checkout.typeCalculationVariants === 'self-delivery'">
+            <div class="checkout-block-title h-inline h2 p-t-sm">
+                @T("Checkout.CheckoutShipping.ReceivingMethod")
+            </div>
+            <div class="m-b" 
+                 ng-init="checkout.changeReceivingMethod('@(Model.CheckoutData.ReceivingMethod.HasValue ? Model.CheckoutData.ReceivingMethod.Value : EnTypeOfReceivingMethod.InHall)')">
+                <div class="btn-group btn-group-large">
+                    <button data-ng-click="checkout.changeReceivingMethod('InHall')" type="button" class="btn"
+                            data-ng-class="{'btn-confirm': checkout.receivingMethod === 'InHall',
+                                        'btn--inactive': checkout.receivingMethod !== 'InHall'}">
+                        @T("Checkout.CheckoutShipping.ReceivingMethod.InHall")
+                    </button>
+                    <button data-ng-click="checkout.changeReceivingMethod('WithYou')" type="button" class="btn"
+                            data-ng-class="{'btn-confirm': checkout.receivingMethod === 'WithYou',
+                                        'btn--inactive': checkout.receivingMethod !== 'WithYou'}">
+                        @T("Checkout.CheckoutShipping.ReceivingMethod.WithYou")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</article>

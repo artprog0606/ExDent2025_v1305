@@ -1,0 +1,118 @@
+﻿@using AdvantShop.Customers
+@model AdvantShop.ViewModel.ProductDetails.ProductTabsViewModel
+@{
+    var tabIndex = 1;
+    var tabContentIndex = 1;
+    var product = Model.ProductModel.Product;
+    var inplaceEnabled = InplaceEditorService.CanUseInplace(RoleAction.Catalog);
+}
+
+<div data-tabs class="tabs tabs-horizontal details-tabs">
+    <ul class="tabs-headers clear">
+        <li id="tabDescription" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+            <a href="javascript:void(0)" role="link" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                @T("Product.ProductTabs.Description")
+            </a>
+        </li>
+        <li id="tabOptions" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+            <a href="javascript:void(0)" role="link" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                @T("Product.ProductTabs.Properties")
+            </a>
+        </li>
+        @if (product.ProductVideos.Count > 0)
+        {
+            <li id="tabVideos" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+                <a href="javascript:void(0)" role="link" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    @T("Product.ProductTabs.Video") <span class="ng-cloak" data-ng-init="product.videosCount=@Model.VideosCount" data-ng-bind="product.videosCount > 0 ? '(' + product.videosCount +')' : ''"></span>
+                </a>
+            </li>
+        }
+
+        @foreach (var tab in Model.Tabs)
+        {
+            var tabId = tab.TabId.IsNotEmpty() ? tab.TabId : string.Format("{0}{1}","tab", tabIndex++);
+            <li id="@tabId" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+                <a href="javascript:void(0)" role="link" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    @tab.Title
+                </a>
+            </li>
+        }
+        @if (SettingsCatalog.AllowReviews)
+        {
+            <li id="tabReviews" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+                <a href="javascript:void(0)" role="link" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    @T("Product.ProductTabs.Reviews") <span class="ng-cloak" data-ng-init="product.reviewsCount=@Model.ReviewsCount" data-ng-bind="product.reviewsCount > 0 ? '(' + product.reviewsCount +')' : ''"></span>
+                </a>
+            </li>
+        }
+        @if (SettingsCatalog.ShowAvaliableLableInProduct && SettingsCatalog.ShowAvailableInWarehouseInProduct)
+        {
+            <li id="tabStocks" class="tabs-header-item" data-tab-header="" data-ng-hide="!tabHeader.isRender" data-ng-class="{'tabs-header-active cs-br-1' : tabHeader.selected}">
+                <a href="" class="tabs-header-item-link" data-ng-click="tabs.change(tabHeader)" data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    @T("Product.ProductTabs.Stocks")
+                </a>
+            </li>
+        }
+    </ul>
+    <div class="tabs-content">
+        <div class="tab-content details-tabs-deacription clear" itemprop="description" data-tab-content="tabDescription" data-ng-class="{'tab-content-active': tabContent.header.selected}" data-qazy-container>
+            @if (inplaceEnabled)
+            {
+                <div @Html.InplaceProduct(product.ProductId, ProductInplaceField.Description)>@Html.Raw(product.Description)</div>
+            }
+            else
+            {
+                @Html.Raw(product.Description)
+            }
+            @if (!string.IsNullOrEmpty(Model.AdditionalDescription))
+            {
+                <div class="tab-description-additional">
+                    @Html.Raw(Model.AdditionalDescription)
+                </div>
+            }
+            @Html.RenderModules("product_after_description", new { product })
+        </div>
+        <div class="tab-content details-tabs-properties" data-tab-content="tabOptions" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+            @Html.Action("ProductProperties", Model)
+        </div>
+        @if (product.ProductVideos.Count > 0)
+        {
+            <div class="tab-content details-tabs-videos"  data-tab-content="tabVideos" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div data-ng-if="tabContent.header.selected" class="ng-cloak">
+                    @Html.Action("ProductVideos", new { product.ProductId })
+                </div>
+            </div>
+        }
+
+        @foreach (var tab in Model.Tabs)
+        {
+            var tabId = tab.TabId.IsNotEmpty() ? tab.TabId : string.Format("{0}{1}", "tab", tabContentIndex++);
+            <div class="tab-content details-tabs-videos" data-tab-content="@tabId" data-ng-class="{'tab-content-active': tabContent.header.selected}" data-qazy-container>
+                @if (tab.Controller.IsNotEmpty() && tab.Action.IsNotEmpty())
+                {
+                    @Html.Action(tab.Action, tab.Controller, new { productId = tab.ProductId })
+                }
+                else
+                {
+                    @Html.Raw(tab.Body)
+                }
+            </div>
+        }
+        @if (SettingsCatalog.AllowReviews)
+        {
+            <div class="tab-content details-tabs-videos" data-tab-content="tabReviews" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div data-ng-if="tabContent.header.selected">
+                    @(Model.UseStandartReviews
+                              ? Html.Action("ProductReviews", new { productModel = Model.ProductModel, ProductId = product.ProductId })
+                              : Html.RenderModules("product_reviews"))
+                </div>
+            </div>
+        }
+        @if (SettingsCatalog.ShowAvaliableLableInProduct && SettingsCatalog.ShowAvailableInWarehouseInProduct)
+        {
+            <div class="tab-content details-tabs-stocks" data-tab-content="tabStocks" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                @Html.Partial("ProductStocks")
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,20 @@
+import appDependency from '../../../../../scripts/appDependency.js';
+import '../../../Content/src/settingsMobile/settingsMobile.js';
+appDependency.addItem(`settingsMobile`);
+import '../../../../../scripts/_common/validation/validation.module.js';
+import '../Content/styles/views/settings.scss';
+
+import 'tinycolor2';
+import '../../../Content/vendors/angular-color-picker/angularjs-color-picker.cjs';
+import '../../../Content/vendors/angular-color-picker/angularjs-color-picker.css';
+import '../../../Content/vendors/angular-color-picker/themes/angularjs-color-picker-bootstrap.css';
+appDependency.addItem(`color.picker`);
+import '../Content/styles/_shared/logo-generator/logo-generator.scss';
+import 'ng-file-upload';
+import '../../../Content/src/_shared/picture-uploader/pictureUploader.js';
+import '../../../Content/src/_shared/picture-uploader/pictureUploader.component.js';
+import '../../../Content/src/_shared/picture-uploader/modal/pictureUploaderModal.js';
+import '../Content/styles/_shared/picture-uploader/picture-uploader.scss';
+appDependency.addItem('pictureUploader');
+import uiAceTextarea from '../../../Content/src/_shared/ui-ace-textarea/uiAceTextarea.module.js';
+appDependency.addItem(uiAceTextarea);

@@ -1,0 +1,346 @@
+﻿@model AdvantShop.Web.Admin.Models.Cms.StaticPages.AdminStaticPageModel
+@{
+    Html.AddAsset("staticPage");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (!isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+}
+
+<form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.StaticPageId)
+    @Html.HiddenFor(x => Model.IsEditMode)
+    @if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = Model.IsEditMode ? Model.PageName : T("Admin.StaticPages.AddEdit.NewStaticPage").ToString();
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "StaticPages")
+        };
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "ng-disabled=\"!form.modified\"", "disabled" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+        );
+        
+        var moreButton = new MoreButtonModel();
+        moreButton.Attributes = new string[] {"ng-if=\"" + Model.IsEditMode.ToString().ToLower() + "\""};
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderAddEditStatic";
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+                
+        if (Model.IsEditMode)
+        {
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                ColorType = eColorType.Link,
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "go",
+                    Attributes = new { width = 24, height = 24 }
+                },
+                Text = T("Admin.View"),
+                Link = Url.AbsoluteRouteUrl("StaticPage", new { url = Model.UrlPath }),
+                Attributes = new string[] { "target=\"_blank\"" }
+            });
+        }
+        
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Text = T("Admin.StaticPages.AddEdit.Delete"),
+            Attributes = new string[] {"ng-click=\"staticPage.deleteStaticPage(" + Model.StaticPageId + ")\""},
+            Icon = new ButtonIcon(){
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+    else
+    {
+        @Html.Back(T("Admin.StaticPages.AddEdit.AllStaticPages").ToString(), Url.AbsoluteActionUrl("Index", "StaticPages"))
+
+        <div class="m-t-xs m-b sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div>
+                    <h2 class="m-t-none m-b-none page-name-block-text sticky-page-name-text">
+                        @if (Model.IsEditMode)
+                        {
+                            <span>@T("Admin.StaticPages.AddEdit.StaticPage")</span> <span>"@Html.Raw(Model.PageName)"</span>
+                        }
+                        else
+                        {
+                            @T("Admin.StaticPages.AddEdit.NewStaticPage")
+                        }
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <a href="" class="link-danger m-r-xs" ng-if="@Model.IsEditMode.ToString().ToLower()" ng-click="staticPage.deleteStaticPage(@Model.StaticPageId)">@T("Admin.StaticPages.AddEdit.Delete")</a>
+                    @if (Model.IsEditMode)
+                    {
+                        @Html.Button(T("Admin.View"), eButtonType.Simple, eButtonSize.Small, eColorType.Default,
+                            @Url.AbsoluteRouteUrl("StaticPage", new { url = Model.UrlPath }), name: "ViewStaticPage", attributes: new[] { "target=\"_blank\"" })
+                    }
+
+                    @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" })
+                </div>
+            </div>
+        </div>
+    }
+        
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row setting">
+                <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <h2 class="fs-lg setting__subtitle">@T("Admin.StaticPages.AddEdit.Main")</h2>
+                    <div class="">
+                    </div>
+                </div>
+                <div class="flex-grow flex-basis-n flex-width-n col-xs-12">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row middle-xs">
+                                    <div class="col-xs-12 col-md-2">
+                                        <label for="BrandName" class="form-label-block control-label"><span class="text-required">@T("Admin.StaticPages.AddEdit.PageTitle")</span></label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextBoxFor(x => x.PageName, new { @class = "form-control input-alt-mobile", url_generator = "", url_path = "staticPage.UrlPath", url_generator_enabled = Model.UrlPath.IsNotEmpty() ? "false" : "true", required = "required", ng_model = "staticPage.PageName", validation_input_text = T("Admin.StaticPages.AddEdit.PageTitle") })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row middle-xs control-label">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-slim col-sm-2">
+                                            <label for="Enabled" class="form-label-block">@T("Admin.StaticPages.AddEdit.Activity")</label>
+                                        </div>
+                                    }
+                                    <div class="col-xs-slim col-sm-10 first-xs last-sm @(isMobile ? "p-r-xs" : "")">
+                                        <label class="adv-checkbox-label form-label-block flex">
+                                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "staticPage.enabled", ng_init = "staticPage.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                            @if (isMobile)
+                                            {
+                                                <span class="m-l-sm">@T("Admin.StaticPages.AddEdit.Activity")</span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row middle-xs">
+                                    <div class="col-xs-12 col-md-2">
+                                        <label class="form-label-block control-label">@T("Admin.StaticPages.AddEdit.Parent")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <span data-e2e="StaticPageParent" data-ng-bind-html="staticPage.parentPageName | sanitize" data-ng-init="staticPage.parentPageName='@Html.AttributeEncode(Model.ParentPageName)'">
+                                        </span>
+                                        <ui-modal-trigger data-controller="'ModalSelectStaticPageCtrl'" controller-as="ctrl"
+                                                          data-on-close="staticPage.changePage(result)"
+                                                          data-resolve="{showRoot: true, selected:@Model.StaticPageId, @(Model.ParentId != 0 ? "currentId:" + Model.ParentId : "")}"
+                                                          template-url="@Html.GetAssetPath("selectStaticPage.html")">
+                                            <a href="" class="edit"  data-e2e="StaticPageParentLink">@T("Admin.StaticPages.Index.ChooseParent")</a>
+                                        </ui-modal-trigger>
+                                        @Html.HiddenFor(x => x.ParentId, new { ng_value = "staticPage.parentId", ng_init = "staticPage.parentId=" + Model.ParentId, ng_model = "staticPage.parentId" })
+
+                                        <a href="" ng-if="staticPage.parentId != 0 " ng-click="staticPage.changePage({staticPageId: 0, pageName: '@T("Admin.StaticPages.AddEdit.Root")'})" class="ng-cloak">@T("Admin.StaticPages.Index.RemoveParent")</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row middle-xs">
+                                    <div class="col-xs-12 col-md-2">
+                                        <label for="SortOrder" class="form-label-block control-label">@T("Admin.StaticPages.AddEdit.Sorting")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextBoxFor(x => x.SortOrder, new { @class = "form-control input-alt-mobile", required = "required", ng_model = "staticPage.sortOrder", validation_input_text = T("Admin.StaticPages.AddEdit.Sorting") })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row middle-xs control-label">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-slim col-sm-2">
+                                            <label for="IndexAtSiteMap" class="form-label-block">@T("Admin.StaticPages.AddEdit.DisplayInSiteMap")</label>
+                                        </div>
+                                    }
+                                    <div class="col-xs-slim col-sm-10 first-xs last-sm @(isMobile ? "p-r-xs" : "")">
+                                        <label class="adv-checkbox-label form-label-block flex">
+                                            @Html.CheckBoxFor(x => x.IndexAtSiteMap, new { ng_model = "staticPage.indexAtSiteMap", ng_init = "staticPage.indexAtSiteMap=" + Model.IndexAtSiteMap.ToLowerString(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                            @if (isMobile)
+                                            {
+                                                <span class="m-l-sm">@T("Admin.StaticPages.AddEdit.DisplayInSiteMap")</span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row">
+                                    <div class="col-xs-12 col-md-2">
+                                        <label for="Description" class="form-label-block m-b-wl control-label">@T("Admin.StaticPages.AddEdit.Text")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextAreaFor(x => x.PageText, new { @class = "wysiwyg", ckeditor = "{height: 600}", ng_model = "staticPage.PageText" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* SEO*@
+            <div class="row setting">
+                <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <h2 class="fs-lg setting__subtitle">SEO</h2>
+                    <div class="@(isMobile ? "m-b-md" : "m-b-sm")">
+                        @T("Admin.StaticPages.AddEdit.SeoParametersAreFilledAutomatically")<br />
+                        @*При необходимости вы самостоятельно можете указать SEO параметры такие как: title, h1, keywords, description*@
+                    </div>
+                </div>
+                <div class="flex-grow flex-basis-n flex-width-n col-xs-12">
+                    <div class="ibox brand-block">
+                        <div class="ibox-content brand-content border_none">
+
+                            <div class="form-group setting__form-group">
+                                <div class="row category-row">
+                                    <div class="col-xs-12 col-md-2">
+                                        @*@T("Admin.Category.Index.UrlPath")*@
+                                        <label for="URL" class="form-label-block control-label"><span class="text-required">@T("Admin.StaticPages.AddEdit.SynonymForURL")</span></label>
+                                    </div>
+
+                                    @if (isMobile)
+                                    {
+                                        <div class="col-xs-12">
+                                            <div class=" @(isMobile ? "card card--form-control" : "")" style="margin-bottom:0;">
+                                                <label for="UrlPath" class="@(isMobile ? "card__label" : "input-group")" style="font-weight:400;">
+                                                    <span class="@(isMobile ? "m-b-xs block" : "input-group-addon")">@(SettingsMain.SiteUrl)/pages/</span>
+                                                </label>
+                                                @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control card__input input-alt-mobile", ng_model = "staticPage.UrlPath", id = "URL", required = "required", validation_input_text = T("Admin.StaticPages.AddEdit.SynonymForURL") })
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-xs-12 col-md-10">
+                                            <label class="input-group form-label-block">
+                                                <span class="input-group-addon fs-xs input-alt-mobile">@(SettingsMain.SiteUrl)/pages/</span>
+                                                @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control input-alt-mobile", ng_model = "staticPage.UrlPath", id = "URL", required = "required", validation_input_text = T("Admin.StaticPages.AddEdit.SynonymForURL") })
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row setting__form-group">
+                                <div class="@(isMobile ? "control-label col-xs-12" : "col-sm-offset-2")">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(x => x.DefaultMeta, new { ng_model = "staticPage.defaultMeta", ng_init = "staticPage.defaultMeta=" + Model.DefaultMeta.ToString().ToLower(), @class = "adv-checkbox-input" })
+                                        <span class="adv-checkbox-emul" data-e2e="DefaultMetaCheckbox"></span>
+                                        <span class="@(isMobile ? "m-l-sm" : "")">@T("Admin.StaticPages.AddEdit.UseMetaForDefault")</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="brand-seo-custom-block ng-cloak m-t-md" ng-if="!staticPage.defaultMeta">
+                                <div class="form-group setting__form-group">
+                                    <div class="row category-row middle-xs">
+                                        <div class="col-xs-12 col-md-2">
+                                            <label class="form-label-block text-required control-label" for="SeoTitle">@T("Admin.Category.Index.SeoTitle")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextBoxFor(x => x.SeoTitle, 
+                                                new
+                                                {
+                                                    @class = "form-control input-alt-mobile", 
+                                                    ng_model = "staticPage.seoTitle", 
+                                                    textcomplete = "",
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.StaticPage }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoTitle").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group setting__form-group">
+                                    <div class="row category-row middle-xs">
+                                        <div class="col-xs-12 col-md-2">
+                                            <label class="form-label-block text-required control-label" for="SeoH1">@T("Admin.Category.Index.SeoH1")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextBoxFor(x => x.SeoH1, 
+                                                new
+                                                {
+                                                    @class = "form-control input-alt-mobile", 
+                                                    ng_model = "staticPage.seoH1",
+                                                    textcomplete = "", 
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.StaticPage }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoH1").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group setting__form-group">
+                                    <div class="row category-row middle-xs">
+                                        <div class="col-xs-12 col-md-2">
+                                            <label class="form-label-block control-label" for="SeoKeywords">@T("Admin.Category.Index.SeoKeywords")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextAreaFor(x => x.SeoKeywords, new { @class = "form-control input-alt-mobile", ng_model = "staticPage.seoKeywords", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.StaticPage }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row middle-xs setting__form-group">
+                                        <div class="col-xs-12 col-md-2">
+                                            <label class="form-label-block control-label" for="SeoDescription">@T("Admin.Category.Index.SeoDescription")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextAreaFor(x => x.SeoDescription, new { @class = "form-control input-alt-mobile", ng_model = "staticPage.seoDescription", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.StaticPage }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md">
+                                        @Html.Action("MetaVariablesDescription", "Common", new { type = AdvantShop.SEO.MetaType.StaticPage })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

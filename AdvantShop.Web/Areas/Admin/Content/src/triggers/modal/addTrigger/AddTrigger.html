@@ -1,0 +1,168 @@
+﻿<form name="formAddTrigger" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.Triggers.AddTrigger'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="control-label">{{'Admin.Js.Triggers.SelectTrigger'|translate}}</div>
+            <div class="m-b-sm">{{'Admin.Js.Triggers.AfterEvent'|translate}}</div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <select
+                        ng-model="ctrl.eventType"
+                        ng-options="s.Id as s.Name for s in ctrl.data.EventTypes"
+                        ng-change="ctrl.changeEventType()"
+                        class="form-control input-alt"></select>
+                </div>
+            </div>
+            <div class="row m-t" ng-if="ctrl.showEventObject">
+                <div class="col-xs-12">
+                    <span ng-class="{'m-r-xs': isMobile.value}">{{'Admin.Js.SettingsTasks.On'|translate}}</span>
+                    <select
+                        ng-model="ctrl.eventObjectGroup"
+                        ng-if="ctrl.eventObjectGroups"
+                        ng-options="s.value as s.label for s in ctrl.eventObjectGroups"
+                        ng-change="ctrl.getEventObjects(ctrl.eventObjectGroup)"
+                        class="form-control input-alt m-r-sm"
+                        style="width: 220px; display: inline-block"></select>
+
+                    <select
+                        ng-model="ctrl.eventObject"
+                        ng-options="s.label for s in ctrl.eventObjects track by s.value"
+                        required
+                        validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                        class="form-control input-alt"
+                        ng-class="{'m-t-sm': isMobile.value}"
+                        style="width: 230px; display: inline-block"></select>
+                </div>
+            </div>
+
+            <div class="row" ng-class="{'m-t': !isMobile.value}">
+                <div class="col-xs-12">
+                    <!-- Время с последнего заказа -->
+                    <div ng-if="ctrl.eventType == 7" ng-class="{'m-t-md': isMobile.value}">
+                        через
+                        <input
+                            type="text"
+                            ng-model="ctrl.eventObjValue"
+                            ng-class="{'m-r-sm m-l-sm': isMobile.value}"
+                            required
+                            validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                            class="form-control input-alt"
+                            style="width: 80px; display: inline-block" />
+                        дней
+                    </div>
+
+                    <!-- Важные даты -->
+                    <div ng-if="ctrl.eventType == 8" ng-class="{'m-t-md': isMobile.value}">
+                        <span ng-class="{'block setting-label-wrap setting__label': isMobile.value}">Дата</span>
+                        <div
+                            ng-class="{'m-b-sm': isMobile.value}"
+                            style="{{isMobile.value ? '' : 'display: inline-block; width: 150px; position: relative; vertical-align: middle; min-height: 34px;'}}">
+                            <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow': isMobile.value}">
+                                    <input type="text" ng-flatpickr-input ng-model="ctrl.triggerParams.DateTime" class="form-control input-alt" />
+                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                </span>
+                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="{{isMobile.value ? '' : 'display: inline-block;'}}"
+                            ng-class="{'m-l-sm': !isMobile.value,'flex middle-xs': isMobile.value}">
+                            <select
+                                ng-model="ctrl.triggerParams.Since"
+                                ng-options="s.value as s.label for s in ctrl.sinceOptions"
+                                class="form-control input-alt"
+                                style="{{isMobile.value ? '' : 'width: 90px; display: inline-block;'}}"></select>
+                            <input
+                                type="text"
+                                ng-model="ctrl.triggerParams.Days"
+                                ng-class="{'m-l-sm m-r-sm': isMobile.value}"
+                                required
+                                validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                class="form-control input-alt"
+                                style="{{isMobile.value ? '' : 'width: 50px; display: inline-block;'}}" /><span>дн.</span>
+                        </div>
+
+                        <div style="display: inline-block" class="{{isMobile.value ? 'm-t-md' : 'm-l-md'}}">
+                            <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                <input ng-model="ctrl.triggerParams.IgnoreYear" type="checkbox" class="adv-checkbox-input control-checkbox" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="{{isMobile.value ? 'flex-grow m-l-sm setting__label' : ''}}">Игнорировать год</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Важные даты покупателя -->
+                    <div ng-if="ctrl.eventType == 9" ng-class="{'m-t-md': isMobile.value}">
+                        <select
+                            ng-model="ctrl.triggerParams.CustomFieldId"
+                            ng-if="ctrl.eventObjectGroups"
+                            ng-init="ctrl.triggerParams.CustomFieldId = ctrl.triggerParams.CustomFieldId || ctrl.eventObjectGroups[0].value"
+                            ng-options="s.value as s.label for s in ctrl.eventObjectGroups"
+                            class="form-control m-r-sm input-alt"
+                            style="{{isMobile.value ? '' : 'width: 200px; display: inline-block;'}}"></select>
+
+                        <div
+                            style="{{isMobile.value ? '' : 'display: inline-block;'}}"
+                            ng-class="{'m-l-sm': !isMobile.value,'flex middle-xs m-t-sm': isMobile.value}">
+                            <select
+                                ng-model="ctrl.triggerParams.Since"
+                                ng-options="s.value as s.label for s in ctrl.sinceOptions"
+                                class="form-control input-alt"
+                                style="{{isMobile.value ? '' : 'width: 90px; display: inline-block;'}}"></select>
+
+                            <input
+                                type="text"
+                                ng-model="ctrl.triggerParams.Days"
+                                required
+                                validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                class="form-control input-alt"
+                                ng-class="{'m-r-sm m-l-sm': isMobile.value}"
+                                style="{{isMobile.value ? '' : 'width: 50px; display: inline-block;'}}" /><span>дн.</span>
+                        </div>
+
+                        <div style="display: inline-block" class="{{isMobile.value ? 'm-t-md' : 'm-l-md'}}">
+                            <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                <input ng-model="ctrl.triggerParams.IgnoreYear" type="checkbox" class="adv-checkbox-input control-checkbox" />
+                                <span class="adv-checkbox-emul"></span>
+                                <span class="{{isMobile.value ? 'flex-grow m-l-sm setting__label' : ''}}">Игнорировать год</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-t">
+            <div>
+                <div class="control-label">{{'Admin.Js.Triggers.TriggerCategory'|translate}}</div>
+            </div>
+            <div class="row m-b">
+                <div class="col-xs-12">
+                    <select
+                        ng-model="ctrl.categoryId"
+                        convert-to-number
+                        required
+                        ng-options="s.value as s.label for s in ctrl.categories"
+                        class="form-control input-alt"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation
+            data-button-validation-success="ctrl.addTrigger()"
+            ladda="ctrl.btnSleep">
+            {{'Admin.Js.AddProduct.Add'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddProduct.Cancel'|translate}}</button>
+    </div>
+</form>

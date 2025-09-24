@@ -1,0 +1,118 @@
+﻿<div class="booking-sheduler-container" is-mobile>
+    <div ng-if="$ctrl.showStyle">
+        <style ui-booking-sheduler-style ng-repeat="column in $ctrl.shedulerObj.Columns">
+            #column{{$index}} .fc-time-grid .fc-slats td {
+                height: {{column.slotHeight}}{{$ctrl.slotHeightPx ? 'px' : 'em'}};
+            }
+            #column{{$index}} .booking-sheduler-offset {
+                height: {{column.offset}}{{$ctrl.slotHeightPx ? 'px' : 'em'}};
+                {{ column.offset === 0 ? 'display:none;'  : null}}
+            }
+        </style>
+    </div>
+    <div class="ibox">
+        <div class="ibox-content" ng-class="{'no-top-border p-xs-x2 p-b-n bottom-xs flex' : !isMobile.value}">
+            <div class="form-group" ng-class="{'m-r-sm booking-sheduler-filter-date' : !isMobile.value}" id="flatpickrDate">
+                <label class="" ng-class="{'control-label': isMobile.value}"><span class="text-required">Дата</span></label>
+                <div
+                    class="input-group"
+                    ng-flatpickr
+                    fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false, minDate: '01.01.2000', appendTo: '#flatpickrDate'}"
+                    fp-on-change="$ctrl.changeDate()"
+                    fp-on-setup="$ctrl.onFlatpickrInit(fpItem)">
+                    <span class="flatpickr-custom-wrap" ng-class="{'flex-grow': isMobile.value}">
+                        <input data-e2e="bookingDate" type="text" class="form-control input-alt" required ng-flatpickr-input ng-model="$ctrl.date" />
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+            <div ng-if="!isMobile.value" class="flex-grow">
+                <ui-grid-custom-filter
+                    grid-column-defs="$ctrl.shedulerColumnDefs"
+                    grid-params="$ctrl._params"
+                    grid-search-placeholder="'Поиск по названию и тегу'"
+                    on-init="$ctrl.onFilterInit(filter)"
+                    on-change="$ctrl.filterApply(params, item)"
+                    on-remove="$ctrl.filterRemove(name, item)">
+                </ui-grid-custom-filter>
+            </div>
+            <div
+                ng-if="isMobile.value && $ctrl.shedulerObj.Columns.length > 0"
+                class="form-group"
+                ng-init="$ctrl.selectedEmployeeName = $ctrl.shedulerObj.Columns[0]">
+                <label class="" ng-class="{'control-label': isMobile.value}"><span>Выбрать специалиста</span></label>
+                <select
+                    ng-model="$ctrl.selectedEmployeeName"
+                    class="form-control input-alt"
+                    ng-options="item.Obj.Name for item in $ctrl.shedulerObj.Columns"></select>
+            </div>
+        </div>
+    </div>
+    <div class="relative" ng-class="{'booking-sheduler-processing': $ctrl.shedulerProcessing}">
+        <div class="kanban-scrollable kanban-scrollable-activated" ng-class="{'dragscroll': $ctrl._shedulerScrollable}">
+            <div class="row kanban-row" ng-class="[$ctrl.shedulerRowClasses]">
+                <div
+                    ng-repeat="column in $ctrl.shedulerObj.Columns track by column.Id"
+                    class="col-xs kanban-skeleton-column"
+                    ng-class="[$ctrl.shedulerColumnClasses, column.Class,{'booking-journal-column' : !isMobile.value}]"
+                    data-columnindex="{{$index}}"
+                    id="column{{$index}}"
+                    ng-if="$ctrl.selectedEmployeeName.Obj.Id == column.Obj.Id || !isMobile.value">
+                    <div class="kanban-column-wrap" ng-class="$ctrl.shedulerColumnWrapClasses">
+                        <div
+                            class="kanban-column-header clearfix"
+                            data-e2e="columnHeader"
+                            sticky
+                            sticky-top="60"
+                            sticky-group="bookingShedulerColumnHeader"
+                            sticky-position-type="absolute">
+                            <!-- sticky sticky-top="70" sticky-group="bookingShedulerColumnHeader" sticky-spy=".kanban-scrollable" sticky-spy-horizontal="true" sticky-position-type="absolute"-->
+
+                            <div
+                                class="flex middle-xs"
+                                ng-if="column.Obj"
+                                ng-click="$ctrl.showReservationResourceSheduler($ctrl._params.affiliateFilterId, column.Obj.Id, column.Date, !$ctrl.compactView ? $ctrl.slotHeightPx : null, column.Obj.Name, column.BookingDuration)">
+                                <div class="booking-journal-avatar inline">
+                                    <img ng-src="{{column.Obj.PhotoSrc}}" />
+                                </div>
+                                <div class="booking-journal-empl inline" ng-class="column.Class">
+                                    <div class="booking-journal-empl-name">
+                                        <a href="">{{column.Obj.Name}}</a>
+                                        (<span data-e2e="CardsPerColumn">{{column.TotalEventsCount}}</span
+                                        ><span class="m-l pull-right" ng-if="column.TotalString" data-e2e="columnTotal">{{column.TotalString}}</span>)
+                                    </div>
+                                    <span class="booking-journal-empl-position">{{column.Obj.Description}}</span>
+                                </div>
+                            </div>
+                            <div ng-if="!column.Obj">
+                                <span ng-class="column.Class">
+                                    {{column.Name}}
+                                    <span data-e2e="CardsPerColumn">{{column.TotalEventsCount}}</span
+                                    ><span class="m-l pull-right" ng-if="column.TotalString" data-e2e="columnTotal">{{column.TotalString}}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="kanban-task-wrap fullcalendar" ng-if="!column.IsNotWork">
+                                <div class="booking-sheduler-offset" ng-if="!$ctrl.compactView"></div>
+                                <full-calendar
+                                    fc-is-watch-options="false"
+                                    fc-is-watch-event-source="false"
+                                    fc-on-init="$ctrl.fullCalendarOnInit(column, calendar)"
+                                    fc-on-destroy="$ctrl.fullCalendarOnDestroy(column)"
+                                    fc-get-options="$ctrl.getCalendarOptions(column)"></full-calendar
+                                ><!--ng-model="column.Events"-->
+                            </div>
+                            <div class="kanban-task-wrap no-work" ng-if="column.IsNotWork">Не рабочий день</div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    ng-if="(!$ctrl.shedulerObj.Columns || !$ctrl.shedulerObj.Columns.length) && $ctrl.emptyText"
+                    ng-class="{'col-xs-12': isMobile.value}">
+                    <span ng-bind="$ctrl.emptyText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

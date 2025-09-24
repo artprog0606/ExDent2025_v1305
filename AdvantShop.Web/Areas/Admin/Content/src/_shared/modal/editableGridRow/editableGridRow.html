@@ -1,0 +1,75 @@
+<form name="formAddProduct" novalidate>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title" ng-bind="ctrl.params.row.entity.Name"></h2>
+    </div>
+    <div class="modal-body">
+        <div
+            ng-repeat="col in ctrl.editableColumns"
+            ui-grid-cell-custom="ctrl.uiGridCustom"
+            data-on-init="ctrl.addUiGridCellCustomScope"
+            data-is-mobile="true"
+            data-col="col"
+            data-row="ctrl.row"
+            data-column-defs="ctrl.columnDefs"></div>
+
+        <div ng-if="ctrl.params.row.entity.MarkingRequiredValidation != null">
+            <div class="form-group">
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span>{{'Admin.Js.EditableGridRow.MarkingRequiredValidation.Title' | translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <a ng-click="ctrl.params.extendCtrl.openChangeMarkingModal(ctrl.params.row.entity)"
+                            >{{'Admin.Js.EditableGridRow.MarkingRequiredValidation.Add' | translate}}</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span>{{'Admin.Js.EditableGridRow.Warehouses.Title' | translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9 flex middle-xs">
+                        <a
+                            class="flex-grow"
+                            ng-click="ctrl.params.extendCtrl.showDistributionOfOrderItem(ctrl.params.row.entity); $event.preventDefault();"
+                            >{{'Admin.Js.EditableGridRow.Warehouses.Add' | translate}}</a
+                        >
+                        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                            <div class="help-content">
+                                <p><span>Ед. измерения:</span> <span ng-bind-html="ctrl.params.row.entity.UnitName"></span></p>
+                                <p><span>Мера (ФФД 1.2):</span> <span ng-bind-html="ctrl.params.row.entity.MeasureName"></span></p>
+                                <p><span>Предмет расчета:</span> <span ng-bind-html="ctrl.params.row.entity.PaymentSubjectName"></span></p>
+                                <p><span>Способ расчета:</span> <span ng-bind-html="ctrl.params.row.entity.PaymentMethodName"></span></p>
+                                <p>
+                                    <span>Ссылка на скачивание:</span>
+                                    <a
+                                        class="text-floating product-download-link"
+                                        data-ng-href="{{ctrl.params.row.entity.DownloadLink}}"
+                                        data-ng-bind-html="ctrl.params.row.entity.DownloadLink"
+                                        target="_blank"></a>
+                                </p>
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation
+            data-button-validation-success="ctrl.save()"
+            ladda="ctrl.btnLoading">
+            {{'Admin.Js.ChangeAdminShopName.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.ChangeAdminShopName.Cancel'|translate}}</button>
+    </div>
+</form>

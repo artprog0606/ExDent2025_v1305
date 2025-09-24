@@ -1,0 +1,90 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var date = Model.Block.TryGetSetting("date");
+    string countdownDate = "";
+    int loopMinutes = 0;
+    bool isLoop = date.selectType.value == "loop";
+
+    if (isLoop)
+    {
+
+        loopMinutes = (int)Model.Block.TryGetSetting("date").end_date;
+    }
+    else
+    {
+        countdownDate = date.end_date != null ? date.end_date.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'") : DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+    }
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row @(Model.Block.TryGetSetting("align_block") != null ? Model.Block.TryGetSetting("align_block") :"middle-xs")">
+            <div class="col-xs-12 col-sm-7 text-image-countdown__col">
+                <div class="text-image-countdown__content">
+                    @if (Model.Block.TryGetSetting("show_title") == true)
+                    {
+                        <div class="lp-h2 lp-h2--color text-image-countdown__title" data-e2e="textImageTitle">
+                            @Html.SubBlock(Model, "title")
+                        </div>
+                    }
+
+                    @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                    {
+                        <div class="lp-h3 lp-h3--color" data-e2e="textImageSubtitle">
+                            @Html.SubBlock(Model, "subtitle")
+                        </div>
+                    }
+
+                    <div class="lp-h3--color text-image-countdown__text lp-block-text--middle lp-font-size--middle" data-e2e="textImageText">
+                        @Html.SubBlock(Model, "text")
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-10 col-md-9 col-lg-8">
+                            <div class="text-image-countdown__countdown">
+                                <div countdown @Html.Raw(isLoop == true ? "is-loop=\"" + loopMinutes + "\"" : "end-time=\"'" + countdownDate + "'\"") class="ng-cloak" data-e2e="ContentCountdown"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                    {
+                        <div class="text-image-countdown__button">
+                            <div class="row @Model.Block.TryGetSetting("align_btns")">
+                                <div class="col-xs-12">
+                                    <div class="lp-btn-group @Model.Block.TryGetSetting("align_btns")">
+                                        @if (Model.Block.TryGetSetting("show_button") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent" data-e2e="textImageBtn1">
+                                                @Html.Button(Model.Block, "button")
+                                            </div>
+                                        }
+                                        @if (Model.Block.TryGetSetting("show_button2") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent" data-e2e="textImageBtn2">
+                                                @Html.Button(Model.Block, "button2")
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-5 text-image-countdown__col text-center first-xs last-sm" data-e2e="textImagePicture">
+                <div class="text-image-countdown__picture-wrap">
+                    @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                    {
+                        DeletePicture = false,
+                        GalleryIconsEnabled = false,
+                        LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                        MaxWidthPicture = PictureLoaderImageSize.XMiddleWidth,
+                        MaxHeightPicture = PictureLoaderImageSize.XMiddleWidth,
+                        ImageLink = Model.Block.TryGetSetting("image_link")
+                    }, Model.Inplace)
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

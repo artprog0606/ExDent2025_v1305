@@ -1,0 +1,26 @@
+﻿@model AdvantShop.ViewModel.ProductDetailsLanding.ProductDetailsViewModelLanding
+@{
+    var product = Model.ProductModel.Product;
+    Layout = null;
+    var filterPhotosEnable = product.ProductPhotos.Any(x => x.ColorID.HasValue);
+}
+
+<div data-ng-controller="ProductCtrl as product">
+    @*@Html.Raw(Model.ProductModel.BlockId != null ? " id=\"block_" + Model.ProductModel.BlockId + "\"" : "")*@ @*дублируется id в воронках*@
+    <div data-ng-init="product.loadData(@product.ProductId, @(Model.ProductModel.ColorId != null ?  Model.ProductModel.ColorId.ToString() : "null"), @(Model.ProductModel.SizeId != null ? Model.ProductModel.SizeId.ToString() : "null"), @Model.ProductModel.HidePrice.ToLowerString(), @filterPhotosEnable.ToLowerString(), true);
+        product.addChangeSizeAndColorCallback(quickview.itemData.onChangeSizeAndColor);
+        quickview.itemData.addProductCtrl(product)"></div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            @Html.Action("ProductPhotos", new { productModel = Model.ProductModel, enabledModalPreview = false, landing = true, quickView = true })
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="page-title-row details-title-row">
+                <div class="lp-products-view-alt__name">@product.Name</div>
+            </div>
+            <div class="lp-products-view-item-price">
+                @Html.Partial("ProductInfoLanding", Model)
+            </div>
+        </div>
+    </div>
+</div>

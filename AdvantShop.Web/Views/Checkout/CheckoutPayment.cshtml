@@ -1,0 +1,64 @@
+﻿@using AdvantShop.Customers
+@{
+    var customer = CustomerContext.CurrentCustomer;
+
+    bool checkFilledZone = false;
+
+    List<string> checkFilledZonengSwitch = new List<string>();
+
+    if (!SettingsDesign.AutodetectCity && (!customer.RegistredUser || !customer.Contacts.Any()))
+    {
+        if (SettingsCheckout.IsShowCountry && SettingsCheckout.IsRequiredCountry)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Country != null && checkout.contact.Country.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowState && SettingsCheckout.IsRequiredState)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Region != null && checkout.contact.Region.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowDistrict && SettingsCheckout.IsRequiredDistrict)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.District != null && checkout.contact.District.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowCity && SettingsCheckout.IsRequiredCity)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.City != null && checkout.contact.City.length > 0");
+        }
+
+        if (SettingsCheckout.IsShowZip && SettingsCheckout.ZipDisplayPlace && SettingsCheckout.IsRequiredZip)
+        {
+            checkFilledZonengSwitch.Add("checkout.contact.Zip != null && checkout.contact.Zip.length > 0");
+        }
+
+        checkFilledZone = checkFilledZonengSwitch.Any();
+    }
+}
+<article class="checkout-block">
+    <div class="checkout-block-title h2">
+        @T("Checkout.CheckoutPayment.PaymentMethods")
+    </div>
+    <div class="checkout-block-content ng-cloak">
+        <div class="checkout-block-content-inner" data-ng-switch="@Html.Raw(checkFilledZone ? checkFilledZonengSwitch.AggregateString("&&") : "true")">
+            <div data-ng-switch-when="false">
+                @T("Checkout.CheckoutPayment.RequiredAddress")
+            </div>
+
+            <div data-ng-switch-when="true">
+                <div data-payment-list
+                     data-anchor="checkoutpayment"
+                     data-items="checkout.Payment.option"
+                     data-select-payment="checkout.ngSelectPayment"
+                     data-count-visible-items="::7"
+                     data-change="checkout.changePayment(payment)"
+                     data-change-details="checkout.changePaymentDetails(payment)"
+                     data-is-progress="checkout.paymentLoading"
+                     data-icon-height="@(SettingsPictureSize.PaymentIconHeight)px"
+                     data-icon-width="@(SettingsPictureSize.PaymentIconWidth)px"
+                     data-enable-phone-mask="@SettingsMain.EnablePhoneMask.ToLowerString()"></div>
+            </div>
+        </div>
+    </div>
+</article>

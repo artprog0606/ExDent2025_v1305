@@ -1,0 +1,65 @@
+<div class="bonus-apply">
+    <div class="m-b" data-ng-if="bonusApply.prohibitAccrualAndSubstract && bonusApply.maxBonus > 0">
+        <div class="btn-group btn-group-large">
+            <button
+                data-ng-click="bonusApply.changeBonusOperationType('addBonus')"
+                type="button"
+                class="btn"
+                data-ng-class="{'btn-confirm': bonusApply.bonusOperationType === 'addBonus',
+                        'btn--inactive': bonusApply.bonusOperationType !== 'addBonus'}">
+                {{ ::'Js.Bonus.AddBonus' | translate }} <strong class="bonus-apply__plus-numb" data-ng-bind="bonusApply.bonusPlus || 0"></strong>
+            </button>
+            <button
+                data-ng-click="bonusApply.changeBonusOperationType('substractBonus')"
+                type="button"
+                class="btn"
+                data-ng-class="{'btn-confirm': bonusApply.bonusOperationType === 'substractBonus',
+                        'btn--inactive': bonusApply.bonusOperationType !== 'substractBonus'}">
+                {{ ::'Js.Bonus.SubstractBonus' | translate }}
+                <strong
+                    class="bonus-apply__applied-numb"
+                    data-ng-bind="bonusApply.bonusOperationType === 'substractBonus' ? bonusApply.appliedBonuses : bonusApply.maxBonus"></strong>
+            </button>
+        </div>
+    </div>
+    <div
+        data-ng-if="!bonusApply.prohibitAccrualAndSubstract || bonusApply.bonusOperationType == 'substractBonus' && bonusApply.allowSpecifyBonusAmount || bonusApply.maxBonus <= 0">
+        <div class="row middle-xs" data-ng-if="bonusApply.allowSpecifyBonusAmount || bonusApply.maxBonus <= 0">
+            <div class="col-xs">
+                <div class="form-field-name vertical-interval-xsmall">
+                    <span data-ng-bind-html="bonusApply.bonusText"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row middle-xs" data-ng-if="bonusApply.maxBonus > 0">
+            <div class="col-xs-12" data-ng-if="bonusApply.allowSpecifyBonusAmount">
+                <span
+                    class="bonus-apply__range-slider ngrs-range-slider"
+                    data-range-slider
+                    data-min="0"
+                    data-show-values="true"
+                    data-attach-handle-values="true"
+                    data-max="bonusApply.maxBonus"
+                    data-model-max="bonusApply.appliedBonuses"
+                    data-pin-handle="min"
+                    data-on-handle-move-up="bonusApply.rangeSliderMove(event, modelMin, modelMax)"></span>
+            </div>
+            <div class="col-xs-12" data-ng-if="!bonusApply.allowSpecifyBonusAmount && !bonusApply.prohibitAccrualAndSubstract">
+                <label class="flex mobile-form-field-control-last">
+                    <input
+                        data-ng-model="bonusApply.isApply"
+                        class="custom-input-native"
+                        type="checkbox"
+                        id="isBonusApply"
+                        name="isBonusApply"
+                        data-ng-change="bonusApply.applyBonus()" />
+                    <span class="custom-input-checkbox"></span>
+                    <span class="custom-input-text">
+                        {{'Js.Bonuses.ByBonusCard'|translate}} <br />
+                        <span class="cs-t-3"> {{bonusApply.bonusText}} </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿<div class="m-b-sm flex between-xs" is-mobile>
+    <div class="flex between-xs inline">
+        <h1 class="page-name-block-text form-control-title form-control-title--middle">{{'Admin.Js.TaskGrid.Tasks'|translate}}</h1>
+    </div>
+    <task-create
+        ng-if="!$ctrl.readonly"
+        data-resolve="{bindTo:{objId: $ctrl.objId, type: $ctrl.type}}"
+        on-after="$ctrl.modalClose();"
+        ng-class="{'link': isMobile.value}">
+        <button
+            class="btn"
+            type="button"
+            data-e2e="leadTaskAdd"
+            ng-class="{'btn-link p-r-none' : isMobile.value, 'btn-sm btn-success': !isMobile.value}">
+            <span class="fa fa-plus" ng-if="!isMobile.value"></span>
+            {{'Admin.Js.TaskGrid.NewTask'|translate}}
+        </button>
+    </task-create>
+</div>
+<ui-grid-custom
+    grid-unique-id="gridTasks"
+    grid-filter-enabled="false"
+    grid-on-init="$ctrl.gridOnInit(grid)"
+    grid-on-delete="$ctrl.update()"
+    grid-options="$ctrl.gridOptions"
+    grid-params="{filterby: $ctrl.type, objId: $ctrl.objId}"
+    grid-url="'tasks/gettasks'"
+    grid-extend-ctrl="$ctrl"
+    grid-row-identificator="'Id'"
+    grid-swipe-line="true">
+    <ui-grid-custom-override-control class="ng-cloak">
+        <div class="card card--gap-row-sm card--border-info" ng-style="{'border-color': !row.entity.Viewed ? '#f8ac59' : 'transparent' }">
+            <div class="card__row card__row--single">
+                <div class="card__col">
+                    <span class="card__text--alt">#<span ng-bind="row.entity.Id"></span></span>
+                    <span class="card__text--alt" ng-bind="row.entity.Name"></span>
+                </div>
+            </div>
+            <div class="card__row m-b">
+                <div class="card__text--color-alt" ng-bind="row.entity.Description"></div>
+            </div>
+            <div class="card__row">
+                <div class="card__col">
+                    <span class="card__text--color-alt">
+                        <span
+                            ng-repeat="managersItem in row.entity.Managers track by managersItem.CustomerId"
+                            ng-bind="($index > 0 ? ', ' : '') + managersItem.FullName"></span>
+                    </span>
+                </div>
+                <div class="card__col card__col--end">
+                    <span class="card__text--color-alt" ng-bind="row.entity.StatusFormatted"></span>
+                </div>
+            </div>
+        </div>
+    </ui-grid-custom-override-control>
+    <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.gridTasks.gridOptions.TotalString"> </ui-grid-custom-footer>
+</ui-grid-custom>

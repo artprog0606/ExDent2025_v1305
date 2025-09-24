@@ -1,0 +1,108 @@
+﻿<div is-mobile>
+    <div class="aside-menu property-groups" data-as-sortable="$ctrl.sortableOptions" data-ng-model="$ctrl.groups" ng-switch="isMobile.value === true">
+        <div ng-repeat="group in $ctrl.groups" data-as-sortable-item data-e2e-property-group-id="{{group.PropertyGroupId}}" ng-switch-when="false">
+            <div
+                class="link-invert aside-menu-row aside-menu-row-with-move"
+                ng-class="{'selected': group.PropertyGroupId == $ctrl.groupId || ($ctrl.groupId == null && group.PropertyGroupId == 0)}">
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        <span data-as-sortable-item-handle ng-if="group.PropertyGroupId !== -1 && group.PropertyGroupId !== 0"
+                            ><icon-move></icon-move
+                        ></span>
+                        <a class="link-invert link-decoration-none" ng-click="$ctrl.selectGroup(group.PropertyGroupId)" href="">{{group.Name}}</a>
+                        <!--href="properties{{ group.PropertyGroupId != 0 ? '?groupId=' + group.PropertyGroupId : '' }}"-->
+                    </div>
+                    <div class="aside-menu-count">
+                        <div class="links-edit" ng-hide="group.PropertyGroupId == 0 || group.PropertyGroupId == -1">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddGroupCtrl'"
+                                controller-as="ctrl"
+                                template-url="../areas/admin/content/src/properties/modal/addGroup/AddGroup.html"
+                                data-resolve="{'groupId': group.PropertyGroupId}"
+                                data-on-close="$ctrl.fetch()">
+                                <button type="button" aria-label="Редактировать" class="link-invert fas fa-pencil-alt link-decoration-none"></button>
+                            </ui-modal-trigger>
+
+                            <button
+                                type="button"
+                                aria-label="Удалить"
+                                class="btn-icon link-invert fas fa-times link-decoration-none"
+                                ng-click="$ctrl.deleteGroup(group.PropertyGroupId, $index)"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr ng-show="group.PropertyGroupId == -1" />
+        </div>
+
+        <div ng-switch-when="true" class="settings-list settings-list--row-gap-3">
+            <div
+                ng-repeat="group in $ctrl.groups track by group.PropertyGroupId"
+                data-as-sortable-item
+                data-e2e-property-group-id="{{group.PropertyGroupId}}"
+                class="swipe-line"
+                ng-class="{'m-b-lg': group.PropertyGroupId == -1}">
+                <div class="swipe-line__inner" data-swipe-line>
+                    <div
+                        class="navigation-item navigation-item--horizontal card card--middle swipe-line__content setting__property-group-item"
+                        style="padding: 0 16px"
+                        ng-class="{'navigation-item--without-icon': group.PropertyGroupId === -1 || group.PropertyGroupId === 0,'selected': group.PropertyGroupId == $ctrl.groupId || ($ctrl.groupId == null && group.PropertyGroupId == 0)}">
+                        <div
+                            class="as-sortable-item-handle navigation-item__icon"
+                            as-sortable-item-handle
+                            ng-if="group.PropertyGroupId !== -1 && group.PropertyGroupId !== 0">
+                            <icon-move>
+                                <svg
+                                    class="icon-move"
+                                    version="1.0"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="10.000000pt"
+                                    height="20.000000pt"
+                                    viewBox="0 0 10.000000 20.000000"
+                                    preserveAspectRatio="xMidYMid meet">
+                                    <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                        <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    </g>
+                                </svg>
+                            </icon-move>
+                        </div>
+                        <div class="navigation-item__text">
+                            <div
+                                style="padding: 18px 0"
+                                ng-click="$ctrl.selectGroup(group.PropertyGroupId)"
+                                ng-bind="group.Name"
+                                class="category-block__name"
+                                data-e2e="categoriesBlockItem"></div>
+                        </div>
+                    </div>
+                    <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                        <div class="links-edit" ng-hide="group.PropertyGroupId == 0 || group.PropertyGroupId == -1">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddGroupCtrl'"
+                                controller-as="ctrl"
+                                template-url="../areas/admin/content/src/properties/modal/addGroup/AddGroup.html"
+                                data-resolve="{'groupId': group.PropertyGroupId}"
+                                data-on-close="$ctrl.fetch()">
+                                <a class="btn btn-sm btn-success flex center-xs middle-xs" style="height: 100%">Редактировать</a>
+                            </ui-modal-trigger>
+                        </div>
+                        <button
+                            ng-hide="group.PropertyGroupId == 0 || group.PropertyGroupId == -1"
+                            type="button"
+                            class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                            ng-click="$ctrl.deleteGroup(group.PropertyGroupId, $index)">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

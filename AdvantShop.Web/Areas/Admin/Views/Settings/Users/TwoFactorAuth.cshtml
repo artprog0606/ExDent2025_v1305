@@ -1,0 +1,83 @@
+@model AdvantShop.Web.Admin.ViewModels.Settings.UsersSettingsViewModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div data-ng-controller="SettingsTwoFactorAuthCtrl as settingsTwoFactorAuth">
+    @if (!isMobile)
+    {
+        <h3 class="sticky-page-name-text m-t-none bold setting__subtitle">
+            @T("Admin.Settings.Users.TwoFactorAuth")
+        </h3>
+    }
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 relative">
+            @Html.DropDownListFor(x => x.ActiveTwoFactorAuthModule, Model.TwoFactorAuthModules, new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsTwoFactorAuth.moduleId",
+            })
+        </div>
+    </div>
+    <div data-ng-show="settingsTwoFactorAuth.moduleId != '-1'">
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-1">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.Users.Email")
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control input-alt", ng_model = "settingsTwoFactorAuth.email" })
+            </div>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <div class="col-xs-12 col-md-1">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.Users.Password")
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                @Html.PasswordFor(x => x.Password, new { @class = "form-control input-alt", ng_model = "settingsTwoFactorAuth.password" })
+            </div>
+        </div>
+        <div>
+            <button type="button"
+                    class="btn btn-success"
+                    ng-click="settingsTwoFactorAuth.getQrCode(settingsTwoFactorAuth.email, settingsTwoFactorAuth.password, settingsTwoFactorAuth.moduleId);
+                    settingsTwoFactorAuth.getAuthActive(settingsTwoFactorAuth.email, settingsTwoFactorAuth.password, settingsTwoFactorAuth.moduleId)">@T("Admin.Settings.Users.GetCode")</button>
+        </div>
+        <div class="col-xs-12 col-md-3" data-ng-show="settingsTwoFactorAuth.Codes != null">
+            <div class="column mt-3">
+                <div class="col mb-2">Qr:</div>
+                <div class="col">
+                    <img ng-src="{{settingsTwoFactorAuth.Codes.QrCode}}" alt="QR-код для двухфакторной аутентификации">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div>
+                    <label>@T("Admin.Settings.Users.EnterKeyManually")&nbsp;</label>
+                </div>
+                <div>
+                    <span id="key">{{settingsTwoFactorAuth.Codes.SecretKey}}</span>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div>
+                    <label>@T("Admin.Settings.Users.EnableTwoFactor")&nbsp;</label>
+                </div>
+                <div>
+                    <label class="adv-checkbox-label d-flex align-items-center">
+                        @Html.CheckBoxFor(x => x.TwoFactorAuthActive, new
+                        {
+                            @class = "adv-checkbox-input", ng_model = "settingsTwoFactorAuth.TwoFactorAuthActive",
+                            ng_change = "settingsTwoFactorAuth.saveAuthActive(settingsTwoFactorAuth.email, settingsTwoFactorAuth.password, settingsTwoFactorAuth.moduleId, settingsTwoFactorAuth.TwoFactorAuthActive)"
+                        })
+                        <span class="adv-checkbox-emul"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+﻿@model SubBlockModel
+@using AdvantShop.Catalog
+
+@{ 
+
+    var urlVideo = "";
+    var fromUpload = false;
+    var insertionMethod = Model.SubBlock.TryGetSetting("insertionMethod");
+    if (insertionMethod == "upload")
+    {
+        urlVideo = Model.SubBlock.TryGetSetting("upload").urlVideo;
+        fromUpload = true;
+    }
+    else { 
+        urlVideo = Model.SubBlock.TryGetSetting("urlVideo");
+    }
+
+
+}
+
+
+@if (Model.SubBlock.TryGetSetting("inModal") != null && Model.SubBlock.TryGetSetting("inModal") == true)
+{
+    <div class="flex @(Model.SubBlock.TryGetSetting("alignButton") != null ? @Model.SubBlock.TryGetSetting("alignButton") : "start-xs")">
+        <button type="button" class="lp-btn--link pointer svg-wrap outline-none button-video-modal-trigger">
+
+
+            @if (Model.SubBlock.TryGetSetting("preview") == null)
+            {
+                if (!Model.InPlace)
+                {
+                    @:<modal-video data-src="@Html.AttributeEncode(urlVideo)" data-from-upload="@fromUpload.ToString().ToLower()" data-e2e="ModalVideoWindow">
+                }
+                    <div class="flex middle-xs iframe-responsive__custom-play-icon-wrap">
+                        <div class="pointer">
+                            @if (Model.InPlace)
+                            {
+                                @:<modal-video data-src="@Html.AttributeEncode(urlVideo)" data-from-upload="@fromUpload.ToString().ToLower()">
+                                }
+                            <svg class="iframe-responsive__custom-play-icon modal-video-icon" viewBox="0 0 52 52" version="1.1" data-e2e="VideoPlayBtn" xmlns="http://www.w3.org/2000/svg">
+                                <circle stroke="currentColor" class="svg-fill-custom" fill="transparent" cx="26" cy="26" r="25.5"></circle>
+                                <polygon fill="currentColor" transform="translate(27.950000, 26.000000) rotate(90.000000) translate(-27.950000, -26.000000) " points="27.95 21.45 35.75 30.55 20.15 30.55"></polygon>
+                            </svg>
+                            @if (Model.InPlace)
+                            {
+                            @:</modal-video>
+                        }
+                        </div>
+                        <div>
+                            @if (Model.InPlace)
+                            {
+                                <div @(Html.InplaceSubBlockContent(Model.SubBlock.Id, Model.SubBlock.Name, "Нажмите чтобы добавить описание", false))>
+                                    @Html.Raw(Html.InplaceEscapeScripts(Model.SubBlock.ContentHtml))
+                                </div>
+                            }
+                            else
+                            {
+                                @Html.Raw(Model.SubBlock.ContentHtml)
+                            }
+                        </div>
+                    </div>
+                if (!Model.InPlace)
+                {
+                    @:</modal-video>
+                }
+            }
+            else
+            {
+                var videoCover = ProductVideoService.GetCoverVideoFromUrl(urlVideo);
+                var videoCoverFromSettings = Model.SubBlock.TryGetSetting("coverVideo");
+
+                <modal-video data-src="@Html.AttributeEncode(urlVideo)"
+                             data-video-cover="@(!string.IsNullOrEmpty(videoCoverFromSettings.Src) ? videoCoverFromSettings.Src : videoCover)"
+                             data-from-upload="@fromUpload.ToString().ToLower()">
+                    <div class="video-view" data-ng-switch="modalVideo.isMobile === true">
+
+                        <div data-ng-switch-when="false">
+                            <div class="video-view__custom-play-wrap">
+                                <div class="video-view__custom-play">
+                                    <svg version="1.1" viewBox="-1 0 20 20" fill="#303030" class="video-view__custom-play-icon"><path d="M15,10l-9,5V5L15,10z"></path></svg>
+                                </div>
+                            </div>
+                            <img src="@(!string.IsNullOrEmpty(videoCoverFromSettings.Src) ? videoCoverFromSettings.Src : videoCover)" />
+                        </div>
+                        <div data-ng-switch-when="true" data-bind-html-compile="modalVideo.htmlForMobile"></div>
+                    </div>
+                </modal-video>
+            }
+        </button>
+</div>
+}
+else
+if (Model.SubBlock.TryGetSetting("asBackground") != null && Model.SubBlock.TryGetSetting("asBackground") == true)
+{
+    <div>
+        @if (urlVideo != null)
+        {
+            <iframe-responsive data-src="@urlVideo" 
+                               data-autoplay="true" 
+                               data-from-upload="@fromUpload.ToString().ToLower()" 
+                               data-as-background="true"
+                               data-disabled-stop="true" 
+                               data-loop="true" 
+                               data-e2e="VideoIframeAdmin">
+            </iframe-responsive>
+        }
+        else
+        {
+            <div class="lp-cover-text text-center" data-e2e="NoVideoText">Введите ссылку на видео в настройках</div>
+        }
+    </div>
+}
+else
+{
+<div class="text-center">
+
+    @if (!LpService.PreviewInAdmin)
+    {
+        if (Model.InPlace)
+        {
+            @:<div class="subblock-inplace-button subblock-inplace-video text-center" data-subblock-inplace-video data-ng-init="subblockInplaceVideo.settings = subblockInplace.settings; subblockInplaceVideo.subblockId = subblockInplace.sublockId;">
+            }
+
+            if (urlVideo != null)
+            {
+                <iframe-responsive data-src="@urlVideo" 
+                                   data-from-upload="@fromUpload.ToString().ToLower()" 
+                                   data-autoplay="@(Model.SubBlock.TryGetSetting("autoplayVideo") != null ? Model.SubBlock.TryGetSetting("autoplayVideo").ToString().ToLower() : false )"
+                                   data-e2e="VideoIframeAdmin"></iframe-responsive>
+            }
+            else
+            {
+                <div class="lp-cover-text text-center" data-e2e="NoVideoText">Введите ссылку на видео в настройках</div>
+            }
+
+            if (Model.InPlace)
+            {
+            @:</div>
+        }
+    }
+    else
+    {
+        <div class="iframe-responsive__container embed-container">
+            <div class="iframe-responsive__item">
+                @{
+                    var url = urlVideo;
+                    if (urlVideo != null)
+                    {
+                        var uri = new Uri((string)url);
+
+                        var query = HttpUtility.ParseQueryString(uri.Query);
+
+                        var videoId = string.Empty;
+
+                        if (query.AllKeys.Contains("v"))
+                        {
+                            videoId = query["v"];
+                        }
+                        else
+                        {
+                            videoId = uri.Segments.Last();
+                        }
+                        <iframe-responsive data-src="@urlVideo" 
+                                           data-from-upload="@fromUpload.ToString().ToLower()"
+                                           data-autoplay="@(Model.SubBlock.TryGetSetting("autoplayVideo") != null ? Model.SubBlock.TryGetSetting("autoplayVideo").ToString().ToLower() : false )" 
+                                           data-e2e="VideoIframeClient">
+                        </iframe-responsive>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+}
+

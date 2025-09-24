@@ -1,0 +1,78 @@
+﻿<div>
+    <form class="gallery-icons-search">
+        <div class="gallery-icons-search__field">
+            <input
+                class="gallery-icons-search__input"
+                autofocus
+                type="text"
+                ng-model="$ctrl.term"
+                ng-change="$ctrl.search($ctrl.term)"
+                placeholder="Введите текст для поиска" />
+            <div class="gallery-icons-search__icon">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 52.966 52.966" width="20" height="20">
+                    <path
+                        d="M51.704,51.273L36.845,35.82c3.79-3.801,6.138-9.041,6.138-14.82c0-11.58-9.42-21-21-21s-21,9.42-21,21s9.42,21,21,21  c5.083,0,9.748-1.817,13.384-4.832l14.895,15.491c0.196,0.205,0.458,0.307,0.721,0.307c0.25,0,0.499-0.093,0.693-0.279  C52.074,52.304,52.086,51.671,51.704,51.273z M21.983,40c-10.477,0-19-8.523-19-19s8.523-19,19-19s19,8.523,19,19  S32.459,40,21.983,40z"
+                        fill="#c1c1c1" />
+                </svg>
+            </div>
+        </div>
+    </form>
+    <div class="row middle-xs between-xs gallery-icons-settings">
+        <div class="col-xs-12 col-sm-6">
+            <div class="gallery-icons-color">
+                <div class="gallery-icons-color__text">Цвет иконки:</div>
+                <div class="gallery-icons-color__input">
+                    <color-picker ng-model="$ctrl.iconColor" options="$ctrl.colorPickerOptions" event-api="$ctrl.colorPickerEventApi"></color-picker>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="gallery-icons-size">
+                <div class="gallery-icons-size__text">Размер иконки:</div>
+                <div class="gallery-icons-size__input-block">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <input class="gallery-icons-size__input" type="number" ng-model="$ctrl.width" />
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <input class="gallery-icons-size__input" type="number" ng-model="$ctrl.height" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gallery-icons gallery-icons-scroll">
+        <div ng-if="$ctrl.showContent">
+            <div
+                id="galleryCloudContent"
+                infinite-scroll="$ctrl.getData($ctrl.term)"
+                infinite-scroll-container="'.gallery-icons-modal .gallery-icons-scroll'">
+                <ul class="gallery-icons__list" ng-style="{'color': $ctrl.iconColor}">
+                    <li class="gallery-icons__list-item" ng-repeat="(iconName, itemList) in $ctrl.data track by iconName">
+                        <ul class="gallery-icons__icon-variants">
+                            <li class="gallery-icons__icon-variants-item" ng-repeat="item in itemList track by $index">
+                                <span
+                                    class="gallery-icons__icon"
+                                    ng-bind-html="item | galleryIconsSize: $ctrl.width: $ctrl.height | sanitize"
+                                    ng-click="$ctrl.select(item, $ctrl.iconColor, $ctrl.width, $ctrl.height)"
+                                    title="{{iconName}}"></span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <div
+                    class="gallery-icons__empty"
+                    ng-show="$ctrl.isLoaded === true && $ctrl.itemsLoading === false && $ctrl.totalCount === 0 && $ctrl.prevTerm === $ctrl.term">
+                    По запросу <b>"<span ng-bind="$ctrl.term"></span>"</b> ничего не найдено
+                </div>
+                <div class="gallery-icons__items-loading" ng-show="$ctrl.isLoaded === true && $ctrl.itemsLoading === true">
+                    <i class="icon-lp-spinner animate-spin"></i> Идёт загрузка данных ...
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="$ctrl.isLoaded !== true" class="gallery-icons__progress">
+        <i class="icon-lp-spinner animate-spin"></i>
+    </div>
+</div>

@@ -1,0 +1,225 @@
+@using AdvantShop.Shipping.OzonRocket
+@using AdvantShop.Shipping.OzonRocket.Api
+@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.OzonRocketShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ClientId</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ClientId, new { ng_model = "shippingMethod.Params.ClientId", @class = "form-control input-alt", required = "required", validation_input_text = "ClientId" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ClientSecret</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ClientSecret, new { ng_model = "shippingMethod.Params.ClientSecret", @class = "form-control input-alt", required = "required", validation_input_text = "ClientSecret" })
+    </div>
+</div>
+
+@Html.Hidden("ExistApi", null, new { ng_model = "shippingMethod.Params.ExistApi", ng_init = "shippingMethod.Params.ExistApi=" + (Model.ClientId.IsNotEmpty() && Model.ClientSecret.IsNotEmpty()).ToLowerString() + "" })
+<div class="form-group row setting__form-group" ng-if="!shippingMethod.Params.ExistApi">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Рассчитывать методы доставки
+    </div>
+    @{
+        var selectedTariff = Model.ListDeliveryTypes.FindAll(x => Model.DeliveryTypes.Any(y => x.Value == y));
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+        data-ng-init='shippingMethod.tariffsList = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.selectedTariff = @JsonConvert.SerializeObject(selectedTariff)'>
+        <ui-select class="input-alt"
+                   multiple
+                   sortable="true"
+                   ng-model="shippingMethod.selectedTariff"
+                   validation-input-text="Расчитывать методы доставки"
+                   ng-required="true"
+                   data-e2e="SelectTariffs">
+            <ui-select-match placeholder="Выберите методы доставки">{{$item.Text}}</ui-select-match>
+            <ui-select-choices repeat="tariff in shippingMethod.tariffsList | filter:$select.search track by $index"
+                               minimum-input-length="1"
+                               ui-disable-choice="tariff.Disabled === true"
+                               @* refresh="product.getTagsByPaging(250, $select.search)" *@
+                               refresh-delay="0">
+                {{tariff.Text}}
+            </ui-select-choices>
+        </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="DeliveryTypes" id="DeliveryTypes" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTariff track by $index"></option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span ng-class="{'text-required': @((Model.FromPlaces.Count > 1).ToLowerString())}">
+            Место передачи отправления
+        </span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.FromPlaceId, Model.FromPlaces,
+            new
+            {
+                ng_model = "shippingMethod.Params.FromPlaceId",
+                ng_init = "shippingMethod.Params.FromPlaceId='" + Model.FromPlaceId + "'",
+                @class = "form-control input-alt",
+                ng_required = (Model.FromPlaces.Count > 1).ToLowerString(),
+                validation_input_text = "Место передачи отправления"
+            })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null  || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="@(isMobile ? "" : "form-group row")" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.YaWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">Параметры виджета</h4>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.YaWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_attr_type = "{{shippingMethod.inputTypeApiKey}}", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <a class="showhidepass @(isMobile ? "col-xs-1" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeApiKey  = 'password'" ng-click="shippingMethod.inputTypeApiKey  = shippingMethod.inputTypeApiKey  == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeApiKey  == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.YaWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    
+    @if (!isMobile)
+    {
+            <div class="col-xs-11  flex-grow-n col-fixed-size-md setting__label setting--m-none">
+                <label for="ShowAddressComment">Отображать описание схемы проезда</label>
+            </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowAddressComment, new { ng_model = "shippingMethod.Params.ShowAddressComment", ng_init = "shippingMethod.Params.ShowAddressComment=" + Model.ShowAddressComment.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отображать описание схемы проезда</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="@(isMobile ? "" : "form-group row")" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.OzonRocketWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">Параметры виджета</h4>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.OzonRocketWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Токен виджета</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.OzonRocketWidgetToken, new { @class = "form-control input-alt", ng_attr_type = "{{shippingMethod.inputTypeWidgetToken}}", ng_model = "shippingMethod.Params.OzonRocketWidgetToken", required = "required", validation_input_text = "Токен виджета" })
+        <a class="showhidepass" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeWidgetToken  = 'password'" ng-click="shippingMethod.inputTypeWidgetToken  = shippingMethod.inputTypeWidgetToken  == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeWidgetToken  == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Токен виджета">
+            Необходимо в ЛК в разделе "Профиль" скопировать скрипт виджета доставки и извлеч из него параметр token.<br />
+            &lt;iframe title=&quot;Ozon widget&quot; style=&quot;...&quot; src=&quot;https://rocket.ozon.ru/lk/widget?token=<span class="alert-info">Значение токена</span>&quot;&gt;...&lt;/iframe&gt;
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.OzonRocketWidget).ToString())' && shippingMethod.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <div class="col-xs-11  flex-grow-n col-fixed-size-md setting__label setting--m-none">
+        <label for="OzonRocketWidgetShowDeliveryPrice">Показывать стоимость доставки</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.OzonRocketWidgetShowDeliveryPrice, new { ng_model = "shippingMethod.Params.OzonRocketWidgetShowDeliveryPrice", ng_init = "shippingMethod.Params.OzonRocketWidgetShowDeliveryPrice=" + Model.OzonRocketWidgetShowDeliveryPrice.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeViewPoints === '@(((int)TypeViewPoints.OzonRocketWidget).ToString())' && shippingMethod.Params.selectedTariff && (shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.Postamat)') != null || shippingMethod.findChoseItem(shippingMethod.selectedTariff, '@(DeliveryType.PickPoint)') != null)">
+    <div class="col-xs-11  flex-grow-n col-fixed-size-md setting__label setting--m-none">
+        <label for="OzonRocketWidgetShowDeliveryTime">Показывать дату доставки</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.OzonRocketWidgetShowDeliveryTime, new { ng_model = "shippingMethod.Params.OzonRocketWidgetShowDeliveryTime", ng_init = "shippingMethod.Params.OzonRocketWidgetShowDeliveryTime=" + Model.OzonRocketWidgetShowDeliveryTime.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+@Html.Partial("_SyncStatuses", Model)
+
+<div class="@(isMobile ? "" : "form-group row")">
+    <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">Параметры передачи заказа</h4>
+</div>
+
+<div class="form-group row middle-xs">
+    
+    @if (!isMobile)
+    {
+        <div class="col-xs-11  flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            <label for="AllowPartialDelivery">Разрешить частичную выдачу</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.AllowPartialDelivery, new { ng_model = "shippingMethod.Params.AllowPartialDelivery", ng_init = "shippingMethod.Params.AllowPartialDelivery=" + Model.AllowPartialDelivery.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Разрешить частичную выдачу</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    
+    @if (!isMobile)
+    {
+            <div class="col-xs-11  flex-grow-n col-fixed-size-md setting__label setting--m-none">
+                <label for="AllowUncovering">Разрешить вскрывать отправление до оплаты</label>
+            </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.AllowUncovering, new { ng_model = "shippingMethod.Params.AllowUncovering", ng_init = "shippingMethod.Params.AllowUncovering=" + Model.AllowUncovering.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Разрешить вскрывать отправление до оплаты</span>
+            }
+        </label>
+    </div>
+</div>

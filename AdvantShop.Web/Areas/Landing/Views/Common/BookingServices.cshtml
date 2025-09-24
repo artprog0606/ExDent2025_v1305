@@ -1,0 +1,57 @@
+﻿@model AdvantShop.App.Landing.Models.Booking.Services.BookingServicesModel
+@{
+    var colorScheme = Model.Block.TryGetSetting("color_scheme");
+    var styleCustom = Model.Block.TryGetSetting("style_custom");
+}
+<ol class="booking-services__content-list">
+    @if (Model.Services != null && Model.Services.Count > 0)
+    {
+        for (var j = 0; j < Model.Services.Count; j++)
+        {
+            if (j > 0)
+            {
+                <li class="booking-services__content-divider"></li>
+            }
+            <li class="booking-services__content-item">
+                <div class="booking-services__row-info">
+                    <div>
+                        <div class="booking-services__name">
+                            @Html.Raw(Model.Services[j].Name)
+                        </div>
+                        @if (Model.Services[j].Description.IsNotEmpty())
+                        {
+                            <div class="m-t-md">
+                                <readmore class="block m-t-md" data-max-height="61">
+                                    @Html.Raw(Model.Services[j].Description.Replace("\n", "<br>"))
+                                </readmore>
+                            </div>
+                        }
+                        else
+                        {
+                            if (Model.Services[j].Text.IsNotEmpty())
+                            {
+                                <div class="m-t-md">
+                                    <readmore class="block m-t-md" data-max-height="61">
+                                        @Html.Raw(Model.Services[j].Text.Replace("\n", "<br>"))
+                                    </readmore>
+                                </div>
+                            }
+                        }
+                    </div>
+                    @if (Model.Services[j].ShowPrice)
+                    {
+                        <div class="booking-services__price">
+                            @Html.Raw(Model.Services[j].Price)
+                        </div>
+                    }
+                </div>
+            </li>
+        }
+    }
+    else
+    {
+        <li>
+            <div>Нет услуг</div>
+        </li>
+    }
+</ol>

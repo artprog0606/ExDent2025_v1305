@@ -1,0 +1,49 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SettingsMail.MailSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div data-ng-controller="SettingsAuthCallCtrl as settingsAuthCall">
+    @if (!isMobile)
+    {
+        <div class="setting-title m-t-none">
+            <h3 class="font-bold">@T("Admin.Settings.AuthCall.Title")</h3>
+        </div>
+    }
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.ActiveAuthCallModule, T("Admin.Settings.AuthCall.ActiveAuthCallModule"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 relative">
+            @Html.DropDownListFor(x => x.ActiveAuthCallModule, Model.AuthCallModules, new
+            {
+                @class = "form-control input-alt", 
+                ng_model = "settingsAuthCall.ActiveAuthCallModule", 
+                ng_on_change = "settingsAuthCall.getAuthCallMods(settingsAuthCall.ActiveAuthCallModule)"
+            })
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.AuthCallMode, T("Admin.Settings.AuthCall.AuthCallMode"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 relative"
+             data-ng-init="settingsAuthCall.AuthCallMode=@Model.AuthCallMode; settingsAuthCall.AuthCallMods=@Model.AuthCallMods">
+            <select id="singleSelect"
+                    data-convert-to-number
+                    disabled-autobind
+                    class="form-control input-alt"
+                    name="AuthCallMode"
+                    data-ng-model="settingsAuthCall.AuthCallMode">
+                <option data-ng-repeat="item in settingsAuthCall.AuthCallMods" value="{{item.Value}}">{{item.Text}}</option>
+            </select>
+        </div>
+    </div>
+</div>

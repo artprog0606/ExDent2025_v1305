@@ -1,0 +1,193 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+}
+
+@{
+    Html.AddAsset("settingsCoupon");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsCoupons", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settingsCoupons.onSelectTab(null)"
+    };
+    headerModel.DefaultTitle =  T("Admin.Settings.SettingsCoupons.Title").ToString();
+    headerModel.Controls = new List<IButton>()
+    {
+        new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCoupons.tabActiveIndex === 'coupons'\""},
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCoupons.tabActiveIndex === 'coupons'\" data-controller=\"'ModalAddEditCouponCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" + Html.GetAssetPath("addEditCoupon.html") + "\" data-on-close=\"settingsCoupons.coupons.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+        new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCoupons.tabActiveIndex === 'discounts'\""},
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCoupons.tabActiveIndex === 'discounts'\" data-controller=\"'ModalAddEditDiscountsPriceRangeCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" + Html.GetAssetPath("AddEditDiscountsPriceRange.html") + "\" data-on-close=\"settingsCoupons.discountsPriceRange.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+        new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCoupons.tabActiveIndex === 'discounts'\""},
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCoupons.tabActiveIndex === 'discountsByTime'\" data-controller=\"'ModalDiscountByDatetimeCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" + Html.GetAssetPath("discountByDatetime.html") + "\" data-on-close=\"settingsCoupons.discountsByTime.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+        new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsCoupons.tabActiveIndex === 'certificates'\""},
+                WrapStart = "<ui-modal-trigger ng-if=\"settingsCoupons.tabActiveIndex === 'certificates'\" data-controller=\"'ModalAddEditCertificatesCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditCertificates.html") + "\" data-on-close=\"settingsCoupons.certificates.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Attributes = new string[] { "ng-if = \"settingsCoupons.tabActiveIndex === 'certificates'\"" };
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+
+    //moreButton.Items.Add(new MoreButtonPopoverItem()
+    //{
+    //    ColorType = eColorType.Link,
+    //    Modificators = new List<eButtonModificators>()
+    //        {
+    //                        eButtonModificators.HorizontalPaddingZero
+    //                    },
+    //    Icon = new ButtonIcon()
+    //    {
+    //        SvgName = "plus-alt",
+    //        Attributes = new { width = 24, height = 24 }
+    //    },
+    //    WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditCertificatesCtrl'\" controller-as=\"ctrl\" template-url=\"../areas/admin/content/src/certificates/modal/addEditCertificates/addEditCertificates.html\" data-on-close=\"settingsCoupons.certificates.grid.fetchData()\">",
+    //    WrapEnd = "</ui-modal-trigger>",
+    //    Text = T("Admin.Certificates.Index.AddCertificates"),
+    //});
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "settings",
+            Attributes = new { width = 24, height = 24 }
+        },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalCertificateSettingsCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("certificateSettings.html") + "\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Admin.Certificates.Index.CertificatesSettings"),
+        Attributes = new string[] { "data-e2e=\"CertificatesSettings\"" }
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+@Html.Header(headerModel)
+
+
+if (isAdminv3 && !isMobile)
+{
+    <div class="backSetting-link__desktop">
+        @Html.Back(@T("Admin.Coupons.Index.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+    </div>
+    <div class="sticky-page-name m-t-xs sticky-page-name-block_mobile" style="margin-bottom:4px;">
+        <div class="backSetting-link__mobile col-xs-2">
+            @Html.Back(@T("Admin.Coupons.Index.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        </div>
+        <h1 class="page-name-block-text">
+            @T("Admin.Settings.SettingsCoupons.Title")
+        </h1>
+    </div>
+}
+<uib-tabset uid="couponsTab"
+            on-select-batch="settingsCoupons.onSelectTab(tab.index);"
+            @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+
+    <uib-tab index="'coupons'" heading="@T("Admin.Coupons.Index.Title")" classes="ng-tab" removable="true">
+        @Html.Partial("_Coupons", "default")
+    </uib-tab>
+
+    <uib-tab index="'discountsByTime'" heading="@T("Admin.SettingsCoupons.Index.DiscountsByTimeTitle")" classes="ng-tab" removable="true">
+        @Html.Partial("_DiscountsByTime")
+    </uib-tab>
+
+    <uib-tab index="'discounts'" heading="@T("Admin.SettingsCoupons.Index.DiscountsPriceRangeTitle")" classes="ng-tab" removable="true">
+        @Html.Partial("_DiscountsPriceRange")
+    </uib-tab>
+
+    <uib-tab index="'couponsGenerated'" heading="@T("Admin.SettingsCoupons.Coupons.GeneratedCoupon")" classes="ng-tab" removable="true">
+        @Html.Partial("_Coupons", "generated")
+    </uib-tab>
+
+    @if (SettingsMain.PartnersActive)
+    {
+        <uib-tab index="'couponsPartners'" heading="@T("Admin.SettingsCoupons.Coupons.PartnersCoupon")" classes="ng-tab" removable="true">
+            @Html.Partial("_Coupons", "partners")
+        </uib-tab>
+    }
+
+    <uib-tab index="'certificates'" heading="@T("Admin.Certificates.Index.Title")" classes="ng-tab" removable="true">
+        @Html.Partial("_Certificates")
+    </uib-tab>
+
+</uib-tabset>
+}
+
+

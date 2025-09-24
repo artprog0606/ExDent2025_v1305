@@ -1,0 +1,451 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SocialSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@if (!isMobile)
+{
+    <div class="setting-title m-t-none m-b-none">
+        <h3 class="setting__subtitle">@T("Admin.Settings.Social.SocialWidget.Title")</h3>
+    </div>
+}
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <a href="https://www.advantshop.net/help/pages/vidzhety-kommunikatsii" target="_blank">@T("Admin.Settings.Social.SocialWidget.Help")</a>
+        </div>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">@T("Admin.Settings.Social.SocialWidget.ShowCommunicationWidget")</div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-2 center-xs">
+        <span class="relative @(isMobile ? "flex middle-xs" : "")">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.SocialWidgetIsActive, new { @class = "adv-checkbox-input", ng_model = "settingsSocial.socialwidget.SocialWidgetIsActive", ng_init = "settingsCrm.SocialWidgetIsActive=" + Model.SocialWidgetIsActive.ToLowerString() })
+                <span class="adv-checkbox-emul" data-e2e="SocialWidgetIsActive"></span>
+            </label>
+            @if (isMobile)
+            {
+                <div class="m-l-sm flex-grow">
+                    <label for="SocialWidgetIsActive" class="">@T("Admin.Settings.Social.SocialWidget.ShowCommunicationWidget")</label>
+                </div>
+            }
+            <help-trigger class="ng-cloak m-l-xs help-trigger-icon-abs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.ShowCommunicationWidget")">
+                @T("Admin.Settings.Social.SocialWidget.ShowCommunicationWidget.HelpText")
+            </help-trigger>
+        </span>
+    </div>
+</div>
+
+
+
+@if (!isMobile)
+{
+    <div class="form-group row">
+        <div class=" col-xs-offset-3 col-xs-2 col-wl-1 col-wl-offset-2 col-wl-1 text-center">
+            @T("Admin.Settings.Social.SocialWidget.Full")
+        </div>
+        <div class="col-xs-2 col-wl-1 col-wl-1 text-center">
+            @T("Admin.Settings.Social.SocialWidget.Mobile")
+        </div>
+    </div>
+}
+
+
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8917 0.0744281C16.9249 0.171082 15.2523 0.512068 14.2207 0.822816C8.53967 2.53407 3.83486 6.7821 1.53283 12.2788C-1.01164 18.3544 -0.355235 25.4643 3.25586 30.943C6.2253 35.4481 10.7842 38.5418 16.0087 39.5972C24.072 41.2258 32.2047 37.8317 36.7452 30.943C41.0849 24.3588 41.0849 15.6213 36.7452 9.03711C33.4026 3.96592 27.9425 0.645681 21.9982 0.0698962C21.0168 -0.0251954 18.8636 -0.0228513 17.8917 0.0744281ZM21.6728 12.1765C21.7978 12.2409 21.9736 12.3928 22.0633 12.5141C22.2205 12.7264 22.228 12.8455 22.2656 15.7567C22.3029 18.6432 22.3122 18.7954 22.4731 19.1435C22.8373 19.9319 23.2676 19.932 23.9913 19.1442C25.1107 17.9257 26.027 16.3978 27.0641 14.0206C27.3987 13.2536 27.6025 12.8864 27.7581 12.7705C27.9686 12.6136 28.084 12.605 30.3356 12.58C33.0394 12.55 33.648 12.6116 33.9075 12.9417C34.0981 13.1841 34.0672 13.5018 33.7855 14.1943C33.397 15.1496 33.2231 15.416 31.1934 18.1642C30.3641 19.2872 29.6328 20.3321 29.5684 20.4862C29.2704 21.1996 29.4263 21.4718 31.0216 23.0241C32.4255 24.3902 33.1311 25.1857 33.6323 25.9675C33.8763 26.3479 33.9391 26.5258 33.9655 26.9107C33.9942 27.3306 33.9754 27.4115 33.8014 27.614L33.6048 27.8427L31.1961 27.8818C29.8714 27.9033 28.619 27.8964 28.413 27.8664C27.509 27.735 27.0049 27.3393 25.0374 25.2162C23.8861 23.9739 23.2458 23.8945 22.7409 24.9315C22.5539 25.3154 22.4777 25.6263 22.3864 26.3771C22.258 27.4323 22.1516 27.6773 21.771 27.7927C20.965 28.0373 18.9427 27.931 17.5459 27.5708C14.4693 26.7771 12.2867 24.8033 9.50967 20.3026C8.34714 18.4186 6.11181 13.9859 5.97224 13.288C5.93357 13.0944 5.9638 13.0064 6.12439 12.8458L6.32481 12.6453H8.71447C11.3167 12.6453 11.3991 12.6576 11.7038 13.0934C11.7869 13.2122 12.0542 13.7665 12.2978 14.3252C13.2272 16.4566 14.8143 18.9803 15.5696 19.5276C15.938 19.7945 16.319 19.8269 16.5168 19.6081C16.5902 19.527 16.7233 19.2721 16.8124 19.0417C16.95 18.6859 16.9804 18.3927 17.0137 17.0986C17.0867 14.2644 16.8044 13.4103 15.6962 13.1118C15.5326 13.0678 15.3775 12.9971 15.3513 12.9548C15.2987 12.8695 15.5685 12.5109 15.8421 12.3025C16.1462 12.0708 16.6127 12.0338 19.0632 12.0467C21.0096 12.057 21.4871 12.0807 21.6728 12.1765Z" fill="#436EAB" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")">@T("Admin.Settings.Social.SocialWidget.ShowVkontakte") <br />(@T("Admin.Settings.Social.SocialWidget.IfIntegrationIsConfigured"))</span>
+            <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowVkontakte.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetVkShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetVkShowInDesktop", ng_init = "settingsSocial.SocialWidgetVkShowInDesktop=" + Model.SocialWidgetVkShowInDesktop.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetVkShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetVkShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetVkShowInMobile", ng_init = "settingsSocial.SocialWidgetVkShowInMobile=" + Model.SocialWidgetVkShowInMobile.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetVkShowInMobile"></span>
+        </label>
+    </div>
+</div>
+@*<div class="form-group row">
+        <div class="col-xs-3 col-wl-2">
+            <div class="setting-label-wrap">@T("Admin.Settings.Social.SocialWidget.ShowFaceBook") <br />(@T("Admin.Settings.Social.SocialWidget.IfIntegrationIsConfigured"))</div>
+        </div>
+        <div class="col-xs-4">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.SocialWidgetIsShowFb, new { @class = "adv-checkbox-input", ng_model = "settingsSocial.socialwidget.SocialWidgetIsShowFb", ng_init = "settingsSocial.SocialWidgetIsShowFb=" + Model.SocialWidgetIsShowFb.ToLowerString() })
+                <span class="adv-checkbox-emul" data-e2e="SocialWidgetIsShowFb"></span>
+            </label>
+            <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowFaceBook.HelpText")
+            </help-trigger>
+        </div>
+    </div>*@
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#302945" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.3911 17.9973C17.0374 18.1899 17 18.3272 17 19.4341C17 20.0231 17.0383 20.5763 17.0851 20.6633C17.227 20.9274 17.6664 21.0129 18.8817 21.0129H20.0422V24.0968C20.0422 26.1869 20.0097 27.2887 19.9413 27.5159C19.7038 28.3052 18.771 28.9724 17.9027 28.974C17.5854 28.9746 17.3924 29.0263 17.229 29.1543C17.0023 29.3319 17 29.3449 17 30.4764C17 32.0499 16.9909 32.0386 18.2076 31.983C19.2778 31.9341 19.8596 31.7495 20.7376 31.1803C22.0505 30.3288 22.8568 29.05 23.0778 27.4685C23.134 27.0657 23.1713 25.1257 23.1713 22.6011V18.4033C23.1713 18.4033 23.1791 18.1103 23.0596 17.9962C22.9444 17.8863 22.6632 17.8973 22.6632 17.8973L20.1141 17.8999C18.4376 17.9017 17.5054 17.935 17.3911 17.9973Z" fill="#FEFEFE" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0255 8.09068C16.9973 8.16373 16.9982 8.71578 17.0274 9.31743C17.2051 12.977 19.1233 15.6689 22.3377 16.7696C23.1486 17.0472 23.1183 17.0775 23.0496 16.0583C22.974 14.938 22.6322 13.3953 22.2503 12.4506C21.3203 10.1503 19.6086 8.5459 17.5824 8.07528C17.1362 7.9716 17.0707 7.97342 17.0255 8.09068Z" fill="#00BF5A" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")"> @T("Admin.Settings.Social.SocialWidget.ShowJivosite") <br />(@T("Admin.Settings.Social.SocialWidget.IfJivositeModuleIsConnected"))</span>
+            <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowJivosite.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetJivositeShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetJivositeShowInDesktop", ng_init = "settingsSocial.SocialWidgetJivositeShowInDesktop=" + Model.SocialWidgetJivositeShowInDesktop.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetJivositeShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetJivositeShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetJivositeShowInMobile", ng_init = "settingsSocial.SocialWidgetJivositeShowInMobile=" + Model.SocialWidgetJivositeShowInMobile.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetJivositeShowInMobile"></span>
+        </label>
+    </div>
+</div>
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#2A98E3" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M26.0336 9.14638C23.8033 9.27345 23.4609 9.3338 23.4609 9.6C23.4609 9.75814 25.2437 14.1187 25.4157 14.3811C25.64 14.7235 25.8802 14.6453 26.217 14.1204C26.3848 13.859 26.545 13.6452 26.573 13.6452C26.7376 13.6452 27.718 14.6194 28.2088 15.2707C29.3897 16.8379 29.9135 18.3107 29.9931 20.2869C30.0361 21.3581 30.0722 21.587 30.2214 21.7362C30.6195 22.1342 31.0017 21.8104 31.4227 20.7185C31.9005 19.4797 32.0457 18.5553 31.9878 17.1217C31.891 14.7229 31.053 12.839 29.3305 11.1472L28.5773 10.4074L28.8703 9.95087C29.0314 9.69988 29.1632 9.42484 29.1632 9.33978C29.1632 9.15085 28.873 8.98377 28.5755 9.00126C28.4544 9.00839 27.3105 9.07368 26.0336 9.14638Z" fill="#6FCF97" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.03948 19.3325C8.74344 19.7088 8.30056 20.9446 8.1218 21.893C7.91652 22.9822 7.97591 24.607 8.26084 25.6921C8.67254 27.2603 9.53063 28.7058 10.7419 29.8716L11.4309 30.5346L11.2752 30.7982C10.7422 31.7006 10.7719 31.6102 10.9496 31.7878C11.1008 31.939 11.2901 31.9419 13.7055 31.829C15.1344 31.7621 16.3524 31.6642 16.4179 31.6106C16.4833 31.5573 16.5367 31.4433 16.5367 31.3573C16.5367 31.2184 14.7512 26.7633 14.5929 26.5071C14.5581 26.4509 14.4297 26.4049 14.3076 26.4049C14.1452 26.4049 14.0038 26.5323 13.7809 26.8797L13.4762 27.3545L13.2065 27.1624C12.7726 26.8535 11.6693 25.6087 11.3257 25.0406C10.4643 23.6159 9.98254 21.9234 9.98035 20.3134C9.97931 19.5517 9.95051 19.3756 9.80529 19.2443C9.5542 19.017 9.26111 19.0508 9.03948 19.3325Z" fill="#EB5757" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.9828 11.7591C14.7689 11.8184 14.6023 11.9347 14.313 12.2268L14.082 12.46L14.885 13.2721C15.3267 13.7188 16.1837 14.5877 16.7896 15.2031L17.8911 16.322L18.2102 16.0062C18.6138 15.6069 18.6822 15.4839 18.6836 15.155C18.6845 14.9468 18.6688 14.8784 18.5892 14.7445C18.5367 14.6562 17.8941 13.9873 17.1614 13.2582C15.7631 11.8668 15.6529 11.776 15.3104 11.7327C15.2219 11.7215 15.076 11.7333 14.9828 11.7591ZM25.5559 22.2719C25.3638 22.3348 25.2414 22.4253 24.9503 22.7197L24.648 23.0254L25.2554 23.6414C25.5895 23.9802 26.4458 24.8516 27.1583 25.5779L28.4537 26.8984L28.7466 26.5952C29.2255 26.0996 29.3196 25.7745 29.1134 25.3283C29.0274 25.1421 28.8409 24.94 27.6868 23.7818C26.9566 23.049 26.291 22.409 26.2075 22.3595C26.0444 22.2628 25.7176 22.2188 25.5559 22.2719Z" fill="white" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3568 13.1865C12.9749 13.5812 12.7824 13.9351 12.6851 14.4212C12.604 14.8263 12.6304 15.801 12.738 16.376C13.0347 17.962 13.9411 19.7421 15.3561 21.5181C15.9611 22.2775 16.4391 22.8041 17.3247 23.687C19.0531 25.4103 20.566 26.5629 22.1261 27.3448C23.532 28.0495 24.7081 28.3423 25.9629 28.2999C26.413 28.2847 26.5488 28.2664 26.7873 28.1891C27.182 28.0611 27.4645 27.8835 27.7836 27.5625L28.0556 27.2889L26.1576 25.353L24.2595 23.4171L23.9835 23.6857C23.5893 24.0694 23.3858 24.1358 23.0587 23.9873C22.8948 23.913 22.0844 23.3122 21.3204 22.6987C19.8833 21.5448 18.8502 20.4508 17.4493 18.5997C17.2042 18.2757 16.9762 17.9421 16.9427 17.8583C16.8156 17.5401 16.881 17.3469 17.2415 16.9751L17.495 16.7137L15.5957 14.7832C14.5511 13.7214 13.6927 12.8527 13.688 12.8527C13.6834 12.8527 13.5344 13.0029 13.3568 13.1865Z" fill="white" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")"> @T("Admin.Settings.Social.SocialWidget.ShowCallback") <br />(@T("Admin.Settings.Social.SocialWidget.IfCallBackModuleIsConnected"))</span>
+            <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowCallback.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetCallbackShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetCallbackShowInDesktop", ng_init = "settingsSocial.SocialWidgetCallbackShowInDesktop=" + Model.SocialWidgetCallbackShowInDesktop.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetCallbackShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetCallbackShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetCallbackShowInMobile", ng_init = "settingsSocial.SocialWidgetCallbackShowInMobile=" + Model.SocialWidgetCallbackShowInMobile.ToLowerString() })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetCallbackShowInMobile"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet card__social-widjet--with-input" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#29A71A" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0975 8.0249C19.033 8.03423 18.7904 8.0649 18.5582 8.09308C15.9488 8.40975 13.3583 9.68481 11.4768 11.5785C9.66817 13.3989 8.59827 15.5442 8.18894 18.1709C8.06857 18.9433 8.06866 20.7865 8.18908 21.5707C8.38706 22.86 8.78565 24.1222 9.34456 25.2298L9.66236 25.8596L8.82124 28.9144C8.3586 30.5946 7.98918 31.9783 8.00024 31.9893C8.01131 32.0004 9.43793 31.6395 11.1705 31.1874L14.3206 30.3652L14.7279 30.5692C18.531 32.4737 23.081 32.1648 26.7034 29.7563C30.8022 27.031 32.7538 22.2238 31.7325 17.3683C31.1437 14.5688 29.3855 11.8907 27.0239 10.1958C25.4288 9.05101 23.4736 8.29584 21.5097 8.06612C20.9693 8.00291 19.4317 7.97665 19.0975 8.0249ZM20.9029 10.0142C22.7708 10.1752 24.5615 10.8638 26.0611 11.998C26.5319 12.3541 27.4119 13.2069 27.7856 13.6692C30.615 17.17 30.7119 22.1526 28.0206 25.7583C27.6898 26.2016 26.8355 27.0887 26.3785 27.4635C25.5073 28.1781 24.2227 28.8828 23.1553 29.2316C20.4216 30.1251 17.663 29.8489 15.1116 28.4263L14.6192 28.1518L12.7742 28.6277C11.7594 28.8895 10.9216 29.096 10.9122 29.0867C10.9029 29.0774 11.1174 28.2642 11.389 27.2797L11.8827 25.4897L11.5992 25.0284C10.8494 23.8082 10.3638 22.4311 10.1903 21.0326C10.1173 20.4439 10.1297 19.1927 10.2147 18.5834C10.8309 14.1655 14.2605 10.6917 18.6051 10.0848C19.4843 9.96199 20.0835 9.94356 20.9029 10.0142ZM15.6226 14.3671C15.3074 14.4331 15.0381 14.6364 14.7377 15.035C14.1751 15.7817 13.9641 16.3646 13.9674 17.1627C13.97 17.7698 14.0522 18.149 14.3145 18.7628C14.679 19.6159 15.1825 20.3527 16.2579 21.6063C17.8326 23.4418 19.0819 24.3306 21.1842 25.111C22.2438 25.5043 22.447 25.5484 23.2006 25.5485C23.7872 25.5486 23.8936 25.5357 24.1997 25.4275C24.8889 25.1836 25.6091 24.6494 25.8261 24.221C26.0557 23.768 26.1947 22.9 26.0741 22.6726C26.0044 22.5414 25.5785 22.2874 25.4846 22.3211C25.4513 22.3331 25.1134 22.1874 24.7337 21.9972C23.2111 21.2347 23.022 21.1978 22.7325 21.6073C22.5459 21.8712 21.8773 22.6738 21.753 22.783C21.5952 22.9219 21.3046 22.8623 20.6854 22.5641C19.332 21.9122 18.2658 20.9679 17.3844 19.6404C16.9862 19.0407 16.9832 18.9557 17.3451 18.5426C17.6942 18.144 18.0194 17.6419 18.0498 17.4543C18.0693 17.3344 17.9613 17.0328 17.5266 15.9935C16.9885 14.7068 16.8966 14.5217 16.7498 14.429C16.6521 14.3673 15.836 14.3225 15.6226 14.3671Z" fill="white" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap setting-label-wrap--height-min")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")"> @T("Admin.Settings.Social.SocialWidget.ShowWhatsApp") @*<br />(@T("Admin.Settings.Social.SocialWidget.OnlyMobileVersion"))*@</span>
+            <help-trigger class="ng-cloak  m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.ShowWhatsApp")">
+                @T("Admin.Settings.Social.SocialWidget.ShowWhatsApp.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetWhatsAppShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetWhatsAppShowInDesktop" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetWhatsAppShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetWhatsAppShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetWhatsAppShowInMobile" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetWhatsAppShowInMobile"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "m-t-sm" : "col-sm-3") card__social-widjet-input">
+        <label class="flex middle-xs @(isMobile ? "" : "col-sm") relative" ng-if="settingsSocial.socialwidget.SocialWidgetWhatsAppShowInMobile || settingsSocial.socialwidget.SocialWidgetWhatsAppShowInDesktop">
+            @Html.TextBoxFor(x => x.SocialWidgetWhatsAppPhone, new { @class = "form-control", ng_model = "settingsSocial.socialwidget.SocialWidgetWhatsAppPhone", type = "text", validation_input_text = @T("Admin.Settings.Social.SocialWidget.ShowWhatsApp"), placeholder = "74950000000", mask_control = "", mask_control_preset = "number" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "col-xs-1" : "")">
+                @T("Admin.Settings.Social.SocialWidget.WhatsApp.HelpText")
+            </help-trigger>
+        </label>
+    </div>
+</div>
+
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet card__social-widjet--with-input" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#7D3DAF" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8837 8.05206C14.7949 8.37432 12.3828 9.29906 11.1674 10.6269C10.2903 11.5853 9.64953 12.9829 9.32544 14.6446C8.9125 16.762 8.88918 20.295 9.27468 22.3376C9.77005 24.9626 11.0141 26.8157 12.947 27.8077C13.225 27.9504 13.6472 28.1375 13.8853 28.2236L14.3182 28.38L14.3416 29.8514C14.3644 31.2743 14.3687 31.3301 14.4747 31.5453C14.6228 31.8461 14.808 31.97 15.146 31.9944C15.3727 32.0108 15.45 31.9948 15.6183 31.8961C15.8908 31.7364 16.5615 31.0337 17.4586 29.9681L18.2041 29.0827L18.5846 29.1135C19.1754 29.1615 21.1963 29.1498 21.848 29.0947C23.2251 28.9782 24.2914 28.791 25.4519 28.4618C26.3548 28.2057 26.5707 28.1236 27.1963 27.7993C28.5298 27.1079 29.4771 26.0654 30.1261 24.5748C30.5042 23.7065 30.734 22.7209 30.877 21.3534C31.4486 15.8897 30.5238 11.8651 28.2885 10.0888C27.0443 9.10004 25.1212 8.44563 22.4273 8.09424C21.6461 7.99234 18.7169 7.96518 17.8837 8.05206ZM21.9959 9.7849C24.0732 10.0139 25.8712 10.5338 26.8607 11.1916C28.5143 12.2909 29.3194 14.6574 29.3201 18.4212C29.3207 21.4086 28.9888 23.1795 28.1911 24.4447C27.6738 25.2651 27.0958 25.798 26.258 26.2269C25.7425 26.4909 25.4743 26.5826 24.4752 26.8369C22.9476 27.2257 21.6911 27.3728 19.8527 27.3781L18.5377 27.3819L18.1403 27.8733C17.2539 28.9693 15.8557 30.6369 15.5924 30.9123C15.3133 31.2041 15.1449 31.2782 15.0599 31.1468C15.039 31.1146 15.0114 30.1201 14.9985 28.937L14.975 26.7857L14.5997 26.6489C12.3712 25.8367 11.1942 24.1753 10.7975 21.2818C10.6971 20.55 10.6606 18.6566 10.7233 17.436C10.8239 15.4762 11.0886 14.2489 11.6535 13.1226C11.9483 12.5348 12.1909 12.1908 12.6022 11.7775C13.7109 10.6633 15.8241 9.92823 18.5171 9.72002C19.2582 9.66269 21.2191 9.69928 21.9959 9.7849ZM19.7516 12.3012C19.5262 12.3876 19.4969 12.704 19.7024 12.8322C19.762 12.8694 19.9993 12.9093 20.2529 12.9248C22.5876 13.0666 24.3992 14.5326 25.0569 16.8123C25.1939 17.2874 25.3197 18.1269 25.3197 18.5667C25.3197 18.7352 25.3421 18.9149 25.3694 18.9661C25.4881 19.1877 25.8547 19.1586 25.9139 18.9228C25.9299 18.8593 25.9305 18.5831 25.9153 18.3093C25.7404 15.1664 23.8015 12.8469 20.9566 12.377C20.3861 12.2827 19.8823 12.2511 19.7516 12.3012ZM15.5921 13.0285C15.3255 13.1262 14.8277 13.4945 14.4923 13.8422C14.0962 14.2527 13.9019 14.6489 13.8812 15.0885C13.8661 15.4111 13.8742 15.4385 14.2385 16.2866C14.7742 17.5337 14.9508 17.9029 15.3449 18.5993C16.8245 21.2142 18.7317 22.9403 21.8123 24.4524C22.7842 24.9295 23.2316 25.0811 23.5542 25.0429C24.0954 24.9788 24.7386 24.4905 25.2041 23.7904C25.7291 23.0006 25.6791 22.6576 24.9468 22.0278C24.4486 21.5993 23.5309 20.9455 23.1702 20.7621C22.6023 20.4734 22.2439 20.582 21.7601 21.1892C21.2845 21.7862 21.0916 21.8394 20.382 21.5694C19.789 21.3438 19.2707 21.013 18.7705 20.5408C18.0944 19.9026 17.5971 19.1602 17.2476 18.2675C17.0957 17.8792 17.0651 17.7513 17.0905 17.6107C17.1372 17.3529 17.2237 17.2093 17.4235 17.0581C17.8584 16.7288 18.048 16.5117 18.1217 16.2586C18.2154 15.9358 18.179 15.7414 17.9421 15.3014C17.5772 14.6238 16.7567 13.4828 16.4009 13.1582C16.1756 12.9527 15.9134 12.9106 15.5921 13.0285ZM20.1667 13.9654C19.971 14.2141 20.0837 14.4351 20.4295 14.4807C21.2254 14.5857 21.7651 14.764 22.2702 15.0887C23.1951 15.6833 23.6851 16.5859 23.7684 17.8489C23.7964 18.2721 23.818 18.3753 23.8898 18.4278C24.0158 18.5199 24.2129 18.5062 24.3103 18.3985C24.3845 18.3166 24.3914 18.2423 24.3685 17.7769C24.2625 15.628 22.7667 14.0827 20.5843 13.8676C20.2787 13.8375 20.2647 13.8408 20.1667 13.9654ZM20.612 15.5749C20.5104 15.6872 20.5128 15.9249 20.6165 16.015C20.6616 16.0542 20.8041 16.0999 20.9332 16.1165C21.3538 16.1707 21.6178 16.2866 21.8502 16.5189C22.0967 16.7654 22.2028 17.0245 22.2634 17.5275C22.3055 17.8771 22.3795 17.9755 22.6003 17.9755C22.8228 17.9755 22.8977 17.8338 22.8665 17.4717C22.8034 16.7413 22.5032 16.1703 22.0067 15.8367C21.5464 15.5273 20.7845 15.3843 20.612 15.5749Z" fill="white" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap setting-label-wrap--height-min")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")"> @T("Admin.Settings.Social.SocialWidget.ShowViber") @*<br />(@T("Admin.Settings.Social.SocialWidget.OnlyMobileVersion"))*@</span>
+            <help-trigger class="ng-cloak  m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.ShowViber")">
+                @T("Admin.Settings.Social.SocialWidget.ShowViber.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label ">
+            @Html.CheckBoxFor(x => x.SocialWidgetViberShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetViberShowInDesktop" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetViberShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label ">
+            @Html.CheckBoxFor(x => x.SocialWidgetViberShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetViberShowInMobile" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetViberShowInMobile"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "m-t-sm" : "col-sm-3") card__social-widjet-input">
+        <label class="flex middle-xs @(isMobile ? "" : "col-sm") relative" ng-if="settingsSocial.socialwidget.SocialWidgetViberShowInMobile || settingsSocial.socialwidget.SocialWidgetViberShowInDesktop">
+            @Html.TextBoxFor(x => x.SocialWidgetViberPhone, new { @class = "form-control", type = "text", ng_model = "settingsSocial.socialwidget.SocialWidgetViberPhone", validation_input_text = @T("Admin.Settings.Social.SocialWidget.ShowViber"), placeholder = "74950000000", mask_control = "", mask_control_preset = "number" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs  @(isMobile ? "col-xs-1" : "")">
+                @T("Admin.Settings.Social.SocialWidget.Viber.HelpText")
+            </help-trigger>
+        </label>
+    </div>
+</div>
+
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet card__social-widjet--with-input" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#FF9800" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.2399 8.06318C17.8441 8.32066 16.7311 8.91267 15.7924 9.89694C14.0537 11.72 13.6321 14.4669 14.7439 16.7287C15.0315 17.3139 15.3372 17.7551 15.7699 18.2093C16.3468 18.8149 16.8337 19.1807 17.5092 19.5157C18.3986 19.957 19.1767 20.1376 20.1867 20.1373C21.8819 20.1367 23.3856 19.4955 24.5764 18.2654C25.8089 16.9924 26.3848 15.3758 26.2433 13.5872C26.0759 11.4718 24.7914 9.56827 22.882 8.60591C22.4495 8.38786 21.6967 8.14782 21.1859 8.06506C20.6556 7.9791 19.7006 7.97816 19.2399 8.06318ZM20.928 11.2088C21.4438 11.3317 21.8753 11.5822 22.2882 11.9984C22.901 12.6159 23.1324 13.1975 23.1293 14.1119C23.1277 14.5982 23.1107 14.7213 23.0041 15.0185C22.6082 16.1221 21.7046 16.8563 20.5653 17.0003C19.1672 17.1769 17.8029 16.3105 17.3828 14.9794C17.2492 14.5559 17.2176 13.8776 17.3113 13.4383C17.4924 12.5882 18.114 11.7946 18.8882 11.4249C19.5514 11.1082 20.2121 11.0383 20.928 11.2088ZM13.8942 20.2012C13.6032 20.3373 13.2918 20.6704 13.1286 21.0202C12.9603 21.3811 12.9569 21.8383 13.12 22.1773C13.2674 22.4834 13.6585 22.8646 14.2698 23.2976C15.405 24.1018 16.7697 24.6107 18.3724 24.8276C18.5916 24.8573 18.8218 24.8916 18.8839 24.9038C18.9834 24.9233 18.7193 25.2047 16.6755 27.2561C14.0649 29.8765 14.1282 29.7976 14.1294 30.4303C14.1302 30.8842 14.2322 31.1399 14.546 31.4754C14.84 31.7898 15.213 31.971 15.6124 31.9935C16.2015 32.0268 16.2272 32.0072 18.2806 29.9589C19.8195 28.4237 20.1079 28.156 20.2227 28.156C20.3377 28.156 20.6149 28.4158 22.1198 29.9343C24.1203 31.953 24.1422 31.9699 24.7497 31.9748C25.0367 31.9771 25.1505 31.9546 25.3685 31.8525C25.6946 31.6996 26.0129 31.3901 26.1878 31.0557C26.2993 30.8425 26.3188 30.7497 26.3189 30.4303C26.3189 30.127 26.2979 30.0154 26.2091 29.8475C26.1394 29.716 25.2518 28.7807 23.7836 27.2919C21.961 25.4439 21.4854 24.9373 21.5497 24.9128C21.5946 24.8956 21.8741 24.8452 22.1707 24.8008C23.342 24.6254 24.2414 24.351 25.1453 23.8934C26.076 23.4223 27.0482 22.6486 27.2947 22.1829C27.4469 21.8953 27.4368 21.378 27.272 21.0201C26.9961 20.4212 26.5234 20.0907 25.9455 20.0926C25.5167 20.094 25.2618 20.1898 24.6559 20.5772C23.4446 21.3518 22.2444 21.7581 20.8332 21.8711C19.0583 22.0133 17.3551 21.5754 15.6996 20.5513C15.4288 20.3838 15.1032 20.2116 14.9761 20.1687C14.6349 20.0534 14.181 20.067 13.8942 20.2012Z" fill="white" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap setting-label-wrap--height-min")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")">  @T("Admin.Settings.Social.SocialWidget.ShowOdnoklassniki")</span>
+            <help-trigger class="ng-cloak  m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowOdnoklassniki.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetOdnoklassnikiShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetOdnoklassnikiShowInDesktop" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetOdnoklassnikiShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetOdnoklassnikiShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetOdnoklassnikiShowInMobile" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetOdnoklassnikiShowInMobile"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "m-t-sm" : "col-sm-3") card__social-widjet-input">
+        <label class="flex middle-xs @(isMobile ? "" : "col-sm") ng-hide" ng-show="settingsSocial.socialwidget.SocialWidgetOdnoklassnikiShowInDesktop || settingsSocial.socialwidget.SocialWidgetOdnoklassnikiShowInMobile">
+            @Html.TextBoxFor(x => x.SocialWidgetLinkOdnoklassniki, new { @class = "form-control", ng_model = "settingsSocial.socialwidget.SocialWidgetLinkOdnoklassniki", placeholder = "https://ok.ru/messages/group/<GROUP_ID>" })
+        </label>
+    </div>
+</div>
+
+<div class="form-group @(isMobile ? "card card--p-18 card__social-widjet card__social-widjet--with-input" : "row middle-xs")">
+    @if (isMobile)
+    {
+        <div>
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#41B4E6" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.8327 14.361C13.5919 16.7707 8.41683 18.7787 8.33239 18.8233C7.90969 19.0463 7.88484 19.6766 8.28831 19.941C8.34973 19.9813 9.64027 20.4772 11.1562 21.0431C12.6721 21.609 13.9202 22.0798 13.9297 22.0893C13.9392 22.0989 14.4115 23.6033 14.9793 25.4324C15.547 27.2616 16.0446 28.8472 16.0851 28.9561C16.2295 29.3442 16.6453 29.5335 16.9731 29.3602C17.0628 29.3127 17.8351 28.7042 18.6891 28.0079C19.5432 27.3117 20.3082 26.7059 20.389 26.6619C20.5721 26.5622 20.9871 26.5541 21.1664 26.6468C21.2397 26.6848 22.5099 27.5954 23.989 28.6704C25.4681 29.7454 26.7721 30.685 26.8867 30.7583C27.2397 30.9839 27.6481 30.8988 27.8355 30.5606C27.937 30.3776 32 10.8848 32 10.5813C32 10.4337 31.9652 10.3607 31.8211 10.2062C31.4652 9.82476 32.5939 9.43362 19.8327 14.361ZM26.7687 14.367C26.8624 14.4608 26.8612 14.4957 26.7603 14.6114C26.7152 14.6631 24.7055 16.5355 22.2943 18.7723C19.8831 21.009 17.8342 22.9259 17.7412 23.0322C17.5394 23.2627 17.3942 23.5362 17.3247 23.8169C17.2967 23.93 17.2029 24.5452 17.1162 25.1842C17.0295 25.8231 16.9327 26.377 16.9012 26.415C16.812 26.5224 16.5871 26.5015 16.5095 26.3786C16.4729 26.3205 16.177 25.3398 15.852 24.199C15.4275 22.7088 15.2614 22.0553 15.2622 21.878C15.2635 21.5617 15.3889 21.2875 15.6189 21.0976C15.8335 20.9206 26.559 14.302 26.6398 14.2968C26.6702 14.2949 26.7282 14.3265 26.7687 14.367Z" fill="white" />
+            </svg>
+        </div>
+    }
+    <div class="col-sm-3 col-wl-2">
+        <div class="@(isMobile ? "flex middle-xs" : "setting-label-wrap setting-label-wrap--height-min")">
+            <span style="@(isMobile ? "opacity:0.6;flex-grow:1;" : "")">@T("Admin.Settings.Social.SocialWidget.ShowTelegram")</span>
+            <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.TitleHote")">
+                @T("Admin.Settings.Social.SocialWidget.ShowTelegram.HelpText")
+            </help-trigger>
+        </div>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SocialWidgetTelegramShowInDesktop, new { @class = "adv-checkbox-input setting__adv-checkbox-pc-input", ng_model = "settingsSocial.socialwidget.SocialWidgetTelegramShowInDesktop" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-pc-emul" data-e2e="SocialWidgetTelegramShowInDesktop"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "" : "col-sm-2 col-wl-1 text-center")">
+        <label class="adv-checkbox-label ">
+            @Html.CheckBoxFor(x => x.SocialWidgetTelegramShowInMobile, new { @class = "adv-checkbox-input setting__adv-checkbox-mobile-input", ng_model = "settingsSocial.socialwidget.SocialWidgetTelegramShowInMobile" })
+            <span class="adv-checkbox-emul setting__adv-checkbox-mobile-emul" data-e2e="SocialWidgetTelegramShowInMobile"></span>
+        </label>
+    </div>
+    <div class="@(isMobile ? "m-t-sm" : "col-sm-3") card__social-widjet-input">
+        <label class="flex middle-xs @(isMobile ? "" : "col-sm") ng-hide" ng-show="settingsSocial.socialwidget.SocialWidgetTelegramShowInDesktop || settingsSocial.socialwidget.SocialWidgetTelegramShowInMobile">
+            @Html.TextBoxFor(x => x.SocialWidgetLinkTelegram, new { @class = "form-control", ng_model = "settingsSocial.socialwidget.SocialWidgetLinkTelegram", placeholder = "https://t.me/<Username>" })
+        </label>
+    </div>
+</div>
+
+<div class="setting-title setting-title__m-t-md flex middle-xs @(isMobile ? "m-t-lg" : "")">
+    <h3 class="m-n setting__subtitle @(isMobile ? "flex-grow" : "")">@T("Admin.Settings.Social.SocialWidget.CustomWidgetTitle")</h3>
+    <help-trigger class="ng-cloak m-l-xs" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Social.SocialWidget.CustomWidgetTitle")">
+        @T("Admin.Settings.Social.SocialWidget.CustomWidgetTitleNote")
+    </help-trigger>
+</div>
+
+@if (!isMobile)
+{
+    <div class="form-group row m-t">
+        <div class="col-xs-2 col-wl-2">
+        </div>
+        <div class="col-xs-3">
+            @T("Admin.Settings.Social.SocialWidget.Name")
+        </div>
+        <div class="col-xs-4">
+            @T("Admin.Settings.Social.SocialWidget.UrlAddressOfLink")
+        </div>
+        <div class="col-xs-3">
+            @T("Admin.Settings.Social.SocialWidget.Icon") (55x55)
+        </div>
+    </div>
+
+}
+
+<div class="form-group row setting__form-group @(isMobile ? "m-t" : "")">
+    <div class="col-xs-12 col-md-2 col-wl-2">
+        <div class="setting-label-wrap setting__label">@T("Admin.Settings.Social.SocialWidget.CustomWidget1")</div>
+    </div>
+    <div class="col-xs-12 col-md-3 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLinkText1, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLinkText1", placeholder = T("Admin.Settings.Social.SocialWidget.Name") })
+    </div>
+    <div class="col-xs-12 col-md-4 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLink1, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLink1", placeholder = T("Admin.Settings.Social.SocialWidget.UrlAddressOfLink") })
+    </div>
+    <div class="col-xs-12 col-md-3">
+        <picture-uploader start-src="@Model.SocialWidgetCustomIcon1Src"
+                          picture-id="1"
+                          class="setting__social-picture-uploader"
+                          upload-url="settingsSocial/UploadSocialWidgetIcon"
+                          upload-params="{'type': '1' }"
+                          delete-url="settingsSocial/DeleteSocialWidgetIcon"
+                          delete-params="{'type': '1' }">
+        </picture-uploader>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2 col-wl-2">
+        <div class="setting-label-wrap setting__label">@T("Admin.Settings.Social.SocialWidget.CustomWidget2")</div>
+    </div>
+    <div class="col-xs-12 col-md-3 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLinkText2, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLinkText2", placeholder = T("Admin.Settings.Social.SocialWidget.Name") })
+    </div>
+    <div class="col-xs-12 col-md-4 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLink2, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLink2", placeholder = T("Admin.Settings.Social.SocialWidget.UrlAddressOfLink") })
+    </div>
+    <div class="col-xs-12 col-md-3">
+        <picture-uploader start-src="@Model.SocialWidgetCustomIcon2Src"
+                          picture-id="2"
+                          class="setting__social-picture-uploader"
+                          upload-url="settingsSocial/UploadSocialWidgetIcon"
+                          upload-params="{'type': '2' }"
+                          delete-url="settingsSocial/DeleteSocialWidgetIcon"
+                          delete-params="{'type': '2' }">
+        </picture-uploader>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2 col-wl-2">
+        <div class="setting-label-wrap setting__label">@T("Admin.Settings.Social.SocialWidget.CustomWidget3")</div>
+    </div>
+    <div class="col-xs-12 col-md-3 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLinkText3, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLinkText3", placeholder = T("Admin.Settings.Social.SocialWidget.Name") })
+    </div>
+    <div class="col-xs-12 col-md-4 @(isMobile ? "m-b-sm" : "")">
+        @Html.TextBoxFor(x => x.SocialWidgetCustomLink3, new { @class = "form-control input-alt", ng_model = "settingsSocial.socialwidget.SocialWidgetCustomLink3", placeholder = T("Admin.Settings.Social.SocialWidget.UrlAddressOfLink") })
+    </div>
+    <div class="col-xs-12 col-md-3">
+        <picture-uploader start-src="@Model.SocialWidgetCustomIcon3Src"
+                          picture-id="3"
+                          class="setting__social-picture-uploader"
+                          upload-url="settingsSocial/UploadSocialWidgetIcon"
+                          upload-params="{'type': '3' }"
+                          delete-url="settingsSocial/DeleteSocialWidgetIcon"
+                          delete-params="{'type': '3' }">
+        </picture-uploader>
+    </div>
+</div>
+<div class="setting-title setting-title__m-t-md flex middle-xs ">
+    <h3 class="m-n setting__subtitle ">@T("Admin.Settings.Social.SocialWidget.SocialWidgetChatInvitation")</h3>
+</div>
+<div class="form-group row setting__form-group m-t">
+    @if (!isMobile)
+    {
+        <div class="col-xs-12 col-md-2 col-wl-2">
+            <div class="setting-label-wrap">@T("Admin.Settings.Social.SocialWidget.SocialWidgetShowPopover")</div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-2">
+        <span class="relative @(isMobile ? "flex middle-xs" : "")">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.SocialWidgetShowPopover, new { @class = "adv-checkbox-input", ng_model = "settingsSocial.socialwidget.SocialWidgetShowPopover" })
+                <span class="adv-checkbox-emul" data-e2e="SocialWidgetShowPopover"></span>
+            </label>
+            @if (isMobile)
+            {
+                <div class="m-l-sm flex-grow">
+                    <label for="SocialWidgetShowPopover" class="">@T("Admin.Settings.Social.SocialWidget.SocialWidgetShowPopover")</label>
+                </div>
+            }
+        </span>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-2">
+            <div class="setting-label-wrap">@T("Admin.Settings.Social.SocialWidget.SocialWidgetPopoverText")</div>
+        </div>
+    <div class="col-xs-12 col-md-10 center-xs">
+        <textarea ckeditor="{height: 150}" class="wysiwyg" cols="20" id="SocialWidgetPopoverText" maxlength="500000" 
+                  name="SocialWidgetPopoverText" ng-model="settingsSocial.socialwidget.SocialWidgetPopoverText" rows="2">
+        @Html.Raw(Model.SocialWidgetPopoverText)
+        </textarea>
+    </div>
+</div>

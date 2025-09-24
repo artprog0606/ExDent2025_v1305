@@ -1,0 +1,106 @@
+﻿<div class="page-name-block m-b-md" is-mobile>
+    <div class="page-name-block-item-main">
+        <h3 class="setting__subtitle">Свяжите категории магазина и сообщества ВКонтакте</h3>
+    </div>
+    <div class="page-name-block-item-additional" ng-if="!isMobile.value">
+        <ui-modal-trigger
+            data-controller="'ModalSaveVkMarketSettingsCtrl'"
+            data-controller-as="ctrl"
+            size="middle"
+            template-url="../areas/admin/content/src/vk/modal/saveVkMarketSettings/saveVkMarketSettings.html">
+            <button class="btn btn-sm btn-success btn--margin-left" type="button">Параметры выгрузки</button>
+        </ui-modal-trigger>
+    </div>
+</div>
+
+<ul is-mobile class="m-b-md" ng-class="{'p-l-sm' : isMobile.value}" style="{{isMobile.value ? 'color: #676a6c;' : ''}}">
+    <li class="m-b-md">
+        Категории товаров магазина в сообществе ВКонтакте называются подборками/альбомами. ВКонтакте они
+        <b>не могут быть вложены</b> одна в другую, а в одной подборке может находиться не более 1000 товаров. Также в сообществе возможно хранить
+        <b>не более 100 подборок и 15000 товаров</b>.
+    </li>
+    <li class="m-b-md">Если количество товаров для переноса превышает несколько тысяч, на него может понадобиться несколько часов или дней.</li>
+    <li class="m-b-md">
+        Для каждого раздела с товарами из магазина необходимо выбрать категорию ВКонтакте. Без такой категории социальная сеть не разрешает размещать
+        товары.
+    </li>
+    <li class="m-b-md">Необходимо, чтобы название было не менее 4 и не более 100 символов, иначе товар не будет перенесён.</li>
+    <li class="m-b-md">
+        ВКонтакте требуется наличие хотя бы одной фотографии для товара, но при этом всего у товара не должно быть более 4 фотографий.<br />
+        После переноса товара в сообщество ВКонтакте его фотографии не меняются.
+    </li>
+    <li class="m-b-md">
+        Обратите внимание на требования ВКонтакте к фотографиям: минимальный размер каждой из сторон фотографии должен быть не менее 400 пикселей.
+        Лучше всего подходят квадратные изображения. Если потребуются изменения при переносе, модуль сам их внесет.
+    </li>
+    <li class="m-b-md">
+        <b>При удалении категорий из списка ниже</b> - автоматически удалятся категории и товары из сообщества ВКонтакте.<br />
+        Если удалить товар из магазина, из сообщества ВКонтакте он удалится только после экспорта.
+    </li>
+    <li class="m-b-md">
+        Товары выгружаются по <b>основной категории товара</b>. Т.е. если товар находится в нескольких категориях, но основная не совпадает с
+        выбранной, то товар не попадет в сообщество ВКонтакте.
+    </li>
+</ul>
+
+<div is-mobile>
+    <div class="sticky-page-name m-b-md">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 ng-if="!isMobile.value" class="page-name-block-text sticky-page-name-text">Категории (подборки)</h1>
+                <h3 ng-if="isMobile.value" class="setting__subtitle">Категории (подборки)</h3>
+            </div>
+            <div ng-if="!isMobile.value" class="page-name-block-item-additional">
+                <ui-modal-trigger
+                    data-controller="'ModalAddEditVkCategoryCtrl'"
+                    controller-as="ctrl"
+                    size="middle"
+                    on-close="$ctrl.grid.fetchData()"
+                    template-url="../areas/admin/content/src/vk/components/vkMarketCategories/modals/ModalAddEditVkCategory.html">
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button"><span class="fa fa-plus"></span> Добавить категорию</button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+
+    <ui-grid-custom
+        grid-unique-id="gridVkCategories"
+        grid-extend-ctrl="$ctrl"
+        grid-filter-enabled="false"
+        grid-selection-enabled="true"
+        grid-pagination-enabled="false"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-options="$ctrl.gridOptions"
+        grid-inplace-url="'vkMarket/inplace'"
+        grid-url="'vkMarket/getCategories'"
+        grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card card--gap-row-sm">
+                <div class="fs-sm">
+                    <div>
+                        <div class="setting__label">Название :</div>
+                        <div class="m-t-xs">{{row.entity.Name}}</div>
+                    </div>
+                    <div class="m-t-sm">
+                        <div class="setting__label">Категории магазина :</div>
+                        <div class="m-t-xs" ng-bind-html="row.entity.Categories"></div>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.grid.gridOptions.TotalString"> </ui-grid-custom-footer>
+    </ui-grid-custom>
+
+    <style>
+        .vk-category-title {
+            font-size: 13px;
+            color: #000;
+        }
+        .ui-select-bootstrap .ui-select-choices-row.active > span .vk-category-title {
+            color: #fff;
+        }
+        .vk-category-subcategories {
+            line-height: 15px;
+        }
+    </style>
+</div>

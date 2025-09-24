@@ -1,0 +1,88 @@
+﻿@model AdvantShop.ViewModel.User.AuthorizationViewModel
+<form name="authForm" novalidate="novalidate" data-ng-controller="AuthCtrl as auth">
+    <label class="row middle-xs">
+        <span class="col-xs-4">
+            <span class="form-field-name input-required vertical-interval-xsmall">@T("User.Authorization.Email")</span>
+        </span>
+        <span class="col-xs-8">
+            <span class="form-field-input vertical-interval-xsmall">
+                @Html.TextBox("email", null, new
+                {
+                    @class = "input-small",
+                    required = "required",
+                    type = "text",
+                    data_ng_model = "auth.email",
+                    pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)|(admin)$",
+                    autocomplete = "email"
+                })
+            </span>
+        </span>
+    </label>
+    <label class="row middle-xs">
+        <span class="col-xs-4">
+            <span class="form-field-name input-required vertical-interval-xsmall">@T("User.Authorization.Password")</span>
+        </span>
+        <span class="col-xs-8">
+            <span class="form-field-input vertical-interval-xsmall relative">
+                @Html.Password("password", null, new { @class = "input-small", autocomplete = "off", required = "required", data_ng_model = "auth.password", ng_attr_type = "{{auth.inputPassword}}" })
+                <a class="showhidepass" ng-init="auth.inputPassword = 'password'" ng-click="auth.inputPassword = auth.inputPassword == 'password' ? 'text' : 'password'">
+                    <span class="fa" ng-class="(auth.inputPassword == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+                </a>
+            </span>
+        </span>
+    </label>
+    <label class="row middle-xs ng-cloak" ng-if="auth.showCaptcha">
+        <span class="col-xs-4">
+            <span class="form-field-name input-required vertical-interval-xsmall">
+                @T("Captcha.Code")
+            </span>
+        </span>
+        <span class="col-xs-8">
+            <span class="form-field-input vertical-interval-xsmall" data-bind-html-compile="auth.captchaHtml">
+            </span>
+        </span>
+    </label>
+    <div class="row middle-xs">
+        <span class="col-xs-8 col-xs-offset-4">
+            <span class="form-field-input  vertical-interval-xsmall">
+                <a href="@(!string.IsNullOrEmpty(Model.ForgotPasswordUrl) ? Model.ForgotPasswordUrl : Url.AbsoluteRouteUrl("ForgotPassword"))" class="link-forget">@T("User.Authorization.ForgotPassword")</a>
+                @if (Model.RegistrationUrl.IsNotEmpty())
+                {
+                    <a href="@Model.RegistrationUrl" class="link-registartion">@T("User.Login.Registration")</a>
+                }
+            </span>
+        </span>
+    </div>
+    <div class="row middle-xs">
+        <span class="col-xs-8 col-xs-offset-4">
+            <span class="form-field-input  vertical-interval-xsmall">
+                <input type="submit" class="btn btn-submit btn-middle" value="@T("User.Authorization.SignIn")" data-button-validation data-button-validation-success="auth.login(auth.email, auth.password, '@Model.RedirectTo')" />
+            </span>
+        </span>
+    </div>
+    @if (SettingsOAuth.AuthByCodeActive)
+    {
+        <div>
+            <div class="row middle-xs">
+                <span class="col-xs-8 col-xs-offset-4">
+                    <span class="form-field-input  vertical-interval-xsmall link-login-partner">
+                        <a href="@Url.RouteUrl("Login", new { state = "emailAuth" })"
+                           class="link-dotted-invert">
+                            @T("User.Authorization.LoginWithPhone")
+                        </a>
+                    </span>
+                </span>
+            </div>
+        </div>
+    }
+    @if (SettingsMain.PartnersActive)
+    {
+        <div class="row middle-xs">
+            <span class="col-xs-8 col-xs-offset-4">
+                <span class="form-field-input  vertical-interval-xsmall link-login-partner">
+                    <a class="link-dotted-invert" href="@Url.AbsoluteRouteUrl("Partners_Home")">Войти в партнерский кабинет</a>
+                </span>
+            </span>
+        </div>
+    }
+</form>

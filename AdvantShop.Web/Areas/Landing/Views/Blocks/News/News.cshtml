@@ -1,0 +1,200 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@using System.Linq
+
+@{
+    var itemsCountInBlock = Model.Block.TryGetSetting("rows_in_block") != null ? (int)Model.Block.TryGetSetting("rows_in_block") : 2;
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+    var itemsAll = Model.Block.TryGetSettingAsList<NewsModel, OldNewsModel>("items");
+
+    var itemsForRender = new List<NewsModel>();
+    var itemsTotalInRowInBlock = itemsCountInRow * itemsCountInBlock;
+
+    if (itemsAll != null && itemsAll.Count > 0)
+    {
+        itemsForRender = itemsAll.Take(itemsTotalInRowInBlock).ToList();
+    }
+}
+
+<div class="container-fluid">
+    <div class="lp-container" data-ng-controller="NewsCtrl as news">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+            @{
+                float width = 100 / itemsCountInRow;
+                var widthString = width.ToInvariantString() + "%";
+                var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+                var i = 0;
+            }
+            <style>
+                    #block_@Model.Block.Id .lp-news-item {
+                    min-width: 100%;
+                    -webkit-flex-basis: 100%;
+                    -ms-flex-preferred-size: 100%;
+                    flex-basis: 100%;
+                    max-width: 100%;
+                    }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .lp-news-item {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width: @(minWidth)px;
+                            }
+                        }
+            </style>
+            <div class="flex flex-wrap center-xs lp-news-item-wrap" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @{ 
+                    string modalIdPart = "modalNewsBlock_" + Model.Block.Id.ToString() + "_";
+                }
+                @foreach (var item in itemsForRender)
+                {
+                    string modalId = modalIdPart + i.ToString();
+
+                    <div class="lp-news-item @(!Model.Inplace ? "lp-news-item--hoverable" : "")" @Html.Raw(!Model.Inplace ? "data-modal-open=\"" + modalId + "\"" : "")>
+                        <div class="lp-news-item__picture" @Html.Raw(Model.Inplace ? "data-modal-open=\"" + modalId + "\"" : "")>
+                            @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                            {
+                                LandingPageId = Model.Block.LandingId,
+                                BlockId = Model.Block.Id,
+                                OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                Current = item.Picture.Src,
+                                Type = item.Picture.Type,
+                                GalleryIconsEnabled = false,
+                                LazyLoadEnabled = item.Picture.LazyLoadEnabled,
+                                LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                                MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                                WidthPicture = item.Picture.Width,
+                                HeightPicture = item.Picture.Height
+                            })
+                        </div>
+
+                        @if (Model.Block.TryGetSetting("show_date") == true || Model.Block.TryGetSetting("show_time") == true)
+                        {
+                            <div class="lp-news-item__datetime">
+                                @if (!string.IsNullOrEmpty(item.Date))
+                                {
+                                    if (Model.Block.TryGetSetting("show_date") == true)
+                                    {
+                                        @Html.Raw(item.Date.TryParseDateTime().ToShortDateString() + " ")
+                                    }
+                                    if (Model.Block.TryGetSetting("show_time") == true)
+                                    {
+                                        @Html.Raw(item.Date.TryParseDateTime().ToShortTimeString())
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <div class="lp-news-item__title lp-font-size--large" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                            @Html.Raw(item.Title)
+                        </div>
+
+                        <div class="lp-news-item__annotation lp-font-size--middle" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].annotation")>
+                            @Html.Raw(item.Annotation)
+                        </div>
+
+                        <div id="@modalId"
+                             class="modal lp-news-modal ng-hide"
+                             data-modal-control
+                             data-anchor="@item.Url"
+                             data-modal-class="color-scheme--light"@*@Model.Block.GetQuickViewClass()*@
+                             data-spy-address="true">
+                                <div class="modal-header">
+                                    <div class="lp-news-modal__title">
+                                        @Html.Raw(item.Title)
+                                    </div>
+                                </div>
+                                <div class="modal-content">
+                                    <div class="lp-news-modal__content lp-font-size--small">
+                                        @Html.Raw(item.Text)
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="text-right">
+                                        <button type="button" class="lp-btn lp-btn--xs lp-btn--primary" data-modal-close>Закрыть</button>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    i++;
+            }
+            <div class="lp-news-item @(!Model.Inplace ? "lp-news-item--hoverable" : "")" @Html.Raw(!Model.Inplace ? "data-modal-open=\"" + modalIdPart + "{{" + itemsTotalInRowInBlock + " + $index}}\"" : "")
+                 data-ng-repeat="item in news.newsData track by $index">
+                <div class="lp-news-item__picture" @Html.Raw(Model.Inplace ? "data-modal-open=\"" + modalIdPart + "{{" + itemsTotalInRowInBlock + " + $index}}\"" : "")>
+                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                    {
+                        LandingPageId = Model.Block.LandingId,
+                        BlockId = Model.Block.Id,
+                        OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + itemsTotalInRowInBlock + " +$index)",
+                        OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + " + $index)",
+                        OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + "+ $index," + Model.Block.Id + ", result)",
+                        NgCurrent = "item.Picture.Src",
+                        Type = ePictureLoaderImageType.Image,
+                        GalleryIconsEnabled = false,
+                        LazyLoadType = ePictureLoaderLazyLoadType.Angular,
+                        MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                        MaxHeightPicture = PictureLoaderImageSize.SmallHeight
+                    })
+                </div>
+                @if (Model.Block.TryGetSetting("show_date") == true || Model.Block.TryGetSetting("show_time") == true)
+                {
+                    <div class="lp-news-item__datetime">
+                        @if (Model.Block.TryGetSetting("show_date") == true)
+                        {
+                            <span data-ng-bind="item.Date | ngFlatpickr: 'd.m.Y' : 'Y-m-d H:i:S'"></span>
+                        }
+
+                        @if (Model.Block.TryGetSetting("show_time") == true)
+                        {
+                            <span data-ng-bind="item.Date | ngFlatpickr: 'H:i' : 'Y-m-d H:i:S'"></span>
+                        }
+                    </div>
+                }
+                <div class="lp-news-item__title lp-font-size--large"
+                     @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].title")
+                     data-ng-bind="item.Title">
+                </div>
+
+                <div class="lp-news-item__annotation lp-font-size--middle"
+                     @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].annotation")
+                     data-ng-bind="item.Annotation">
+                </div>
+
+                <div id="@modalIdPart{{@itemsTotalInRowInBlock + $index}}"
+                     class="modal lp-news-modal ng-hide color-scheme--light"
+                     data-modal-control
+                     data-anchor="{{item.Url}}"
+                     data-spy-address="true">
+                    <div class="modal-header">
+                        <div class="lp-news-modal__title">
+                            <span data-ng-bind="item.Title"></span>
+                        </div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="lp-news-modal__content lp-font-size--small">
+                            <span data-ng-bind="item.Text"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-right">
+                            <button type="button" class="lp-btn lp-btn--xs lp-btn--primary" data-modal-close>Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            @if (itemsAll != null && itemsAll.Count > itemsCountInBlock)
+            {
+                <div class="lp-news__more" data-ng-if="@itemsTotalInRowInBlock + (news.page * @itemsCountInRow) < @itemsAll.Count">
+                    <button type="button" data-ladda="news.inProgress" class="lp-btn lp-btn--primary" data-ng-click="news.getItems(@Model.Block.Id, @itemsCountInRow, @itemsTotalInRowInBlock + (news.page * @itemsCountInRow))">Показать еще</button>
+                </div>
+            }
+    </div>
+</div>

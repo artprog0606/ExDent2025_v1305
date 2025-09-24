@@ -1,0 +1,72 @@
+﻿<form is-mobile name="formAddCard" novalidate class="add-bonus-card-form">
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.Cards.AddACard'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal add-bonus-card-form__inner">
+            <div class="row form-group setting__form-group">
+                <label class="col-xs-12 col-md-6 col-md-3 m-b-xs text-required control-label"> {{'Admin.Js.Cards.CardOwner'|translate}} </label>
+                <div class="col-xs-12 col-md-6 col-md-9 add-bonus-card-form__customer">
+                    <ui-modal-trigger
+                        data-controller="'ModalSelectCustomerCtrl'"
+                        controller-as="ctrl"
+                        size="middle"
+                        template-url="../areas/admin/content/src/_shared/modal/selectCustomer/selectCustomer.html"
+                        data-on-close="ctrl.selectCustomer(result)">
+                        <a href="" class="edit link-decoration-none add-bonus-card-form__change-customer-link"
+                            >{{'Admin.Js.Cards.SelectACustomer'|translate}}:</a
+                        >
+                    </ui-modal-trigger>
+                    <input
+                        type="text"
+                        class="ng-hide"
+                        name="inputCategoryName"
+                        required
+                        ng-model="ctrl.customerId"
+                        validation-input-text="{{'Admin.Js.Cards.YouShouldSelect'|translate}}" />
+                    <a
+                        data-e2e="selectCustomer"
+                        target="_blank"
+                        href="customers/view/{{ctrl.customerId}}"
+                        ng-if="ctrl.customerId != null"
+                        class="ng-cloak add-bonus-card-form__change-customer link-invert">
+                        {{ctrl.selectedFirstName}} {{ctrl.selectedLastName}}
+                    </a>
+                </div>
+            </div>
+
+            <div class="row form-group setting__form-group">
+                <label class="col-xs-12 col-md-3 control-label m-b-xs"> {{'Admin.Js.Cards.CardNumber'|translate}} </label>
+                <div class="col-xs-12 col-md-9">
+                    <input data-e2e="CardNumber" type="text" class="form-control input-alt" ng-model="ctrl.CardNumber" />
+                </div>
+            </div>
+
+            <div class="row setting__form-group">
+                <label class="col-xs-12 col-md-3 control-label m-b-xs required"> {{'Admin.Js.Cards.Grade'|translate}} </label>
+                <div class="col-xs-12 col-md-9">
+                    <select
+                        data-e2e="SelectGrade"
+                        required
+                        validation-input-text="{{'Admin.Js.Cards.SelectAGrade'|translate}}"
+                        class="form-control input-alt"
+                        ng-options="item.Value as item.Text for item in ctrl.Grades"
+                        ng-model="ctrl.GradeId"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.addCard();"
+            ladda="ctrl.btnLoading"
+            data-e2e="addCard">
+            {{'Admin.Js.Cards.Add'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.Cards.Cancel'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,83 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Web.Admin.Handlers.Store
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Shared/_Layout.cshtml";
+    }
+    else if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+
+    var Model = new GetStorePage().Execute();
+}
+
+@helper GetClassForSubmenu(string action, string controller)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = currentController == controller.ToLower() ? "active" : ""; // currentAction == action.ToLower() &&
+
+    @cssClass
+}
+@if (!isMobile)
+{
+<div class="balance__padding-page balance__padding-page--bg-white">
+    <div class="main-panel-page">
+        <div class="row between-md" style="margin-bottom:13px;">
+            <div class="col-xs-slim">
+                @Html.Back(T("Admin.Settings.Commonpage.MySites").ToString(), Url.AbsoluteActionUrl("Index", "Dashboard"))
+            </div>
+        </div>
+        <div class="flex middle-xs between-md m-b-xs" style="padding-bottom:2px;">
+            <div class="flex-grow flex middle-xs flex-wrap">
+                <div class="funnel-page__name-wrap">
+                    <h1 class="flex bold funnel-page__name">@Model.StoreName</h1>
+                </div>
+                <div class="funnel-page__links flex-shrink">
+                    <button class="btn site__enabled-toggle site__enabled-toggle--on">@T("Admin.Settings.Commonpage.Published")</button>
+                </div>
+            </div>
+            <a href="@UrlService.GetUrl()" class="btn btn-submit" style="font-weight:400;" target="_blank">
+                @T("Admin.Settings.Commonpage.GoWebsite")
+            </a>
+        </div>
+        <div class="m-b-xs">
+            <a href="@Model.StoreDomain" class="link-gray link-decoration-invert" data-e2e="storeUrlLink">@Model.StoreDomain</a>
+            <br />
+            @if (Model.UseDomainsManager)
+            {
+
+                <a href="@Url.AbsoluteActionUrl("Domains", "Store")"
+                   class="link-decoration-invert">@T("Admin.Settings.Commonpage.ConnectYourDomain")</a>
+
+            }
+        </div>
+    </div>
+</div>
+}
+<div class="balance__padding-page balance__padding-page--m-t-n">
+    <div class="funnel-page">
+        <div class="funnel-site__block-wrap">
+            @if (!isMobile)
+            {
+                <ul class="nav nav-tabs nav-tabs--slim nav-tabs--indent-bottom nav-tabs--adaptive-special-store">
+                    @foreach (var item in Model.MenuItems)
+                    {
+                        <li class="uib-tab nav-item ng-tab @GetClassForSubmenu(item.MenuUrlAction.Action, item.MenuUrlAction.Controller)">
+                            <a href="@Url.AbsoluteActionUrl(item.MenuUrlAction.Action, item.MenuUrlAction.Controller)" class="nav-link">
+                                @item.Name
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            <div>
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>

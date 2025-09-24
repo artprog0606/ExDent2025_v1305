@@ -1,0 +1,67 @@
+﻿<article class="customer-orders" data-is-mobile>
+    <h2 class="m-b-md clearfix customer-orders__title">
+        {{'Admin.Js.CustomerOrders.Orders'|translate}}
+        <a
+            href="orders/add?customerId={{$ctrl.customerId}}"
+            data-e2e="addOrder"
+            class="pull-right btn btn-sm btn-action customer-orders__create-btn"
+            target="_blank"
+            >{{'Admin.Js.CustomerOrders.CreateOrder'|translate}}</a
+        >
+    </h2>
+    <div class="row">
+        <div class="col-xs-12">
+            <ui-grid-custom
+                grid-unique-id="gridCustomerOrders{{$ctrl.prefix}}"
+                grid-filter-enabled="false"
+                grid-selection-enabled="false"
+                grid-params="{customerId: $ctrl.customerId}"
+                grid-options="$ctrl.gridOrdersOptions"
+                grid-url="'orders/getOrders'"
+                ng-if="!isMobile.value">
+            </ui-grid-custom>
+
+            <ui-grid-custom
+                grid-unique-id="gridCustomerOrders{{$ctrl.prefix}}"
+                grid-filter-enabled="false"
+                grid-selection-enabled="false"
+                grid-params="{customerId: $ctrl.customerId}"
+                grid-options="$ctrl.gridOrdersOptions"
+                grid-url="'orders/getOrders'"
+                ng-if="isMobile.value">
+                <ui-grid-custom-override-control class="ng-cloak">
+                    <a ng-href="orders/edit/{{row.entity.OrderId}}" class="card card--gap-row-sm m-b-md">
+                        <div class="card__row">
+                            <div class="card__col">
+                                <span class="card__text--alt">#<span ng-bind="row.entity.Number"></span></span>
+                                <span class="card__text" ng-style="{'color': '#' + row.entity.Color}" ng-bind="row.entity.StatusName"></span>
+                            </div>
+                            <div class="card__col card__col--end">
+                                <span class="card__text--alt" ng-bind="row.entity.SumFormatted"></span>
+                            </div>
+                        </div>
+                        <div class="card__row">
+                            <div class="card__col">
+                                <span class="card__text" ng-bind="row.entity.BuyerName"></span>
+                            </div>
+                            <div class="card__col card__col--end">
+                                <span
+                                    class="card__text"
+                                    ng-style="row.entity.IsPaid ? {'color':'green'} : {'color':'red'}"
+                                    ng-bind="row.entity.IsPaid ? 'Оплачен' : 'Не оплачен'"></span>
+                            </div>
+                        </div>
+                        <div class="card__row">
+                            <div class="card__col">
+                                <span class="card__text card__text--color-alt" ng-bind="row.entity.City"></span>
+                            </div>
+                            <div class="card__col card__col--end">
+                                <span class="card__text card__text--color-alt" ng-bind="row.entity.OrderDateFormatted"></span>
+                            </div>
+                        </div>
+                    </a>
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </div>
+</article>

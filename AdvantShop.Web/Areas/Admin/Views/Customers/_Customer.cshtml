@@ -1,0 +1,422 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Common
+@model AdvantShop.Web.Admin.Models.Customers.CustomersModel
+@{
+    ViewBag.CustomerFieldModelPrefix = "customer.instance";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<ng-form novalidate="" name="customerForm">
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <div class="@(!isMobile ? "p-r-lg" : "")">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.LastName")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Customer.LastName, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.lastName" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-4 form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.FirstName")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Customer.FirstName, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.firstName" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-4 form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Patronymic")</label>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.TextBoxFor(x => x.Customer.Patronymic, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.patronymic" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Customer.Organization))
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Organization")</label>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        @Html.Label(Model.Customer.Organization, new { @class = "form-control input-alt" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left m-b-xs">Email</label>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="row between-xs middle-xs">
+                                <div class="col-xs-12 col-md">
+                                    @Html.TextBoxFor(x => x.Customer.EMail, new
+                                   {
+                                       @class = "form-control input-alt",
+                                       ng_model = "customer.instance.customer.email",
+                                       pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)|(admin)$",
+                                       validation_input_text = "Email"
+                                   })
+                                </div>
+                                @if (Model.IsEditMode)
+                                {
+                                    <div class="@(isMobile ? "m-t-sm" : "") col-xs flex-grow-n text-nowrap" ng-if="customer.instance.customer.email != null && customer.instance.customer.email.length > 0 && customerForm['Customer.EMmail'].$error.pattern == null">
+                                        <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'" controller-as="ctrl" size="lg"
+                                                          template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                                          data-resolve="{params: {email: customer.instance.customer.email, firstName: customer.instance.customer.firstName, lastName: customer.instance.customer.lastName, patronymic: customer.instance.customer.patronymic, pageType: 'customer'}}">
+                                            <a href="" class="edit link-decoration-none">@T("Admin.Customers.Customer.SendEmail")</a>
+                                        </ui-modal-trigger>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.PhoneNumber")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="row between-xs middle-xs">
+                                <div class="col-xs-12 col-md">
+                                    @Html.TextBoxFor(x => x.Customer.Phone, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.phone", ng_keyup = "customer.parseStandartPhone(customer.instance.customer.phone)", mask_control_preset = "phone", mask_control = "" })
+                                </div>
+                                @if (Model.IsEditMode)
+                                {
+                                    <div class="col-xs flex-grow-n text-nowrap @(isMobile ? "m-t-sm" : "")" ng-if="customer.instance.customer.standardPhone != null">
+                                        <a href="tel:@Model.Customer.StandardPhone" ng-href="tel:{{customer.instance.customer.standardPhone}}" class="edit link-decoration-none" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Customers_CallCustomer.ToString()');">
+                                            @T("Admin.Customers.Customer.Call")
+                                        </a>
+
+                                        <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl"
+                                                          data-resolve="{params: { customerId: '@Model.Customer.Id', phone: customer.instance.customer.phone, pageType: 'customer', throwError: true}}"
+                                                          template-url="@Html.GetAssetPath("sendSms.html")">
+                                            <a href="" class="edit link-decoration-none m-l-xs">@T("Admin.Customers.Customer.SendSMS")</a>
+                                        </ui-modal-trigger>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left m-b-xs">@T("Admin.Customers.ViewCustomerInfo.BirthDay")</label>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="row between-xs middle-xs">
+                                <div class="col-xs">
+                                    <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                                        <span class="flatpickr-custom-wrap">
+                                            <input type="text"
+                                                   ng-flatpickr-input
+                                                   id="Customer_BirthDay"
+                                                   name="Customer.BirthDay"
+                                                   class="form-control input-alt"
+                                                   ng-model="customer.instance.customer.birthday"
+                                                   ng-init="customer.instance.customer.birthday='@(Model.Customer != null && Model.Customer.BirthDay != null ? Model.Customer.BirthDay.Value.ToString("yyyy-MM-dd") : "")'"
+                                                   value="@(Model.Customer != null && Model.Customer.BirthDay != null ? Model.Customer.BirthDay.Value.ToString("yyyy-MM-dd") : "")">
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.VkUser != null)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        @{
+                                            var vkLink = "https://vk.com/" + (!string.IsNullOrEmpty(Model.VkUser.ScreenName) ? Model.VkUser.ScreenName : "id" + Model.VkUser.Id);
+                                        }
+                                        <i class="fab fa-vk vk-customer-icon"></i> <a href="@vkLink" target="_blank">@vkLink</a>
+                                        <a href="" ng-click="customer.deleteVkLink()" class="link-invert link-decoration-none fas fa-times link-danger"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.InstagramUser != null)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        <i class="fab fa-instagram instagram-user-name"></i>
+                                        <a href="https://instagram.com/@(Model.InstagramUser.UserName)/" class="instagram-user-name" target="_blank">@Model.InstagramUser.UserName</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.FacebookUser != null)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        <i class="fa fa-facebook-official"></i>
+                                        <a href="https://facebook.com/@(Model.FacebookUser.Id)/" target="_blank">@Model.FacebookUser.FirstName @Model.FacebookUser.LastName</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.OkUser != null)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        @{
+                                            var okLink = "https://ok.ru/profile/" + Model.OkUser.Id;
+                                        }
+                                        <i class="fab fa-odnoklassniki"></i> <a href="@okLink" target="_blank">@okLink</a>
+                                        <a href="" ng-click="customer.deleteOkLink()" class="link-invert link-decoration-none fas fa-times link-danger"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (!Model.IsEditMode)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Password")</label>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="row between-xs middle-xs">
+                                    <div class="col-xs">
+                                        @Html.PasswordFor(x => x.Customer.Password, new { @class = "form-control input-alt", ng_model = "customer.instance.customer.password", autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @Html.HiddenFor(x => x.CustomerContact.ContactId, new { ng_model = "customer.instance.customerContact.contactId" })
+
+        @if(!Model.IsEditMode){
+ <div class="col-xs-12 col-md-6">
+
+            <div class="row">
+                <div class="col-xs-12 col-md-4 form-group relative">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.City")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.City, new
+                            {
+                                @class = "form-control input-alt",
+                                ng_model = "customer.instance.customerContact.city",
+                                autocompleter_address = "",
+                                on_select = "customer.processCity(item)",
+                                ng_change = "customer.processCity()"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 form-group relative">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.Region")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.Region, new
+                            {
+                                @class = "form-control input-alt",
+                                ng_model = "customer.instance.customerContact.region",
+                                autocompleter = "",
+                                on_type = "region"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 form-group relative">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.Country")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.Country, new
+                            {
+                               @class = "form-control input-alt",
+                               ng_model = "customer.instance.customerContact.country",
+                               autocompleter = "",
+                               on_type = "country"
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-xs-12 col-md-4 form-group">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.District")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.District, new
+                            {
+                                @class = "form-control input-alt",
+                                ng_model = "customer.instance.customerContact.district"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-5 form-group relative">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.Street")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.Street, new
+                            {
+                                @class = "form-control input-alt",
+                                ng_model = "customer.instance.customerContact.street",
+                                autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                                autocompleter_url = Model.AddressSuggestionsUrl,
+                                autocompleter_params = "{part: 'Street', city: customer.instance.customerContact.city, district: customer.instance.customerContact.district, region: customer.instance.customerContact.region, inAdminPart: true}",
+                                on_select = Model.UseAddressSuggestions.ToLowerString() + " && customer.processAddress(item)",
+                                ng_change = Model.UseAddressSuggestions.ToLowerString() + " && customer.processAddress()"
+                            })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md form-group">
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label text-left">@T("Admin.Customers.Customer.Zip")</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.TextBoxFor(x => x.CustomerContact.Zip, new
+                            {
+                                @class = "form-control input-alt",
+                                ng_model = "customer.instance.customerContact.zip"
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="row between-xs">
+                    <div class="col-xs-6 col-sm @(isMobile ? "form-group" : "")  relative">
+                        <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.House")</label>
+                        @Html.TextBoxFor(x => x.CustomerContact.House, new
+                        {
+                            @class = "form-control input-alt",
+                            ng_model = "customer.instance.customerContact.house",
+                            autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                            autocompleter_url = Model.AddressSuggestionsUrl,
+                            autocompleter_params = "{part: 'House', street: customer.instance.customerContact.street, city: customer.instance.customerContact.city, district: customer.instance.customerContact.district, region: customer.instance.customerContact.region, inAdminPart: true}",
+                            on_select = Model.UseAddressSuggestions.ToLowerString() + " && customer.processAddress(item)",
+                            ng_change = Model.UseAddressSuggestions.ToLowerString() + " && customer.processAddress()"
+                        })
+                    </div>
+                    <div class="col-xs-6 @(isMobile ? "col-sm form-group" : "col-sm-5")">
+                        <div class="row between-xs">
+                            <div class="col-xs-12 col-md">
+                                <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Apartment")</label>
+                                @Html.TextBoxFor(x => x.CustomerContact.Apartment, new { @class = "form-control input-alt", ng_model = "customer.instance.customerContact.apartment", @maxlength="50" })
+                            </div>
+                            @if (!isMobile)
+                            {
+                                <div class="col-xs-8 col-sm">
+                                    <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Structure")</label>
+                                    @Html.TextBoxFor(x => x.CustomerContact.Structure, new { @class = "form-control input-alt", ng_model = "customer.instance.customerContact.structure" })
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    @if (isMobile)
+                    {
+                        <div class="col-xs-4 col-sm">
+                            <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Structure")</label>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    @Html.TextBoxFor(x => x.CustomerContact.Structure, new { @class = "form-control input-alt", ng_model = "customer.instance.customerContact.structure" })
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="col-xs-4 col-sm">
+                        <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Entrance")</label>
+                        @Html.TextBoxFor(x => x.CustomerContact.Entrance, new { @class = "form-control input-alt", ng_model = "customer.instance.customerContact.entrance" })
+                    </div>
+                    <div class="col-xs-4 col-sm">
+                        <label class="control-label text-left m-b-xs">@T("Admin.Customers.Customer.Floor")</label>
+                        @Html.TextBoxFor(x => x.CustomerContact.Floor, new { @class = "form-control input-alt", ng_model = "customer.instance.customerContact.floor" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        }
+    </div>
+
+    <div class="customer-custom-fields-divider"></div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="@(isMobile ? "flex flex-wrap" : "row")">
+                @Html.Partial("_CustomerFields", new CustomerFieldsViewModel(Model.CustomerFields, ngModelName: "customer.instance", onSelectFunc: "customer.processCompanyName($item)", ngVariableVisible: "customer.instance.customer.customerType"))
+            </div>
+        </div>
+    </div>
+
+</ng-form>

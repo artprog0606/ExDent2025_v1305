@@ -1,0 +1,75 @@
+﻿@model AdvantShop.Web.Admin.Models.Partners.PartnerEditModel
+@{
+    var partner = Model.Partner;
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div data-ng-controller="PartnerCtrl as partner">
+    <form method="POST" action="@Url.AbsoluteActionUrl("AddEdit")" novalidate="novalidate" name="addEditPartnerForm">
+        @Html.AntiForgeryToken()
+
+        <div ng-init="partner.initPartner('@Model.PartnerId', @Model.IsEditMode.ToLowerString())">
+            <input name="Id" type="hidden" value="{{partner.intstance.partner.id}}" />
+            <input name="IsEditMode" type="hidden" value="{{partner.intstance.isEditMode}}" />
+            <input name="Partner.Id" type="hidden" value="{{partner.instance.id}}" />
+        </div>
+
+        <div class="sticky-page-name @(isMobile ? "modal-header" : "p-t-sm")" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner @(isMobile ? "lead-info__header-cols" : "")">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name @(isMobile ? "modal-header-title" : "")">
+                        @if (!Model.IsEditMode)
+                        {
+                            <span>@T("Admin.Partners.NewPartner")</span>
+                        }
+                        else if (partner != null)
+                        {
+                            <span>@partner.Name</span>
+                        }
+                    </h1>
+                </div>
+                @if (!isMobile)
+                {
+                    <div class="page-name-block-item-additional">
+                        <div>
+                            @if (Model.IsEditMode)
+                            {
+                                <a href="" class="link-danger m-r-sm" ng-click="partner.delete()">@T("Admin.Delete")</a>
+                            }
+                            <button type="button" class="btn btn-sm btn-success" data-e2e="btnSave" button-validation="" ng-disabled="!addEditPartnerForm.modified"
+                                    button-validation-success="partner.savePartner(addEditPartnerForm)">
+                                <span class="fa fa-check"></span>&nbsp;@T("Admin.Save")
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="@(isMobile ? "modal-body" : "")">
+            <div class="row">
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="ibox category-block">
+                                <div class="ibox-content category-content border_none">
+                                    @Html.Partial("_EditPartner", Model)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    @Html.Partial("_EditPartnerRightBlock", Model)
+                </div>
+            </div>
+        </div>
+        @if (isMobile)
+        {
+            <div class="modal-footer">
+                <button class="btn btn-save btn-primary" type="button" button-validation="" ng-disabled="!addEditPartnerForm.modified" button-validation-success="partner.savePartner(addEditPartnerForm)">{{'Admin.Js.AddEdit.Save'|translate}}</button>
+                <button class="btn btn-default btn-cancel" type="button" ng-click="$ctrl.dismissPartnerInfo()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+            </div>
+        }
+    </form>
+</div>

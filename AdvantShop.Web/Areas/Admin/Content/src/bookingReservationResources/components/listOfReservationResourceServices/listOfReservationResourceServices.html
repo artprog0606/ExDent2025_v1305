@@ -1,0 +1,51 @@
+﻿<div is-mobile>
+    <div ng-if="!isMobile.value" class="m-b-sm">
+        <div class="flex between-xs inline">
+            <h1 class="page-name-block-text">Услуги</h1>
+        </div>
+        <ui-modal-trigger
+            class="pull-right"
+            size="xs-11"
+            data-controller="'ModalBookingServicesSelectvizrCtrl'"
+            data-controller-as="ctrl"
+            data-resolve="{params:{affiliateId: $ctrl.affiliateId}}"
+            data-on-close="$ctrl.addServicesModal(result)"
+            template-url="../areas/admin/content/src/_shared/modal/bookingServicesSelectvizr/bookingServicesSelectvizr.html"
+            ng-if="!$ctrl.readonly">
+            <button class="btn btn-sm btn-success" type="button" disabled ng-disabled="!$ctrl.gridServicesInited">
+                <span class="fa fa-plus"></span>
+                {{'Admin.Js.ListBookingUserServices.Add'|translate}}
+            </button>
+        </ui-modal-trigger>
+    </div>
+</div>
+
+<div>
+    <ui-grid-custom
+        grid-unique-id="gridReservationResourceServices"
+        grid-row-identificator="'Id'"
+        grid-url="'bookingService/getServices'"
+        grid-options="$ctrl.gridServicesOptions"
+        grid-params="{categoryFilterId : 0, affiliateId: $ctrl.affiliateId, reservationResourceId: $ctrl.reservationResourceId}"
+        grid-on-init="$ctrl.gridServicesOnInit(grid)"
+        grid-search-placeholder="'Поиск по наименованию'"
+        grid-extend-ctrl="$ctrl"
+        grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card card--image-horizontal product-item">
+                <div class="product-item__link card__image-wrap">
+                    <img class="product-item__img" ng-src="{{row.entity.PhotoSrc || '../images/nophoto_small.png'}}" />
+                </div>
+                <div class="card__content" style="display: block">
+                    <div class="product-item__header">
+                        <div class="product-item__title product-item__link" ng-bind="row.entity.Name"></div>
+                    </div>
+                    <div class="product-item__art" ng-if="row.entity.ArtNo">Артикул: <span ng-bind="row.entity.ArtNo"></span></div>
+                    <div class="card__row card__row--bottom" style="margin-top: 15px">
+                        <div class="" style="font-weight: 500" ng-bind="row.entity.PriceString"></div>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+</div>

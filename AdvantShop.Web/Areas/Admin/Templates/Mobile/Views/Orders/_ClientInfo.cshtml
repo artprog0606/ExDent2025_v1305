@@ -1,0 +1,122 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.ClientInfoModel
+
+@{
+    var fullName = Model.Customer != null ? Model.Customer.GetFullName() : string.Empty;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="client-info">
+
+    <div class="client-info__title">@T("Admin.Orders.ClientInfo.Customer")</div>
+
+    @if (Model.Customer != null)
+    {
+
+        <div class="client-info__customer">
+            <div class="client-info__general-info">
+                <a href="@Url.AbsoluteActionUrl("View", "Customers", new {id = Model.CustomerId})" class="client-info__name">@T(!string.IsNullOrEmpty(fullName) ? fullName : "Admin.Orders.OrderCustomer.ClientCard")</a>
+                @if (!isMobile)
+                {
+                    <div class="client-info__status-text">@Model.CustomerGroup</div>
+                }
+            </div>
+            @*<div class="client-info__statuses" ng-init="order.clientStatus='@Model.Customer.ClientStatus'">
+                    <button type="button" data-e2e="statusVip" class="client-info__status-btn card card--icon" ng-click="order.changeStatusClient('Vip')" ng-class="{'vip':order.clientStatus === 'Vip'}">
+                        @Html.SvgSprite("VIP", "", new { width = 25, height = 22 })
+                    </button>
+                    <button type="button" data-e2e="statusBad" ng-click="order.changeStatusClient('Bad')" class="client-info__status-btn card card--icon" ng-class="{'bad':order.clientStatus === 'Bad'}">
+                        @Html.SvgSprite("black-list", "", new { width = 24, height = 24 })
+                    </button>
+                </div>*@
+        </div>
+        if (isMobile)
+        {
+            <div class="client-info__row">
+                <div class="client-info__col client-info__text client-info__text--alt">
+                    @T("Admin.Customers.RightBlock.CustomerGroup"):
+                </div>
+                <div class="client-info__col client-info__text">
+                    @Model.CustomerGroup
+                </div>
+            </div>
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Segment))
+    {
+        <div class="client-info__row">
+            <div class="client-info__col client-info__text client-info__text--alt">
+                @T("Admin.Orders.ClientInfo.Segment")
+            </div>
+            <div class="client-info__col" data-e2e="CustomerSegment">
+                @Model.Segment
+            </div>
+        </div>
+    }
+
+    @if (Model.Customer != null)
+    {
+        if (Model.Customer.BirthDayFormatted.IsNotEmpty())
+        {
+
+            <div class="client-info__row">
+                <div class="client-info__col client-info__text client-info__text--alt">
+                    День рождения:
+                </div>
+                <div class="client-info__col client-info__text">
+                    @Model.Customer.BirthDayFormatted
+                </div>
+            </div>
+        }
+        if (Model.InterestingCategories.Any())
+        {
+            <div class="client-info__row">
+                <div class="client-info__col client-info__text client-info__text--alt">
+                    Интересы:
+                </div>
+                <div class="client-info__col client-info__text">
+                    @Model.InterestingCategories.AggregateString(", ")
+                </div>
+            </div>
+        }
+    }
+
+
+    @if (Model.Statistic != null)
+    {
+        <div class="client-info__title">@T("Admin.Customers.ViewCustomerHeader.Statistics")</div>
+        <div class="client-info__row">
+            <span class="client-info__col client-info__text client-info__text--alt">@T("Admin.Customers.ViewCustomerHeader.AmountOfPurchases")</span>
+            <span class="client-info__col client-info__text">@Model.Statistic.OrdersSum</span>
+        </div>
+        <div class="client-info__row">
+            <span class="client-info__col client-info__text client-info__text--alt">@T("Admin.Customers.ViewCustomerHeader.AverageCheck")</span>
+            <span class="client-info__col client-info__text">@Model.Statistic.AverageCheck</span>
+        </div>
+        <div class="client-info__row" data-e2e="durationTime">
+            <span class="client-info__col client-info__text client-info__text--alt" title="@Model.Statistic.RegistrationDate">
+                @T("Admin.Customers.ViewCustomerHeader.YourCustomer")
+            </span>
+            <span class="client-info__col client-info__text">@Model.Statistic.RegistrationDuration</span>
+
+        </div>
+
+        <a href="@Url.AbsoluteActionUrl("View", "Customers", new { id = @Model.CustomerId })?customerOrdersTab=ordersCustomer" class="client-info__row" data-e2e="CustomerOrdersCount" target="_blank">
+            <span class="client-info__col client-info__text client-info__text--link">@T("Admin.Orders.ClientInfo.AllOrders")</span>
+            <span class="client-info__col client-info__text">@Model.Statistic.OrdersCount</span>
+        </a>
+
+        if (!string.IsNullOrEmpty(Model.Statistic.AdminCommentAboutCustomer))
+        {
+            <div class="client-info__row">
+                <div class="client-info__col client-info__text client-info__text--alt">
+                    @T("Admin.Orders.ClientInfo.AdministratorComment")
+                </div>
+                <div class="client-info__col client-info__text" data-e2e="AdminCommentAboutCustomer">
+                    @(Model.Statistic.AdminCommentAboutCustomer ?? T("Admin.Orders.ClientInfo.No").ToString())
+                </div>
+            </div>
+        }
+    }
+</div>

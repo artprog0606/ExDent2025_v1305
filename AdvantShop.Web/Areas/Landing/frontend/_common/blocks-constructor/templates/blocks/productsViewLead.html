@@ -1,0 +1,270 @@
+﻿<div data-tabs class="tabs tabs-horizontal tabs-lp--minimalistic" id="photosSortable" ng-controller="SubBlockProductsViewCtrl as product">
+    <ul class="tabs-headers row center-xs start-sm">
+        <li
+            id="tabCoverFront"
+            class="tabs-header-item col-xs-12 col-sm-slim"
+            data-tab-header=""
+            data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+            <span
+                class="tabs-header-item-link"
+                data-ng-click="tabs.change(tabHeader)"
+                data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                Внешний вид
+            </span>
+        </li>
+        <li
+            id="tabProducts"
+            class="tabs-header-item col-xs-12 col-sm-slim"
+            data-tab-header=""
+            data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+            <span
+                class="tabs-header-item-link"
+                data-ng-click="tabs.change(tabHeader)"
+                data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                Товары
+            </span>
+        </li>
+        <li
+            ng-if="$ctrl.modalData.settings.form"
+            id="tabForm"
+            class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+            data-tab-header=""
+            data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+            <span
+                class="tabs-header-item-link"
+                data-ng-click="tabs.change(tabHeader)"
+                data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                Форма
+                <svg
+                    ng-if="$ctrl.formSettings.$invalid && $ctrl.formSettings.$dirty"
+                    class="block-constructor-icon-error"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    version="1.1"
+                    viewBox="0 0 512 512"
+                    width="16px"
+                    height="16px">
+                    <path
+                        d="M507.494,426.066L282.864,53.537c-5.677-9.415-15.87-15.172-26.865-15.172c-10.995,0-21.188,5.756-26.865,15.172
+                              L4.506,426.066c-5.842,9.689-6.015,21.774-0.451,31.625c5.564,9.852,16.001,15.944,27.315,15.944h449.259
+                              c11.314,0,21.751-6.093,27.315-15.944C513.508,447.839,513.336,435.755,507.494,426.066z M256.167,167.227
+                              c12.901,0,23.817,7.278,23.817,20.178c0,39.363-4.631,95.929-4.631,135.292c0,10.255-11.247,14.554-19.186,14.554
+                              c-10.584,0-19.516-4.3-19.516-14.554c0-39.363-4.63-95.929-4.63-135.292C232.021,174.505,242.605,167.227,256.167,167.227z
+                              M256.498,411.018c-14.554,0-25.471-11.908-25.471-25.47c0-13.893,10.916-25.47,25.471-25.47c13.562,0,25.14,11.577,25.14,25.47
+                              C281.638,399.11,270.06,411.018,256.498,411.018z"
+                        fill="currentColor" />
+                </svg>
+            </span>
+        </li>
+    </ul>
+    <div class="tabs-content">
+        <div class="tab-content" data-tab-content="tabCoverFront" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="blocks-constructor-settings-col">
+                        <div ng-include="$ctrl.modalData.generalOptionsTemplateUrl"></div>
+                        <div class="blocks-constructor-row">
+                            <label class="blocks-constructor-label" data-e2e="ShowPrice">
+                                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_price" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Отображать цену </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.show_description != null">
+                            <label class="blocks-constructor-label" data-e2e="ShowDescription">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.show_description" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Отображать краткое описание </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.hide_photo != null">
+                            <label class="blocks-constructor-label" data-e2e="HidePhoto">
+                                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.hide_photo" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Скрывать фотографии </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.show_only_available != null">
+                            <label class="blocks-constructor-label">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.show_only_available" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Показывать только товары в наличии </span>
+                            </label>
+                        </div>
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.move_not_avaliable_to_end != null">
+                            <label class="blocks-constructor-label">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.move_not_avaliable_to_end" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Товары не в наличии перемещать в конец списка </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.quickview != null">
+                            <label class="blocks-constructor-label" data-e2e="OnQuickView">
+                                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.quickview" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Включить быстрый просмотр </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.quickview != null && $ctrl.modalData.settings.quickview">
+                            <div class="blocks-constructor-row__name">Описание товара в быстром просмотре</div>
+                            <div>
+                                <div class="blocks-constructor-select">
+                                    <select
+                                        ng-model="$ctrl.modalData.settings.quickview_description"
+                                        ng-options="item.value as item.name for item in $ctrl.modalData.settings.descriptionOptions"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="blocks-constructor-row">
+                            <div class="blocks-constructor-row__name">Товаров в строке</div>
+                            <input
+                                class="blocks-constructor-input"
+                                data-e2e="CountProductInRow"
+                                type="number"
+                                ng-model="$ctrl.modalData.settings.number_products_in_row" />
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.show_button != null">
+                            <label class="blocks-constructor-label" data-e2e="ShowBtn">
+                                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_button" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text">
+                                    Отображать кнопку "{{$ctrl.modalData.settings.button.text}}" в списке
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row">
+                            <label class="blocks-constructor-label" data-e2e="ShowBtnQuickview">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.show_button_quickview" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text">
+                                    Отображать кнопку "{{$ctrl.modalData.settings.button.text}}" при быстром просмотре
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="blocks-constructor-row">
+                            <div class="blocks-constructor-row__name">Текст кнопки</div>
+                            <input
+                                class="blocks-constructor-input"
+                                data-e2e="ButtonText"
+                                type="text"
+                                data-ng-model="$ctrl.modalData.settings.button.text" />
+                        </div>
+
+                        <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.hover_animation != null">
+                            <div class="blocks-constructor-row__name">Эффекты при наведении на фотографию</div>
+                            <div>
+                                <div class="blocks-constructor-select">
+                                    <select
+                                        ng-model="$ctrl.modalData.settings.hover_animation"
+                                        ng-options="item.value as item.name for item in $ctrl.modalData.settings.hover_animation_options"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="blocks-constructor-settings-col--alt">
+                        <div ng-include="$ctrl.modalData.generalRightOptionsTemplateUrl"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="blocks-constructor-table-row-group" ng-include="$ctrl.modalData.buttonOptionsTemplateUrl"></div>
+        </div>
+        <div class="tab-content" data-tab-content="tabProducts" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+            <div class="blocks-constructor-settings-col">
+                <div
+                    class="photos-list"
+                    ng-init="product.itemsSelected = $ctrl.modalData.settings.product_ids;$ctrl.modalData.addCallback(product.onApplySettings);product.getProductsByIds($ctrl.modalData.settings.product_ids)">
+                    <div>
+                        <div class="flex top-xs flex-wrap" as-sortable="product.sortableOptions" ng-model="product.products">
+                            <div class="photos-list__item-wrap" data-ng-repeat="item in product.products" data-as-sortable-item data-e2e="PhotoImg">
+                                <div as-sortable-item-handle ondragstart="return false;">
+                                    <div class="photos-list__item photos-list__item--m-b flex flex-column center-xs middle-xs">
+                                        <div class="photos-list__item--inner">
+                                            <div class="photos-list__item-delete" data-e2e="ItemDel">
+                                                <span
+                                                    sweetalert
+                                                    sweet-options="{title: 'Вы уверены, что хотите удалить товар ?', type: 'warning', showCancelButton: true, showCancelButton: true, }"
+                                                    sweet-on-confirm="product.deleteProduct(item.ProductId)">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" class="photos-list__delete">
+                                                        <path
+                                                            fill="#222"
+                                                            fill-rule="evenodd"
+                                                            d="M8.732 8.025l2.768 2.768-.707.707-2.768-2.768L5.257 11.5l-.707-.707 2.768-2.768L4.55 5.257l.707-.707 2.768 2.768 2.768-2.768.707.707-2.768 2.768z" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                            <div class="picture-loader-trigger-image-wrap">
+                                                <span>
+                                                    <img ng-src="{{item.PhotoSmall || $ctrl.NO_PHOTO_PATH}}" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="photos-list__item-overlay"></div>
+                                    </div>
+                                    <div ng-bind="item.Name" class="photos-list__item-name"></div>
+                                    <div ng-if="!item.Enabled" class="photos-list__item-name">
+                                        <span class="danger" data-e2e="EnabledProduct">Не активен</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="photos-list__item-wrap">
+                                <div
+                                    class="photos-list__item photos-list__add flex center-xs middle-xs"
+                                    data-e2e="AddProduct"
+                                    no-drag
+                                    ng-click="product.openProductsModal($ctrl.modalData)">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        version="1.1"
+                                        id="Capa_1"
+                                        x="0px"
+                                        y="0px"
+                                        viewBox="0 0 42 42"
+                                        style="enable-background: new 0 0 42 42"
+                                        xml:space="preserve"
+                                        width="10px"
+                                        height="10px">
+                                        <polygon points="42,19 23,19 23,0 19,0 19,19 0,19 0,23 19,23 19,42 23,42 23,23 42,23 " fill="#3797eb" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            ng-if="$ctrl.modalData.settings.form"
+            class="tab-content"
+            data-tab-content="tabForm"
+            data-ng-class="{'tab-content-active': tabContent.header.selected}">
+            <blocks-constructor-form-settings
+                common-options="$ctrl.modalData.data"
+                form-settings="$ctrl.formSettings"></blocks-constructor-form-settings>
+        </div>
+    </div>
+</div>

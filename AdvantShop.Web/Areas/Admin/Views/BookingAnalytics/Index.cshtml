@@ -1,0 +1,171 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.ViewModels.Booking.Analytics.AnalyticsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Booking/_BookingLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Booking/_BookingLayout.cshtml";
+    }
+}
+
+<div class="wrapper" is-mobile>
+
+    <div class="content-page__subtitle row">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <h2 class="setting__subtitle">
+                Аналитика
+            </h2>
+            <div class="@(isMobile ? "m-b-md" : "")">Статистика по бронированию</div>
+            @Html.HiddenFor(model => model.SelectedAffiliate.Id, new { ng_model = "bookingAnalytics.affiliateId" })
+        </div>
+        <div class="col-xs-12 col-md-9 col-wl-10">
+            <div class="row">
+                <div class="col-xs-12 col-md-slim ng-cloak @(isMobile ? "form-group" : "")">
+                    <div class="m-b-xs @(isMobile ? "control-label" : "")">
+                        Дата от
+                    </div>
+
+                    <div>
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="bookingAnalytics.updateData()">
+                            <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                                <input type="text" class="form-control input-alt"
+                                       ng-flatpickr-input
+                                       ng-model="bookingAnalytics.dateFrom"
+                                       ng-init="bookingAnalytics.dateFrom='@Model.DateFrom.ToString("yyyy-MM-dd")'">
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-slim ng-cloak @(isMobile ? "form-group" : "")">
+                    <div class="m-b-xs @(isMobile ? "control-label" : "")">
+                        Дата по
+                    </div>
+                    <div>
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="bookingAnalytics.updateData()">
+                            <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                                <input type="text" class="form-control input-alt"
+                                       ng-flatpickr-input
+                                       ng-model="bookingAnalytics.dateTo"
+                                       ng-init="bookingAnalytics.dateTo='@Model.DateTo.ToString("yyyy-MM-dd")'">
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xs-12 col-md-slim ng-cloak @(isMobile ? "form-group" : "")">
+                    <div class="m-b-xs @(isMobile ? "control-label" : "")">
+                        Оплачена
+                    </div>
+                    <div>
+                        @Html.DropDownListFor(x => x.Paid, Model.PaidItems, new { @class = "form-control input-alt", ng_model = "bookingAnalytics.paid", ng_init = "bookingAnalytics.paid='" + Model.Paid + "'", ng_change = "bookingAnalytics.updateData()" })
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-slim ng-cloak @(isMobile ? "form-group" : "")">
+                    <div class="m-b-xs @(isMobile ? "control-label" : "")">
+                        Статус
+                    </div>
+                    @Html.DropDownListFor(x => x.Status, Model.Statuses, new { @class = "form-control input-alt", ng_model = "bookingAnalytics.status", ng_init = "bookingAnalytics.status='" + Model.Status + "'", ng_change = "bookingAnalytics.updateData()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="@(isMobile ? "" : "m-t")">
+
+        <div class="row">
+
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="settings-wrap">
+                    <div class="@(isMobile ? "nav nav-tabs nav-collapse-tab chips-list" : "aside-menu")">
+
+                        <a class="link-invert link-decoration-none @(isMobile ? "nav-item ng-tab chips-list__item" : "aside-menu-row settigs-menu-row")" ng-class="{'selected':bookingAnalytics.selectedTab=='booking'}" href="" ng-click="bookingAnalytics.showTab('booking')">
+                            <div class="@(isMobile ? "chip" : "aside-menu-inner")" ng-class="{'chip--active':bookingAnalytics.selectedTab =='booking' && isMobile.value}">
+                                <div class="@(isMobile ? "" : "aside-menu-name")">Брони</div>
+                            </div>
+                        </a>
+
+                        <a class="link-invert link-decoration-none @(isMobile ? "nav-item ng-tab chips-list__item" : "aside-menu-row settigs-menu-row")" ng-class="{'selected':bookingAnalytics.selectedTab=='reservationResources'}" href="" ng-click="bookingAnalytics.showTab('reservationResources')">
+                            <div class="@(isMobile ? "chip" : "aside-menu-inner")" ng-class="{'chip--active':bookingAnalytics.selectedTab =='reservationResources' && isMobile.value}">
+                                <div class="@(isMobile ? "" : "aside-menu-name")">Ресурсы</div>
+                            </div>
+                        </a>
+
+                        <a class="link-invert link-decoration-none @(isMobile ? "nav-item ng-tab chips-list__item" : "aside-menu-row settigs-menu-row")" ng-class="{'selected':bookingAnalytics.selectedTab=='services'}" href="" ng-click="bookingAnalytics.showTab('services')">
+                            <div class="@(isMobile ? "chip" : "aside-menu-inner")" ng-class="{'chip--active':bookingAnalytics.selectedTab =='services' && isMobile.value}">
+                                <div class="@(isMobile ? "" : "aside-menu-name")">Услуги</div>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-9 col-wl-10">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="@(isMobile ? "" : "container-fluid")" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+
+                            <div ng-show="bookingAnalytics.selectedTab == 'booking'">
+                                <booking-analytics-common affiliate-id="bookingAnalytics.affiliateId"
+                                                          on-init="bookingAnalytics.onInitCommon(analyticsCommon)"
+                                                          show-bookings-fn="bookingAnalytics.showBookings(params)"></booking-analytics-common>
+                                <booking-turnover affiliate-id="bookingAnalytics.affiliateId" on-init="bookingAnalytics.onInitTurnover(turnover)"></booking-turnover>
+                                <booking-analytics-sources affiliate-id="bookingAnalytics.affiliateId" on-init="bookingAnalytics.onInitSources(analyticsSources)"></booking-analytics-sources>
+                                <booking-analytics-payment-methods affiliate-id="bookingAnalytics.affiliateId"
+                                                                   on-init="bookingAnalytics.onInitPaymentMethods(analyticsPaymentMethods)"
+                                                                   show-bookings-fn="bookingAnalytics.showBookings(params)"></booking-analytics-payment-methods>
+                            </div>
+
+                            <div ng-show="bookingAnalytics.selectedTab == 'reservationResources'">
+                                <reservation-resources affiliate-id="bookingAnalytics.affiliateId"
+                                                       on-init="bookingAnalytics.onInitReservationResources(reservationResources)"
+                                                       show-bookings-fn="bookingAnalytics.showBookings(params)"></reservation-resources>
+                            </div>
+
+                            <div ng-show="bookingAnalytics.selectedTab == 'services'" class="ng-cloak">
+                                <div>
+                                    <h2 class="reports-title @(isMobile ? "setting__subtitle" : "m-b")">
+                                        Оказанные услуги
+                                    </h2>
+                                    <div class="form-group @(isMobile ? "flex middle-xs between-xs" : "")">
+                                        <span class="m-r-sm @(isMobile ? "setting__label" : "")">В разрезе ресурсов</span>
+                                        <label class="adv-checkbox-label">
+                                            <switch-on-off checked="bookingAnalytics.servicesGroupByReservationResource" on-change="bookingAnalytics.servicesGroupByReservationResourceChange(checked)"></switch-on-off>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <services-analytics data-affiliate-id="bookingAnalytics.affiliateId"
+                                                    data-status="bookingAnalytics.status"
+                                                    data-no-status="!bookingAnalytics.status || bookingAnalytics.status === 'null' ? 3 : null"
+                                                    data-paid="bookingAnalytics.paid"
+                                                    data-date-from="bookingAnalytics.dateFrom"
+                                                    data-date-to="bookingAnalytics.getServicesDateTo()"
+                                                    data-group-by-reservation-resource="bookingAnalytics.servicesGroupByReservationResource"
+                                                    auto-fetch-by-new-booking="false"
+                                                    no-fetch-by-on-init="true"
+                                                    on-init="bookingAnalytics.onInitServicesAnalytics(servicesAnalytics)">
+                                </services-analytics>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

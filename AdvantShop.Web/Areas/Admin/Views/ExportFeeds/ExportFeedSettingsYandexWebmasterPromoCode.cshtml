@@ -1,0 +1,58 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.ExportFeeds.ExportFeedSettingsYandexWebmasterModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="export-feed-yandex-promos">
+    @if (!isMobile)
+    {
+        <div class="row end-xs export-feed-yandex-promocode-head" style="padding: 1rem;">
+            <ui-modal-trigger data-controller="'ModalAddEditYandexPromoCodeCtrl'" controller-as="ctrl" size="middle"
+                              template-url="@Html.GetAssetPath("addEditYandexPromoCode.html")"
+                              data-resolve="{value: { ExportFeedId: '@Model.ExportFeedId'}}"
+                              on-close="exportFeeds.AddEditYandexPromoCode(result)">
+                <button class="btn btn-sm btn-success btn--margin-left" data-e2e="AddYandexPromo" type="button">
+                    <span class="fa fa-plus"></span>@T("Admin.Add")
+                </button>
+            </ui-modal-trigger>
+        </div>
+    }
+    <div class="ibox @(isMobile ? "row" : "")">
+        <div class="col-xs" ng-init="exportFeeds.setGridYandexPromoCodesOptionsData(@Model.PromoCodesJson);exportFeeds.ExportFeedId = @Model.ExportFeedId;">
+            <ui-grid-custom grid-unique-id="gridYandexPromoCodes"
+                            grid-on-init="exportFeeds.gridYandexPromoCodesOnInit(grid)"
+                            grid-filter-enabled="false"
+                            grid-pagination-enabled="false"
+                            grid-selection-enabled="false"
+                            grid-row-identificator="'PromoID'"
+                            grid-params="{exportFeedId:@Model.ExportFeedId}"
+                            grid-options="exportFeeds.gridYandexPromoCodesOptions"
+                            grid-on-fetch="exportFeeds.gridYandexPromoCodesOnFetch(grid)"
+                            grid-extend-ctrl="exportFeeds"
+                            grid-swipe-line="true">
+                <ui-grid-custom-override-control class="ng-cloak">
+                    <ui-modal-trigger data-controller="'ModalAddEditYandexPromoCodeCtrl'" controller-as="ctrl" size="middle"
+                                      template-url="@Html.GetAssetPath("addEditYandexPromoCode.html")"
+                                      data-resolve="{value: { ExportFeedId: '@Model.ExportFeedId', PromoID: row.entity.PromoID }}"
+                                      on-close="grid.appScope.$ctrl.gridExtendCtrl.AddEditYandexPromoCode(result)">
+                        <div class="card card--gap-row-sm card--p-18">
+                            <div class="">
+                                <div class="card__col m-r-xs">
+                                    <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Название:</div>{{row.entity.Name}}
+                                </div>
+                                <div class="card__col m-r-xs m-t-sm">
+                                    <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Описание:</div><span class="fs-xs" style="word-break: break-all; ">{{row.entity.Description}}</span>
+                                </div>
+                                <div class="card__col m-r-xs m-t-sm">
+                                    <div class="setting--grid-span-grey setting--m-t-none m-r-xs">Ссылка на акцию:</div><span class="fs-xs" style="word-break: break-all; ">{{row.entity.PromoUrl}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </ui-modal-trigger>
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

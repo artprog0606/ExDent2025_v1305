@@ -1,0 +1,203 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.YandexKassaPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            <div>
+                Если у вас нет учетной записи в сервисе ЮKassa, вы можете зарегистрироваться по <a href="https://go.advantshop.net/yookassa" target="_blank">ссылке</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Способ подключения
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.Protocol, Model.Protocols, new { ng_model = "paymentMethod.Parameters.Protocol", ng_init = "paymentMethod.Parameters.Protocol='" + Model.Protocol + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Способ подключения">
+            Протокол взаимодействия<br />
+            Платежный модуль - HTTP<br />
+            API - протокол API
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ShopId</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ShopId, new { ng_model = "paymentMethod.Parameters.ShopId", @class = "form-control input-alt", required = "required", validation_input_text = "ShopId" })
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol == ''">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ScId</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ScId, new { ng_model = "paymentMethod.Parameters.ScId", @class = "form-control input-alt", required = "required", validation_input_text = "ScId" })
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol != ''">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Секретный ключ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = "Секретный ключ" })
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol == ''">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.YandexKassa.PasswordForMD5")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "paymentMethod.Parameters.Password", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.YandexKassa.PasswordForMD5").ToString() })
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol != ''">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.YandexKassa.PaymentMethod")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.YaPaymentType, Model.YaPaymentTypesNew, new { ng_model = "paymentMethod.Parameters.YaPaymentType", ng_init = "paymentMethod.Parameters.YaPaymentType='" + Model.YaPaymentType + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol == ''">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.YandexKassa.PaymentMethod")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.YaPaymentType, Model.YaPaymentTypes, new { ng_model = "paymentMethod.Parameters.YaPaymentType", ng_init = "paymentMethod.Parameters.YaPaymentType='" + Model.YaPaymentType + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+
+
+@*<div class="form-group row middle-xs" ng-if="paymentMethod.Parameters.Protocol == ''">
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.PaymentMethods.YandexKassa.DemoMode")
+        </div>
+        <div class="col-xs-6 relative">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.DemoMode, new { ng_model = "paymentMethod.Parameters.DemoMode", ng_init = "paymentMethod.Parameters.DemoMode=" + Model.DemoMode.ToLowerString(), @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>*@
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.PaymentMethods.YandexKassa.SendDataForCheck")
+        </div>
+    }
+    <div class="col-xs col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span> @T("Admin.PaymentMethods.YandexKassa.SendDataForCheck")</span>
+            }
+        </label>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol != '' && paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>Система налогообложения</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TaxSystemCode, Model.TaxSystemCodes, new { ng_model = "paymentMethod.Parameters.TaxSystemCode", ng_init = "paymentMethod.Parameters.TaxSystemCode='" + Model.TaxSystemCode + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.Protocol != '' && paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>ФФД подключенной кассы</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeFfd, Model.TypesFfd, new { ng_model = "paymentMethod.Parameters.TypeFfd", ng_init = "paymentMethod.Parameters.TypeFfd='" + Model.TypeFfd + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="@Model.ExistsUnitsWithOutMeasure.ToLowerString() && paymentMethod.Parameters.Protocol != '' && paymentMethod.Parameters.SendReceiptData && paymentMethod.Parameters.TypeFfd === '1'">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <div>
+                Имеются единицы измерения без указания меры для ФФД. <a target="_blank" href="settingscatalog?catalogTab=units&gridUnits=%7B%22WithOutMeasureType%22:true%7D">Смотреть...</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.YaPaymentType == 'installments' || paymentMethod.Parameters.YaPaymentType == 'CR'">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Минимальная цена</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MinimumPrice, new { ng_model = "paymentMethod.Parameters.MinimumPrice", @class = "form-control", required = "required", validation_input_text = "Минимальная цена" })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Минимальная цена">
+            Кнопка "Купить в кредит" будет отображаться у товаров превышающих минимальную цену
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.YaPaymentType == 'installments' || paymentMethod.Parameters.YaPaymentType == 'CR'">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12 control-label" : "col-fixed-size-md")">
+        Максимальная цена
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MaximumPrice, new {ng_model = "paymentMethod.Parameters.MaximumPrice", @class = "form-control", validation_input_text = "Минимальная цена", type = "number"})
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Максимальная цена">
+            Кнопка "Купить в кредит" будет отображаться у товаров не превышающих максимальную цену.<br/>
+            Оставьте поле пустым, если это ограничение не нужно.
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.YaPaymentType == 'installments' || paymentMethod.Parameters.YaPaymentType == 'CR'">
+    <div class="flex-grow-n setting__label setting--m-b-sm @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Сумма первого платежа(%)</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.FirstPayment, new { ng_model = "paymentMethod.Parameters.FirstPayment", @class = "form-control input-alt", required = "required", validation_input_text = "Сумма первого платежа(%)" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Сумма первого платежа(%)">
+            % от стоимости товара составит первый платеж
+        </help-trigger>
+    </div>
+</div>

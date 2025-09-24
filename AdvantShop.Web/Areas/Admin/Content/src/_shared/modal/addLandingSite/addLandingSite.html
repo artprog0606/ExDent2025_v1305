@@ -1,0 +1,722 @@
+﻿<form novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddLandingSite.NewFunnel'|translate}}</h2>
+    </div>
+    <div class="modal-body create-funnel__modal-body" ng-class="{'funnel-modal-content-new-item': ctrl.step !== 7 && ctrl.step !== 100 }">
+        <div ng-class="{'form-horizontal m-r m-l': !isMobile.value}">
+            <div ng-if="ctrl.lpType == 'OneProductUpSellDownSell'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.MainProduct'|translate}}</h2>
+                    <div>{{'Admin.Js.AddLandingSite.BasedDataSelectedProduct'|translate}}</div>
+                    <div class="m-t-sm">
+                        <add-product-landing
+                            on-close="ctrl.addProduct(result, ctrl.trackEventCreateFreeShippingFunnelStep2)"
+                            setting-selectvizr="{multiSelect: false,value: {itemsSelected: ctrl.productId}}"
+                            products="ctrl.product">
+                        </add-product-landing>
+                    </div>
+
+                    <div class="m-t-sm">
+                        <switch-on-off
+                            checked="ctrl.showCrossSells"
+                            on-change="ctrl.onChangeSwitcher(checked)"
+                            theme="blue"
+                            label="{{'Admin.Js.AddLandingSite.SelectUpsellDownsellProducts'|translate}}">
+                        </switch-on-off>
+                    </div>
+
+                    <div ng-if="ctrl.checkBoxDownsellUpsselModel.showCrossSells" class="m-t row">
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellOne'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectUpsellProductSecond'|translate}}</div>
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addUpsellProduct(result, 5, ctrl.trackEventCreateFreeShippingFunnelStep3)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.upsellProductId}}"
+                                    products="ctrl.upsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellTwoDownsell'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectProdRefuseFirstUpsell'|translate}}</div>
+
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addDownsellProduct(result, 6, ctrl.trackEventCreateFreeShippingFunnelStep5)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.downsellProductId}}"
+                                    products="ctrl.downsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                        class="m-t-md products-for-funnel-button"
+                        style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                        <button
+                            type="button"
+                            data-e2e="LandingSiteNext"
+                            class="btn btn-sm btn-success"
+                            ng-click="ctrl.validateAndGo(6);ctrl.trackEventCreateFreeShippingFunnelStep2();"
+                            ng-disabled="ctrl.productId==null">
+                            {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="ctrl.step == 6">
+                    <div>
+                        <h4 class="create-site__label">{{'Admin.Js.AddLandingSite.FunnelName'|translate}}</h4>
+                        <div>
+                            <input
+                                type="text"
+                                ng-model="ctrl.name"
+                                ng-keydown="ctrl.onKeydownAddLandingSite($event, ctrl.name, 7)"
+                                class="form-control input-alt"
+                                data-e2e="LandingSiteName"
+                                autofocus="" />
+                        </div>
+                        <div
+                            ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                            class="m-t-md products-for-funnel-button">
+                            <button
+                                type="button"
+                                data-e2e="LandingSiteNext"
+                                ng-click="ctrl.step = 7; ctrl.addLandingSite()"
+                                ng-disabled="ctrl.name == null || ctrl.name.length == 0"
+                                class="btn btn-sm btn-success">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" ng-if="ctrl.step == 7">
+                    <h2 class="m-t-lg m-b-lg">
+                        <i class="fa fa-spinner fa-spin fa-fw"></i> {{'Admin.Js.AddLandingSite.InstallingFunnel'|translate}}
+                    </h2>
+                    <span ng-init="ctrl.trackEventCreateFreeShippingFunnelStepFinal();"></span>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.lpType == 'CollectContacts'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2 class="m-t-sm create-site__subtitle">{{'Admin.Js.AddLandingSite.ContactCollection'|translate}}</h2>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="m-t-sm">
+                                <a href="" ng-click="ctrl.step = 10" class="btn inline btn-sm btn-success m-t-sm" data-e2e="LandingSiteNext"
+                                    >{{'Admin.Js.AddLandingSite.Continue'|translate}}</a
+                                >
+                                <a
+                                    class="btn btn-sm btn-default link-invert inline middle-cell m-l-sm m-t-sm"
+                                    magnific-popup=""
+                                    href="./../areas/admin/content/images/landing/scheme2.png">
+                                    {{'Admin.Js.AddLandingSite.FunnelDiagram'|translate}}
+                                </a>
+                                <a href="http://demo7.advantshop.net/lp/statya-1" target="_blank" class="inline middle-cell m-l-sm m-t-sm">
+                                    {{'Admin.Js.AddLandingSite.FunnelDemo'|translate}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.template == 'CollectContactsForAccess'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.ActionAfterFilling'|translate}}</h2>
+
+                    <div class="m-t">
+                        <div class="m-b-xs create-site__label">{{'Admin.Js.AddLandingSite.TransitionTo'|translate}}</div>
+
+                        <select
+                            id="ModalAddLandingSiteSelectPostAction"
+                            ng-model="ctrl.postAction"
+                            ng-options="item.value as item.label for item in ctrl.postActions"
+                            ng-change="ctrl.changePostAction()"
+                            class="form-control input-alt"></select>
+
+                        <div
+                            ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                            class="m-t-md products-for-funnel-button"
+                            style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                            <button type="button" ng-click="ctrl.step = 2;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-if="ctrl.step == 2">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.ActionAfterFilling'|translate}}</h2>
+
+                    <div class="m-t">
+                        <div ng-switch="ctrl.postAction">
+                            <div ng-switch-when="1">
+                                <div class="m-b-sm create-site__label">{{'Admin.Js.AddLandingSite.SelectCategory'|translate}}</div>
+                                <div>
+                                    <div
+                                        data-js-tree
+                                        data-show-root
+                                        data-tree-ajax="catalog/categoriestree?categoryIdSelected={{ctrl.postActionCategoryId}}"
+                                        data-tree-core=""
+                                        data-tree-events="select_node:ctrl.selectPostActionCategory"></div>
+                                </div>
+                            </div>
+                            <div ng-switch-when="2">
+                                <div class="m-b-sm create-site__label">{{'Admin.Js.AddLandingSite.Funnel'|translate}}</div>
+                                <div ng-init="ctrl.getPostActionFunnels();">
+                                    <select
+                                        ng-model="ctrl.postActionFunnelSiteId"
+                                        id="ModalAddLandingSiteSelectPostFunnel"
+                                        ng-options="item.value as item.label for item in ctrl.funnels"
+                                        class="form-control input-alt"></select>
+                                </div>
+                            </div>
+                            <div ng-switch-when="3">
+                                <div class="m-b-sm create-site__label">{{'Admin.Js.AddLandingSite.SpecifyURL'|translate}}</div>
+                                <input type="text" ng-model="ctrl.postActionUrl" class="form-control input-alt" />
+                            </div>
+                        </div>
+
+                        <div ng-class="{'m-t-md products-for-funnel-button': !isMobile.value, 'modal-footer modal-footer--outside': isMobile.value}">
+                            <button type="button" class="btn btn-sm btn-default m-r" data-e2e="LandingSiteBack" ng-click="ctrl.step=1">
+                                {{'Admin.Js.AddLandingSite.Back'|translate}}
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-success"
+                                data-e2e="LandingSiteNext"
+                                ng-click="ctrl.step = 10;"
+                                ng-disabled="ctrl.postActionCategoryId == null && ctrl.postActionFunnelSiteId == null && ctrl.postActionUrl == null">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.template == 'Article'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.LinkSpecialOffer'|translate}}</h2>
+
+                    <div class="m-t">
+                        <div class="m-b-xs create-site__label">{{'Admin.Js.AddLandingSite.TransitionTo'|translate}}</div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <select
+                                    ng-model="ctrl.postAction"
+                                    id="ModalAddLandingSiteSelectPostActionUrl"
+                                    ng-options="item.value as item.label for item in ctrl.postActions"
+                                    ng-change="ctrl.changePostAction()"
+                                    class="form-control input-alt"></select>
+                            </div>
+                        </div>
+
+                        <div
+                            ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                            class="m-t-md products-for-funnel-button"
+                            style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                            <button type="button" ng-click="ctrl.step = 2;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-if="ctrl.step == 2">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.LinkSpecialOffer'|translate}}</h2>
+
+                    <div class="m-t">
+                        <div ng-switch="ctrl.postAction">
+                            <div ng-switch-when="1">
+                                <div class="m-b-sm create-site__label">{{'Admin.Js.AddLandingSite.SelectCategory'|translate}}</div>
+                                <div>
+                                    <div
+                                        data-js-tree
+                                        data-show-root
+                                        data-tree-ajax="catalog/categoriestree?categoryIdSelected={{ctrl.postActionCategoryId}}"
+                                        data-tree-core=""
+                                        data-tree-events="select_node:ctrl.selectPostActionCategory"></div>
+                                </div>
+                            </div>
+                            <div ng-switch-when="2">
+                                <div class="m-b-sm create-site__label">{{'Admin.Js.AddLandingSite.Funnel'|translate}}</div>
+                                <div ng-init="ctrl.getPostActionFunnels();">
+                                    <select
+                                        ng-model="ctrl.postActionFunnelSiteId"
+                                        ng-options="item.value as item.label for item in ctrl.funnels"
+                                        class="form-control input-alt"></select>
+                                </div>
+                            </div>
+                            <div ng-switch-when="3">
+                                <div class="m-b-sm">{{'Admin.Js.AddLandingSite.SpecifyURL'|translate}}</div>
+                                <input type="text" ng-model="ctrl.postActionUrl" class="form-control input-alt" />
+                            </div>
+                        </div>
+
+                        <div ng-class="{'m-t-md products-for-funnel-button': !isMobile.value, 'modal-footer modal-footer--outside': isMobile.value}">
+                            <button type="button" class="btn btn-sm btn-default m-r" data-e2e="LandingSiteBack" ng-click="ctrl.step=1">
+                                {{'Admin.Js.AddLandingSite.Back'|translate}}
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-success"
+                                data-e2e="LandingSiteNext"
+                                ng-click="ctrl.step = 10;"
+                                ng-disabled="ctrl.postActionCategoryId == null && ctrl.postActionFunnelSiteId == null && ctrl.postActionUrl == null">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.lpType == 'MultyProducts' && (ctrl.template == 'MultyProducts' || ctrl.template == 'MultyProductsKnowPrice')">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <div>
+                        <h2 class="create-site__subtitle m-t-none m-b">{{'Admin.Js.AddLandingSite.StepOneSelectProductsFunnel'|translate}}</h2>
+                        <div ng-init="ctrl.multyFunnelMode = 'products'">
+                            <div data-ng-class="{'m-b-sm': isMobile.value, 'm-b-xs' : !isMobile.value}">
+                                <label class="adv-radio-label">
+                                    <input
+                                        class="adv-radio-input"
+                                        ng-model="ctrl.multyFunnelMode"
+                                        type="radio"
+                                        value="products"
+                                        ng-click="ctrl.setMultyFunnelMode()" />
+                                    <span class="adv-radio-label-text"> {{'Admin.Js.AddLandingSite.SelectProductsFunnel'|translate}} </span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                            <div data-ng-class="{'m-b-sm': isMobile.value, 'm-b-xs' : !isMobile.value}">
+                                <label class="adv-radio-label">
+                                    <input
+                                        class="adv-radio-input"
+                                        ng-model="ctrl.multyFunnelMode"
+                                        type="radio"
+                                        value="categories"
+                                        ng-click="ctrl.setMultyFunnelMode()" />
+                                    <span class="adv-radio-label-text"> {{'Admin.Js.AddLandingSite.SelectCategoriesFunnel'|translate}} </span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="m-t-sm">
+                            <div ng-if="ctrl.multyFunnelMode == 'products'">
+                                <add-product-landing
+                                    on-close="ctrl.addProductList(result)"
+                                    settings-selectvizr="{value: {itemsSelected: ctrl.productIds}}"
+                                    products="ctrl.products">
+                                </add-product-landing>
+                            </div>
+                            <div ng-if="ctrl.multyFunnelMode == 'categories'">
+                                <div ng-include="'../Areas/Admin/Content/src/_shared/modal/addLandingSite/categories.html'"></div>
+                            </div>
+
+                            <div
+                                ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                                class="m-t-md products-for-funnel-button"
+                                style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                                <button type="button" ng-click="ctrl.step = 10;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                    {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.lpType == 'MultyProducts' && ctrl.template == 'MultyProductsWithCategories'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <div>
+                        <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.StepOneSelectCategoriesFunnel'|translate}}</h2>
+                        <div class="m-t-sm">
+                            <div ng-include="'../Areas/Admin/Content/src/_shared/modal/addLandingSite/categories.html'"></div>
+                            <div
+                                ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                                class="m-t-md products-for-funnel-button">
+                                <button type="button" ng-click="ctrl.step = 10;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                    {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.lpType == 'MultyProducts' && (ctrl.template == 'VideoWithCrossSells' || ctrl.template == 'ArticleWithCrossSells')">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.MainProduct'|translate}}</h2>
+                    <div>{{'Admin.Js.AddLandingSite.BasedDataSelectedProduct'|translate}}</div>
+                    <div class="m-t-sm">
+                        <add-product-landing
+                            on-close="ctrl.addProduct(result)"
+                            setting-selectvizr="{multiSelect: false,value: {itemsSelected: ctrl.productId}}"
+                            products="ctrl.product">
+                        </add-product-landing>
+                    </div>
+
+                    <div class="m-t-sm">
+                        <switch-on-off
+                            checked="ctrl.checkBoxDownsellUpsselModel.showCrossSells"
+                            theme="blue"
+                            on-change="ctrl.onChangeSwitcher(checked)"
+                            label="{{'Admin.Js.AddLandingSite.SelectUpsellDownsellProducts'|translate}}">
+                        </switch-on-off>
+                    </div>
+
+                    <div ng-if="ctrl.checkBoxDownsellUpsselModel.showCrossSells" class="m-t row">
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellOne'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectUpsellProductSecond'|translate}}</div>
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addUpsellProduct(result, 5)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.upsellProductId}}"
+                                    products="ctrl.upsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellTwoDownsell'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectProdRefuseFirstUpsell'|translate}}</div>
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addDownsellProduct(result, 10)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.downsellProductId}}"
+                                    products="ctrl.downsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                        class="m-t-md products-for-funnel-button"
+                        style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                        <button
+                            type="button"
+                            data-e2e="LandingSiteNext"
+                            class="btn btn-sm btn-success"
+                            ng-click="ctrl.validateAndGo(10)"
+                            ng-disabled="ctrl.productId==null">
+                            {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                ng-if="ctrl.lpType == 'MultyProducts' && ctrl.template != 'CollectContactsForAccess' && ctrl.template != 'MultyProducts' && ctrl.template != 'MultyProductsKnowPrice' && ctrl.template != 'MultyProductsWithCategories' && ctrl.template != 'VideoWithCrossSells' && ctrl.template != 'ArticleWithCrossSells'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <div>
+                        <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.StepOneSelectProductsFunnel'|translate}}</h2>
+                        <div>{{'Admin.Js.AddLandingSite.SelectMultipleProductsFunnel'|translate}}</div>
+                        <div class="m-t-sm">
+                            <add-product-landing
+                                on-close="ctrl.addProductList(result)"
+                                settings-selectvizr="{value: {itemsSelected: ctrl.productIds}}"
+                                products="ctrl.products">
+                            </add-product-landing>
+
+                            <div
+                                ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                                class="m-t-md products-for-funnel-button"
+                                style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                                <button type="button" ng-click="ctrl.step = 10;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                    {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                ng-if="ctrl.lpType == 'Couponator' || ctrl.lpType == 'CouponatorOrder' || ctrl.lpType == 'LandingFunnel' || ctrl.lpType == 'LandingFunnelOrder' || ctrl.lpType == 'VideoLandingFunnel' || ctrl.lpType == 'VideoLandingFunnelOrder'">
+                <div class="form-group" ng-if="ctrl.step == 1 && ctrl.template == 'Lottery'">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.MainProduct'|translate}}</h2>
+                    <div>{{'Admin.Js.AddLandingSite.BasedDataSelectedProduct'|translate}}</div>
+                    <div class="m-t-sm">
+                        <add-product-landing
+                            on-close="ctrl.addProduct(result)"
+                            setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.productId}}"
+                            products="ctrl.product">
+                        </add-product-landing>
+
+                        <div
+                            ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                            class="m-t-md products-for-funnel-button"
+                            style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                            <button
+                                type="button"
+                                ng-click="ctrl.step = 10"
+                                ng-disabled="ctrl.productId == null"
+                                class="btn btn-sm btn-success"
+                                data-e2e="LandingSiteNext">
+                                {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="form-group"
+                    ng-if="ctrl.step == 1 && (ctrl.template == 'LandingFunnelOrderSet' || ctrl.template == 'LandingFunnelOrderSetWithForm')">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.SelectProductsForFunnel'|translate}}</h2>
+                    <div>{{'Admin.Js.AddLandingSite.SelectMultipleProductsFunnel'|translate}}</div>
+                    <div class="m-t-sm">
+                        <add-offer-landing
+                            on-close="ctrl.addOfferList(result)"
+                            settings-selectvizr="{value: {itemsSelected: ctrl.offerIds}}"
+                            offers="ctrl.offers">
+                        </add-offer-landing>
+                    </div>
+
+                    <div class="m-t-sm">
+                        <switch-on-off
+                            checked="ctrl.checkBoxDownsellUpsselModel.showCrossSells"
+                            theme="blue"
+                            on-change="ctrl.onChangeSwitcher(checked)"
+                            label="{{'Admin.Js.AddLandingSite.SelectUpsellDownsellProducts'|translate}}">
+                        </switch-on-off>
+                    </div>
+
+                    <div ng-if="ctrl.checkBoxDownsellUpsselModel.showCrossSells" class="m-t row">
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellOne'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectUpsellProductSecond'|translate}}</div>
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addUpsellProduct(result, 3)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.upsellProductId}}"
+                                    products="ctrl.upsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellTwoDownsell'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectProdRefuseFirstUpsell'|translate}}</div>
+
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addDownsellProduct(result, 10)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.downsellProductId}}"
+                                    products="ctrl.downsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                        class="m-t-md products-for-funnel-button"
+                        style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                        <button
+                            type="button"
+                            ng-click="ctrl.validateAndGo(10)"
+                            ng-disabled="ctrl.offers == null || ctrl.offers.length == 0"
+                            class="btn btn-sm btn-success"
+                            data-e2e="LandingSiteNext">
+                            {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="form-group"
+                    ng-if="ctrl.step == 1 && ctrl.template != 'Lottery' && ctrl.template != 'LandingFunnelOrderSet' && ctrl.template != 'LandingFunnelOrderSetWithForm'">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.MainProduct'|translate}}</h2>
+                    <div>{{'Admin.Js.AddLandingSite.BasedDataSelectedProduct'|translate}}</div>
+                    <div class="m-t-sm">
+                        <add-product-landing
+                            on-close="ctrl.addProduct(result)"
+                            setting-selectvizr="{multiSelect: false,value: {itemsSelected: ctrl.productId}}"
+                            products="ctrl.product">
+                        </add-product-landing>
+                    </div>
+
+                    <div class="m-t-sm">
+                        <switch-on-off
+                            checked="ctrl.checkBoxDownsellUpsselModel.showCrossSells"
+                            theme="blue"
+                            on-change="ctrl.onChangeSwitcher(checked)"
+                            label="{{'Admin.Js.AddLandingSite.SelectUpsellDownsellProducts'|translate}}">
+                        </switch-on-off>
+                    </div>
+
+                    <div ng-if="ctrl.checkBoxDownsellUpsselModel.showCrossSells" class="m-t row">
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellOne'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectUpsellProductSecond'|translate}}</div>
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addUpsellProduct(result, 5)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.upsellProductId}}"
+                                    products="ctrl.upsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 m-b">
+                            <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellTwoDownsell'|translate}}</h2>
+                            <div>{{'Admin.Js.AddLandingSite.SelectProdRefuseFirstUpsell'|translate}}</div>
+
+                            <div class="m-t-sm">
+                                <add-product-landing
+                                    on-close="ctrl.addDownsellProduct(result, 10)"
+                                    setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.downsellProductId}}"
+                                    products="ctrl.downsellProduct">
+                                </add-product-landing>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                        class="m-t-md products-for-funnel-button"
+                        style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                        <button
+                            type="button"
+                            data-e2e="LandingSiteNext"
+                            class="btn btn-sm btn-success"
+                            ng-click="ctrl.validateAndGo(10)"
+                            ng-disabled="ctrl.productId==null">
+                            {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.lpType == 'ProductCrossSellDownSell' && (ctrl.step == 0 || ctrl.step == 1)">
+                <div class="form-group">
+                    <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.MainProduct'|translate}}</h2>
+
+                    <div ng-if="ctrl.step == 0">
+                        <div>{{'Admin.Js.AddLandingSite.BasedDataSelectedProduct'|translate}}</div>
+                        <div class="m-t-sm">
+                            <add-product-landing
+                                on-close="ctrl.addProduct(result)"
+                                setting-selectvizr="{multiSelect: false,value: {itemsSelected: ctrl.productId}}"
+                                products="ctrl.product">
+                            </add-product-landing>
+                        </div>
+                    </div>
+                    <div ng-if="ctrl.step != 0">
+                        <div class="m-t m-b-lg">{{ctrl.productCrossSell.Name}}</div>
+                    </div>
+
+                    <div class="m-t-sm">
+                        <switch-on-off
+                            checked="ctrl.checkBoxDownsellUpsselModel.showCrossSells"
+                            theme="blue"
+                            on-change="ctrl.onChangeSwitcher(checked)"
+                            label="{{'Admin.Js.AddLandingSite.SelectUpsellDownsellProducts'|translate}}">
+                        </switch-on-off>
+                    </div>
+                </div>
+
+                <div ng-if="ctrl.checkBoxDownsellUpsselModel.showCrossSells" class="m-t row">
+                    <div class="col-xs-12 col-md-6 m-b">
+                        <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellOne'|translate}}</h2>
+                        <div>{{'Admin.Js.AddLandingSite.SelectUpsellProductSecond'|translate}}</div>
+                        <div class="m-t-sm">
+                            <add-product-landing
+                                on-close="ctrl.addUpsellProduct(result, 2)"
+                                setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.upsellProductId}}"
+                                products="ctrl.upsellProduct">
+                            </add-product-landing>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 m-b">
+                        <h2 class="create-site__subtitle m-t-none">{{'Admin.Js.AddLandingSite.UpsellTwoDownsell'|translate}}</h2>
+                        <div>{{'Admin.Js.AddLandingSite.SelectProdRefuseFirstUpsell'|translate}}</div>
+
+                        <div class="m-t-sm">
+                            <add-product-landing
+                                on-close="ctrl.addDownsellProduct(result, 10)"
+                                setting-selectvizr="{multiSelect: false, value: {itemsSelected: ctrl.downsellProductId}}"
+                                products="ctrl.downsellProduct">
+                            </add-product-landing>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                    class="m-t-md products-for-funnel-button"
+                    style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                    <button
+                        type="button"
+                        data-e2e="LandingSiteNext"
+                        class="btn btn-sm btn-success"
+                        ng-click="ctrl.validateAndGo(10)"
+                        ng-disabled="ctrl.productId==null">
+                        {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                    </button>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.template == 'CompanySiteWithCatalog'">
+                <div class="form-group" ng-if="ctrl.step == 1">
+                    <div>
+                        <h2 class="create-site__subtitle m-t-none m-b">{{'Admin.Js.Funnel.SelectCategoriesForFunnel'|translate}}</h2>
+                        <div class="m-t-sm">
+                            <div ng-include="'../Areas/Admin/Content/src/_shared/modal/addLandingSite/categories.html'"></div>
+                            <div
+                                ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                                class="m-t-md products-for-funnel-button">
+                                <button type="button" ng-click="ctrl.step = 10;" class="btn btn-sm btn-success" data-e2e="LandingSiteNext">
+                                    {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="ctrl.step == 10">
+                <div>
+                    <h2 class="m-b-md m-t-none" ng-if="ctrl.lpType=='None'">{{'Admin.Js.AddLandingSite.BlankTemplate'|translate}}</h2>
+                    <h2 class="m-b-md m-t-none" ng-if="ctrl.lpType=='CollectContacts'">{{'Admin.Js.AddLandingSite.ContactCollection'|translate}}</h2>
+                    <h4 class="create-site__label">{{'Admin.Js.AddLandingSite.FunnelName'|translate}}</h4>
+                    <div>
+                        <input
+                            type="text"
+                            ng-model="ctrl.name"
+                            ng-keydown="ctrl.onKeydownAddLandingSite($event, ctrl.name, 100)"
+                            class="form-control input-alt"
+                            data-e2e="LandingSiteName"
+                            autofocus="" />
+                    </div>
+                    <div
+                        ng-class="{'modal-footer create-site__custom-footer-style-for-btn' : isMobile.value}"
+                        class="m-t-md products-for-funnel-button"
+                        style="{{isMobile.value ? 'margin-left:-20px;margin-right:-20px;margin-bottom:-20px;' : ''}}">
+                        <button
+                            type="button"
+                            data-e2e="LandingSiteNext"
+                            ng-click="ctrl.step = 100; ctrl.addLandingSite()"
+                            ng-disabled="ctrl.name == null || ctrl.name.length == 0"
+                            class="btn btn-sm btn-success">
+                            {{'Admin.Js.AddLandingSite.Continue'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center" ng-if="ctrl.step == 100" is-mobile>
+                <h2 class="create-site__subtitle m-t-lg m-b-lg" style="{{isMobile.value ? 'margin-top:10px !important' : '' }}">
+                    <i class="fa fa-spinner fa-spin fa-fw"></i> {{'Admin.Js.AddLandingSite.InstallingFunnel'|translate}}
+                </h2>
+            </div>
+        </div>
+    </div>
+</form>

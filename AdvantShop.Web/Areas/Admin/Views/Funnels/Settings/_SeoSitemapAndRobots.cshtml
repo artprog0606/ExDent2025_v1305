@@ -1,0 +1,87 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteSettings
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@*<div ng-switch="landingSite.domain != null && landingSite.domain.length > 0">
+    <div ng-switch-when="false">
+        Настройки будут доступны после подключения домена
+    </div>
+    <div ng-switch-when="true">*@
+
+        <div>
+            <h3 class="@(isMobile ? "funnel__subtitle" : "")">@T("Admin.Views.Funnels.Settings.SeoSiteMapsAndRobots")</h3>
+        </div>
+
+        <div class="form-group row @(isMobile ? "funnel__form-group funnel__reverse middle-xs" : "")">
+            @if (!isMobile)
+            {
+                <div class="col-xs-11 col-md-3 col-wl-2">
+                    <div class="setting-label-wrap @(isMobile ? "funnel__label funnel--m-none" : "")">
+                        @T("Admin.Views.Funnels.Settings.UseHttpsInLinks")
+                    </div>
+                </div>
+            }
+            <div class="col-xs-12 col-md-8 relative">
+                <label class="adv-checkbox-label @(isMobile ? "flex" : "")">
+                    @Html.CheckBoxFor(x => x.UseHttpsForSitemap, new { @class = "adv-checkbox-input", ng_model = "landingSite.settings.UseHttpsForSitemap", ng_init = "landingSite.settings.UseHttpsForSitemap=" + Model.UseHttpsForSitemap.ToLowerString() })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span class="m-l-sm flex-grow @(isMobile ? "funnel--m-none" : "")">
+                            @T("Admin.Views.Funnels.Settings.UseHttpsInLinks")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row @(isMobile ? "funnel__form-group" : "")">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap @(isMobile ? "funnel__label" : "")">
+                    @T("Admin.Views.Funnels.Settings.SeoSiteMapsAndRobots") xml
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative">
+                <div ng-bind="landingSite.sitemapData.LastDateXml" data-e2e="lastDateXml" class="ng-cloak m-b-sm"></div>
+                <div ng-if="landingSite.sitemapData.SitemapXmlUrl != null" class="ng-cloak m-b-sm">
+                    <a href="" ng-href="{{landingSite.sitemapData.SitemapXmlUrl}}" data-e2e="SitemapXmlUrl" target="_blank">{{landingSite.sitemapData.SitemapXmlUrl}}</a>
+                </div>
+                <a href="" class="btn btn-sm btn-success" data-e2e="generateSitemapXml" ng-click="landingSite.generateSitemapXml()">@T("Admin.Views.Funnels.Settings.Generate")</a>
+            </div>
+        </div>
+
+        <div class="form-group row @(isMobile ? "funnel__form-group" : "")">
+            <div class="col-xs-12 col-md-3 col-wl-2">
+                <div class="setting-label-wrap  @(isMobile ? "funnel__label" : "")">
+                    @T("Admin.Views.Funnels.Settings.SeoSiteMapsAndRobots") html
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative">
+                <div ng-bind="landingSite.sitemapData.LastDateHtml" data-e2e="lastDateHtml" class="ng-cloak m-b-sm"></div>
+                <div ng-if="landingSite.sitemapData.SitemapHtmlUrl != null" class="ng-cloak m-b-sm">
+                    <a href="" ng-href="{{landingSite.sitemapData.SitemapHtmlUrl}}" data-e2e="SitemapHtmlUrl" target="_blank">{{landingSite.sitemapData.SitemapHtmlUrl}}</a>
+                </div>
+                <a href="" class="btn btn-sm btn-success" data-e2e="generateSitemapHtml" ng-click="landingSite.generateSitemapHtml()">@T("Admin.Views.Funnels.Settings.Generate")</a>
+            </div>
+        </div>
+
+        <div class="@(isMobile ? "" : "m-t-xxl")">
+            <h3 class="@(isMobile ? "funnel__subtitle" : "")">@T("Admin.Settings.SeoSettings.RobotsTxtHeader")</h3>
+        </div>
+        <div class="container-fluid">
+            <div class="form-group row">
+                <div class="col-xs-offset-0">
+                    @T("Admin.SettingsSeo.RobotsTxt.RulesFOrHandlingUrl")
+                    <br/>
+                    @T("Admin.SettingsSeo.RobotsTxt.BeCareful")
+                </div>
+            </div>
+        </div>
+
+        <ui-ace-textarea ng-model="landingSite.settings.RobotsTxt">
+            @Html.TextAreaFor(x => Model.RobotsTxt, new {ng_model = "landingSite.settings.RobotsTxt" })
+        </ui-ace-textarea>
+    @*</div>
+</div>*@

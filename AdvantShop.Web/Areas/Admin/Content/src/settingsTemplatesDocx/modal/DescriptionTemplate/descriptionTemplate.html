@@ -1,0 +1,28 @@
+﻿<script type="text/ng-template" id="fieldsTree">
+    <div ng-if="(ctrl.profiMode || !item.Hidden) && item.Key">
+        <a href="" class="text-decoration-none fa"
+           ng-class="{'fa-angle-down': !item.showChilds, 'fa-angle-up': item.showChilds}"
+           ng-click="item.showChilds = !item.showChilds"
+           ng-if="(ctrl.profiMode || !item.Hidden) && item.Childs"></a>
+        "<span class="bold">{{item.Key}}</span>"
+        <span ng-if="ctrl.profiMode">({{item.Type}})</span>
+        - <span class="italic">{{item.Description}}</span>
+    </div>
+    <div class=""
+         ng-class="{'p-l-lg': item.Key}"
+         ng-if="(ctrl.profiMode || !item.Hidden) && item.Childs"
+         ng-show="item.showChilds">
+        <div ng-repeat="item in item.Childs" ng-include="'fieldsTree'">
+        </div>
+    </div>
+</script>
+
+<form novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">Описание шаблона документа</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-if="ctrl.Childs" ng-init="item = {Childs: ctrl.Childs, Hidden: false, showChilds: true}" ng-include="'fieldsTree'"></div>
+    </div>
+</form>

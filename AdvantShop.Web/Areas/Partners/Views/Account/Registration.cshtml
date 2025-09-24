@@ -1,0 +1,181 @@
+﻿@using AdvantShop.Core.Services.Partners
+@model AdvantShop.Areas.Partners.ViewModels.Account.RegistrationViewModel
+@{
+    Layout = "~/Areas/Partners/Views/Account/_Layout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="@(isMobile ? "" : "container") partner-reg-cnt container-fluid">
+    <div class="partner-reg-block">
+        <h2 class="flex center-xs">
+            Регистрация в партнерской программе
+        </h2>
+        <div class="row between-xs">
+            <div class="col-xs-12">
+                @using (Html.BeginForm("Registration", "Account", FormMethod.Post, new { name = "partnerRegForm", novalidate = "novalidate" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <label class="flex center-xs vertical-interval-big">
+                        <span class="">
+                            <label data-ng-init="registration.partnerType='@Model.PartnerType.ToString()'">
+                                <input class="custom-input-native" value="@EPartnerType.LegalEntity" data-ng-model="registration.partnerType" type="radio" name="PartnerType" checked="checked" />
+                                <span class="custom-input-radio"></span>
+                                <span class="custom-input-text">Юридическое лицо</span>
+                            </label>
+                            <label class="horizontal-interval-middle no-left">
+                                <input class="custom-input-native" value="@EPartnerType.NaturalPerson" data-ng-model="registration.partnerType" type="radio" name="PartnerType" />
+                                <span class="custom-input-radio"></span>
+                                <span class="custom-input-text">Физическое лицо</span>
+                            </label>
+                        </span>
+                    </label>
+                    <div class="row middle-xs">
+                        <div class="col-xs-12" data-ng-show="registration.partnerType == '@EPartnerType.LegalEntity'">
+                            <div class="vertical-interval-big no-top">
+                                @Html.PartnerStaticBlock("PartnersRegistration_LegalEntityDescription")
+                            </div>
+                        </div>
+                        <div class="col-xs-12 ng-hide" data-ng-show="registration.partnerType == '@EPartnerType.NaturalPerson'">
+                            <div class="vertical-interval-big no-top">
+                                @Html.PartnerStaticBlock("PartnersRegistration_NaturalPersonDescription")
+                            </div>
+                        </div>
+                    </div>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall input-required" data-ng-bind="registration.partnerType == '@EPartnerType.NaturalPerson' ? 'ФИО:' : 'Наименование:'">Наименование:</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.TextBoxFor(m => m.Name, new
+                            {
+                                @class = "input-small",
+                                required = "required",
+                                data_ng_model = "registration.name",
+                                data_ng_init = "registration.name='" + Model.Name + "'",
+                                autocomplete = "name"
+                            })
+                            </span>
+                        </span>
+                    </label>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall input-required">Телефон:</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.TextBoxFor(m => m.Phone,
+                                new
+                                {
+                                    placeholder = "{{::'Js.Phone.PhonePlaceholder' | translate}}",
+                                    data_mask_control = SettingsMain.EnablePhoneMask.ToLowerString(),
+                                    data_mask_control_preset = "phone",
+                                    @class = "input-small",
+                                    required = "required",
+                                    data_ng_model = "registration.phone",
+                                    data_ng_init = "registration.phone='" + Model.Phone + "'",
+                                    autocomplete = "tel",
+                                    maxlength = 70
+                                })
+                            </span>
+                        </span>
+                    </label>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall">Город:</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.TextBoxFor(m => m.City, new
+                            {
+                                @class = "input-small",
+                                data_ng_model = "registration.city",
+                                data_ng_init = "registration.city='" + Model.City + "'"
+                            })
+                            </span>
+                        </span>
+                    </label>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall input-required">Email:</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.TextBoxFor(m => m.Email, new
+                           {
+                               @type = "email",
+                               @class = "input-small",
+                               required = "required",
+                               data_ng_model = "registration.email",
+                               data_ng_init = "registration.email='" + Model.Email + "'",
+                               pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)$",
+                               autocomplete = "email"
+                           })
+                            </span>
+                        </span>
+                    </label>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall input-required">Пароль:</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.PasswordFor(m => m.Password, new { @class = "input-small", autocomplete = "off", required = "required", data_ng_model = "registration.pass" })
+                            </span>
+                        </span>
+                    </label>
+                    <label class="row middle-xs">
+                        <span class="col-xs-12 col-md-4">
+                            <span class="form-field-name vertical-interval-xsmall input-required">Пароль (ещё раз):</span>
+                        </span>
+                        <span class="col-xs-12 col-md-8">
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.PasswordFor(m => m.PasswordConfirm, new { @class = "input-small", autocomplete = "off", required = "required", data_ng_model = "registration.passagain" })
+                            </span>
+                        </span>
+                    </label>
+
+                    if (SettingsPartners.EnableCaptchaInRegistrationPartners)
+                    {
+                        <label class="row middle-xs">
+                            <span class="col-xs-12 col-md-4">
+                                <span class="form-field-name vertical-interval-xsmall input-required">
+                                    @T("Captcha.Code"):
+                                </span>
+                            </span>
+                            <span class="col-xs-12 col-md-8">
+                                @Html.Action("Captcha", "Common", new { ngModel = "registration.captcha", area = "" })
+                            </span>
+                        </label>
+                    }
+                    if (SettingsCheckout.IsShowUserAgreementText)
+                    {
+                        <label class="row middle-xs">
+                            <span class="col-xs-12 col-md-4"></span>
+                            <span class="col-xs-12 col-md-8">
+                                <span class="form-field-input vertical-interval-xsmall">
+                                    @Html.CheckBox("Agree", new { required = "required", data_ng_model = "registration.agreement", @class = "custom-input-native", data_ng_init= "registration.agreement = " + SettingsCheckout.AgreementDefaultChecked.ToLowerString()})
+                                    <span class="custom-input-checkbox"></span>
+                                    @Html.Raw(SettingsCheckout.UserAgreementText)
+                                </span>
+                            </span>
+                        </label>
+                    }
+                    <div class="row middle-xs">
+                        <div class="col-xs-12 col-md-offset-4 col-md-8 col-p-v">
+                            <input type="submit" class="btn btn-submit btn-middle" value="Зарегистрироваться" data-button-validation />
+                        </div>
+                    </div>
+                    <div class="row middle-xs">
+                        <span class="col-xs-12 col-md-8 col-md-offset-4">
+                            <span class="form-field-input">
+                                Уже зарегистрированы? 
+                                <a href="@Url.Action("Login")" class="horizontal-interval-small">Войти</a>
+                            </span>
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

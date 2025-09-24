@@ -1,0 +1,90 @@
+﻿@using AdvantShop.Trial
+@using AdvantShop.Saas
+@model  List<AdvantShop.Core.Modules.Module>
+@{
+    Layout = "_ModulesLayout.cshtml";
+}
+
+<div ng-init="modules.pageType = false; modules.filterStart = '@(Request["name"] ?? string.Empty)'; modules.onInit(); modules.filtersMarket = modules.getFiltersMarket()">
+    <div class="ng-cloak" ng-if="modules.dataLoaded == true">
+        <div ng-switch="modules.modulesMaster == null || modules.modulesMaster.length === 0">
+
+            <div class="text-center ibox-content" ng-switch-when="true">
+                <div class="m-b-xl m-t-xxl">@T("Admin.Modules.Market.NoNewModules")</div>
+            </div>
+
+            <div ng-switch-when="false">
+                <div class="row">
+                    <div class="col-xs-3 col-wl-2">
+                        <div class="clearfix">
+                            <div class="pull-left header-alt">@T("Admin.Modules.Market.Category")</div>
+                        </div>
+                        <div class="aside-menu">
+                            <a href="" class="link-invert link-decoration-none aside-menu-row aside-menu-row--bg" ng-click="modules.selectCategory(category)"
+                               ng-class="{'selected-blue': category == modules.selectedCategory}" style="margin-bottom: 2px">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        <span>Все категории</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="" class="link-invert link-decoration-none aside-menu-row aside-menu-row--bg" ng-repeat="category in modules.categories"
+                               ng-click="modules.selectCategory(category)" ng-class="{'selected-blue': category == modules.selectedCategory}" style="margin-bottom: 2px">
+                                <div class="aside-menu-inner">
+                                    <div class="aside-menu-name">
+                                        <span ng-bind="category"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-xs-9 col-sm-9 col-wl-10">
+                        <div class="ibox-content">
+                            @if (TrialService.IsTrialEnabled)
+                            {
+                                <div class="h4">
+                                    @T("Admin.Modules.Market.AttentionSomeModules")<br />
+                                    @T("Admin.Modules.Market.MoreInfo")<a href="https://www.advantshop.net/modules" target="_blank">https://www.advantshop.net/modules</a>
+                                </div>            
+                            }
+                            <div>
+                                <ui-grid-custom-filter grid-column-defs="modules.filtersMarket"
+                                                       grid-params="modules.gridParams"
+                                                       grid-search-text="@(string.IsNullOrEmpty(Request["name"]) ? "$ctrl.gridSearchText": "'" + Request["name"] + "'")"
+                                                       grid-search-placeholder="$ctrl.gridSearchPlaceholder"
+                                                       on-change="modules.filterApply(params, item)"
+                                                       on-remove="modules.filterRemove(name, item)"></ui-grid-custom-filter>
+                            </div>
+                            <div class="modules-container flex flex-wrap">
+                                <div class="flex-basis-fix-xs item-module-wrap"
+                                     data-module-string-id="{{module.StringId | lowercase}}"
+                                     ng-repeat="module in modules.modulesData">
+                                    <div class="item-module">
+                                        <a class="item-module-img flex middle-xs center-xs m-b-sm" ng-href="{{module.DetailsLink}}" target="_blank">
+                                            <img ng-src="{{module.Icon}}" />
+                                        </a>
+                                        <div class="m-b-sm m-t-sm">
+                                            <div class="item-module-name base-color text-center flex center-xs middle-xs" ng-bind="module.Name"></div>
+                                            <div class="item-module-price bold base-color text-center"
+                                                 ng-if="@((SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled).ToLowerString()) || module.Price != 0 || (module.Price == 0 && module.IsFree)"
+                                                 ng-bind="module.PriceString"></div>
+                                        </div>
+                                        <div>
+                                            <div>
+                                                <button ng-if="(module.Active || module.Price == 0 || @((TrialService.IsTrialEnabled || SaasDataService.IsSaasEnabled).ToLowerString()) === true) && !module.DissalowInstall" type="button" class="btn btn-sm btn-success btn-block" ng-click="modules.installModule(module)">@T("Admin.Modules.Market.Install")</button>
+                                                <a ng-if="!module.Active && module.Price != 0 && @((TrialService.IsTrialEnabled || SaasDataService.IsSaasEnabled).ToLowerString()) !== true && module.DetailsLink != null && module.DetailsLink.length > 0" class="btn btn-sm btn-info btn-block" ng-href="{{module.DetailsLink}}" target="_blank">@T("Admin.Modules.Market.Buy")</a>
+                                            </div>
+                                            <div ng-if="module.DetailsLink != null && module.DetailsLink.length > 0">
+                                                <a ng-href="{{module.DetailsLink}}" target="_blank" class="btn btn-sm btn-block">@T("Admin.Modules.Market.ModuleDescription")</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

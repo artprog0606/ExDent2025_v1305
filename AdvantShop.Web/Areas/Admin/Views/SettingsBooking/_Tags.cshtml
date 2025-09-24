@@ -1,0 +1,48 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.BookingSettingsModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@if (!isMobile)
+{
+    <div class="sticky-page-name m-b-sm" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+
+            <div class="page-name-block-item-main">
+                <h2 class="sticky-page-name-text @(isMobile ? "setting--m-t-none" : "")">
+                    @T("Admin.Settings.Booking.Tags")
+                </h2>
+            </div>
+
+            <div class="page-name-block-item-additional">
+                <ui-modal-trigger data-controller="'ModalAddEditBookingTagCtrl'" controller-as="ctrl" on-close="settingsBooking.gridBookingTags.fetchData()"
+                                  template-url="@Html.GetAssetPath("AddEditTag.html")">
+                    <button class="btn btn-sm btn-success" type="button">
+                        <span class="fa fa-plus"></span>
+                        @T("Admin.Settings.Booking.Tags.AddTag")
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+}
+<ui-grid-custom grid-unique-id="gridBookingTags"
+                grid-row-identificator="'Id'"
+                grid-on-init="settingsBooking.gridBookingTagsOnInit(grid)"
+                grid-options="settingsBooking.gridBookingTagsOptions"
+                grid-url="'settingsBooking/getTags'"
+                grid-inplace-url="'settingsBooking/inplaceTag'"
+                grid-extend-ctrl="settingsBooking"
+                grid-search-placeholder="'@T("Admin.Settings.Booking.Tags.Grid.SearchPlaceholder")'"
+                grid-swipe-line="true">
+    <ui-grid-custom-override-control class="ng-cloak">
+        <div class="card card--gap-row-sm card--p-18">
+            <ui-modal-trigger data-controller="'ModalAddEditBookingTagCtrl'" controller-as="ctrl" on-close="grid.appScope.$ctrl.fetchData()"
+                                template-url="@Html.GetAssetPath("AddEditTag.html")"
+                                data-resolve="{'id': row.entity.Id}">
+                {{row.entity.Name}}
+            </ui-modal-trigger>
+        </div>
+    </ui-grid-custom-override-control>
+    <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="settingsBooking.gridBookingTags.gridOptions.TotalString">
+    </ui-grid-custom-footer>
+</ui-grid-custom>

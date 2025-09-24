@@ -1,0 +1,105 @@
+﻿@using AdvantShop.Helpers;
+@model AdvantShop.Models.Checkout.CheckoutModel
+
+@{
+    Html.AddAsset("checkout");
+    var isShowProductsPhotoInCheckoutCart = TemplateSettingsProvider.GetSettingValue("ShowProductsPhotoInCheckoutCart").TryParseBool().ToLowerString();
+}
+<div class="col-p-v mobile-content-padding checkout-page">
+    @if (!Model.IsApi)
+    {
+        <div class="page-title-row checkout-title-row">
+            <div class="checkout-title page-title">
+                <h1 class="main-title main-title--m-t-n cs-br-1">@T("Checkout.Index.CheckoutTitle")</h1>
+            </div>
+        </div>
+    }
+    @if (!Model.IsLanding)
+    {
+        @Html.SingleBreadCrumb(T("Checkout.Index.CheckoutTitle").ToString())
+    }
+    <div class="row top-xs">
+        <div class="col-xs-12 col-sm-7 col-p-v"
+             data-ng-init="checkout.getAddress(@Model.CheckoutData.ShowContacts().ToLowerString(), @((SettingsDesign.AutodetectCity || Model.CheckoutData.Contact.City.IsNullOrEmpty()).ToLowerString()), @Newtonsoft.Json.JsonConvert.SerializeObject(Model.CheckoutData.Contact))">
+            @*формы нельзя в друг друга вкладывать, поэтому пришлось делать несколько*@
+            @Html.RenderModules("checkout_page_top")
+            @Html.StaticBlock("checkout_top")
+
+            @if (Model.ShoppingCartMode == EShoppingCartMode.Full)
+            {
+                <form novalidate="novalidate" name="cartFullForm">
+                    <div class="cart-full-checkout"
+                         data-ng-model="checkout.Cart.Items" validation-custom-function="modelValue.length > 0"
+                         data-show-brief-description="@Model.ShowBriefDescriptionProductInCheckout.ToLowerString()"
+                         @(MobileHelper.IsMobileBrowser() ? "data-cart-mobile-full" : "data-cart-full") is-checkout="true" data-show-only-items="true" is-show-photo-in-cart="@isShowProductsPhotoInCheckoutCart.ToLower()"
+                         data-show-photo="@Model.ShowProductsPhotoInCheckoutCart.ToLowerString()"
+                         data-photo-width="@(SettingsPictureSize.XSmallProductImageWidth)">
+                    </div>
+                </form>
+            }
+            @Html.Action("CheckoutUser", new { isLanding = Model.IsLanding, isApi = Model.IsApi })
+
+            @using (Html.BeginForm("IndexPost", "Checkout", FormMethod.Post, new { name = "checkoutForm", novalidate = "novalidate", @class = "js-checkout-form" }))
+            {
+                @Html.AntiForgeryToken()
+                if (!Model.CheckoutData.HideShippig)
+                {
+                    @Html.Partial("CheckoutShipping", Model)
+                    @Html.Action("CheckoutShippingAddress")
+                }
+
+                @Html.Partial("CheckoutPayment")
+                @Html.Action("CheckoutBonus")
+                @Html.Action("CheckoutCoupon")
+                @Html.Partial("CheckoutComment", Model.CheckoutData)
+                if (MobileHelper.IsMobileEnabled())
+                {
+                    <div class="p-b-md checkout-cart-col" id="rightCell">
+                        @Html.Partial("CheckoutCart", Model)
+                    </div>
+                }
+
+                @Html.RenderModules("checkout_page")
+
+                @Html.Partial("CheckoutSummary")
+                <input type="hidden" name="customData" id="customData" value=""/>
+                <input type="hidden" name="isLanding" id="isLanding" value="@Model.IsLanding.ToLowerString()"/>
+                <input type="hidden" name="showMode" id="showMode" value="@((int)Model.ShowMode)"/>
+                if (Model.OrderType != null)
+                {
+                    <input type="hidden" name="orderType" id="orderType" value="@Model.OrderType.Value.ToString().ToLower()"/>
+                }
+
+                @Html.StaticBlock("checkout_bottom")
+                @Html.RenderModules("checkout_page_bottom")
+            }
+        </div>
+        @if (!MobileHelper.IsMobileEnabled())
+        {
+            <div class="col-xs-12 col-sm-5 col-p-v checkout-cart-col" data-sticky-element="">
+                @Html.Partial("CheckoutCart", Model)
+                @Html.StaticBlock("checkout_after_cart")
+            </div>
+        }
+    </div>
+</div>
+@if (!Model.IsLanding)
+{
+    <div ng-if="checkout.Cart.BuyOneClickEnabled">
+        <div id="modalBuyOneClickInCheckout" class="modal ng-hide"
+             data-modal-control
+             data-modal-class="buy-one-click-dialog">
+            <div data-modal-header class="modal-header">
+                @T("Product.BuyInOneClick.BuyInOneClickHeader")
+            </div>
+            <div class="modal-content">
+                <div data-buy-one-click-form="true"
+                     data-success-fn="checkout.buyOneClickSuccessFn(result)"
+                     data-page="@AdvantShop.Orders.BuyInOneclickPage.Checkout"
+                     data-order-type="@AdvantShop.Core.Services.Orders.OrderType.OneClick"
+                     data-enable-phone-mask="@SettingsMain.EnablePhoneMask.ToLowerString()">
+                </div>
+            </div>
+        </div>
+    </div>
+}

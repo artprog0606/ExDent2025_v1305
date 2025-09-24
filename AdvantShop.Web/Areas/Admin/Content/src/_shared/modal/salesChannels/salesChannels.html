@@ -1,0 +1,199 @@
+﻿<div class="animated1 bounceInRight1 simple-modal__inner" is-mobile>
+    <div ng-switch="ctrl.selectedChannel != null" class="simple-modal__header-wrap">
+        <div class="simple-modal__header between-xs top-xs" ng-switch-when="true">
+            <div>
+                <div class="flex top-xs">
+                    <button type="button" class="simple-modal__back m-r-xs" ng-click="ctrl.backToMenu()">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="transform: translateX(-4px) translateY(2px)"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 370.814 370.814">
+                            <polygon
+                                points="292.92,24.848 268.781,0 77.895,185.401 268.781,370.814 292.92,345.961 127.638,185.401   "
+                                fill="#36474f" />
+                        </svg>
+                    </button>
+                    <!--                    <h1 class="simple-modal__title" ng-bind="'Канал продаж &quot;' + ctrl.selectedChannel.Name + '&quot;' + (ctrl.selectedChannel.IsNew ? ' (новинка)' : '')"></h1>-->
+                    <h1 class="simple-modal__title" ng-bind="ctrl.selectedChannel.Name + (ctrl.selectedChannel.IsNew ? ' (новинка)' : '')"></h1>
+                </div>
+            </div>
+            <div>
+                <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+            </div>
+        </div>
+        <div ng-switch-default class="simple-modal__header top-xs between-xs">
+            <h1 class="simple-modal__title">{{'Admin.Js.SalesChannels.AddSaleChannel'|translate}}</h1>
+            <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        </div>
+    </div>
+    <div class="simple-modal__body">
+        <div
+            class="sales-channel-wrap"
+            ng-class="{'move-left': ctrl.closeDetailsChannel === false, 'move-right': ctrl.closeDetailsChannel === true }"
+            animation-observer
+            animationend="ctrl.hiddenAnimatedElements(event, scope, 'sales-channel')"
+            animationstart="ctrl.showAnimatedElements(event, scope, 'sales-channel')">
+            <section class="card-channel-inner">
+                <div class="card-channel-cards-wrap">
+                    <button
+                        ng-repeat="item in ctrl.salesChannelsNotEnabled"
+                        ng-click="ctrl.changeSaleChannel($event, item);"
+                        type="button"
+                        class="card-channel">
+                        <div class="row relative">
+                            <div class="col-xs-2">
+                                <div class="card-channel__icon" ng-bind-html="item.Icon | sanitize"></div>
+                            </div>
+                            <div class="col-xs-10">
+                                <div
+                                    class="card-channel__tariff"
+                                    ng-if="item.PlanNameSaasFeatureAvailableFrom != null && item.PlanNameSaasFeatureAvailableFrom.length > 0">
+                                    с тарифа {{item.PlanNameSaasFeatureAvailableFrom}}
+                                </div>
+                                <div class="card-channel__title" ng-bind="item.Name + (item.IsNew ? ' (новинка)' : '')"></div>
+                                <div class="card-channel__text" ng-bind="item.Description"></div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <div ng-if="ctrl.salesChannelsEnabled != null && ctrl.salesChannelsEnabled.length > 0">
+                        <h3 class="m-t-md m-b">Установленные</h3>
+                        <button
+                            ng-repeat="item in ctrl.salesChannelsEnabled"
+                            ng-click="ctrl.changeSaleChannel($event, item);"
+                            type="button"
+                            class="card-channel">
+                            <div class="row relative">
+                                <div class="col-xs-2">
+                                    <div class="card-channel__icon" ng-bind-html="item.Icon | sanitize"></div>
+                                </div>
+                                <div class="col-xs-10">
+                                    <div class="card-channel__title" ng-bind="item.Name + (item.IsNew ? ' (новинка)' : '')"></div>
+                                    <div
+                                        class="card-channel__tariff"
+                                        ng-if="item.PlanNameSaasFeatureAvailableFrom != null && item.PlanNameSaasFeatureAvailableFrom.length > 0">
+                                        с тарифа {{item.PlanNameSaasFeatureAvailableFrom}}
+                                    </div>
+                                    <div class="card-channel__text" ng-bind="item.Description"></div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Внутрення страница -->
+            <div class="sales-channel__inner">
+                <section class="card-channel-details">
+                    <div class="sales-channel" ng-if="ctrl.isLoadCarousel" style="{{isMobile.value ? 'min-height:100%' : ''}}">
+                        <div class="carousel carousel-sales-funnel-details m-b-sm">
+                            <div class="carousel-inner" ng-class="{'carousel-inner--p-none carousel-inner--bg-white' : isMobile.value}">
+                                <div
+                                    class="carousel-list flex"
+                                    data-init-on-load="true"
+                                    load="ctrl.selectedChannel.Details.Videos != null ? ctrl.isRenderedVideos : ctrl.isRenderedImages"
+                                    data-carousel
+                                    data-dots="true"
+                                    data-stretch="false"
+                                    data-prev-icon="fa fa-angle-left"
+                                    data-next-icon="fa fa-angle-right">
+                                    <div ng-repeat="image in ctrl.selectedChannel.Details.Images" class="flex-shrink-n sales-channel__full-width">
+                                        <img ng-src="{{image.Src}}" alt="{{image.Alt}}" ng-class="{'last':$last}" />
+                                        <span ng-if="$last" ng-init="$last ? ctrl.setIsRenderedImages('images') : null"></span>
+                                    </div>
+                                    <div class="flex-shrink-n" ng-repeat="video in ctrl.selectedChannel.Details.Videos">
+                                        <iframe
+                                            id="funnelVideo"
+                                            ng-if="ctrl.selectedChannel.Details.Videos != null && ctrl.selectedChannel.Details.Videos.length > 0"
+                                            width="462"
+                                            height="260"
+                                            ng-init="ctrl.getTrustVideoSrc(video.Src)"
+                                            ng-src="{{ctrl.urlVideo}}"
+                                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen></iframe>
+                                        <span ng-if="$last" ng-init="$last ? ctrl.setIsRenderedImages('videos') : null"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-nav">
+                                <button class="carousel-nav-prev"></button>
+                                <button class="carousel-nav-next"></button>
+                            </div>
+                        </div>
+                        <div class="row top-xs" ng-if="!isMobile.value">
+                            <div class="col-xs-2">
+                                <div class="card-channel__icon" ng-bind-html="ctrl.selectedChannel.Icon | sanitize"></div>
+                            </div>
+                            <div class="col-xs-10">
+                                <div
+                                    class="card-channel__title card-channel__title--font-middle m-b-sm"
+                                    ng-bind="ctrl.selectedChannel.Details.Title"></div>
+                                <div class="card-channel__title--font-middle m-b" ng-bind-html="ctrl.selectedChannel.Details.PriceString"></div>
+                                <div class="card-channel__text" ng-bind-html="ctrl.selectedChannel.Details.Text"></div>
+                                <div
+                                    class="card-channel__text m-t-sm"
+                                    ng-if="ctrl.selectedChannel.MenuName == 'Facebook' || ctrl.selectedChannel.MenuName == 'Instagram'">
+                                    *Instagram и Facebook принадлежат компании Meta, чья деятельность запрещена на территории России с 21 марта 2022
+                                    года.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row top-xs" ng-if="isMobile.value">
+                            <div class="col-xs-2">
+                                <div class="card-channel__icon" ng-bind-html="ctrl.selectedChannel.Icon | sanitize"></div>
+                            </div>
+                            <div class="col-xs-10" style="align-self: center">
+                                <div class="card-channel__title card-channel__title--font-middle" ng-bind="ctrl.selectedChannel.Details.Title"></div>
+                            </div>
+                            <div class="col-xs-2"></div>
+                            <div class="col-xs-10">
+                                <div class="card-channel__title--font-middle m-b" ng-bind-html="ctrl.selectedChannel.Details.PriceString"></div>
+                                <div class="card-channel__text" ng-bind-html="ctrl.selectedChannel.Details.Text"></div>
+                                <div
+                                    class="card-channel__text m-t-sm"
+                                    ng-if="ctrl.selectedChannel.MenuName == 'Facebook' || ctrl.selectedChannel.MenuName == 'Instagram'">
+                                    *Instagram и Facebook принадлежат компании Meta, чья деятельность запрещена на территории России с 21 марта 2022
+                                    года.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="simple-modal__footer" ng-switch="ctrl.selectedChannel != null">
+        <div ng-switch-when="true" class="simple-modal__btn-group">
+            <button
+                type="button"
+                class="btn btn--uppercase btn-success"
+                ng-click="ctrl.addSaleChannel()"
+                ng-if="!ctrl.selectedChannel.Enabled && (ctrl.PlanNameSaasFeatureAvailableFrom == null || ctrl.PlanNameSaasFeatureAvailableFrom.length == 0)"
+                ng-disabled="ctrl.addIsLoading"
+                ladda="ctrl.addIsLoading">
+                {{'Admin.Js.SalesChannels.AddChannel'|translate}}
+            </button>
+            <button
+                type="button"
+                class="btn btn--uppercase btn-success"
+                ng-click="ctrl.removeSaleChannel()"
+                ng-if="ctrl.selectedChannel.Enabled"
+                ng-disabled="ctrl.removeIsLoading"
+                ladda="ctrl.removeIsLoading">
+                {{"Admin.Js.SalesChannels.DeleteChannel"|translate}}
+            </button>
+            <button type="button" class="btn btn-default btn-cancel simple-modal__close-btn" ng-click="ctrl.backToMenu()">
+                {{'Admin.Js.SalesChannels.Cancel'|translate}}
+            </button>
+        </div>
+        <div ng-switch-default>
+            <ui-modal-dismiss>
+                <button type="button" class="btn btn-default btn-cancel simple-modal__close-btn">{{'Admin.Js.SalesChannels.Close'|translate}}</button>
+            </ui-modal-dismiss>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+﻿@{
+    var hash = SettingsGeneral.SiteVersion.GetHashCode();
+}
+<!DOCTYPE html>
+<html lang="@SettingsMain.Language.Split('-')[0].ToLower()" data-ng-app="app" @Html.GetNgController()>
+<head>
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl("partners/")" />
+    <meta charset="utf-8">
+    <meta name="Description" content="@Html.GetPageDescription()" />
+    @Html.GetPageKeywords(asMetaLink: true)
+    <meta name="robots" content="noindex, nofollow" />
+    @Html.Action("Favicon", "Common", new { area = "" })
+    @Html.Partial("_HeadScripts")
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+    </script>
+</head>
+<body class="cs-t-1 text-floating">
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    <div hidden>@Html.StaticBlock("LiveCounter")</div>
+    @Html.Action("GoogleAnalytics", "Common", new { area = "" })
+    <div class="stretch-container cs-bg-3">
+        <header class="site-head">
+            @Html.Partial("_TopPanel")
+            @if (ViewBag.HideMenu == null)
+            {
+                @Html.Partial("_MenuTop")
+            }
+        </header>
+        <main class="stretch-middle">
+            <div class="container container-fluid">
+                @RenderBody()
+            </div>
+        </main>
+        <div class="site-footer-wrap">
+            @Html.Partial("_Footer")
+        </div>
+    </div>
+    @Html.Action("Telephony", "Common", new { area = "" })
+    <div class="color-scheme--light">
+        @Html.Action("CookiesPolicy", "Common", new { area = "" })
+    </div>
+    @Html.Partial("_FooterScripts")
+    @Html.GetNotifyMessages()
+</body>
+</html>

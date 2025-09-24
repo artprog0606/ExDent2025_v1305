@@ -1,0 +1,37 @@
+﻿@model BlockModel
+@using System.Linq;
+
+@{
+    bool reverse = Model.Block.TryGetValuableSetting<bool>("reverse");
+    bool renderSocials = Model.Block.ExistSocials();
+}
+
+<footer class="container-fluid">
+    <div class="lp-container">
+        <div class="row between-xs">
+            @if (Model.Block.NeedRenderMenu())
+            {
+                <div class="col-xs-12 col-md-slim">
+                    @Html.SubBlock(Model, "menu")
+                </div>
+            }
+            <div class="col-xs-12 col-md-slim @(reverse ? "first-xs" : "")">
+                @if (Model.Block.TryGetSetting("show_logo") == true)
+                {
+                    <div class="lp-footer-with-menu__logo">
+                        @Html.SubBlock(Model, "logo")
+                    </div>
+                }
+                <div class="lp-footer-with-menu__block-text">
+                    @Html.SubBlock(Model, "text")
+                </div>
+                @if (renderSocials)
+                {
+                    <div class="lp-footer-with-menu__social">
+                        @Html.Partial("_Socials", Model.Block)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</footer>

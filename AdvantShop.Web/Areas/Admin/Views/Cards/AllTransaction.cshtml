@@ -1,0 +1,148 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Core.Services.Bonuses.Model.Enums
+@model AdvantShop.Web.Infrastructure.Handlers.AbstractFilterResult<AdvantShop.Core.Services.Bonuses.Model.Transaction>
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("cards");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.Cards.AllTransaction.TransactionHistory") + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Edit", "Cards", new { id = ViewBag.CardId })
+    };
+
+    @Html.Header(headerModel)
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }
+}
+
+<div class="ibox">
+    <div class="ibox-content">
+        @if (!isMobile)
+        {
+            @Html.Back("Карта", Url.AbsoluteActionUrl("Edit", "Cards", new { id = ViewBag.CardId }))
+            <h2 class="m-b-sm clearfix">@T("Admin.Cards.AllTransaction.TransactionHistory")</h2>
+        }
+    <div class="@(isMobile ? "" : "m-b")">
+        <div class="row">
+            <div class="col-xs-12 setting__table-wrap @(isMobile ? "m-b" : "")">
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 10%")">
+                                @T("Admin.Cards.AllTransaction.DateAndTime")
+                            </th>
+                            <th colspan="3" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 50%; text-align: center;")">
+                                @T("Admin.Cards.AllTransaction.Points")
+                            </th>
+                            <th rowspan="2" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 30%")">
+                                @T("Admin.Cards.AllTransaction.Comment")
+                            </th>
+                            <th rowspan="2" style="@(isMobile ? "width: 100%;white-space:nowrap;" : "width: 15%")">
+                                @T("Admin.Cards.AllTransaction.SaleNumber")
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.AllTransaction.Spent")
+                            </th>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.AllTransaction.Accrued")
+                            </th>
+                            <th style="@(isMobile ? "white-space:nowrap;" : "text-align: center;")">
+                                @T("Admin.Cards.AllTransaction.Balance")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DataItems)
+                        {
+                            <tr data-e2e="TransactionId-@item.Id">
+                                <td data-e2e="TransactionDate">
+                                    @item.CreateOn.ToString("dd.MM.yyyy HH:mm:ss")
+                                </td>
+                                <td data-e2e="TransactionBonusesUsed" @*style="color: @(item.OType == EOperationType.AddMainBonus ? "#08c" : "#cc3b3b")"*@>
+                                    @if (item.OperationType == EOperationType.SubtractBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        @("-" + item.Amount.ToInvatiant())
+                                    }
+                                </td>
+                                <td data-e2e="TransactionBonusesAdded">
+                                    @if (item.OperationType == EOperationType.AddBonus ||
+                                         item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.AddMainBonus)
+                                    {
+                                        @("+" + item.Amount.ToInvatiant())
+                                    }
+                                </td>
+                                <td data-e2e="TransactionBonusesSaldo">
+                                    @if (item.OperationType == EOperationType.AddBonus ||
+                                         item.OperationType == EOperationType.SubtractBonus ||
+                                         item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus ||
+                                         item.OperationType == EOperationType.AddMainBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        @item.Balance.ToInvatiant()
+                                    }
+                                    @if (item.OperationType == EOperationType.AddMainBonus ||
+                                         item.OperationType == EOperationType.SubtractMainBonus)
+                                    {
+                                        <span class="settings-list__item-descr">(@T("Admin.Cards.AllTransaction.MainPoints"))</span>
+                                    }
+                                    @if (item.OperationType == EOperationType.AddAdditionBonus ||
+                                         item.OperationType == EOperationType.SubtractAdditionBonus)
+                                    {
+                                        <span class="settings-list__item-descr">(@T("Admin.Cards.AllTransaction.AdditionPoints"))</span>
+                                    }
+                                    @if (item.OperationType == EOperationType.AddBonus &&
+                                         item.Bonus != null &&
+                                         item.Bonus.StartDate.HasValue &&
+                                         item.Bonus.StartDate.Value > item.CreateOnCut)
+                                    {
+                                        <span class="settings-list__item-descr">(с учетом новых @((item.Balance + item.Amount).ToInvatiant()))</span>
+                                    }
+                                </td>
+                                <td data-e2e="TransactionComment">
+                                    @item.Basis
+                                </td>
+                                <td data-e2e="PurchaseId">
+                                    @item.PurchaseId
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.DataItems.Count < 1)
+                        {
+                            <tr>
+                                <td colspan="9">
+                                    @T("Admin.Cards.AllTransaction.NoRecordsFound")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                @Html.BootstrapPager(Model.PageIndex, index => Url.AbsoluteActionUrl("AllTransaction", "Cards", new { CardId = ViewBag.CardId, page = index }), Model.TotalItemsCount, Model.ItemsPerPage)
+
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

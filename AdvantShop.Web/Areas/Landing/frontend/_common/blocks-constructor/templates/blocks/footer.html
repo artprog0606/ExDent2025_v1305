@@ -1,0 +1,178 @@
+﻿<div>
+    <div data-tabs class="tabs tabs-horizontal tabs-lp--minimalistic">
+        <ul class="tabs-headers row center-xs start-sm">
+            <li
+                id="tabFooterFront"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Внешний вид
+                </span>
+            </li>
+            <li
+                ng-if="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('menu')]"
+                id="tabFooterMenu"
+                class="tabs-header-item col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Пункты меню
+                </span>
+            </li>
+            <li
+                ng-if="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')]"
+                id="tabFooterLogo"
+                class="tabs-header-item col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Логотип
+                </span>
+            </li>
+            <li
+                ng-if="$ctrl.modalData.settings.vk_enabled != null"
+                id="tabFooterContact"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Контакты
+                </span>
+            </li>
+        </ul>
+        <div class="tabs-content">
+            <div class="tab-content" data-tab-content="tabFooterFront" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="blocks-constructor-settings-col">
+                                <div ng-include="$ctrl.modalData.generalOptionsTemplateUrl"></div>
+                                <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.reverse != null">
+                                    <label class="blocks-constructor-label" data-e2e="reverse">
+                                        <input
+                                            class="blocks-constructor-checkbox-native"
+                                            type="checkbox"
+                                            ng-model="$ctrl.modalData.settings.reverse" />
+                                        <span class="blocks-constructor-checkbox"></span>
+                                        <span class="blocks-constructor-label-text"> Перевернуть блоки </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="blocks-constructor-settings-col--alt">
+                                <div ng-include="$ctrl.modalData.generalRightOptionsTemplateUrl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                ng-if="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('menu')]"
+                class="tab-content"
+                data-tab-content="tabFooterMenu"
+                data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <block-constructor-menu
+                    modal-data="$ctrl.modalData"
+                    menu-data="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('menu')]"
+                    range-options="$ctrl.rangeMenuItemsSpacing"
+                    on-select-block="$ctrl.selectBlock(item, blockSelected)"></block-constructor-menu>
+            </div>
+            <div
+                ng-if="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')]"
+                class="tab-content text-center"
+                data-tab-content="tabFooterLogo"
+                data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div class="blocks-constructor-settings-col--alt">
+                    <div class="blocks-constructor-row">
+                        <label class="blocks-constructor-label" data-e2e="ShowLogo">
+                            <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_logo" />
+                            <span class="blocks-constructor-checkbox"></span>
+                            <span class="blocks-constructor-label-text"> Показывать логотип </span>
+                        </label>
+                    </div>
+                    <div
+                        ng-if="$ctrl.modalData.settings.show_logo"
+                        data-ng-init="$ctrl.modalData.data.logogeneratorId = 'logo-generator_' + $ctrl.modalData.landingpageId + '_' + $ctrl.modalData.blockId;">
+                        <div class="blocks-constructor-row text-center">
+                            <div>
+                                <logo-generator-preview
+                                    class="logo-generator-preview modal-logo-generator-preview"
+                                    data-edit-on-page-load="false"
+                                    data-logo-generator-id="{{$ctrl.modalData.data.logogeneratorId}}">
+                                    <div
+                                        ng-class="$ctrl.modalData.settings.color_scheme !== 'color-scheme--custom' ? $ctrl.modalData.settings.color_scheme : null"
+                                        ng-style="{'background-color': $ctrl.modalData.settings.color_scheme === 'color-scheme--custom' ? $ctrl.modalData.settings.color_scheme_custom.BackgroundColor : null}">
+                                        <img
+                                            data-e2e="LogoGeneratorPreview"
+                                            ng-src="{{$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.src || 'areas/landing/frontend/images/nophoto.jpg'}}"
+                                            data-logo-generator-preview-img />
+                                    </div>
+                                </logo-generator-preview>
+                            </div>
+                        </div>
+                        <div class="blocks-constructor-row" ng-class="{'flex flex-column' : $ctrl.isMobile}">
+                            <picture-loader-trigger
+                                title="{{ ::'Js.Inplace.UpdatePicture' | translate }}"
+                                data-lp-id="{{$ctrl.modalData.landingpageId}}"
+                                data-block-id="{{$ctrl.modalData.blockId}}"
+                                data-current="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.src"
+                                data-delete-picture="true"
+                                data-max-width-picture="400"
+                                data-max-height-picture="200"
+                                data-width-picture="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.width"
+                                data-height-picture="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.height"
+                                gallery-icons-enabled="false"
+                                on-apply="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.src = result.picture"
+                                on-resize="$ctrl.onResizeLogo($ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings, result)"
+                                on-delete="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.src = null"
+                                on-lazy-load-change="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.lazyLoadEnabled = result"
+                                lazy-load-enabled="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.lazyLoadEnabled || false">
+                                <button
+                                    ng-class="{'block m-b-md' : $ctrl.isMobile}"
+                                    type="button"
+                                    data-e2e="BtnLoadLogo"
+                                    class="blocks-constructor-btn-confirm"
+                                    picture-loader-element-trigger>
+                                    Загрузить логотип
+                                </button>
+                            </picture-loader-trigger>
+
+                            <logo-generator-trigger
+                                class=""
+                                logo-generator-id="{{$ctrl.modalData.data.logogeneratorId}}"
+                                url-save="landing/landingInplace/LogoGeneratorProcessPicture"
+                                logo-generator-params="{lpId:$ctrl.modalData.landingpageId, blockId: $ctrl.modalData.blockId }"
+                                logo-generator-options="{disableAlign: true}"
+                                logo-generator-success-fn="$ctrl.modalData.data.Subblocks[$ctrl.getIndexSubblockByName('logo')].Settings.src = src">
+                                <button type="button" data-e2e="BtnGenerateLogo" class="blocks-constructor-btn-confirm">Создать логотип</button>
+                            </logo-generator-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                ng-if="$ctrl.modalData.settings.vk_enabled != null"
+                class="tab-content"
+                data-tab-content="tabFooterContact"
+                data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div class="blocks-constructor-settings-col--alt">
+                    <div ng-include="$ctrl.modalData.socialTemplateUrl"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,261 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Common
+@using Newtonsoft.Json
+@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var order = Model.Order;
+    var orderCustomer = order != null ? order.OrderCustomer : null;
+    var isNewOrDraft = order == null || order.IsDraft;
+    var customerId = orderCustomer != null ? orderCustomer.CustomerID : Guid.Empty;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<form novalidate="" name="popupOrderCustomerForm" class="@(!isMobile ? "modal-body" : "") popup-order-customer">
+    @if (isMobile)
+    {
+        <div class="modal-header">
+            <ui-modal-cross><div class="close" ng-click="$ctrl.close()"></div></ui-modal-cross>
+            <h2 class="modal-header-title">@T("Admin.Orders.OrderCustomer.Address")</h2>
+        </div>
+    }
+    else
+    {
+        <div class="sticky-page-name sticky-page-name-in-modal--panel">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <div class="page-name-block-text sticky-page-name-text inline order-header-item order-header-item-name">
+                        @T("Admin.Orders.OrderCustomer.Address")
+                    </div>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <button class="btn btn-sm btn-success" type="button" data-button-validation button-validation-success="ctrl.save(); ctrl.btnLoading = true"
+                            ladda="ctrl.btnLoading" ng-disabled="!popupOrderCustomerForm.modified">
+                        <span class="fa fa-check"></span>Сохранить
+                    </button>
+                </div>
+            </div>
+            <ui-modal-cross></ui-modal-cross>
+        </div>
+    }
+
+    @if (isMobile)
+    {
+        @:<div class="modal-body">
+    }
+        <div class="popup-order-customer__content-container">
+            <div class="row">
+                <div class="col-xs-12">
+                    @if(Model.Customer != null){
+                        <ui-modal-trigger data-controller="'ModalChangeOrderAddressCtrl'"
+                                          data-controller-as="ctrl"
+                                          data-resolve="{ params: { customerId: '@Model.Customer.Id', @(Model.IsOrderContactExistInAddressList ? "contactId:'" + Model.ContactId + "'" : "") }}"
+                                          data-on-close="ctrl.changeAddress(result)"
+                                          template-url="@Html.GetAssetPath("orderCustomerChangeAddress.html")">
+                            <a href="" class="m-b inline-block" data-e2e="ChangeAddress">
+                                @T("Admin.Settings.SystemSettings.ChangeAddress")
+                            </a>
+                        </ui-modal-trigger>
+                    }
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="customersegments-custom-fields add-edit-popup-customer-fields"
+                                 ng-init="ctrl.initModal(@Model.OrderId, @Model.IsEditMode.ToLowerString(), @isNewOrDraft.ToLowerString(), '@customerId', '@Model.StandardPhone')">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-4">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.City")</label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.City, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.city",
+                                                                autocompleter_address = "",
+                                                                on_select = "ctrl.processCity(item)",
+                                                                ng_change = "ctrl.processCity()"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-4">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Region")</label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Region, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.region",
+                                                                autocompleter = "",
+                                                                on_type = "region"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-4">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Country")</label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Country, new
+                                                            {
+                                                               @class = "form-control input-alt-mobile",
+                                                               ng_model = "ctrl.country",
+                                                               autocompleter = "",
+                                                               on_type = "country"
+                                                           })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-4">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.District")</label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.District, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.district"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-5">
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">
+                                                                @T("Admin.Orders.OrderCustomer.Street")
+                                                            </label>
+                                                            <a href="//maps.yandex.ru/?text={{ctrl.getMapAddress()}}" target="_blank"><i class="fa fa-map-marker"></i></a>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Street, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.street",
+                                                                autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                                                                autocompleter_url = Model.AddressSuggestionsUrl,
+                                                                autocompleter_params = "{part: 'Street', city: ctrl.city, region: ctrl.region, inAdminPart: true}",
+                                                                on_select = Model.UseAddressSuggestions.ToLowerString() + " && ctrl.processAddress(item)",
+                                                                ng_change = Model.UseAddressSuggestions.ToLowerString() + " && ctrl.processAddress()"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md">
+
+                                                    <div class="row m-b-sm form-row">
+                                                        <div class="col-xs-12">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Zip")</label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Zip, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.zip"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="popup-order-customer__form-group @(isMobile ? "" : "form-group")">
+                                            <div class="row between-xs">
+                                                <div class="col-xs-12 col-md-2 m-b-sm form-row">
+                                                    <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.House")</label>
+                                                    @Html.TextBoxFor(x => x.Order.OrderCustomer.House, new
+                                                    {
+                                                        @class = "form-control input-alt-mobile",
+                                                        ng_model = "ctrl.house",
+                                                        maxlength = "50",
+                                                        autocompleter_address = Model.UseAddressSuggestions.ToLowerString(),
+                                                        autocompleter_url = Model.AddressSuggestionsUrl,
+                                                        autocompleter_params = "{part: 'House', street: ctrl.street, city: ctrl.city, region: ctrl.region, inAdminPart: true}",
+                                                        on_select = Model.UseAddressSuggestions.ToLowerString() + " && ctrl.processAddress(item)",
+                                                        ng_change = Model.UseAddressSuggestions.ToLowerString() + " && ctrl.processAddress()"
+                                                    })
+                                                </div>
+                                                <div class="col-xs-12 col-md">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-md-5 m-b-sm form-row">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Structure")</label>
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    @Html.TextBoxFor(x => x.Order.OrderCustomer.Structure, new
+                                                                    {
+                                                                        @class = "form-control input-alt-mobile",
+                                                                        ng_model = "ctrl.structure",
+                                                                        maxlength = "10"
+                                                                    })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-4 m-b-sm form-row">
+                                                            <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Apartament")</label>
+                                                            @Html.TextBoxFor(x => x.Order.OrderCustomer.Apartment, new
+                                                            {
+                                                                @class = "form-control input-alt-mobile",
+                                                                ng_model = "ctrl.apartment",
+                                                                maxlength = "50",
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-2 m-b-sm form-row">
+                                                    <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Entrance")</label>
+                                                    @Html.TextBoxFor(x => x.Order.OrderCustomer.Entrance, new
+                                                    {
+                                                        @class = "form-control input-alt-mobile",
+                                                        ng_model = "ctrl.entrance",
+                                                        maxlength = "10"
+                                                    })
+                                                </div>
+                                                <div class="col-xs-12 col-md-2 m-b-sm form-row">
+                                                    <label class="control-label text-left">@T("Admin.Orders.OrderCustomer.Floor")</label>
+                                                    @Html.TextBoxFor(x => x.Order.OrderCustomer.Floor, new
+                                                    {
+                                                        @class = "form-control input-alt-mobile",
+                                                        ng_model = "ctrl.floor",
+                                                        maxlength = "10"
+                                                    })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    @if (isMobile)
+    {
+    @:</div>
+    }
+
+    @if (isMobile)
+    {
+        <div class="modal-footer">
+            <button class="btn btn-sm btn-success" type="button" data-button-validation button-validation-success="ctrl.save(); ctrl.btnLoading = true"
+                    ladda="ctrl.btnLoading" ng-disabled="!popupOrderCustomerForm.modified">
+                {{'Admin.Js.AddEdit.Save'|translate}}
+            </button>
+            <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+        </div>
+    }
+</form>

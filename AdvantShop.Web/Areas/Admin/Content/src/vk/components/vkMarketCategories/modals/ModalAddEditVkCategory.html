@@ -1,0 +1,75 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{ctrl.type == "add" ? "Новая подборка ВКонтакте" : "Редактирование подборки ВКонтакте"}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span class="text-required">Название</span>
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <input type="text" class="form-control input-alt" ng-model="ctrl.category.Name" required validation-input-text="Название" autofocus />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span class="text-required">Категории магазина</span>
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <div ng-bind-html="ctrl.category.Categories"></div>
+
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCategoriesCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                    data-resolve="{'params': {'selectedIds': ctrl.CategoryIds}}"
+                    data-on-close="ctrl.selectCategories(result)">
+                    <a href="">Выбрать</a>
+                </ui-modal-trigger>
+                <div class="m-t m-b">
+                    Товары выгружаются по <b>основной категории</b> товара. Т.е. если товар находится в нескольких категориях, но основная не
+                    совпадает с выбранной, то товар не попадет в сообщество ВКонтакте.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label">
+                <span class="text-required">Категория ВКонтакте</span>
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <ui-select
+                    class="input-alt"
+                    ng-model="ctrl.vkCategory"
+                    on-select="ctrl.selectVkCategory($item, $model)"
+                    append-to-body="true"
+                    skip-focusser="true">
+                    <ui-select-match allow-clear="true" placeholder="Начните вводить категорию и выберите подходящую">
+                        {{$select.selected.Name}} • {{$select.selected.SubCategories}}
+                    </ui-select-match>
+                    <ui-select-choices
+                        refresh="ctrl.find($select.search,$select)"
+                        refresh-delay="350"
+                        repeat="item in ctrl.items"
+                        minimum-input-length="2">
+                        <div class="vk-category-title">{{item.Name}}</div>
+                        <div class="vk-category-subcategories" ng-if="item.SubCategories != null" class="m-b-xs">{{item.SubCategories}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label"> Сортировка </label>
+            <div class="col-xs-12 col-md-8">
+                <input type="text" class="form-control input-alt" ng-model="ctrl.category.SortOrder" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation>Сохранить</button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">Отмена</button>
+    </div>
+</form>

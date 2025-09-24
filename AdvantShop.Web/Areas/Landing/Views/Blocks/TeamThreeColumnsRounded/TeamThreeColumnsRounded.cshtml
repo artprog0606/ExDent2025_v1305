@@ -1,0 +1,187 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<TeamModel>("items") ?? new List<TeamModel>();
+    var roundPhoto = (bool?)Model.Block.TryGetSetting("round_photo") ?? false;
+
+    //var itemsForRender = new List<TeamModel>();
+
+    //var itemsCountInBlock = Model.Block.TryGetSetting("rows_in_block") != null ? (int)Model.Block.TryGetSetting("rows_in_block") : 1;
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+    //var itemsTotalInRowInBlock = itemsCountInRow * itemsCountInBlock;
+
+    //if (items != null && items.Count > 0)
+    //{
+    //    itemsForRender = items.Take(itemsTotalInRowInBlock).ToList();
+    //}
+}
+
+<div class="container-fluid">
+    <div class="lp-container" data-ng-controller="ColumnsCtrl as team">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center" data-e2e="teamThreeColumnsTitle">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center" data-e2e="teamThreeColumnsSubtitle">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+        @if (items.Any())
+        {
+            float width = 100 / itemsCountInRow;
+            var widthString = width.ToInvariantString() + "%";
+            var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+            var countRenderRow = Math.Ceiling((decimal)items.Count / (decimal)itemsCountInRow);
+
+            <style>
+                    #block_@Model.Block.Id .lp-block-team-three-columns-rounded__item {
+                        min-width: 100%;
+                        -webkit-flex-basis: 100%;
+                        -ms-flex-preferred-size: 100%;
+                        flex-basis: 100%;
+                        max-width: 100%;
+                    }
+
+                    @@media (min-width: 48em) {
+                        #block_@Model.Block.Id .lp-block-team-three-columns-rounded__item {
+                            -webkit-flex-basis: @(widthString);
+                            -ms-flex-preferred-size: @(widthString);
+                            flex-basis: @(widthString);
+                            max-width: @(widthString);
+                            min-width: @(widthString);
+                            @*min-width: @(minWidth)px;*@
+                        }
+
+                        @if (countRenderRow != 1) {
+                            <text>
+                            #block_@Model.Block.Id .lp-block-team-three-columns-rounded__item:nth-child(n + @(itemsCountInRow + 1) ) {
+                                padding-top: 10px;
+                            }
+                            </text>
+                        }
+                    }
+            </style>
+
+
+            <div class="flex flex-wrap center-xs lp-block-team-three-columns-rounded__row" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="lp-block-team-three-columns-rounded__item">
+                        <div class="lp-block-team-three-columns-rounded__picture @(roundPhoto ? "round-image" : "")" data-e2e="teamThreeColumnsPic">
+                            @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                           {
+                               LandingPageId = Model.Block.LandingId,
+                               BlockId = Model.Block.Id,
+                               OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                               OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                               OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                               OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                               Current = items[i].Picture.Src,
+                               GalleryIconsEnabled = false,
+                               LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                               LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                               CropperParams = new CropperParams()
+                               {
+                                   AspectRatio = "1"
+                               },
+                               MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                               MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                               WidthPicture = items[i].Picture.Width,
+                               HeightPicture = items[i].Picture.Height
+                           })
+                        </div>
+                        <div class="lp-block-team-three-columns-rounded__content">
+                            <div class="lp-font-size--large lp-block-team-three-columns-rounded__header" data-e2e="teamThreeColumnsHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].name")>
+                                @Html.Raw(items[i].Name)
+                            </div>
+                            <div class="lp-h3--color lp-font-size--middle lp-block-team-three-columns-rounded__text" data-e2e="teamThreeColumnsText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].position")>
+                                @Html.Raw(items[i].Position)
+                            </div>
+                        </div>
+                        @if (items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                        {
+                            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TeamBtnRow">
+                                <div class="col-xs-12" data-e2e="teamThreeColumnsBtn">
+                                        @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                        {
+                                            @:<a href="@Html.ButtonHref(items[i].Button)" class="lp-btn lp-btn--primary lp-btn--xs link-text-decoration-none" @Html.Raw(items[i].Button.TargetBlank ? "target=\"_blank\"" : null)>
+                                        }
+                                        else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                        {
+                                            @:<button class="lp-btn lp-btn--primary lp-btn--xs" type="button" data-scroll-to-block="@items[i].Button.ActionSection">
+                                        }
+
+                                        @items[i].Button.Text
+
+                                        @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                        {
+                                                @:</a>
+                                        }
+                                        else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                        {
+                                            @:</button>
+                                        }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                @*<div class="lp-block-team-three-columns-rounded__item"
+                     data-ng-repeat="item in team.columnsData track by $index">
+                    <div class="lp-block-team-three-columns-rounded__picture @(roundPhoto ? "round-image" : "")">
+                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                       {
+                           LandingPageId = Model.Block.LandingId,
+                           BlockId = Model.Block.Id,
+                           OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + itemsTotalInRowInBlock + " + $index)",
+                           OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + " + $index)",
+                           OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data.Settings.items, " + itemsTotalInRowInBlock + "+ $index," + Model.Block.Id + ", result)",
+                           NgCurrent = "item.Picture.Src",
+                           GalleryIconsEnabled = false,
+                           LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                           MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                           MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                       })
+                    </div>
+                    <div class="lp-block-team-three-columns-rounded__content">
+                        <div class="lp-font-size--large lp-block-team-three-columns-rounded__header" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].name")
+                             data-ng-bind="item.Name">
+                        </div>
+                        <div class="lp-h3--color lp-font-size--middle lp-block-team-three-columns-rounded__text" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsTotalInRowInBlock + " + {{$index}}].position")
+                             data-ng-bind="item.Position">
+                        </div>
+                    </div>
+                    @if (Model.Block.TryGetSetting("show_button") == true)
+                    {
+                        <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TeamBtnRow">
+                            <div class="col-xs-12">
+                                @Html.Button(Model.Block, "button", customFields: new Dictionary<string, string>
+                                    {
+                                        { "Выбран сотрудник", "item.Name" }
+                                    })
+                            </div>
+                        </div>
+                    }
+                </div>*@
+            </div>
+            @*if (items != null && items.Count > itemsCountInBlock)
+            {
+                <div class="lp-block-team-three-columns-rounded__more" data-ng-if="@itemsTotalInRowInBlock + (team.page * @itemsCountInRow) < @items.Count">
+                    <button type="button" data-ladda="team.inProgress" class="lp-btn lp-btn--primary" data-ng-click="team.getItems(@Model.Block.Id, @itemsCountInRow, @itemsTotalInRowInBlock + (team.page * @itemsCountInRow), 'TeamModel')">Показать еще</button>
+                </div>
+            }*@
+        }
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

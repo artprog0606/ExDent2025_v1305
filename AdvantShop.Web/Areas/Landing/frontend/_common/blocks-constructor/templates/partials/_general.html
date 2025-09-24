@@ -1,0 +1,173 @@
+﻿<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.color_scheme != null">
+    <div class="blocks-constructor-row__name">Цветовая схема</div>
+    <div class="blocks-constructor-row__name">
+        <span class="blocks-constructor-select">
+            <select
+                data-e2e="ColorScheme"
+                ng-change="$ctrl.changeColorScheme($ctrl.modalData.settings.color_scheme)"
+                ng-model="$ctrl.modalData.settings.color_scheme"
+                ng-options="item.value as item.name for item in $ctrl.modalData.colorSchemeList"></select>
+        </span>
+    </div>
+    <button
+        class="blocks-constructor-btn-confirm"
+        data-e2e="EditColorSchemeBtn"
+        type="button"
+        ng-if="$ctrl.modalData.settings.color_scheme === 'color-scheme--custom'"
+        ng-click="$ctrl.showModalColorSchemeCustom($ctrl.modalData.settings.color_scheme_custom)">
+        Редактировать цветовую схему
+    </button>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.padding_top != null">
+    <div class="blocks-constructor-row__name">Отступ сверху</div>
+    <span
+        class="blocks-constructor-slider"
+        data-e2e="PaddingTop"
+        range-slider
+        pin-handle="min"
+        min="$ctrl.rangeSliderPadding.min"
+        max="$ctrl.rangeSliderPadding.max"
+        model-max="$ctrl.modalData.settings.padding_top"
+        step="$ctrl.rangeSliderPadding.step"
+        show-inputs="false"
+        attach-handle-values="true"
+        show-values="true"
+        caption="px"
+        on-handle-move-up="$ctrl.rangeSliderPadding.changeTop(event, modelMin, modelMax)"></span>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.padding_bottom != null">
+    <div class="blocks-constructor-row__name">Отступ снизу</div>
+    <span
+        class="blocks-constructor-slider"
+        data-e2e="PaddingBottom"
+        range-slider
+        pin-handle="min"
+        min="$ctrl.rangeSliderPadding.min"
+        max="$ctrl.rangeSliderPadding.max"
+        model-max="$ctrl.modalData.settings.padding_bottom"
+        step="$ctrl.rangeSliderPadding.step"
+        show-inputs="false"
+        attach-handle-values="true"
+        show-values="true"
+        caption="px"
+        on-handle-move-up="$ctrl.rangeSliderPadding.changeBottom(event, modelMin, modelMax)"></span>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.full_height != null">
+    <label class="blocks-constructor-label" data-e2e="FullHeight">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" value="desktop" ng-model="$ctrl.modalData.settings.full_height" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Высота блока 100% </span>
+    </label>
+</div>
+
+<div class="blocks-constructor-row">
+    <label class="blocks-constructor-label" data-e2e="MobileHidden">
+        <input
+            class="blocks-constructor-checkbox-native"
+            type="checkbox"
+            value="mobile"
+            ng-model="$ctrl.modalData.settings.mobile_hidden"
+            ng-change="$ctrl.changeHiddenOnDevice('mobile',$ctrl.modalData.settings.mobile_hidden)" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Скрывать блок в мобильной версии </span>
+    </label>
+</div>
+
+<div class="blocks-constructor-row">
+    <label class="blocks-constructor-label" data-e2e="DesktopHidden">
+        <input
+            class="blocks-constructor-checkbox-native"
+            type="checkbox"
+            value="desktop"
+            ng-model="$ctrl.modalData.settings.desktop_hidden"
+            ng-change="$ctrl.changeHiddenOnDevice('desktop',$ctrl.modalData.settings.desktop_hidden)" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Скрывать блок в десктопной версии </span>
+    </label>
+</div>
+
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.show_title != null">
+    <label class="blocks-constructor-label" data-e2e="ShowTitle">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_title" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Добавить заголовок </span>
+    </label>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.show_subtitle != null">
+    <label class="blocks-constructor-label" data-e2e="ShowSubtitle">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_subtitle" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Добавить подзаголовок </span>
+    </label>
+</div>
+<div class="blocks-constructor-row">
+    <label class="blocks-constructor-label" data-e2e="ShowOnAllPage">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_on_all_landing_pages_top" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Показывать на всех страницах сверху </span>
+    </label>
+</div>
+<div class="blocks-constructor-row">
+    <label class="blocks-constructor-label" data-e2e="ShowOnAllPageBottom">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_on_all_landing_pages_bottom" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Показывать на всех страницах снизу </span>
+    </label>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.width_in_columns != null">
+    <div class="blocks-constructor-row__name">Ширина блока</div>
+    <div class="blocks-constructor-select">
+        <select data-e2e="WidthColumn" ng-model="$ctrl.modalData.settings.width_in_columns" convert-to-number disabled-autobind>
+            <option value="1">1 колонка</option>
+            <option value="2">2 колонки</option>
+            <option value="3">3 колонки</option>
+            <option value="4">4 колонки</option>
+            <option value="5">5 колонки</option>
+            <option value="6">6 колонок</option>
+            <option value="7">7 колонок</option>
+            <option value="8">8 колонок</option>
+            <option value="9">9 колонок</option>
+            <option value="10">10 колонок</option>
+            <option value="11">11 колонок</option>
+            <option value="12">12 колонок</option>
+        </select>
+    </div>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.round_photo != null">
+    <label class="blocks-constructor-label" data-e2e="RoundPhoto">
+        <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.round_photo" />
+        <span class="blocks-constructor-checkbox"></span>
+        <span class="blocks-constructor-label-text"> Закруглить фотографии </span>
+    </label>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.align_items !== undefined">
+    <div class="blocks-constructor-row__name">Выравнивание блоков</div>
+    <div class="blocks-constructor-select">
+        <select data-e2e="AlignItems" ng-model="$ctrl.modalData.settings.align_items" disabled-autobind>
+            <option value="start-xs">По левому краю</option>
+            <option value="center-xs">По центру</option>
+            <option value="end-xs">По правому краю</option>
+        </select>
+    </div>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.align_text != null">
+    <div class="blocks-constructor-row__name">Выравнивание текста</div>
+    <div class="blocks-constructor-select">
+        <select data-e2e="AlignText" ng-model="$ctrl.modalData.settings.align_text" disabled-autobind>
+            <option value="start-xs">По левому краю</option>
+            <option value="center-xs">По центру</option>
+            <option value="end-xs">По правому краю</option>
+        </select>
+    </div>
+</div>
+<div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.align_btns != null">
+    <div class="blocks-constructor-row__name">Расположение кнопки</div>
+    <div class="blocks-constructor-select">
+        <select data-e2e="AlignBtns" ng-model="$ctrl.modalData.settings.align_btns" disabled-autobind>
+            <option value="start-xs">По левому краю</option>
+            <option value="center-xs">По центру</option>
+            <option value="end-xs">По правому краю</option>
+        </select>
+    </div>
+</div>

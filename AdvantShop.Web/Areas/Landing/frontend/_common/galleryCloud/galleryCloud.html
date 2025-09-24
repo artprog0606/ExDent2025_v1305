@@ -1,0 +1,85 @@
+﻿<div>
+    <form class="gallery-cloud-search">
+        <div class="gallery-cloud-search__field">
+            <input
+                class="gallery-cloud-search__input"
+                autofocus
+                type="text"
+                ng-model="$ctrl.term"
+                ng-change="$ctrl.search($ctrl.term)"
+                placeholder="Поиск изображения" />
+            <div class="gallery-cloud-search__icon">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 52.966 52.966" width="20" height="20">
+                    <path
+                        d="M51.704,51.273L36.845,35.82c3.79-3.801,6.138-9.041,6.138-14.82c0-11.58-9.42-21-21-21s-21,9.42-21,21s9.42,21,21,21  c5.083,0,9.748-1.817,13.384-4.832l14.895,15.491c0.196,0.205,0.458,0.307,0.721,0.307c0.25,0,0.499-0.093,0.693-0.279  C52.074,52.304,52.086,51.671,51.704,51.273z M21.983,40c-10.477,0-19-8.523-19-19s8.523-19,19-19s19,8.523,19,19  S32.459,40,21.983,40z"
+                        fill="#c1c1c1" />
+                </svg>
+            </div>
+        </div>
+        <div class="gallery-cloud-search__list">
+            <span
+                ng-click="$ctrl.selectSearchExample('Природа')"
+                ng-class="{'active': $ctrl.term === 'Природа'}"
+                class="gallery-cloud-search__list-item">
+                Природа
+            </span>
+            <span
+                ng-click="$ctrl.selectSearchExample('Бизнес')"
+                ng-class="{'active': $ctrl.term === 'Бизнес'}"
+                class="gallery-cloud-search__list-item">
+                Бизнес
+            </span>
+            <span ng-click="$ctrl.selectSearchExample('Люди')" ng-class="{'active': $ctrl.term === 'Люди'}" class="gallery-cloud-search__list-item">
+                Люди
+            </span>
+            <span ng-click="$ctrl.selectSearchExample('Дом')" ng-class="{'active': $ctrl.term === 'Дом'}" class="gallery-cloud-search__list-item">
+                Дом
+            </span>
+            <span ng-click="$ctrl.selectSearchExample('Авто')" ng-class="{'active': $ctrl.term === 'Авто'}" class="gallery-cloud-search__list-item">
+                Авто
+            </span>
+            <span
+                ng-click="$ctrl.selectSearchExample('Работа')"
+                ng-class="{'active': $ctrl.term === 'Работа'}"
+                class="gallery-cloud-search__list-item">
+                Работа
+            </span>
+            <span
+                ng-click="$ctrl.selectSearchExample('Дизайн')"
+                ng-class="{'active': $ctrl.term === 'Дизайн'}"
+                class="gallery-cloud-search__list-item">
+                Дизайн
+            </span>
+        </div>
+    </form>
+    <hr class="gallery-cloud-search__devider" />
+    <div class="gallery-cloud gallery-cloud-scroll">
+        <div ng-if="$ctrl.showContent">
+            <div
+                id="galleryCloudContent"
+                infinite-scroll="$ctrl.getData($ctrl.term)"
+                infinite-scroll-container="'.gallery-cloud-modal .gallery-cloud-scroll'">
+                <ul class="gallery-cloud__list">
+                    <li class="gallery-cloud__list-item" ng-repeat="photo in $ctrl.data.photos track by $index" ng-click="$ctrl.select(photo)">
+                        <img class="gallery-cloud__list-item-img" ng-src="{{photo.Src.Tiny}}" style="width: 203px; height: 145px" />
+
+                        <div ng-if="photo.isSelected" class="gallery-cloud__progress">
+                            <i class="icon-lp-spinner animate-spin"></i>
+                        </div>
+                    </li>
+                </ul>
+                <div
+                    class="gallery-cloud__empty"
+                    ng-show="$ctrl.isLoaded === true && $ctrl.itemsLoading === false && $ctrl.data.photos.length === 0 && $ctrl.prevTerm === $ctrl.term">
+                    По запросу <b>"<span ng-bind="$ctrl.term"></span>"</b> ничего не найдено
+                </div>
+                <div class="gallery-cloud__items-loading" ng-show="$ctrl.isLoaded === true && $ctrl.itemsLoading === true">
+                    <i class="icon-lp-spinner animate-spin"></i> Идёт загрузка данных ...
+                </div>
+            </div>
+        </div>
+        <div ng-if="$ctrl.isLoaded !== true" class="gallery-cloud__progress">
+            <i class="icon-lp-spinner animate-spin"></i>
+        </div>
+    </div>
+</div>

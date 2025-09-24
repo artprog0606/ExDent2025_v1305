@@ -1,0 +1,466 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.GrastinShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Grastin.APIkey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ApiKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Grastin.APIkey") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Grastin.PrefixToOrder")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.OrderPrefix, new { ng_model = "shippingMethod.Params.OrderPrefix", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Grastin.PrefixToOrder") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Grastin.PaymentForDelivery")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypePaymentDelivery, Model.TypesPaymentDelivery, new { ng_model = "shippingMethod.Params.TypePaymentDelivery", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Grastin.PaymentForDelivery") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Grastin.PaymentForSelfDelivery")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypePaymentPickup, Model.TypesPaymentPickup, new { ng_model = "shippingMethod.Params.TypePaymentPickup", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Grastin.PaymentForSelfDelivery") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.DepartureCity")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.WidgetFromCity, Model.ListCities, new { ng_model = "shippingMethod.Params.WidgetFromCity", ng_init = "shippingMethod.Params.WidgetFromCity='" + Model.WidgetFromCity + "'", @class = "form-control input-alt", validation_input_text = T("Admin.ShippingMethods.Grastin.DepartureCity") })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Тип расчета</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeCalc, Model.ListTypesCalc, new { ng_model = "shippingMethod.Params.TypeCalc", @class = "form-control input-alt", required = "required", validation_input_text = "Тип расчета" })
+    </div>
+</div>
+@*@Html.HiddenFor(x => x.TypeCalc, new { ng_model = "shippingMethod.Params.TypeCalc" })*@
+@Html.HiddenFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ExistApi" })
+
+<div class="form-group row middle-xs setting__form-group" ng-if="!shippingMethod.Params.ExistApi">
+    <div class="col-xs-12">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            Укажите @T("Admin.ShippingMethods.Grastin.APIkey") и сохраните настройки метода для отображения дополнительных настроек
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.AgreementInMoscow")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.MoscowRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.MoscowRegionId", ng_init = "shippingMethod.Params.MoscowRegionId='" + Model.MoscowRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.AgreementInStPetersburg")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.SaintPetersburgRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.SaintPetersburgRegionId", ng_init = "shippingMethod.Params.SaintPetersburgRegionId='" + Model.SaintPetersburgRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.NizhnyNovgorod")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.NizhnyNovgorodRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.NizhnyNovgorodRegionId", ng_init = "shippingMethod.Params.NizhnyNovgorodRegionId='" + Model.NizhnyNovgorodRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.Orel")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.OrelRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.OrelRegionId", ng_init = "shippingMethod.Params.OrelRegionId='" + Model.OrelRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Выберите договор по Краснодару
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.KrasnodarRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.KrasnodarRegionId", ng_init = "shippingMethod.Params.KrasnodarRegionId='" + Model.KrasnodarRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.BoxberryContract")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.BoxberryRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.BoxberryRegionId", ng_init = "shippingMethod.Params.BoxberryRegionId='" + Model.BoxberryRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.RussianPostContract")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.RussianPostRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.RussianPostRegionId", ng_init = "shippingMethod.Params.RussianPostRegionId='" + Model.RussianPostRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.CdekContract")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.CdekRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.CdekRegionId", ng_init = "shippingMethod.Params.CdekRegionId='" + Model.CdekRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2' && shippingMethod.Params.ExistApi">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Выберите договор по Партнерским ПВЗ
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.PartnerRegionId, Model.ListRegionIds, new { ng_model = "shippingMethod.Params.PartnerRegionId", ng_init = "shippingMethod.Params.PartnerRegionId='" + Model.PartnerRegionId + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc === '0' || shippingMethod.Params.TypeCalc === '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Grastin.DeliveryMethods")</span>
+    </div>
+    @{
+        var selectedDelivery = Model.ListDeliveryTypes.FindAll(x => Model.ActiveDeliveryTypes.Any(y => x.Value == y));
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+        data-ng-init='shippingMethod.listDeliveryTypes = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.deliveryTypes = @JsonConvert.SerializeObject(selectedDelivery)'>
+        <ui-select class="input-alt"
+                   multiple
+                   sortable="true"
+                   ng-model="shippingMethod.deliveryTypes"
+                   validation-input-text="@T("Admin.ShippingMethods.Grastin.DeliveryMethods")"
+                   ng-required="true"
+                   data-e2e="SelectTariffs">
+            <ui-select-match placeholder="@T("Admin.ShippingMethods.BoxBerry.ChooseShippingMethod")">{{$item.Text}}</ui-select-match>
+            <ui-select-choices repeat="delivery in shippingMethod.listDeliveryTypes | filter:$select.search track by $index"
+                               minimum-input-length="1"
+                               ui-disable-choice="delivery.Disabled === true"
+                               refresh-delay="0">
+                {{delivery.Text}}
+            </ui-select-choices>
+        </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="ActiveDeliveryTypes" id="ActiveDeliveryTypes" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="shippingMethod.deliveryTypes" ng-repeat="option in shippingMethod.deliveryTypes track by $index"></option>
+        </select>
+        <input type="hidden" name="ActiveDeliveryTypes" value="" ng-if="!shippingMethod.deliveryTypes.length" />
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="shippingMethod.Params.TypeCalc !== '2'">
+    @if (!isMobile)
+    {
+        <div class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            @T("Admin.ShippinhMethods.Grastin.WithInsurance")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.Insure, new { ng_model = "shippingMethod.Params.Insure", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>
+                    @T("Admin.ShippinhMethods.Grastin.WithInsurance")
+                </span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '2'">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            Не включать стоимость обработки заказа
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(!isMobile ? "" : "flex middle-xs")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ExcludeCostOrderprocessing, new { ng_model = "shippingMethod.Params.ExcludeCostOrderprocessing", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>
+                    Не включать стоимость обработки заказа
+                </span>
+            }
+        </label>
+       
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+            Надценка добавляемая Grastin к стоимости доставки при отправке службой Boxberry.
+            При активации данного параметра эта надценка не включается в стоимость доставки для клиента, т.е. данную надценку вы берете на себя (доплачиваете сами).
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            <label for="EnabledCod">@T("Admin.ShippingMethods.Grastin.CreatePaymentMethodPaymentByCourier")</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.EnabledCod, new { ng_model = "shippingMethod.Params.EnabledCOD", ng_init = "shippingMethod.Params.EnabledCOD=" + Model.EnabledCod.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.ShippingMethods.Grastin.CreatePaymentMethodPaymentByCourier")</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+            <label for="EnabledPickPoint">@T("Admin.ShippingMethods.Grastin.CreatePaymentUponReceiptOfAnOrder")</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.EnabledPickPoint, new { ng_model = "shippingMethod.Params.EnabledPickPoint", ng_init = "shippingMethod.Params.EnabledPickPoint=" + Model.EnabledPickPoint.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.ShippingMethods.Grastin.CreatePaymentUponReceiptOfAnOrder")</span>
+            }
+        </label>
+    </div>
+</div>
+
+@Html.Partial("_SyncStatuses", Model)
+
+<h3 class="m-b m-t setting__suttitle" ng-if="shippingMethod.Params.TypeCalc !== '0'">Настройки виджета</h3>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc === '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeCalc === '3'">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md") setting--m-none">
+            Отображать описание схемы проезда
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowDrivingDescriptionPoint, new { ng_model = "shippingMethod.Params.ShowDrivingDescriptionPoint", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отображать описание схемы проезда</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc === '1'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.HidePartners")
+    </div>
+    @{
+        var selectedPartners = Model.ListPartnersShort.FindAll(x => x.Selected);
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+         data-ng-init='shippingMethod.listPartners = @JsonConvert.SerializeObject(Model.ListPartnersShort); shippingMethod.selectedPartners = @JsonConvert.SerializeObject(selectedPartners)'>
+        <ui-select class="input-alt"
+                   multiple
+                   sortable="true"
+                   ng-model="shippingMethod.selectedPartners"
+                   data-e2e="SelectTariffs">
+            <ui-select-match placeholder="Выберите партнеров">{{$item.Text}}</ui-select-match>
+            <ui-select-choices repeat="partner in shippingMethod.listPartners | filter:$select.search track by $index"
+                               minimum-input-length="1"
+                               ui-disable-choice="partner.Disabled === true"
+                               refresh-delay="0">
+                {{partner.Text}}
+            </ui-select-choices>
+        </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="WidgetHidePartnersShort" id="WidgetHidePartnersShort" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedPartners" ng-repeat="option in shippingMethod.selectedPartners track by $index"></option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc === '2'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.HidePartners")
+    </div>
+    @{
+        var selectedPartnersFull = Model.ListPartnersFull.FindAll(x => x.Selected);
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+         data-ng-init='shippingMethod.listPartnersFull = @JsonConvert.SerializeObject(Model.ListPartnersFull); shippingMethod.selectedPartnersFull = @JsonConvert.SerializeObject(selectedPartnersFull)'>
+        <ui-select class="input-alt"
+                   multiple
+                   sortable="true"
+                   ng-model="shippingMethod.selectedPartnersFull"
+                   data-e2e="SelectTariffs">
+            <ui-select-match placeholder="Выберите партнеров">{{$item.Text}}</ui-select-match>
+            <ui-select-choices repeat="partner in shippingMethod.listPartnersFull | filter:$select.search track by $index"
+                               minimum-input-length="1"
+                               ui-disable-choice="partner.Disabled === true"
+                               refresh-delay="0">
+                {{partner.Text}}
+            </ui-select-choices>
+        </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="WidgetHidePartnersFull" id="WidgetHidePartnersFull" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedPartnersFull" ng-repeat="option in shippingMethod.selectedPartnersFull track by $index"></option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md") setting--m-none">
+        <label for="WidgetFromCityHide">@T("Admin.ShippingMethods.Grastin.HideCityOfDeparture")</label>
+    </div>
+    <div class="col-xs-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WidgetFromCityHide, new { ng_model = "shippingMethod.Params.WidgetFromCityHide", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+@*<div class="form-group row middle-xs" ng-if="shippingMethod.Params.TypeCalc  !== '0'">
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Grastin.ProhibitChangeDepartureCity")
+        </div>
+        <div class="col-xs-6 relative">
+            <label class="adv-checkbox-label form-label-block">
+                @Html.CheckBoxFor(x => x.WidgetFromCityNoChange, new { ng_model = "shippingMethod.Params.WidgetFromCityNoChange", @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+    </div>*@
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md") setting--m-none">
+        <label for="WidgetHideCost">@T("Admin.ShippingMethods.Grastin.DoNotShowShippingCost")</label>
+    </div>
+    <div class="col-xs-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WidgetHideCost, new { ng_model = "shippingMethod.Params.WidgetHideCost", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md") setting--m-none">
+        <label for="WidgetHideDuration">@T("Admin.ShippingMethods.Grastin.DoNotShowDeliveryTime")</label>
+    </div>
+    <div class="col-xs-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WidgetHideDuration, new { ng_model = "shippingMethod.Params.WidgetHideDuration", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.ExtraCharge")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.WidgetExtracharge, new { ng_model = "shippingMethod.Params.WidgetExtracharge", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Grastin.ExtraCharge")">
+            <p>@T("Admin.ShippingMethods.Grastin.SpecifyTypeOfExtraCharge")</p>
+            <p>@T("Admin.ShippingMethods.Grastin.FixedNumberExample100")</p>
+            <p>@T("Admin.ShippingMethods.Grastin.PercentageIfPercentageExample3")</p>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.TypeOfExtraCharge")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.WidgetExtrachargeTypen, Model.ExtrachargeTypes, new { ng_model = "shippingMethod.Params.WidgetExtrachargeTypen", ng_init = "shippingMethod.Params.WidgetExtrachargeTypen='" + Model.WidgetExtrachargeTypen + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Grastin.TypeOfExtraCharge")">
+            <p>@T("Admin.ShippingMethods.Grastin.SpecifyTypeOfExtraCharge")</p>
+            <p>@T("Admin.ShippingMethods.Grastin.FixedNumberExample100")</p>
+            <p>@T("Admin.ShippingMethods.Grastin.PercentageIfPercentageExample3")</p>
+        </help-trigger>
+    </div>
+</div>
+
+@*<div class="form-group row middle-xs" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+        <div class="flex-grow-n col-fixed-size-md">
+            @T("Admin.ShippingMethods.Grastin.AddDaysToDeliveryTime")
+        </div>
+        <div class="col-xs-6 relative">
+            @Html.TextBoxFor(x => x.WidgetAddDuration, new { ng_model = "shippingMethod.Params.WidgetAddDuration", @class = "form-control" })
+        </div>
+    </div>*@
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeCalc !== '0' && shippingMethod.Params.TypeCalc !== '3'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.Grastin.ProhibitShowingPartnersInSpecificCities")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.WidgetHidePartnersJson, new { ng_model = "shippingMethod.Params.WidgetHidePartnersJson", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Grastin.ProhibitShowingPartnersInSpecificCities")">
+            @T("Admin.ShippingMethods.Grastin.Example")
+            {
+            "Санкт-Петербург":["grastincourier","hermespikup","postcourieronline"],
+            "Тверь":["boxberrypikup","dpdpikup"],
+            "Балашиха":["postpackageonline","postcourieronline"]
+            }
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Hidden("ShipIdCod", Model.ShipIdCod)
+@Html.Hidden("ShipIdPickPoint", Model.ShipIdPickPoint)

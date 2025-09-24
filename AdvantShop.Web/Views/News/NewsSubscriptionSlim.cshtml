@@ -1,0 +1,63 @@
+﻿<div class="subscribe-block subscribe-block--slim cs-bg-3">
+<form novalidate name="subscribeForm" class="subscribe-block__form"
+      data-ng-controller="SubscribeCtrl as subscribe">
+    <div class="contents" data-ng-init="subscribe.form=subscribeForm">
+        <div class="subscribe-block__text subscribe-block-text subscribe-block__cell">
+            @SettingsNews.MainPageText
+        </div>
+        <div class="subscribe-block__input-wrap subscribe-block__cell">
+            <input name="subscribeEmailField" placeholder="@T("News.NewsSubscription.Email")"
+                   type="email" value="" class="input-middle" required
+                   data-ng-model="subscribe.subscribeEmail"
+                   data-ng-model-options="{ debounce: 100 }"/>
+        </div>
+        <div class="subscribe-block__button-wrap  subscribe-block__cell subscribe-block-button-slim">
+            <input type="submit" class="btn btn-action btn-middle btn-expander btn-subscribe"
+                   value="@T("News.NewsSubscription.Subscibe")"
+                   data-button-validation
+                   data-button-validation-success="subscribe.subscribeSend()">
+        </div>
+        @if (SettingsCheckout.IsShowUserAgreementText || SettingsDesign.ShowUserAgreementForPromotionalNewsletter)
+        {
+            <div class="subscribe-block__checkbox-list">
+                @if (SettingsDesign.ShowUserAgreementForPromotionalNewsletter)
+                {
+                    <div class="subscribe-block-field subscribe-block__checkbox-wrap  subscribe-block__cell">
+                        <label>
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.CheckBox("AgreeForPromotionalNewsletter", new
+                                {
+                                    data_ng_model = "subscribe.agreeForPromotionalNewsletter",
+                                    @class = "custom-input-native",
+                                    required = "required",
+                                    data_ng_init = "subscribe.agreeForPromotionalNewsletter = " + SettingsDesign.SetUserAgreementForPromotionalNewsletterChecked.ToLowerString()
+                                })
+                                <span class="custom-input-checkbox"></span>
+                                @Html.Raw(SettingsDesign.UserAgreementForPromotionalNewsletter)
+                            </span>
+                        </label>
+                    </div>
+                }
+                @if (SettingsCheckout.IsShowUserAgreementText)
+                {
+                    <div class="subscribe-block-field subscribe-block__checkbox-wrap  subscribe-block__cell">
+                        <label>
+                            <span class="form-field-input vertical-interval-xsmall">
+                                @Html.CheckBox("Agree", new
+                                {
+                                    data_ng_model = "subscribe.agree",
+                                    @class = "custom-input-native",
+                                    required = "required",
+                                    data_ng_init = "subscribe.agree = " + SettingsCheckout.AgreementDefaultChecked.ToLowerString()
+                                })
+                                <span class="custom-input-checkbox"></span>
+                                @Html.Raw(SettingsCheckout.UserAgreementText)
+                            </span>
+                        </label>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</form>
+</div>

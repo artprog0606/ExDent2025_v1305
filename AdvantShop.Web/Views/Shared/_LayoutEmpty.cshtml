@@ -1,0 +1,53 @@
+﻿@{
+    var hash = SettingsGeneral.SiteVersion.GetHashCode();
+    var isLanding = AdvantShop.Core.Services.Landing.LpService.CurrentSiteId != 0;
+}
+<!DOCTYPE html>
+<html data-ng-strict-di data-ng-app="app" lang="ru" @Html.GetNgController()>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <meta name="format-detection" content="telePhone=no">
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl()" />
+    <meta name="Description" content="@Html.GetPageDescription()" />
+    @Html.GetPageKeywords(asMetaLink: true)
+    @Html.GetNoFollowTag()
+    @Html.GetCanonicalTag()
+    @Html.Partial("_Head")
+    @Html.Action("Favicon", "Common")
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+    </script>
+</head>
+<body class="cs-t-1 text-floating">
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    @if (!isLanding)
+    {
+        @Html.GoggleTagManagerCounter()
+        <div hidden>@Html.StaticBlock("LiveCounter")</div>
+        @Html.Action("GoogleAnalytics", "Common")
+    }
+    else
+    {
+        @Html.Action("GaScript", "LandingTracking", new { area = "Landing" })
+        @Html.Action("GtmScript", "LandingTracking", new { area = "Landing" })
+        @Html.Action("YandexMetrikaScript", "LandingTracking", new { area = "Landing" })
+    }
+    @Html.RenderModules("body_start")
+    <div class="site-layout-empty-container">
+        <main class="stretch-middle site-body">
+            <div class="container-fluid site-body-inner js-site-body-inner cs-bg-7">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+    @Html.GetNotifyMessages()
+    @Html.Partial("_FooterScripts")
+    @Html.RenderModules("body_end")
+    @Html.StaticBlock("body_end")
+    @Html.Action("Script", "SocialWidget", new { area = "" })
+</body>
+</html>

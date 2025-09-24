@@ -1,0 +1,202 @@
+﻿@using System.Globalization
+@using AdvantShop.Core.Services.Landing.Reviews
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<LpReview>("items") ?? new List<LpReview>();
+    if (items.Count > 0)
+    {
+        items = items.Where(x => x.Enabled).ToList();
+    }
+    int itemsPerPage = Convert.ToInt32(Model.Block.TryGetSetting("items_per_page"));
+
+    var itemsToRender = items.Take(itemsPerPage).ToList();
+    var i = 0;
+    var showRating = Model.Block.TryGetSetting("show_rating") == true;
+    var showTime = Model.Block.TryGetSetting("show_time") == true;
+}
+
+<div class="container-fluid" data-ng-controller="ReviewsFormLandingCtrl as reviewsForm">
+    <div class="lp-container" data-e2e="@(Model.Config.Name)_container">
+        <div class="row center-xs">
+            <div class="col-xs-10">
+                @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+                {
+                    <div class="lp-block-form__header">
+                        @if (Model.Block.TryGetSetting("show_title") == true)
+                        {
+                            <div class="lp-h2 lp-h2--color" data-e2e="FormTitleBlock">@Html.SubBlock(Model, "title")</div>
+                        }
+                        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                        {
+                            <div class="lp-h3 lp-h3--color" data-e2e="FormSubTitleBlock">@Html.SubBlock(Model, "subtitle")</div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="col-xs-12">
+                <form novalidate name="formReviews@(Model.Block.Id)" class="m-b-lg" data-e2e="FormCapture">
+                    <div class="row" data-ng-init="reviewsForm.form = formReviews@(Model.Block.Id)">
+                        <div class="col-xs-12 col-sm-3 m-b-md">
+                            <div>
+                                <input type="text" class="lp-input" name="name" placeholder="Ваше имя" required data-ng-model="reviewsForm.name" />
+                            </div>
+                            <div class="m-t-md">
+                                <input type="email" class="lp-input" name="email" placeholder="Ваш email" required data-ng-model="reviewsForm.email" />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-lg-7 m-b-md">
+                            <div class="full-height">
+                                <textarea class="lp-input full-height" placeholder="Текст отзыва" required data-ng-model="reviewsForm.text"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-lg-2 text-left">
+                            @if (showRating)
+                            {
+                                <div>
+                                    <div class="m-b-sm font-size-lg light line-height-xs">Общий рейтинг</div>
+                                    <div class="m-b-sm">
+                                        @Html.Action("Rating", new { id = Model.Form.Id, ngModel = "reviewsForm.rating", objId = 0, Ratio = 5 })
+                                    </div>
+                                </div>
+                            }
+                            <div>
+                                <button type="submit" data-ladda="reviewsForm.formSubmitInProcess" data-button-validation data-button-validation-success="reviewsForm.submit(@Model.Block.Id)" class="lp-btn lp-btn--primary lp-btn--md ladda-button" data-style="zoom-in" data-e2e="ButtonForm">
+                                    <span class="ladda-label">
+                                        Отправить
+                                    </span><span class="ladda-spinner"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        @if (itemsToRender.Count > 0)
+        {
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="lp-h2 lp-h2--color text-center">Отзывы</div>
+                </div>
+                <div class="col-xs-12" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")  data-e2e="ReviewsFormBlock">
+                    @foreach (var item in itemsToRender)
+                    {
+                        <div class="form-reviews__item">
+                            <div class="row between-sm">
+                                @if (showTime && item.Date.HasValue)
+                                {
+                                    <div class="col-xs-12 col-sm-slim">
+                                        <div class="form-reviews__date lp-h3 lp-h3--color m-b-n">
+                                            @(((DateTime)item.Date).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+                                        </div>
+                                    </div>
+                                }
+                                @if (showRating)
+                                {
+                                    <div class="col-xs-12 col-sm-slim">
+                                        <div class="form-reviews__rating">
+                                            @Html.Action("Rating", new { id = Model.Form.Id, ngModel = "rating" + i, objId = i, ratio = item.Rating ?? 5, readOnly = true })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="form-reviews__author" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].Name")>
+                                @item.Name
+                            </div>
+
+                            <div>
+                                <div class="form-reviews__text lp-h3 m-b-lg flex" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].Text")>
+                                    @Html.Raw(item.Text)
+                                </div>
+
+                                @if (item.Childs != null && item.Childs.Count > 0)
+                                {
+                                    var j = 0;
+                                    foreach (var child in item.Childs)
+                                    {
+                                        <div class="form-reviews__answer m-b-lg">
+                                            <div class="form-reviews__answer-info">
+                                                @if (showTime && child.Date.HasValue)
+                                                {
+                                                    <span class="form-reviews__answer-date">
+                                                        @(((DateTime)child.Date).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+                                                    </span>
+                                                }
+                                                <div class="form-reviews__answer-name bold" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].Childs[" + j + "].Name")>
+                                                    @child.Name
+                                                </div>
+                                            </div>
+                                            <div class="form-reviews__answer-text" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].Childs[" + j + "].Text")>
+                                                @Html.Raw(child.Text)
+                                            </div>
+                                        </div>
+                                        j++;
+                                    }
+                                }
+                            </div>
+                        </div>
+                        i++;
+                    }
+
+                    <div data-ng-repeat="item in reviewsForm.reviewsData track by $index" ng-if="reviewsForm.reviewsData != null && reviewsForm.reviewsData.length > 0" class="ng-cloak">
+                        <div class="form-reviews__item">
+                            <div class="row between-sm">
+                                @if (showTime)
+                                {
+                                    <div class="col-xs-12 col-sm-slim">
+                                        <div class="form-reviews__date lp-h3 lp-h3--color m-b-n">
+                                            <span data-ng-bind="item.Date | ngFlatpickr: 'd/m/Y' : 'Y-m-d H:i:S'"></span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (showRating)
+                                {
+                                    <div class="col-xs-12 col-sm-slim">
+                                        <div class="form-reviews__rating">
+                                            @Html.Action("Rating", new { id = Model.Form.Id, ngModel = "rating[$index]", ratioAsNgModel = "item.Rating", readOnly = true })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="form-reviews__author"
+                                 @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsPerPage + " + {{$index}}].Name")
+                                 data-ng-bind="item.Name">
+                            </div>
+
+                            <div>
+                                <div class="form-reviews__text lp-h3 m-b-lg flex"
+                                     @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + itemsPerPage + " + {{$index}}].Text")
+                                     data-ng-bind="item.Text">
+                                </div>
+
+                                <div class="form-reviews__answer m-b-lg" ng-if="item.Childs != null && item.Childs.length > 0" ng-repeat="child in item.Childs">
+                                    <div class="form-reviews__answer-info">
+                                        @if (showTime)
+                                        {
+                                            <span class="form-reviews__answer-date">
+                                                <span data-ng-bind="child.Date | ngFlatpickr: 'd/m/Y' : 'Y-m-d H:i:S'"></span>
+                                            </span>
+                                        }
+                                        <span class="form-reviews__answer-name bold" data-ng-bind="child.Name"></span>
+                                    </div>
+                                    <div class="form-reviews__answer-text" data-ng-bind="child.Text"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    @if (items.Count > itemsPerPage)
+                    {
+                        <div class="lp-news__more" data-ng-show="@((int)Math.Ceiling((double)items.Count/itemsPerPage)) > reviewsForm.page">
+                            <button type="button" data-ladda="reviewsForm.inProgress" class="lp-btn lp-btn--primary" data-ng-click="reviewsForm.getItems(@Model.Block.Id, reviewsForm.page, @itemsPerPage)">Показать еще</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

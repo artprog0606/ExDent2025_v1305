@@ -1,0 +1,45 @@
+﻿@using AdvantShop.Core
+@using AdvantShop.Design
+@{
+    Html.AddAsset("common", true);
+}
+@{
+    var prefix = !string.IsNullOrEmpty(SettingsDesign.MobileTemplate)
+        ? "_" + SettingsDesign.MobileTemplate.ToLower()
+        : "";
+
+    var bundleNameMobileCss = "mobile" + prefix + ".css";
+    var bundleNameMobileJs = "mobile" + prefix + ".js";
+}
+
+@{
+    Html.AddBundles(new List<string>
+    {
+        "~/vendors/angular/i18n/angular-locale_" + SettingsMain.LanguageWithFallback() + ".js",
+        "~/userfiles/" + SettingsMain.Language + ".js",
+
+        //common scripts
+    }, bundleNameMobileJs);
+}
+
+<script src="@UrlService.GetAbsoluteLink("vendors/jquery/jquery.min.js?v=3.7.1")"></script>
+
+@Html.Partial("_FooterNewMobileScriptsTemplate")
+@Html.Partial("_FooterMobileScriptsTemplate")
+
+<div id="_OcLazyLoadFilesAnchor_"></div> @*Для OcLazyLOad чтоб css и js добавлялись перед ним (чтоб не перезатирали стили шаблона) *@
+
+@Html.RenderAssetFilesAsHtml("runtime")
+@Html.RenderAssets()
+
+@Html.Partial("_ExtraStyles", bundleNameMobileCss)
+@Html.RenderJsBundle(bundleNameMobileJs)
+
+@Html.RenderModuleCssBundle("mobile_modules.css")
+@Html.RenderModuleJsBundle("mobile_modules.js")
+
+
+@Html.Action("MobileOverlap", "Mobile", new
+{
+    area = ""
+})

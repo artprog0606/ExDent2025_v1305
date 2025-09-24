@@ -1,0 +1,365 @@
+﻿@using AdvantShop.Helpers
+@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var rnd = new Random().NextDouble();
+    var orderCustomer = Model.IsEditMode && Model.Order != null
+        ? Model.Order.OrderCustomer
+        : null;
+    var orderRecipient = Model.IsEditMode && Model.Order != null
+        ? Model.Order.OrderRecipient
+        : null;
+    var recipientFullName = orderRecipient != null ? orderRecipient.FullName : null;
+    var recipientPhone = orderRecipient != null ? StringHelper.ConvertToStandardPhone(orderRecipient.Phone, true, true).ToString() : null;
+    var orderReview = Model.IsEditMode && Model.Order != null
+        ? Model.Order.OrderReview
+        : null;
+
+    var customerFullName = orderCustomer != null ? ((Customer)orderCustomer).GetFullName() : string.Empty;
+    var customerCompanyName = orderCustomer != null ? orderCustomer.CustomerCompanyName : string.Empty;
+    var contact = orderCustomer != null ? ((Customer)orderCustomer).Contacts.FirstOrDefault() : null;
+    var address = contact != null ? CustomerService.ConvertAddressToString(contact,
+        cc => cc.Country,
+        cc => cc.Region,
+        cc => cc.District,
+        cc => cc.City,
+        cc => cc.Zip,
+        cc => cc.Street,
+        cc => cc.House,
+        cc => cc.Structure,
+        cc => cc.Apartment,
+        cc => cc.Entrance,
+        cc => cc.Floor) : string.Empty;
+
+    var hasCustomFields = orderCustomer != null && new List<string> { orderCustomer.CustomField1, orderCustomer.CustomField2, orderCustomer.CustomField3 }.Any(x => x.IsNotEmpty());
+}
+@if (Model.IsEditMode && Model.Order != null && !Model.Order.IsDraft)
+{
+    <div class="ibox category-block block-additional-parameters">
+        <div class="ibox-content category-content block-additional-parameters-content border_none">
+            <div class="clear">
+                <div class="order__subblock-title pull-left">@T("Admin.Orders.OrderInfo.Contacts")</div>
+                <div class="pull-right">
+                    <ui-modal-trigger data-controller="'ModalChangeOrderCustomerCtrl'" data-controller-as="ctrl" size="xs-11" window-class="modal--panel modal--bg" opened-class="modal-open--panel"
+                                      data-animation="false"
+                                      data-resolve="{ params: { orderId: @(Model.OrderId) }}"
+                                      data-on-close="order.editCustomerClose()"
+                                      template-url="@("orders/popupOrderCustomer?orderid=" + Model.OrderId + "&rnd=" + rnd)">
+                        <a href="" class="m-b-xs block fs-xs order-change-modal-link link-dashed fs-xs" data-e2e="ChangeCustomer">
+                            @T("Admin.Orders.OrderInfo.Change")
+                        </a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+
+            @if (orderCustomer != null)
+            {
+                <div class="block-additional-parameters-row">
+                    <div class="m-b-sm" data-e2e="FullNameCustomer">
+                        @if (Model.Customer != null)
+                        {
+                            if (string.IsNullOrEmpty(customerCompanyName))
+                            {
+                                <a href="@Url.AbsoluteActionUrl("View", "Customers", new {id = Model.Customer.Id})" class="text-decoration-invert customer-fullname">
+                                    @customerFullName
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.AbsoluteActionUrl("View", "Customers", new {id = Model.Customer.Id})" class="text-decoration-invert customer-fullname">
+                                    @customerCompanyName
+                                </a>
+                                <div>@customerFullName</div>
+                            }
+
+                        }
+                        else if (Model.LinkedCustomer != null)
+                        {
+                            <a href="@Url.AbsoluteActionUrl("View", "Customers", new {id = Model.LinkedCustomer.Id})" class="text-decoration-invert customer-fullname">
+                                @customerFullName
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="customer-fullname">@customerFullName</span>
+                        }
+                    </div>
+
+                    @if (orderCustomer.Email.IsNotEmpty())
+                    {
+                        <div class="card card--icon m-b-xs">
+                            <ui-modal-trigger class="vertical-middle"
+                                              data-controller="'ModalSendLetterToCustomerCtrl'"
+                                              controller-as="ctrl" size="lg"
+                                              template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                              data-on-close="order.updateLeadEventsWithDelay()"
+                                              data-resolve="{params: {customerId: '@orderCustomer.CustomerID', email: '@orderCustomer.Email', firstName: '@orderCustomer.FirstName', lastName: '@orderCustomer.LastName', patronymic: '@orderCustomer.Patronymic', orderId: '@Model.OrderId', pageType: 'order'}}">
+                                
+                                                @if (isMobile)
+                                                {
+
+                                                    @Html.SvgSprite("email", "", new { width = 22, height = 22 })
+                                                }
+                                                else
+                                                {
+                                                    <a href="" class="far fa-envelope m-r-xs text-decoration-none" title="Отправить email"></a>
+                                                }
+                            </ui-modal-trigger>
+                            <span class="vertical-middle" data-e2e="CustomerMail">@orderCustomer.Email</span>
+
+                        </div>
+                    }
+
+                    @if (orderCustomer.Phone.IsNotEmpty())
+                    {
+                        var phoneFormatted = StringHelper.ConvertToStandardPhone(orderCustomer.Phone, true, true).ToString();
+                        <div class="m-b-xs flex middle-xs">
+                            @if (orderCustomer.StandardPhone != null && orderCustomer.StandardPhone.Value != 0)
+                            {
+                               <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl" size="middle"
+                                                  data-resolve="{params: { customerId: '@orderCustomer.CustomerID', phone: order.standardPhone, orderId: '@Model.OrderId', pageType: 'order'}}"
+                                                  template-url="@Html.GetAssetPath("sendSms.html")">
+                                                @if (isMobile)
+                                                {
+                                                    <span class="card__inner">
+                                                        @Html.SvgSprite("chat", "", new { width = 22, height = 22 })
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <a href="" class="far fa-comments m-r-xs text-decoration-none" title="Отправить SMS"></a>
+                                                }
+                                </ui-modal-trigger>
+                                <span data-e2e="CustomerTel">@phoneFormatted</span>
+                                <a href="tel:+@orderCustomer.StandardPhone" class="m-l-xs fas fa-phone link-decoration-none link-invert f-s-18  link-fourth" title="Позвонить"
+                                   onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Orders_CallCustomer.ToString()');"></a>
+
+                                <span ng-init="order.ShowViberDesktopAppNotification = @Model.ShowViberDesktopAppNotification.ToLowerString()">
+                                    <ui-modal-trigger ng-show="order.ShowViberDesktopAppNotification" class=" ng-hide"
+                                                      data-controller="'OrderModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                                      data-resolve="{ params: { appName: 'Viber', link: 'https://viber.click/@orderCustomer.StandardPhone' }}"
+                                                      data-on-close="order.ShowViberDesktopAppNotification = result"
+                                                      template-url="@Html.GetAssetPath("desktopAppNotificationOrder.html")">
+                                        <a href="" class="m-l-xs fas vertical-middle" data-e2e="ViberLink" title="Viber">
+                                            <svg width="18" height="18" class="link-viber-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                 viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                                <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+	                                                c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+	                                                c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+	                                                c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+	                                                C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+	                                                c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+	                                                c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+	                                                c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+	                                                c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+	                                                c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+	                                                 M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+	                                                C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+	                                                c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+	                                                c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" /></svg>
+                                        </a>
+                                    </ui-modal-trigger>
+                                    <a ng-show="!order.ShowViberDesktopAppNotification" href="https://viber.click/@orderCustomer.StandardPhone" target="_blank" class="m-l-xs" data-e2e="ViberLink" title="Viber">
+                                        <svg width="18" height="18" class="link-viber-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                            <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+	                                                c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+	                                                c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+	                                                c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+	                                                C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+	                                                c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+	                                                c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+	                                                c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+	                                                c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+	                                                c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+	                                                 M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+	                                                C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+	                                                c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+	                                                c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" /></svg>
+                                    </a>
+                                </span>
+                                
+                                <span ng-init="order.ShowWhatsAppDesktopAppNotification = @Model.ShowWhatsAppDesktopAppNotification.ToLowerString()">
+                                    <ui-modal-trigger ng-show="order.ShowWhatsAppDesktopAppNotification" class="ng-hide"
+                                                      data-controller="'OrderModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                                      data-resolve="{ params: { appName: 'WhatsApp', link: 'https://wa.me/@orderCustomer.StandardPhone' }}"
+                                                      data-on-close="order.ShowWhatsAppDesktopAppNotification = result"
+                                                      template-url="@Html.GetAssetPath("desktopAppNotificationOrder.html")">
+                                        <a href="" class="m-l-xs fas vertical-middle" data-e2e="WhatsAppLink" title="WhatsApp">
+                                            <svg width="18" height="18" class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                 viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                            <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+	                                                    l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+	                                                    c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+	                                                    c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+	                                                    c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+	                                                    c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" /> </svg>
+                                        </a>
+                                    </ui-modal-trigger>
+                                    <a ng-show="order.ShowWhatsAppDesktopAppNotification === false" href="https://wa.me/@orderCustomer.StandardPhone" target="_blank" class="m-l-xs" data-e2e="WhatsAppLink" title="WhatsApp">
+                                        <svg width="18" height="18" class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                        <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+	                                                    l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+	                                                    c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+	                                                    c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+	                                                    c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+	                                                    c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" /> </svg>
+                                    </a>
+                                </span>
+                                
+                                <span ng-init="order.ShowTelegramDesktopAppNotification = @Model.ShowTelegramDesktopAppNotification.ToLowerString()">
+                                    <ui-modal-trigger ng-show="order.ShowTelegramDesktopAppNotification" class="ng-hide"
+                                                      data-controller="'OrderModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                                      data-resolve="{ params: { appName: 'telegram', link: 'https://t.me/+@orderCustomer.StandardPhone' }}"
+                                                      data-on-close="order.ShowTelegramDesktopAppNotification = result"
+                                                      template-url="@Html.GetAssetPath("desktopAppNotificationOrder.html")">
+                                        <a href="" class="m-l-xs fas vertical-middle" data-e2e="TelegramLink" title="Telegram">
+                                            <svg class="link-telegram-icon" width="18" height="18" viewBox="0 0 240.1 240.1">
+                                                <circle fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" cx="120.1" cy="120.1" r="120.1"/>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/>
+                                            </svg>
+                                        </a>
+                                    </ui-modal-trigger>
+                                    <a ng-show="order.ShowTelegramDesktopAppNotification === false" href="https://t.me/+@orderCustomer.StandardPhone" target="_blank" class="m-l-xs" data-e2e="TelegramLink" title="Telegram">
+                                        <svg class="link-telegram-icon" width="18" height="18" viewBox="0 0 240.1 240.1">
+                                            <circle fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" cx="120.1" cy="120.1" r="120.1"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/>
+                                        </svg>
+                                    </a>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="vertical-middle">@phoneFormatted</span>
+                            }
+                        </div>
+                        <div class="m-b-xs flex middle-xs">
+                            @Html.RenderModules("admin_order_customer_info", new { orderCustomer = orderCustomer })
+                        </div>
+                    }
+                    @*Для окна доставки*@
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Country, new Dictionary<string, object>() { { "ng-model", "order.country" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Region, new Dictionary<string, object>() { { "ng-model", "order.region" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.District, new Dictionary<string, object>() { { "ng-model", "order.district" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.City, new Dictionary<string, object>() { { "ng-model", "order.city" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Zip, new Dictionary<string, object>() { { "ng-model", "order.zip" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Street, new Dictionary<string, object>() { { "ng-model", "order.street" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.House, new Dictionary<string, object>() { { "ng-model", "order.house" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Structure, new Dictionary<string, object>() { { "ng-model", "order.structure" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Apartment, new Dictionary<string, object>() { { "ng-model", "order.apartment" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Entrance, new Dictionary<string, object>() { { "ng-model", "order.entrance" } })
+                    @Html.HiddenFor(x => x.Order.OrderCustomer.Floor, new Dictionary<string, object>() { { "ng-model", "order.floor" } })
+                </div>
+            }
+        </div>
+
+        <div class="ibox-content category-content block-additional-parameters-content p-r-lg border_none block-additional-border-top" ng-init="order.RecipientFullName = '@recipientFullName';order.RecipientPhone = '@recipientPhone'">
+            <div class="clear">
+                <div class="order__subblock-title pull-left">@T("Admin.Orders.OrderInfo.OrderRecipient")</div>
+                <div class="pull-right">
+                    <ui-modal-trigger data-controller="'ModalChangeOrderRecipientCtrl'" data-controller-as="ctrl" size="xs"
+                                      data-resolve="{ params: { orderId: @(Model.OrderId) }}"
+                                      data-on-close="order.updateOrderRecipient(result)"
+                                      template-url="@Html.GetAssetPath("changeOrderRecipient.html")">
+                        <a href="" class="m-b-xs block fs-xs order-change-modal-link link-dashed fs-xs" data-e2e="ChangeRecipient">
+                            @T("Admin.Orders.OrderInfo.Change")
+                        </a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+            <div class="block-additional-parameters-row" ng-if="order.RecipientFullName || order.RecipientPhone">
+                <div class="order-note-color m-b-xs" ng-bind="order.RecipientFullName">@recipientFullName</div>
+                <div class="order-note-color m-b-xs" ng-bind="order.RecipientPhone">@recipientPhone</div>
+            </div>
+        </div>
+
+
+            <div class="ibox-content category-content block-additional-parameters-content p-r-lg border_none block-additional-border-top">
+                <div class="clear">
+                    <div class="order__subblock-title pull-left">@T("Admin.Js.Orders.DeliveryAddress")</div>
+                    <div class="pull-right">
+                        <ui-modal-trigger data-controller="'ModalChangeOrderCustomerAddressCtrl'" data-controller-as="ctrl" size="xs-11" window-class="modal--panel modal--bg" opened-class="modal-open--panel"
+                                          data-animation="false"
+                                          data-resolve="{ params: { orderId: @(Model.OrderId) }}"
+                                          data-on-close="order.editCustomerClose()"
+                                          template-url="@("orders/popupOrderCustomerAddress?orderid=" + Model.OrderId + "&rnd=" + rnd)">
+                            <a href="" class="m-b-xs block fs-xs order-change-modal-link link-dashed fs-xs" data-e2e="ChangeCustomerAddress">
+                                @T("Admin.Orders.OrderInfo.Change")
+                            </a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+                @if (address.IsNotEmpty())
+                {
+                    <div class="m-b-sm" data-e2e="CustomerAdress">
+                        @address
+                    </div>
+                    <div>
+                        <a href="//maps.yandex.ru/?text=@address" data-e2e="CustomerAdressMap" target="_blank">@T("Admin.Orders.OrderInfo.ShowOnMap")</a>
+                    </div>
+                }else{
+                    <span>@T("Admin.Order.Address.NotExist")</span>
+                }
+                @if (hasCustomFields)
+                {
+                    <div class="m-t-sm">
+                        @if (orderCustomer.CustomField1.IsNotEmpty())
+                        {
+                            <div class="m-t-xs">
+                                @SettingsCheckout.CustomShippingField1: <span class="bold">@orderCustomer.CustomField1</span>
+                            </div>
+                        }
+                        @if (orderCustomer.CustomField2.IsNotEmpty())
+                        {
+                            <div class="m-t-xs">
+                                @SettingsCheckout.CustomShippingField2: <span class="bold">@orderCustomer.CustomField2</span>
+                            </div>
+                        }
+                        @if (orderCustomer.CustomField3.IsNotEmpty())
+                        {
+                            <div class="m-t-xs">
+                                @SettingsCheckout.CustomShippingField3: <span class="bold">@orderCustomer.CustomField3</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        
+
+        @if (orderReview != null && (orderReview.Ratio != 0 || orderReview.Text.IsNotEmpty()))
+        {
+            <div class="ibox-content category-content block-additional-parameters-content p-r-lg border_none block-additional-border-top">
+                <div class="clear">
+                    <div class="order__subblock-title pull-left m-b-xs">@T("Admin.Orders.OrderInfo.OrderReview")</div>
+                </div>
+                <div class="block-additional-parameters-row">
+
+                    <ul class="rating"
+                        rating
+                        readonly="true"
+                        current="@orderReview.Ratio.ToString()">
+                        @for (var i = 5; i > 0; --i)
+                        {
+                            <li class="rating-item"
+                                ng-class="{'rating-item-selected': @i <= rating.current}">
+                                <svg width="25" height="25" class="rating__star" xmlns="http://www.w3.org/2000/svg" viewBox="3 0 22 22">
+                                    <path fill="currentColor" d="M19.392 9.202c0-.248-.188-.403-.565-.463l-5.061-.736-2.268-4.588c-.128-.275-.293-.413-.494-.413-.202 0-.367.138-.495.413L8.241 8.003l-5.061.736c-.377.06-.565.215-.565.463 0 .142.084.303.252.484l3.67 3.57-.867 5.04c-.014.095-.02.162-.02.202 0 .141.035.26.105.358.07.098.177.146.318.146.12 0 .255-.04.403-.12l4.527-2.38 4.527 2.38c.141.08.276.12.403.12a.355.355 0 0 0 .308-.146.595.595 0 0 0 .106-.358 1.51 1.51 0 0 0-.01-.201l-.868-5.042 3.66-3.569c.175-.174.262-.336.262-.484" />
+                                </svg>
+                            </li>
+                        }
+                    </ul>
+
+                    @if (orderReview.Text.IsNotEmpty())
+                    {
+                        <div class="clear m-t-sm p-t-xs">
+                            <div class="order__subblock-title pull-left">@T("Admin.Orders.OrderInfo.OrderReview.Text")</div>
+                        </div>
+                        <div class="m-b-xs">@orderReview.Text</div>
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+}

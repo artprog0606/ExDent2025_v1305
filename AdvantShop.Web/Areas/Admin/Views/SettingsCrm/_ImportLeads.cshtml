@@ -1,0 +1,531 @@
+﻿@using AdvantShop.Helpers
+@model AdvantShop.Web.Admin.ViewModels.Catalog.Import.ImportLeadsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="ImportCtrl as import" is-mobile>
+    <form name="importLeadsForm" novalidate="novalidate">
+
+        <div class="sticky-page-name  @(isMobile ? "" : "m-t-n-xs")" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                @if (!isMobile)
+                {
+                    <div class="page-name-block-item-main flex middle-xs">
+                        <h2 class="sticky-page-name-text m-t-none">
+                            @T("Admin.SettingsCrm.ImportLeads.Title")
+                        </h2>
+                    </div>
+                    <div class="page-name-block-item-additional">
+                        <button class="btn btn-sm btn-success ng-cloak" data-e2e="Export" type="button"
+                                data-ladda="import.inProgress"
+                                data-button-validation=""
+                                data-button-validation-success="import.startLeadsImport()" disabled ng-disabled="!import.showFields || import.isStartExport">
+                            @T("Admin.SettingsCrm.ImportLeads.Import")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="" ng-if="!import.isStartExport">
+            <div class="row">
+                <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+                    <h3 class="category-title bold setting__subtitle">@T("Admin.SettingsCrm.ImportLeads.Params")</h3>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="category-block">
+                        <div class="category-content border_none">
+                            <div class="form-group row middle-xs">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.SettingsCrm.ImportLeads.BasicSalesFunnel")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    @Html.DropDownListFor(m => m.BasicSalesFunnelId, Model.SalesFunnels, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.BasicSalesFunnelId"
+                                    })
+
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" use-template="true" style="padding-left:0.625rem;" data-title="@T("Admin.SettingsCrm.ImportLeads.BasicSalesFunnel")">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCrm.ImportLeads.BasicSalesFunnel.Help")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.BasicSalesFunnel")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.BasicSalesFunnel.Help")
+                                        </div>
+                                    </help-trigger>
+                                }
+
+                            </div>
+                            <div class="form-group row middle-xs setting__form-group">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.SettingsCrm.ImportLeads.ColumnSeparator")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    @Html.DropDownListFor(m => m.ColumnSeparator, Model.ColumnSeparators, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.ColumnSeparator"
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" use-template="true" style="padding-left:0.625rem;" data-title="@T("Admin.SettingsCrm.ImportLeads.ColumnSeparator")">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCrm.ImportLeads.ColumnSeparatorHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center" ng-if="import.importSettings.ColumnSeparator=='custom'">
+                                    @Html.TextBoxFor(m => m.CustomColumnSeparator, Model.CustomColumnSeparator, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.CustomColumnSeparator",
+                                        ng_required = "import.importSettings.ColumnSeparator=='custom'",
+                                        validation_input_text = T("Admin.SettingsCrm.ImportLeads.ColumnSeparator")
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" use-template="true" style="padding-left:0.625rem;" data-title="@T("Admin.SettingsCrm.ImportLeads.ColumnSeparator")">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCrm.ImportLeads.ColumnSeparatorHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.ColumnSeparator")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.ColumnSeparatorHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+                            <div class="form-group row middle-xs setting__form-group">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.SettingsCrm.ImportLeads.FileEncoding")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    @Html.DropDownListFor(m => m.Encoding, Model.Encodings, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "import.importSettings.Encoding"
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" use-template="true" style="padding-left:0.625rem;" data-title="@T("Admin.SettingsCrm.ImportLeads.FileEncoding")">
+                                            <div class="help-content">
+                                                @T("Admin.SettingsCrm.ImportLeads.FileEncodingHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.FileEncoding")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.FileEncodingHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.Import.ImportLeads.PropertySeparator")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    @Html.TextBoxFor(m => m.PropertySeparator, Model.PropertySeparator, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        required = "required",
+                                        ng_model = "import.importSettings.PropertySeparator",
+                                        validation_input_text = T("Admin.Import.ImportLeads.DelimiterBetweenProperties")
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm p-l-sm" : "p-t-xs m-t-xs")" style="padding-left:0.625rem;" use-template="true" data-title="@T("Admin.Import.ImportLeads.PropertySeparator")">
+                                            <div class="help-content">
+                                                @T("Admin.Import.ImportLeads.PropertySeparatorHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="ng-cloak m-l-xs p-t-xs m-t-xs" use-template="true" data-title="@T("Admin.Import.ImportLeads.PropertySeparator")">
+                                        <div class="help-content">
+                                            @T("Admin.Import.ImportLeads.PropertySeparatorHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap setting__label">
+                                        @T("Admin.Import.ImportLeads.PropertyValueSeparator")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    @Html.TextBoxFor(m => m.PropertyValueSeparator, Model.PropertyValueSeparator, new
+                                    {
+                                        @class = "form-control input-alt",
+                                        required = "required",
+                                        ng_model = "import.importSettings.PropertyValueSeparator",
+                                        validation_input_text = T("Admin.Import.ImportLeads.DelimiterBetweenPropertyAndValue")
+                                    })
+                                    @if (isMobile)
+                                    {
+                                        <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm p-l-sm" : "p-t-xs m-t-xs")" style="padding-left:0.625rem;" use-template="true" data-title="@T("Admin.Import.ImportLeads.PropertyValueSeparator")">
+                                            <div class="help-content">
+                                                @T("Admin.Import.ImportLeads.PropertyValueSeparatorHint")
+                                            </div>
+                                        </help-trigger>
+                                    }
+                                </div>
+                                @if (!isMobile)
+                                {
+                                    <help-trigger class="ng-cloak m-l-xs p-t-xs m-t-xs" use-template="true" data-title="@T("Admin.Import.ImportLeads.PropertyValueSeparator")">
+                                        <div class="help-content">
+                                            @T("Admin.Import.ImportLeads.PropertyValueSeparatorHint")
+                                        </div>
+                                    </help-trigger>
+                                }
+                            </div>
+
+                            <div class="form-group row setting__form-group">
+                                @if (!isMobile)
+                                {
+                                    <div class="col-xs-3 col-wl-2">
+                                        <div class="setting-label-wrap">
+                                            @T("Admin.SettingsCrm.ImportLeads.HasHeader")
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(m => m.HaveHeader, new
+                                        {
+                                            @class = "adv-checkbox-input",
+                                            ng_model = "import.importSettings.HaveHeader"
+                                        })
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                    @if (isMobile)
+                                    {
+                                        <div class="col-xs col-wl-2">
+                                            <label for="HaveHeader" class="setting-label-wrap setting--m-none">
+                                                @T("Admin.SettingsCrm.ImportLeads.HasHeader")
+                                            </label>
+                                        </div>
+                                    }
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.HasHeader")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.HasHeaderHint")
+                                        </div>
+                                    </help-trigger>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row setting__form-group">
+                                @if (!isMobile)
+                                {
+                                    <div class="col-xs-3 col-wl-2">
+                                        <div class="setting-label-wrap">
+                                            @T("Admin.SettingsCrm.ImportLeads.UpdateCustomer")
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(m => m.UpdateCustomer, new
+                                        {
+                                            @class = "adv-checkbox-input",
+                                            ng_model = "import.importSettings.UpdateCustomer"
+                                        })
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                    @if (isMobile)
+                                    {
+                                        <div class="col-xs col-wl-2">
+                                            <label for="UpdateCustomer" class="setting-label-wrap setting--m-none">
+                                                @T("Admin.SettingsCrm.ImportLeads.UpdateCustomer")
+                                            </label>
+                                        </div>
+                                    }
+                                    <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.UpdateCustomer")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.UpdateCustomerHint")
+                                        </div>
+                                    </help-trigger>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row setting__form-group">
+                                @if (!isMobile)
+                                {
+                                    <div class="col-xs-3 col-wl-2">
+                                        <div class="setting-label-wrap">
+                                            @T("Admin.SettingsCrm.ImportLeads.DoNotDuplicate")
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-xs-12 col-md-3 col-wl-2 setting--flex-align-center">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(m => m.DoNotDuplicate, new
+                                        {
+                                            @class = "adv-checkbox-input",
+                                            ng_model = "import.importSettings.DoNotDuplicate"
+                                        })
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                    @if (isMobile)
+                                    {
+                                        <div class="col-xs col-wl-2">
+                                            <label for="DoNotDuplicate" class="setting-label-wrap setting--m-none">
+                                                @T("Admin.SettingsCrm.ImportLeads.DoNotDuplicate")
+                                            </label>
+                                        </div>
+                                    }
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="@T("Admin.SettingsCrm.ImportLeads.DoNotDuplicate")">
+                                        <div class="help-content">
+                                            @T("Admin.SettingsCrm.ImportLeads.DoNotDuplicate.Help")
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <div class="setting-label-wrap">
+                                        <a href="" data-button-validation="" data-button-validation-success="import.getExampleLeadsFile()" download>@T("Admin.SettingsCrm.ImportLeads.SampleFile")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row @(isMobile ? "" : "m-t")">
+                <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+                    <h3 class="category-title bold setting__subtitle setting--m-t-none">@T("Admin.SettingsCrm.ImportLeads.CsvFile")</h3>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="category-block">
+                        <div class="category-content border_none">
+                            <div class="form-group row" ng-if="!import.showFields">
+                                <div class="col-xs-12 col-md-3 col-wl-2">
+                                    <file-uploader class="picture-uploader-middle inline"
+                                                   accept=".csv"
+                                                   start-src=""
+                                                   upload-url="/import/UploadCsvLeadsFile"
+                                                   upload-params=""
+                                                   on-update="import.getFieldsFromLeadsCsvFile()">
+                                    </file-uploader>
+                                    <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                        <div class="help-content">
+                                            @Html.Action("FilesHelpTextByFileType", "Common", new { type = EFileType.Csv | EFileType.Text })
+                                        </div>
+                                    </help-trigger>
+                                </div>
+                            </div>
+                            <div ng-if="import.showFields">
+                                <div class="form-group row">
+                                    <div class="col-xs-5 col-sm-3">
+                                        <div class="setting-title1">
+                                            <h3 class="setting--m-none">@T("Admin.SettingsCrm.ImportLeads.ColumnInCsv")</h3>
+                                        </div>
+                                    </div>
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-3">
+                                            <div class="setting-title1">
+                                                <h3>@T("Admin.SettingsCrm.ImportLeads.FirstLeadData")</h3>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-xs-7 col-sm-3">
+                                        <div class="setting-title1">
+                                            <h3 class="setting--m-none">@T("Admin.SettingsCrm.ImportLeads.DataType")</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" ng-repeat="header in import.headers track by $index">
+                                    <div class="col-xs-5 col-sm-3" ng-class="{'flex middle-xs' : isMobile.value}">
+                                        <span class="setting__label"> {{import.headers[$index]}} </span>
+                                    </div>
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-3">
+                                            <span> {{import.firstObjectFields[$index]}} </span>
+                                        </div>
+                                    }
+                                    <div class="col-xs-7 col-sm-3">
+                                        <select ng-options="key as value for (key , value) in import.allFields"
+                                                ng-model="import.importSettings.selectedFields[$index]"
+                                                class="form-control input-alt">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row @(isMobile ? "setting__form-group col-xs setting--flex-align-center flex-nowrap" : "")">
+                                    @if (isMobile)
+                                    {
+                                        <button class="btn btn-xs btn-success ng-cloak m-r-xs @(isMobile ? "flex-grow" : "")" data-e2e="Export" type="button"
+                                                data-ladda="import.inProgress"
+                                                data-button-validation=""
+                                                data-button-validation-success="import.startLeadsImport()" disabled ng-disabled="!import.showFields || import.isStartExport">
+                                            @T("Admin.SettingsCrm.ImportLeads.Import")
+                                        </button>
+                                    }
+                                    <file-uploader class="picture-uploader-middle inline"
+                                                   accept=".csv"
+                                                   start-src=""
+                                                   upload-url="/import/UploadCsvLeadsFile"
+                                                   upload-params=""
+                                                   on-update="import.getFieldsFromLeadsCsvFile()"
+                                                   title-upload-button="@T("Admin.SettingsCrm.ImportLeads.ChangeNewFile")"
+                                                   go-to-first-step-after-succes="true">
+                                    </file-uploader>
+                                    @*<button class="btn btn-sm btn-success m-l-xs" data-e2e="Export" type="button"
+                                                data-button-validation=""
+                                                data-button-validation-success="import.changeNewFile()">
+                                            @T("Admin.SettingsCrm.ImportLeads.ChangeNewFile")
+                                        </button>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <cm-stat ng-if="import.isStartExport" data-on-finish="cmStat.deleteObsevarable()">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="row setting__form-group">
+                        <div class="col-xs-12">
+                            <uib-progressbar max="cmStat.entity.Total" value="cmStat.entity.Processed"><span style="color:white; white-space:nowrap;">{{ cmStat.entity.ProcessedPercent }} %</span></uib-progressbar>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group row setting--flex-align-center">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.Added")
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-4">
+
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Add"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row setting--flex-align-center">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.Updated")
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-4">
+
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Update"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row setting--flex-align-center">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.Errors")
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-4">
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-bind="cmStat.entity.Error"></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row setting--flex-align-center">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.CurrentProcess")
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-4">
+                                    <label class="adv-checkbox-label">
+                                        <a class="link-decoration-none" ng-href="{{cmStat.entity.CurrentProcess}}" ng-bind="cmStat.entity.CurrentProcessName"></a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="!cmStat.entity.IsRun">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group row setting--flex-align-center" ng-if="cmStat.entity.Error == 0">
+                                <div class="col-xs-12">
+                                    <div class="setting-label-wrap setting--m-none">
+                                        @T("Admin.ProgressData.ProcessEndSuccess")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <div class="setting-label-wrap">
+                                        @*@T("Admin.ProgressData.ProcessEndError")*@
+                                        <label class="adv-checkbox-label">
+                                            <a class="link-decoration-none" href="@Url.AbsoluteActionUrl("GetLogFile","ExportImportCommon")" download>@T("Admin.ProgressData.DownloadErrorsLog")</a>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="cmStat.entity.IsRun">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a class="btn btn-sm btn-default" target="_blank" ng-click="import.abortImport()">@T("Admin.ProgressData.InterruptProcess")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-if="!cmStat.entity.IsRun">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a class="link-decoration-none" href="" ng-click="import.isStartExport = false; import.showFields = false;">@T("Admin.ProgressData.BackToImport")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </cm-stat>
+    </form>
+</div>

@@ -1,0 +1,108 @@
+﻿@model AdvantShop.ViewModel.User.AuthorizationViewModel
+
+<form name="smsAuthForm" novalidate="novalidate" data-ng-controller="SmsAuthCtrl as auth">
+    <div ng-switch="auth.currentForm" data-ng-init="auth.redirect = '@Model.RedirectTo'">
+        <div ng-switch-when="enterPhoneForm">
+            <label class="row middle-xs">
+                <span class="col-xs-4">
+                    <span class="form-field-name input-required vertical-interval-xsmall">@T("User.Authorization.Phone")</span>
+                </span>
+                <span class="col-xs-8">
+                    <span class="form-field-input vertical-interval-xsmall">
+                        <input autocomplete="tel"
+                               class="input-small"
+                               data-mask-control="@SettingsMain.EnablePhoneMask.ToLowerString()"
+                               data-mask-control-preset="phone"
+                               data-ng-init="auth.phone=''"
+                               data-ng-model="auth.phone"
+                               id="smsConfirmationPhone"
+                               maxlength="70"
+                               name="smsConfirmationPhone"
+                               required="required"
+                               type="text">
+                    </span>
+                </span>
+            </label>
+            <div class="row middle-xs" ng-if="auth.enableRetrySend">
+                <div class="col-xs-8 col-xs-offset-4">
+                    <span class="form-field-input  vertical-interval-xsmall">
+                        <button type="button" class="btn btn-submit btn-middle" data-ng-click="auth.sendSmsCode();">@T("User.SmsAuthorization.Login")</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div ng-switch-when="confirmSmsForm">
+            <div class="row middle-xs">
+                <span class="col-xs-12">
+                    @Html.Action("GetCodeDescription")
+                </span>
+            </div>
+            <div class="row middle-xs m-t">
+                <span class="col-xs-12 col-sm-slim">
+                    <sms-confirmation-input count="4"
+                                            on-init="auth.initSmsConfirmationInput(smsConfirmationInput)"
+                                            on-complete="auth.confirmSmsCodeComplete(value)"
+                                            focus-on-start="true">
+                    </sms-confirmation-input>
+                </span>
+            </div>
+            <div class="row middle-xs m-t" ng-if="!auth.enableRetrySend && auth.countdownSeconds > 0">
+                <div class="col-xs-12">
+                    <div class="timer" id="smsConfirmationCountdownTimer"></div>
+                </div>
+            </div>
+            <div class="row middle-xs m-t" ng-if="auth.enableRetrySend">
+                <div class="col-xs-12">
+                    <div class="re-code">
+                        <a href="javascript:void(0);" class="link-dotted-invert" data-ng-click="auth.sendSmsCode();">@T("User.SmsAuthorization.SendCodeAgain")</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row middle-xs m-t-xs m-b">
+                <div class="col-xs-12">
+                    <div class="edit-phone">
+                        <a href="javascript:void(0);" class="link-dotted-invert" data-ng-click="auth.returnToFirstStep();">@T("User.SmsAuthorization.ChangePhoneNumber")</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row middle-xs m-b">
+            <span class="" data-ng-class="{'col-xs-8 col-xs-offset-4': auth.currentForm === 'enterPhoneForm', 'col-xs-12': auth.currentForm !== 'enterPhoneForm'}">
+                <span class="vertical-interval-xsmall">
+                    <a href="login?state=smsAuth" class="link-dotted-invert">@T("User.SmsAuthorization.LoginWithEmail")</a>
+                </span>
+            </span>
+        </div>
+    </div>
+    @if (SettingsMain.PartnersActive && !Model.IsLanding)
+    {
+        <div class="row middle-xs">
+            <span class="col-xs-8 col-xs-offset-4">
+                <span class="form-field-input  vertical-interval-xsmall">
+                    <a href="@Url.AbsoluteRouteUrl("Partners_Home")" class="link-dotted-invert">@T("User.SmsAuthorization.LoginPartners")</a>
+                </span>
+            </span>
+        </div>
+    }
+    <div id="modalSmsConfirmationCaptcha" class="modal ng-hide"
+         data-modal-control
+         data-modal-overlay-class="sms-confirmation-code-modal"
+         data-modal-class="sms-confirmation-code-modal__form"
+         data-close-out="false">
+        <div class="modal-content">
+            <div class="sms-confirmation-code-modal__content">
+                <div class="m-b">{{ ::'Js.SmsConfirmation.EnterCaptchaCode' | translate }}</div>
+                <div class="m-b">
+                    <span class="form-field-input vertical-interval-xsmall" data-bind-html-compile="auth.captchaHtml"></span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-small btn-action pointer" data-ng-click="auth.checkCaptcha()">
+                        {{ ::'Js.SmsConfirmation.Confirm' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

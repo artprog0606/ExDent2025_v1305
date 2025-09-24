@@ -1,0 +1,101 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.AlfabankKupiLegkoPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ИНН</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Inn, new { ng_model = "paymentMethod.Parameters.Inn", @class = "form-control input-alt", required = "required", validation_input_text = "ИНН" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="ИНН">
+            ИНН интернет-магазина
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Промо-акция
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.PromoCode, new { ng_model = "paymentMethod.Parameters.PromoCode", @class = "form-control input-alt", validation_input_text = "Промо-акция" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.KupiVKredit.Promotions")">
+            Код/название акции (кредитного продукта банка с акцией)
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label  setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+            Тестовый режим
+        </div>
+    }
+    <div class="col-xs col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.TestMode, new { ng_model = "paymentMethod.Parameters.TestMode", ng_init = "paymentMethod.Parameters.TestMode=" + Model.TestMode.ToLowerString(), @class = "adv-checkbox-input", validation_input_text = "Тестовый режим" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Тестовый режим</span>
+            }
+        </label>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Минимальная цена</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MinimumPrice, new { ng_model = "paymentMethod.Parameters.MinimumPrice", @class = "form-control", required = "required", validation_input_text = "Минимальная цена" })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Минимальная цена">
+            Кнопка "Купить в кредит" будет отображаться у товаров превышающих минимальную цену
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12 control-label" : "col-fixed-size-md")">
+        Максимальная цена
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs setting--m-t-sm" : "")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.MaximumPrice, new {ng_model = "paymentMethod.Parameters.MaximumPrice", @class = "form-control", validation_input_text = "Минимальная цена", type = "number"})
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@Model.CurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Максимальная цена">
+            Кнопка "Купить в кредит" будет отображаться у товаров не превышающих максимальную цену.<br/>
+            Оставьте поле пустым, если это ограничение не нужно.
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Сумма первого платежа(%)</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.FirstPayment, new { ng_model = "paymentMethod.Parameters.FirstPayment", @class = "form-control input-alt", required = "required", validation_input_text = "Сумма первого платежа(%)" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Сумма первого платежа(%)">
+            % от стоимости товара составит первый платеж
+        </help-trigger>
+    </div>
+</div>
+
+

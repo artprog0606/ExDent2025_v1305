@@ -1,0 +1,1254 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Core.Services.Bonuses
+@using AdvantShop.Repository.Currencies
+@model AdvantShop.Web.Admin.Models.Catalog.Products.AdminProductModel
+@{
+    var baseCurrency = CurrencyService.GetAllCurrencies().FirstOrDefault(x => x.Rate == 1f);
+    var baseCurrencySymbol = baseCurrency != null ? baseCurrency.Symbol : "BaseCurrency";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var comboEnabled = FeaturesService.IsEnabled(EFeature.CustomOptionCombo);
+    var сustomOptionPicture = FeaturesService.IsEnabled(EFeature.CustomOptionPicture);
+}
+
+@{
+    Html.AddAsset("product");
+}
+
+@functions{
+    public IHtmlString RenderAttrShow(string id)
+    {
+        return @Html.Raw(SettingsDesign.IsMobileTemplate ? "ng-show=\"product.activeMenuId === '" + id + "'\"" : "");
+    }
+}
+
+<form method="POST" action="@Url.AbsoluteActionUrl("Edit")" enctype="multipart/form-data" name="form" id="form" novalidate="novalidate">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.ProductId)
+
+    @if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        if (Model.BreadCrumbs.Count > 0)
+        {
+            headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+            {
+                Url = Model.BreadCrumbs.Last().Url
+            };
+        }
+
+        headerModel.Controls = new List<IButton>()
+        {
+
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] {"data-e2e=\"btnSave\"", "data-button-validation", "disabled", "ng-disabled=\"!form.modified || product.isProcessGetTags === true\""},
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new {width = 25, height = 25}
+                }
+            }
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        if (SettingsMain.StoreActive)
+        {
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                Text = T("Admin.View"),
+                Link = Url.AbsoluteRouteUrl("Product", new {url = Model.UrlPath}),
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Type = eButtonType.Link,
+                ColorType = eColorType.Link,
+                Attributes = new[] {"target=\"_blank\""},
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "go",
+                    Attributes = new {width = 24, height = 24}
+                }
+            });
+        }
+
+        if (isMobile)
+        {
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                Text = T("Admin.Product.Edit.MakeCopyOfItem"),
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.HorizontalPaddingZero
+                },
+                Type = eButtonType.Link,
+                ColorType = eColorType.Link,
+                Attributes = new[] {"data-e2e=\"ProductCopy\""},
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "copy",
+                    Attributes = new {width = 24, height = 24}
+                },
+                WrapStart = "<ui-modal-trigger data-controller=\"'ModalCopyProductCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("CopyProduct.html") + "\" data-resolve=\"{ 'product': { 'productId': " + Model.ProductId + ", 'name': product.Name }}\">",
+                WrapEnd = "</ui-modal-trigger>"
+            });
+        }
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Produt.Edit.Delete"),
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Attributes = new[] {"ng-click=\"product.deleteProduct(" + Model.ProductId + ")\""},
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new {width = 24, height = 24}
+            }
+        });
+
+        headerModel.Controls.Add(moreButton);
+
+        headerModel.Title = "Товар";
+
+        @Html.Header(headerModel)
+    }
+    <div class="wrapper" ng-init="product.form=form; product.initProduct(@Model.ProductId, @isMobile.ToLowerString());">
+        @if (isMobile)
+        {
+            <div class="container-out--mobile container-out--mobile-top">
+                <figure class="product-figure">
+                    <span class="product-figure__photo-wrap">
+                        <img src="@Model.PhotoSrc()" alt="" class="product-figure__photo" ng-src="{{product.mainPhotoSrc}}" ng-init="product.mainPhotoSrc='@Model.PhotoSrc()'" />
+                    </span>
+                    <figcaption class="product-figure__caption">@Model.Name</figcaption>
+                </figure>
+            </div>
+        }
+        <div class="grid-classic">
+            <div class="grid-classic-row grid-classic-fixed @(!isMobile ? "flex": "")">
+                <div class="grid-classic-col grid-classic-col-md @(isMobile ? "m-b": "aside-menu-wrap")" id="leftAsideProduct">
+                    @Html.Partial("_LeftMenu", Model)
+                </div>
+                <div class="grid-classic-col @(!isMobile ? "grid-classic-col-md--grow": "")">
+                    @if (!isMobile)
+                    {
+                        <div class="m-b-md">
+                            <div class="sticky-page-name p-b-n" sticky sticky-top="0">
+                                <div class="page-name-block sticky-page-name-inner">
+                                    <div class="page-name-block-item-main">
+                                        <h1 class="page-name-block-text sticky-page-name-text">
+                                            @T("Admin.Product.Edit.Goods")"@Model.Name"
+                                        </h1>
+                                    </div>
+                                    <div class="page-name-block-item-additional">
+                                        <a href="" class="link-danger m-r-xs" ng-click="product.deleteProduct(@Model.ProductId)">@T("Admin.Produt.Edit.Delete")</a>
+                                        @if (SettingsMain.StoreActive)
+                                        {
+                                            <a href="@Url.AbsoluteRouteUrl("Product", new {url = Model.UrlPath})" class="btn btn-sm btn-default" target="_blank">@T("Admin.View")</a>
+                                        }
+                                        <button type="submit" class="btn btn-sm btn-success" data-e2e="btnSave" data-button-validation disabled ng-disabled="!form.modified || product.isProcessGetTags === true">
+                                            <i class="fa fa-check"></i> @T("Admin.Save")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.Partial("BreadCrumbs", Model.BreadCrumbs)
+                        </div>
+                    }
+                    <div class="ibox">
+                        <div class="ibox-content relative" id="scroll-container">
+
+                            <div class="row" @RenderAttrShow("main")>
+                                <div class="col-xs-12 col-md-8 col-wl-9">
+                                    @Html.RenderModules("admin_product_top", new { productId = Model.ProductId })
+
+                                    <div class="product-setting product-setting--main">
+                                        <div id="main">
+                                            <div class="@(isMobile ? "" : "container-fluid")">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="flex top-xs">
+                                                            @if (!isMobile)
+                                                            {
+                                                                <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.Main")</h2>
+                                                            }
+
+                                                            <a href="https://www.advantshop.net/help/pages/add-product" target="_blank" class="@(!isMobile ? "p-l-sm": "m-b") link-academy link-invert inline-flex middle-xs product-mobile__link-help" style="padding-top:3px;">
+
+                                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                                                                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                                                </svg>
+                                                                <span>@T("Admin.Product.Edit.InstructionsAddProduct")</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="@(isMobile ? "" : "container-fluid")">
+                                                <div class="form-group middle-xs row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="ProductName" class="text-required">@T("Admin.Product.Edit.ProductName")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <div class="form-control-wrap">
+                                                            @Html.TextBoxFor(x => x.Name, new { @class = "form-control input-alt", ng_model = "product.Name", required = "required", validation_input_text = T("Admin.Product.Edit.ProductName").ToString() })
+                                                            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.ProductName")">
+                                                                <p>@T("Admin.Product.Edit.NameOfComodityItem")</p>
+                                                                <p>@T("Admin.Product.Edit.ObligatoryField")</p>
+                                                            </help-trigger>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group middle-xs row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="ArtNo" class="text-required">@T("Admin.Product.Edit.VendorCode")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <div class="form-control-wrap">
+                                                            @Html.TextBoxFor(x => x.ArtNo, new { @class = "form-control input-alt", ng_model = "product.ArtNo", required = "required", validation_input_text = T("Admin.Product.Edit.VendorCode").ToString() })
+                                                            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.ProductVendorCode")">
+                                                                <p>@T("Admin.Product.Edit.VendorCodeUnique")</p>
+                                                                <p>@T("Admin.Product.Edit.UsedToFind")</p>
+                                                            </help-trigger>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group middle-xs row product-mobile__form-group">
+                                                    <div class="col-xs col-md-2 first-md @(isMobile ? "p-l-n": "")">
+                                                        <div class="setting-label-wrap form-control-title form-control-title--none-margin form-control-title--slim">
+                                                            <label for="Enabled" class="form-label-block">@T("Admin.Product.Edit.Activity")</label>
+                                                        </div>
+                                                        @if (isMobile && Model.Hidden)
+                                                        {
+                                                            <span class="p-l-sm error-color">@T("Admin.Product.Edit.HiddenProduct")</span>
+                                                            <help-trigger class="ng-cloak" data-title="@T("Admin.Product.Edit.HiddenProduct")">
+                                                                @T("Admin.Product.Edit.HiddenProductText")
+                                                            </help-trigger>
+                                                        }
+                                                    </div>
+                                                    <div class="col-xs-slim col-md-9 relative first-xs">
+                                                        <label class="adv-checkbox-label form-label-block" data-e2e="ProductEnabled">
+                                                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "product.enabled", ng_init = "product.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                                                            <span class="adv-checkbox-emul" data-e2e="CheckBoxEnabledClick"></span>
+                                                        </label>
+
+                                                        @if (!isMobile && Model.Hidden)
+                                                        {
+                                                            <span class="p-l-sm error-color">@T("Admin.Product.Edit.HiddenProduct")</span>
+                                                            <help-trigger class="ng-cloak" data-title="@T("Admin.Product.Edit.HiddenProduct")">
+                                                                @T("Admin.Product.Edit.HiddenProductText")
+                                                            </help-trigger>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                @*24.10.18 функционал скрыт, не доделан вывод товаров в клиентке по наличию в каналах*@
+                                                @if (false)
+                                                {
+                                                    <div class="form-group middle-xs row product-mobile__form-group">
+                                                        <div class="col-xs-12 col-md-2">
+                                                            <div class="setting-label-wrap form-control-title">
+                                                                <label for="Enabled" class="form-label-block">@T("Admin.Product.Edit.EnabledInSalesChannel")</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-6 relative">
+                                                            Доступно в {{product.enableSalesChannelCount}} из {{product.allSalesChannelCount}}
+                                                            <ui-modal-trigger data-controller="'ModalSalesChannelExcludedCtrl'" controller-as="ctrl"
+                                                                              @*data-on-close="product.addCategory(result)"*@
+                                                                              data-on-close="product.loadSalesChannels(@Model.ProductId)"
+                                                                              data-resolve="{data: {productId: @Model.ProductId}}"
+                                                                              template-url="@Html.GetAssetPath("SalesChannelExcluded.html")">
+                                                                (<a href="" data-e2e="SalesChannelEdit">@T("Admin.Product.Edit.SetExcludedSalesChannel")</a>)
+                                                            </ui-modal-trigger>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="form-group top-xs row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="category">@T("Admin.Product.Edit.Category")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        @if (isMobile)
+                                                        {
+                                                            <div class="form-control input-alt">
+                                                                <div style="overflow-y:auto;max-height:200px;">
+                                                                    <div ng-repeat="c in product.categories track by c.value">
+                                                                        <div class="pseudo-category" ng-class="{'pseudo-category--active' : product.activeCategory == $index}" ng-click="product.selectPseudoSelectItem(c);product.activeCategory = $index;">{{c.label}}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <select bs-modifiable="false"
+                                                                    class="form-control form-control-category input-alt" multiple
+                                                                    ng-model="product.category"
+                                                                    ng-options="c.label for c in product.categories track by c.value" data-e2e="ProductCategory">
+                                                            </select>
+                                                        }
+
+                                                        <div class="note @(isMobile ? "m-t-sm" : "m-t-xs")">
+                                                            <ui-modal-trigger data-controller="'ModalAddCategoryCtrl'" controller-as="ctrl"
+                                                                              data-on-close="product.addCategories(result)"
+                                                                              data-resolve="{showRoot: false}"
+                                                                              template-url="@Html.GetAssetPath("AddCategory.html")">
+                                                                <a class="link-decoration-none" href="" data-e2e="CategoryAdd">@T("Admin.Product.Edit.Add")</a>
+                                                            </ui-modal-trigger>
+                                                            <a href="" ng-if="product.category != null" ng-click="product.deleteCategory()" class="link-danger word-spacing ng-cloak link-decoration-none" data-e2e="CategoryDelete">@T("Admin.Product.Edit.Delete")</a>
+                                                            <a href="" ng-click="product.setMainCategory()" class="word-spacing link-decoration-none" data-e2e="CategorySetMain">@T("Admin.Product.Edit.Default")</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title @(isMobile ? "flex middle-xs" : "")">
+                                                            <span class="@(isMobile ? "flex-grow" : "")">@T("Admin.Product.Edit.Markers")</span>
+                                                            @if (isMobile)
+                                                            {
+                                                                <help-trigger class="ng-cloak" data-title="@T("Admin.Product.Edit.Markers")">
+                                                                    @T("Admin.Product.Edit.ProductMarkers") <a href="http://www.advantshop.net/help/pages/markers" target="_blank">@T("Admin.Product.Edit.MarkersHitSaleDiscount")</a>
+                                                                </help-trigger>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <div class="product-markers @(isMobile ? "" : "form-group label-wrap product-mobile__form-group")">
+                                                            <label class="adv-checkbox-label category-label @(isMobile ? "" : "word-spacing")">
+                                                                @if (isMobile)
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.BestSeller, new { @class = "adv-checkbox-input", ng_model = "product.BestSeller", ng_init = "product.BestSeller=" + Model.BestSeller.ToLowerString() })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.BestSeller, new { @class = "adv-checkbox-input absolute", ng_model = "product.BestSeller", ng_init = "product.BestSeller=" + Model.BestSeller.ToLowerString() })
+                                                                }
+                                                                <span class="adv-checkbox-emul" data-e2e="CheckBoxBestSellerClick"></span>
+                                                                <span>@T("Admin.Product.Edit.Bestseller")</span>
+                                                            </label>
+                                                            <label class="adv-checkbox-label category-label @(isMobile ? "" : "word-spacing")">
+                                                                 @if (isMobile)
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.Recomended, new { @class = "adv-checkbox-input", ng_model = "product.Recomended", ng_init = "product.Recomended=" + Model.Recomended.ToLowerString() })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.Recomended, new { @class = "adv-checkbox-input absolute", ng_model = "product.Recomended", ng_init = "product.Recomended=" + Model.Recomended.ToLowerString() })
+                                                                }
+                                                                <span class="adv-checkbox-emul" data-e2e="CheckBoxRecomendedClick"></span>
+                                                                <span>@T("Admin.Product.Edit.Recommended")</span>
+                                                            </label>
+                                                            <label class="adv-checkbox-label category-label @(isMobile ? "" : "word-spacing")">
+                                                                 @if (isMobile)
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.New, new { @class = "adv-checkbox-input ", ng_model = "product.New", ng_init = "product.New=" + Model.New.ToLowerString() })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.New, new { @class = "adv-checkbox-input absolute", ng_model = "product.New", ng_init = "product.New=" + Model.New.ToLowerString() })
+                                                                }
+                                                                <span class="adv-checkbox-emul" data-e2e="CheckBoxNewClick"></span>
+                                                                 <span>@T("Admin.Product.Edit.Novelty")</span>
+                                                            </label>
+                                                            <label class="adv-checkbox-label category-label nowrap @(isMobile ? "" : "word-spacing")">
+
+                                                                  @if (isMobile)
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.Sales, new { @class = "adv-checkbox-input", ng_model = "product.Sales", ng_init = "product.Sales=" + Model.Sales.ToLowerString() })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.CheckBoxFor(x => x.Sales, new { @class = "adv-checkbox-input absolute", ng_model = "product.Sales", ng_init = "product.Sales=" + Model.Sales.ToLowerString() })
+                                                                }
+                                                                <span class="adv-checkbox-emul" data-e2e="CheckBoxSalesClick"></span>
+                                                                <span>@T("Admin.Product.Edit.Sale")</span>
+                                                            </label>
+                                                            @if (!isMobile)
+                                                            {
+                                                                <help-trigger class="ng-cloak" data-title="@T("Admin.Product.Edit.Markers")">
+                                                                    @T("Admin.Product.Edit.ProductMarkers") <a href="http://www.advantshop.net/help/pages/markers" target="_blank">@T("Admin.Product.Edit.MarkersHitSaleDiscount")</a>
+                                                                </help-trigger>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @{
+                                                    var downloadLinkExist = string.IsNullOrEmpty(Model.DownloadLink);
+                                                }
+                                                <div class="form-group middle-xs row product-mobile__form-group" ng-init="isNeedEditDownloadLink = @(downloadLinkExist.ToLowerString())">
+                                                    @if (!isMobile)
+                                                    {
+                                                        <div class="col-xs-slim col-md-2 first-sm @(isMobile ? "flex-grow flex middle-xs p-l-xs" : "")">
+                                                            <div class="setting-label-wrap @(isMobile ? "flex-grow" : "")">
+                                                                <label for="IsDigital">@T("Admin.Product.Edit.IsDigital")</label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="relative @(isMobile ? "col-xs-12" : "col-xs-6 col-sm-2 col-md-2 col-wl-1 ")">
+                                                        <div class="row middle-xs">
+                                                            <div class="relative @(isMobile ? "col-xs-12" : "col-xs-1 col-sm-3 col-md-slim")">
+                                                                <div class="form-control-wrap">
+                                                                    <label class="adv-checkbox-label form-label-block flex @(isMobile ? "flex-grow" : "")" data-e2e="DoNotApplyOtherDiscounts">
+                                                                        @Html.CheckBoxFor(x => x.IsDigital, new { @class = "adv-checkbox-input", ng_model = "product.IsDigital" })
+                                                                        <span class="adv-checkbox-emul"></span>
+                                                                        @if (isMobile)
+                                                                        {
+                                                                        <span class="m-l-sm">@T("Admin.Product.Edit.IsDigital")</span>
+                                                                        }
+                                                                    </label>
+                                                                    @if (isMobile)
+                                                                    {
+                                                                        <help-trigger class="ng-cloak" data-title="@T("Admin.Product.Edit.IsDigital")">
+                                                                            @T("Admin.Product.Edit.IsDigital.Help")
+                                                                        </help-trigger>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            @if (!isMobile)
+                                                            {
+                                                                <help-trigger class="last-xs ng-cloak" data-title="@T("Admin.Product.Edit.IsDigital")">
+                                                                    @T("Admin.Product.Edit.IsDigital.Help")
+                                                                </help-trigger>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    @if (!isMobile)
+                                                    {
+                                                        <div class="col-xs-12 col-md-2" ng-if="product.IsDigital === true" >
+                                                            <div class="setting-label-wrap form-control-title">
+                                                                <label for="downloadLink">@T("Admin.Product.Edit.DownloadLink")</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-5 col-wl-6 relative" ng-if="product.IsDigital === true">
+                                                            <div class="form-control-wrap @(downloadLinkExist ? "": "ng-hide")" ng-show="isNeedEditDownloadLink">
+                                                                @Html.TextBoxFor(x => x.DownloadLink, new { @class = "form-control input-alt", ng_model = "product.DownloadLink", validation_input_text = T("Admin.Product.Edit.DownloadLink").ToString() })
+                                                            </div>
+                                                            <div class="form-control-wrap product-download-link @(downloadLinkExist ? "ng-hide": "")" ng-show="!isNeedEditDownloadLink">
+                                                                <a class="product-download-link__text" href="@Model.DownloadLink" target="_blank">@Model.DownloadLink</a>
+                                                                <a class="link-invert ui-grid-custom-service-icon fas fa-pencil-alt" ng-click="isNeedEditDownloadLink = true"></a>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @if(isMobile)
+                                                {
+                                                    <div class="form-group middle-xs row product-mobile__form-group" 
+                                                         ng-init="isNeedEditDownloadLink = @(downloadLinkExist.ToLowerString())"
+                                                         ng-if="product.IsDigital === true">
+                                                        <div class="col-xs-12 col-md-2">
+                                                            <div class="setting-label-wrap form-control-title">
+                                                                <label for="downloadLink">@T("Admin.Product.Edit.DownloadLink")</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-6 relative">
+                                                            <div class="form-control-wrap @(downloadLinkExist ? "": "ng-hide")" ng-show="isNeedEditDownloadLink">
+                                                                @Html.TextBoxFor(x => x.DownloadLink, new { @class = "form-control input-alt", ng_model = "product.DownloadLink", validation_input_text = T("Admin.Product.Edit.DownloadLink").ToString() })
+                                                            </div>
+                                                            <div class="form-control-wrap @(downloadLinkExist ? "ng-hide": "")" ng-show="!isNeedEditDownloadLink">
+                                                                <a class="product-download-link" href="@Model.DownloadLink" target="_blank">
+                                                                    <span class="product-download-link__text">@Model.DownloadLink</span>
+                                                                </a>
+                                                                <a class="link-invert fas fa-pencil-alt m-l-sm link-decoration-none" ng-click="isNeedEditDownloadLink = true"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="form-group middle-xs row product-mobile__form-group" ng-show="!product.useOfferBarCode">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="barcode">@T("Admin.Product.Edit.Barcode")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <div class="form-control-wrap">
+                                                            @Html.TextBoxFor(x => x.BarCode, new { @class = "form-control input-alt", ng_model = "product.BarCode", validation_input_text = T("Admin.Product.Edit.Barcode").ToString() })
+                                                            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.ProductBarcode")">
+                                                                <p>@T("Admin.Product.Edit.BarcodeIsUnique")</p>
+                                                                <p>@T("Admin.Product.Edit.BarcodeHint")</p>
+                                                            </help-trigger>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--@{
+                                                    //var downloadLinkExist = string.IsNullOrEmpty(Model.DownloadLink);
+                                                }
+                                                <div class="form-group middle-xs row product-mobile__form-group" ng-init="isNeedEditDownloadLink = @(downloadLinkExist.ToLowerString())">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="downloadLink">@T("Admin.Product.Edit.DownloadLink")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+
+                                                        <div class="form-control-wrap @(downloadLinkExist ? "": "ng-hide")" ng-show="isNeedEditDownloadLink">
+                                                            @Html.TextBoxFor(x => x.DownloadLink, new { @class = "form-control input-alt", ng_model = "product.DownloadLink", validation_input_text = T("Admin.Product.Edit.DownloadLink").ToString() })
+                                                        </div>
+
+                                                        <div class="form-control-wrap @(downloadLinkExist ? "ng-hide": "")" ng-show="!isNeedEditDownloadLink">
+                                                            <a href="@Model.DownloadLink" target="_blank"><span>@Model.DownloadLink</span></a>
+                                                            <a class="link-invert ui-grid-custom-service-icon fas fa-pencil-alt @(isMobile ? "m-l-xs p-l-sm" : "")" ng-click="isNeedEditDownloadLink = true"></a>
+                                                        </div>
+
+                                                    </div>
+                                                </div>-->
+                                                <div class="form-group middle-xs row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <label for="comment">@T("Admin.Product.Edit.Comment")</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <div class="form-control-wrap">
+                                                            @Html.TextArea("comment", Model.Comment, new { @class = "form-control input-alt r-v", ng_model = "product.Comment", rows = "1", validation_input_text = T("Admin.Product.Edit.Comment").ToString() })
+                                                            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.Comment")">
+                                                                @T("Admin.Product.Edit.CommentHint")
+                                                            </help-trigger>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row product-mobile__form-group">
+                                                    <div class="col-xs-12 col-md-2">
+                                                        <div class="setting-label-wrap form-control-title">
+                                                            <div>@T("Admin.Product.Edit.Export")</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-9 relative">
+                                                        <ui-modal-trigger size="middle" data-controller="'ModalExportOptionsCtrl'" controller-as="ctrl"
+                                                                          template-url="@Html.GetAssetPath("exportOptions.html")"
+                                                                          data-resolve="{ 'productId': @Model.ProductId }">
+                                                            <a class="product-setting-link" href="">@T("Admin.Product.Edit.ExportOptions")</a>
+                                                        </ui-modal-trigger>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-xs-12 col-md-4 col-wl-3">
+                                    @Html.Partial("_RightBlock", Model)
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--price" @RenderAttrShow("price")>
+                                <div id="price">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="container-fluid">
+                                            <div class="row middle-xs">
+                                                <div class="col-xs-12">
+                                                    <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.PriceAndAvailability")</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="currency">@T("Admin.Product.Edit.Currency")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.CurrencyId, Model.Currencies, new { @class = "form-control input-alt", ng_model = "product.CurrencyId", ng_init = "product.CurrencyId='" + Model.CurrencyId + "'" })
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.Currency")">
+                                                        <p>@T("Admin.Product.Edit.CanChooseCurrency")</p>
+                                                        <p>@T("Admin.Product.Edit.LearnMoreAboutCurrencies")</p>
+                                                        <p><a href="http://www.advantshop.net/help/pages/currency" target="_blank">@T("Admin.Product.Edit.InsctructionSettingCurrency")</a></p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="discounts">@T("Admin.Product.Edit.Discounts")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    <div class="input-group" ng-init="product.discountType=@((int)Model.DiscountType)">
+                                                        @Html.TextBoxFor(x => x.DiscountPercent, new { ng_model_options = "{ allowInvalid: true}", @class = "form-control input-alt" + (Model.DiscountType != AdvantShop.Catalog.DiscountType.Percent ? " ng-hide" : ""), ng_model = "product.DiscountPercent", ng_show = "product.discountType === 0", validation_input_float = "", min = "0", max = "100", validation_input_text = T("Admin.Product.Edit.Discounts").ToString() })
+                                                        @Html.TextBoxFor(x => x.DiscountAmount, new { @class = "form-control input-alt" + (Model.DiscountType != AdvantShop.Catalog.DiscountType.Amount ? " ng-hide" : ""), ng_model = "product.DiscountAmount", ng_show = "product.discountType === 1", validation_input_float = "", min = "0", validation_input_text = T("Admin.Product.Edit.Discounts").ToString(), style = "margin-left:0;" })
+                                                        <div class="product-discount input-group-btn">
+                                                            <span class="btn @(Model.DiscountType == AdvantShop.Catalog.DiscountType.Percent ? (isMobile ? "btn-success product-currency-active" : "product-currency-active") : "btn-default")"
+                                                                  ng-click="product.setDiscountType(0)"
+                                                                  ng-class="{'product-currency-active @(isMobile ? "btn-success": "")':product.discountType === 0, 'btn-default': product.discountType !== 0}"
+                                                                  data-e2e="DiscountPercent"><span>%</span></span>
+                                                            <span class="btn @(Model.DiscountType == AdvantShop.Catalog.DiscountType.Amount ? (isMobile ? "btn-success product-currency-active" : "product-currency-active") : "btn-default")"
+                                                                  ng-click="product.setDiscountType(1)"
+                                                                  ng-class="{'product-currency-active @(isMobile ? "btn-success": "")':product.discountType === 1, 'btn-default': product.discountType !== 1}"
+                                                                  data-e2e="DiscountAmount"><span>@Model.Currency.Symbol</span></span>
+                                                            </div>
+                                                        </div>
+                                                        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.Discounts")">
+                                                            <p>@T("Admin.Product.Edit.DiscountOnThePrice")</p>
+                                                            <p>@T("Admin.Product.Edit.DiscountInPercentageOrCurrency")</p>
+                                                            <p>@T("Admin.Product.Edit.DiscountLinks")</p>
+                                                        </help-trigger>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="@(isMobile ? "" : "container-fluid")">
+                                            <div class="form-group middle-xs row product-mobile__form-group">
+                                                @if (!isMobile)
+                                                {
+                                                    <div class="col-xs-slim col-md-2 first-sm @(isMobile ? "flex-grow flex middle-xs p-l-xs" : "")">
+                                                        <div class="setting-label-wrap @(isMobile ? "flex-grow" : "")">
+                                                            <label for="AllowPreOrder">@T("Admin.Product.Edit.OnRequestOrStock")</label>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="col-xs-12 col-md-slim relative">
+                                                    <div class="form-control-wrap">
+                                                        <label class="adv-checkbox-label  @(isMobile ? "form-label-block flex flex-grow" : "category-label")">
+                                                            @Html.CheckBoxFor(x => x.AllowPreOrder, new { @class = "adv-checkbox-input", ng_model = "product.AllowPreOrder", ng_init = "product.AllowPreOrder=" + Model.AllowPreOrder.ToLowerString() })
+                                                            <span class="adv-checkbox-emul" data-e2e="AllowPreOrderClick"></span>
+                                                            @if (isMobile)
+                                                            {
+                                                                <span class="m-l-sm">@T("Admin.Product.Edit.OnRequestOrStock")</span>
+                                                            }
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="@(isMobile ? "" : "container-fluid")">
+                                            <div class="form-group middle-xs row product-mobile__form-group">
+                                                @if (!isMobile)
+                                                {
+                                                    <div class="col-xs-slim col-md-2 first-sm @(isMobile ? "flex-grow flex middle-xs p-l-xs" : "")">
+                                                        <div class="setting-label-wrap @(isMobile ? "flex-grow" : "")">
+                                                            <label for="DoNotApplyOtherDiscounts">@T("Admin.Product.Edit.DoNotApplyOtherDiscounts")</label>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="col-xs-12 col-md-slim relative">
+                                                    <div class="form-control-wrap">
+                                                        <label class="adv-checkbox-label form-label-block flex @(isMobile ? "flex-grow" : "")" data-e2e="DoNotApplyOtherDiscounts">
+                                                            @Html.CheckBoxFor(x => x.DoNotApplyOtherDiscounts, new { @class = "adv-checkbox-input", ng_model = "product.DoNotApplyOtherDiscounts" })
+                                                            <span class="adv-checkbox-emul"></span>
+                                                            @if (isMobile)
+                                                            {
+                                                                <span class="m-l-sm">@T("Admin.Product.Edit.DoNotApplyOtherDiscounts")</span>
+                                                            }
+                                                        </label>
+                                                        @if (isMobile)
+                                                        {
+                                                            <help-trigger class="last-xs ng-cloak" data-title="@T("Admin.Product.Edit.DoNotApplyOtherDiscounts")">
+                                                                @T("Admin.Product.Edit.DoNotApplyOtherDiscountsHint")
+                                                            </help-trigger>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                @if (!isMobile)
+                                                {
+                                                    <help-trigger class="last-xs ng-cloak" data-title="@T("Admin.Product.Edit.DoNotApplyOtherDiscounts")">
+                                                        @T("Admin.Product.Edit.DoNotApplyOtherDiscountsHint")
+                                                    </help-trigger>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        @if (BonusSystem.IsActive)
+                                        {
+                                            <div class="@(isMobile ? "" : "container-fluid")">
+                                                <div class="middle-xs row @(isMobile ? "m-b-xs" : "form-group product-mobile__form-group")">
+                                                    @if (!isMobile)
+                                                    {
+                                                        <div class="col-xs-slim col-md-2 first-sm">
+                                                            <div class="setting-label-wrap">
+                                                                <label for="AccrueBonuses">@T("Admin.Product.Edit.AddPointsForProduct")</label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="col-xs-slim col-md-6 relative first-xs">
+                                                        <label class="adv-checkbox-label form-label-block" data-e2e="ChargeBonuses">
+                                                            @Html.CheckBoxFor(x => x.AccrueBonuses, new { @class = "adv-checkbox-input", ng_model = "product.AccrueBonuses" })
+                                                            <span class="adv-checkbox-emul"></span>
+                                                            @if (isMobile)
+                                                            {
+                                                                <span>@T("Admin.Product.Edit.AddPointsForProduct")</span>
+                                                            }
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div class="@(isMobile ? "" : "container-fluid") grid-offers-wrapper" ng-init="product.initOffers(@Model.UseOfferWeightAndDimensions.ToLowerString(), @Model.UseOfferBarCode.ToLowerString(), @Model.PriceRules, '@SettingsMain.SiteUrl', @Model.AvailableWarehouses.ToLowerString())" lozad-adv="product.scrollToActiveElement('gridOffersShowed')">
+                                            <div class="row ng-cloak @(isMobile ? "m-b-xs" : "form-group product-mobile__form-group")" ng-if="product.gridOffersShowed">
+                                                <div class="col-xs-12 col-wl-12 product-mobile__ui-grid-custom-wrap" ng-init="product.getOffersValidation()">
+                                                    <div ng-if="product.offersValidation != null" ng-bind="product.offersValidation" class="m-b error-color"></div>
+                                                    <ui-grid-custom class="ui-grid-custom-inputs-alt"
+                                                                    grid-unique-id="gridOffers"
+                                                                    grid-on-init="product.gridOffersOnInit(grid)"
+                                                                    grid-filter-enabled="false"
+                                                                    grid-pagination-enabled="false"
+                                                                    grid-selection-enabled="false"
+                                                                    grid-params="{ProductId: product.productId}"
+                                                                    grid-options="product.gridOffersOptions"
+                                                                    grid-url="'product/getOffers'"
+                                                                    grid-inplace-url="'product/updateOffer'"
+                                                                    grid-empty-text="'@T("Admin.Product.Edit.ProductHasNoPrices")'"
+                                                                    grid-on-inplace-apply="product.gridOffersUpdate()"
+                                                                    grid-extend-ctrl="product"
+                                                                    grid-row-identificator="'OfferId'"
+                                                                    grid-swipe-line="true">
+                                                        @*<ui-grid-custom-override-control class="ng-cloak">
+                                <ui-modal-trigger data-controller="'ModalAddEditOfferCtrl'"
+                                                  controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("addEditOffer.html")"
+                                                  data-resolve="{'ProductId': row.entity.ProductId,'OfferId': row.entity.OfferId}"
+                                                  data-on-close="grid.appScope.$ctrl.gridExtendCtrl.gridOffersUpdate()">
+                                    <div class="card card--gap-row-sm">
+                                        <div class="">
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Артикул:</div>
+                                                <div>{{row.entity.ArtNo}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Размер:</div>
+                                                <div>{{row.entity.Size ? row.entity.Size : '-'}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Цвет:</div>
+                                                <div>{{row.entity.Color ? row.entity.Color : '-'}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Цена:</div>
+                                                <div>{{row.entity.BasePrice}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Закупочная цена:</div>
+                                                <div>{{row.entity.SupplyPrice}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs m-b-xs">
+                                                <div class="m-r-sm card__title">Количество:</div>
+                                                <div>{{row.entity.Amount}}</div>
+                                            </div>
+                                            <div class="flex middle-xs between-xs">
+                                                <div class="m-r-sm card__title">Главная:</div>
+                                                <div>{{row.entity.Main ? 'Да' : 'Нет'}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui-modal-trigger>
+                            </ui-grid-custom-override-control>*@
+                                                    </ui-grid-custom>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="@(isMobile ? "" : "container-fluid") m-b-sm">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <div class="@(isMobile ? "product-offers__add" : "")">
+                                                        <ui-modal-trigger data-controller="'ModalAddEditOfferCtrl'" controller-as="ctrl" template-url="@Html.GetAssetPath("addEditOffer.html")"
+                                                                          data-resolve="{'ProductId': product.productId, 'UseOfferWeightAndDimensions': product.useOfferWeightAndDimensions, 'UseOfferBarCode': product.useOfferBarCode}"
+                                                                          data-on-close="product.gridOffersUpdate()">
+                                                            <a href="" class="btn btn-sm @(isMobile ? "btn-info btn--full-width" : "btn-action")">@T("Admin.Product.Edit.AddPrice")</a>
+                                                        </ui-modal-trigger>
+                                                        <span class="m-l-xs">
+                                                            @T("Admin.product.Edit.Directories")
+                                                        <a href="@Url.AbsoluteActionUrl("Index", "SettingsCatalog", new { catalogTab = "colors" })" target="_blank">
+                                                            @T("Admin.Product.Edit.OfColors")
+                                                        </a> @T("Admin.Product.Edit.And")
+                                                        <a href="@Url.AbsoluteActionUrl("Index", "SettingsCatalog", new { catalogTab = "sizes" })" target="_blank">
+                                                            @T("Admin.Product.Edit.Sizes")
+                                                        </a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="SizeChart">@T("Admin.Product.Edit.SizeChart")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.SizeChartId, Model.SizeCharts, new { @class = "form-control input-alt", ng_model = "product.SizeChartId", ng_init = "product.SizeChartId='" + Model.SizeChartId + "'" })
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.SizeChart")">
+                                                        @T("Admin.Product.Edit.SizeChartHint")
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 @(isMobile ? "m-t-sm" : "m-l-md")">
+                                                <span>
+                                                    @T("Core.Catalog.SizeChart.Reference")
+                                                    <a href="@Url.AbsoluteActionUrl("Index", "SettingsCatalog", new { catalogTab = "sizecharts" })" target="_blank">
+                                                        @T("Core.Catalog.SizeChart.SizeChart")
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="Unit">@T("Admin.Product.Edit.UnitOfMeasure")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.UnitId, Model.Units, new { @class = "form-control input-alt", ng_model = "product.UnitId", ng_init = "product.UnitId='" + Model.UnitId + "'" })
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.UnitOfMeasure")">
+                                                        <p>@T("Admin.Product.Edit.UnitsOfProduct")</p>
+                                                        <p>@T("Admin.Product.Edit.Example")<br>@T("Admin.Product.Edit.PiecesLitersEtc")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 @(isMobile ? "m-t-sm" : "m-l-md")">
+                                                <span>
+                                                    @T("Admin.Product.Edit.Directory")
+                                                    <a href="@Url.AbsoluteActionUrl("Index", "SettingsCatalog", new { catalogTab = "units" })" target="_blank">
+                                                        @T("Admin.Product.Edit.UnitsMeasurement")
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")"
+                                        data-ng-init="product.Multiplicity = '@(Model.Multiplicity)'; product.MinAmount = @(Model.MinAmount.HasValue == false ? "null" : "'" + Model.MinAmount.Value.ToInvariantString() + "'"); product.MaxAmount = @(Model.MaxAmount.HasValue == false ? "null" : "'"+ Model.MaxAmount.Value.ToInvariantString() +"'");">
+                                        <div class="form-group row middle-xs product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="MinAmount">@T("Admin.Product.Edit.LimitationsOnMinimumAndMaximumQuantity")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs@(isMobile ? "-5" : "") col-md-1"
+                                                data-spinbox
+                                                data-validation-text="@(T("Admin.Product.Edit.MinimumQuantityOfGoods") )"
+                                                data-is-visible-arrows="false"
+                                                data-is-required="false"
+                                                data-need-comma="true"
+                                                data-only-validation="true"
+                                                data-input-name="MinAmount"
+                                                data-value="product.MinAmount"
+                                                data-step="product.Multiplicity"
+                                                data-max="product.MaxAmount"
+                                                data-min="product.MinAmountLimit"></div>
+                                            <div class="dash @(isMobile ? "col-xs-1 dash text-center" : "")">-</div>
+                                            <div class="col-xs@(isMobile ? "-5" : "") col-md-1 relative"
+                                                data-spinbox
+                                                data-validation-text="@(T("Admin.Product.Edit.MaximumQuantityOfGoods") )"
+                                                data-is-visible-arrows="false"
+                                                data-is-required="false"
+                                                data-need-comma="true"
+                                                data-only-validation="true"
+                                                data-input-name="MaxAmount"
+                                                data-value="product.MaxAmount"
+                                                data-step="product.Multiplicity"
+                                                data-max="product.MaxAmountLimit"
+                                                data-min="product.MinAmount"></div>
+                                            <div class="col-xs-@(isMobile ? "1" : "slim") p-l-n">
+                                                <help-trigger class="ng-cloak help-trigger-icon @(isMobile ? "m-l-sm" : "")" data-title="@T("Admin.Product.Edit.MinAndMaxQuantity")">
+                                                    <p>@T("Admin.Product.Edit.DefinesMinAndMaxPossibleQuantity")</p>
+                                                    <p>@T("Admin.Product.Edit.Example2.10")</p>
+                                                    <p>@T("Admin.Product.Edit.IfRestrictionNotNecessery")</p>
+                                                </help-trigger>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap  form-control-title">
+                                                    <label for="Multiplicity">@T("Admin.Product.Edit.NumberMultiplicity")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 @(isMobile ? "col-md-2" : "col-md-1") relative">
+                                                <div class="form-control-wrap">
+                                                    <div data-spinbox
+                                                         data-validation-text="@(T("Admin.Product.Edit.MaximumQuantityOfGoods"))"
+                                                         data-is-visible-arrows="false"
+                                                         data-need-comma="true"
+                                                         data-input-name="Multiplicity"
+                                                         data-value="product.Multiplicity"
+                                                         data-step="0"></div>
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs  @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.NumberMultiplicity")">
+                                                        <p>@T("Admin.Product.Edit.ImportantOptionsIfProductLessOne")</p>
+                                                        <p>@T("Admin.Product.Edit.ValueMustBeGraterThen0")</p>
+                                                        <p>@T("Admin.Product.Edit.ExampleMeters")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--delivery" @RenderAttrShow("fiscalization")>
+                                <div id="fiscalization">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.Fiscalization")</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="TaxId">@T("Admin.Product.Edit.Tax")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.TaxId, Model.Taxes, new { @class = "form-control input-alt", ng_model = "product.TaxId", ng_init = "product.TaxId='" + Model.TaxId + "'" })
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.Tax")">
+                                                        <p>@T("Admin.Product.Edit.SpecifyTax")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="PaymentSubjectType">@T("Admin.Product.Edit.SubjectCalculation")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.PaymentSubjectType, Model.PaymentSubjectTypes, new { @class = "form-control input-alt", ng_model = "product.PaymentSubjectType", ng_init = "product.PaymentSubjectType='" + Model.PaymentSubjectType + "'" })
+                                                    <help-trigger data-use-template="true" class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.SubjectCalculation")">
+                                                        <p>@T("Admin.Product.Edit.ParameterPrintingChecks")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="PaymentMethodType">@T("Admin.Product.Edit.MethodCalculation")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-3 col-wl-2 relative">
+                                                <div class="form-control-wrap">
+                                                    @Html.DropDownListFor(x => x.PaymentMethodType, Model.PaymentMethodTypes, new { @class = "form-control input-alt", ng_model = "product.PaymentMethodType", ng_init = "product.PaymentMethodType='" + Model.PaymentMethodType + "'" })
+                                                    <help-trigger data-use-template="true" class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-xs p-l-sm" : "")" data-title="@T("Admin.Product.Edit.MethodCalculation")">
+                                                        <p>@T("Admin.Product.Edit.ParameterPrintingChecks")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--delivery" @RenderAttrShow("delivery")>
+                                <div id="delivery">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.Delivery")</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="@(isMobile ? "" : "container-fluid")" ng-show="!product.useOfferWeightAndDimensions">
+                                        <div class="form-group middle-xs row relative product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="Weight">@T("Admin.Product.Edit.Weight")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 @(isMobile ? "flex middle-xs col-md-2" : "col-md-1")">
+                                                @Html.TextBoxFor(x => x.Weight, new { @class = "form-control input-alt", ng_model = "product.Weight", validation_input_float = "", validation_input_text = T("Admin.Product.Edit.Weight").ToString() })
+                                                @if (isMobile)
+                                                {
+                                                    <span class="@(isMobile ? "m-l-sm" : "")">@T("Admin.Product.Edit.Kg")</span>
+                                                    <help-trigger class="ng-cloak m-l-sm" data-title="@T("Admin.Product.Edit.ProductWeight")">
+                                                        <p>@T("Admin.Product.Edit.UsedToCalculate")</p>
+                                                        <p>@T("Admin.Product.Edit.Example")</p>
+                                                        <ul>
+                                                            <li>2 @T("Admin.Product.Edit.Kg")</li>
+                                                            <li>1,2 @T("Admin.Product.Edit.Kg")</li>
+                                                            <li>0.3 @T("Admin.Product.Edit.Kg")</li>
+                                                        </ul>
+                                                    </help-trigger>
+                                                }
+                                            </div>
+                                            @if (!isMobile)
+                                            {
+                                                <span>@T("Admin.Product.Edit.Kg")</span>
+                                                <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Product.Edit.ProductWeight")">
+                                                    <p>@T("Admin.Product.Edit.UsedToCalculate")</p>
+                                                    <p>@T("Admin.Product.Edit.Example")</p>
+                                                    <ul>
+                                                        <li>2 @T("Admin.Product.Edit.Kg")</li>
+                                                        <li>1,2 @T("Admin.Product.Edit.Kg")</li>
+                                                        <li>0.3 @T("Admin.Product.Edit.Kg")</li>
+                                                    </ul>
+                                                </help-trigger>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")" ng-show="!product.useOfferWeightAndDimensions">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="Length">@T("Admin.Product.Edit.Dimensions")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs col-md-1 @(isMobile ? "flex flex-column-reverse" : "")">
+                                                @Html.TextBoxFor(x => x.Length, new { @class = "form-control input-alt", ng_model = "product.Length", validation_input_float = "", validation_input_text = T("Admin.Product.Edit.Length").ToString() })
+                                                <span class="@(isMobile ? "inline-block m-b-sm" : "italic sub")">@T("Admin.Product.Edit.Length")</span>
+                                            </div>
+                                            <div class="@(isMobile ? "p-t-md" : "dash align-top")">-</div>
+                                            <div class="col-xs col-md-1 @(isMobile ? "flex flex-column-reverse" : "")">
+                                                @Html.TextBoxFor(x => x.Width, new { @class = "form-control input-alt", ng_model = "product.Width", validation_input_float = "", validation_input_text = T("Admin.Product.Edit.Width").ToString() })
+                                                <span class="@(isMobile ? "inline-block m-b-sm" : "italic sub")">@T("Admin.Product.Edit.Width")</span>
+                                            </div>
+                                            <div class="@(isMobile ? "p-t-md" : "dash align-top")">-</div>
+                                            <div class="col-xs col-md-1 @(isMobile ? "flex flex-column-reverse" : "")">
+                                                @Html.TextBoxFor(x => x.Height, new { @class = "form-control input-alt", ng_model = "product.Height", validation_input_float = "", validation_input_text = T("Admin.Product.Edit.Height").ToString() })
+                                                <span class="@(isMobile ? "inline-block m-b-sm" : "italic sub")">@T("Admin.Product.Edit.Height")</span>
+                                            </div>
+                                            <div class="relative @(isMobile ? "m-l-xs m-r-sm" : "dash align-top")" style="@(isMobile ? "text-align:end;padding-top: 25px;" : "")">
+                                                @T("Admin.Products.Edit.Mm")
+                                                <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs" data-title="@T("Admin.Product.Edit.ProductDimensions")">
+                                                    <p>@T("Admin.Product.Edit.UsedToCalculateCosInDeliverySystems")</p>
+                                                    <p>@T("Admin.Product.Edit.Example15x20"):</p>
+                                                    <ul>
+                                                        <li>@T("Admin.Product.Edit.Lenght200")</li>
+                                                        <li>@T("Admin.Product.Edit.Width150")</li>
+                                                        <li>@T("Admin.Product.Edit.Height3")</li>
+                                                    </ul>
+                                                </help-trigger>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="form-group middle-xs row product-mobile__form-group">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="setting-label-wrap form-control-title">
+                                                    <label for="ShippingPrice">@T("Admin.Product.Edit.CostOfDelivery")</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-2 relative">
+                                                <div class="form-control-wrap">
+                                                    <div class="input-group @(isMobile ? "middle-xs" : "")">
+                                                        @Html.TextBoxFor(x => x.ShippingPrice, new { @class = "form-control input-alt", ng_model = "product.ShippingPrice", validation_input_float = "", validation_input_text = T("Admin.Product.Edit.CostOfDelivery").ToString() })
+                                                        <div class="@(isMobile ? "" : "input-group-btn")">
+                                                            <span class="@(isMobile ? "m-l-sm" : "btn btn-default")"><span>@baseCurrencySymbol</span></span>
+                                                        </div>
+                                                    </div>
+                                                    <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs" data-title="@T("Admin.Product.Edit.CostOfDeliveryOfUnit")">
+                                                        <p>@T("Admin.Product.Edit.ThisParameterDeliveryDepending")</p>
+                                                        <p>@T("Admin.Product.Edit.ThisParameterExportedIntoYandexMarket")</p>
+                                                        <p>@T("Admin.Product.Edit.IfParameterNotNeeded")</p>
+                                                    </help-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--photos" lozad-adv="product.scrollToActiveElement('productPhotosShowed')" @RenderAttrShow("photos")>
+                                <div id="photos" bs-modifiable="false">
+                                    <div ng-if="product.productPhotosShowed">
+                                        <product-photos data-product-id="@Model.ProductId"
+                                                        data-show-google-image-search="@Model.ShowGoogleImageSearch.ToLowerString()"
+                                                        data-show-image-search="@Model.ShowImageSearchEnabled.ToLowerString()"
+                                                        data-is-mobile-mode="@isMobile.ToLowerString()"
+                                                        on-init="product.initProductPhotos(productPhotos)"
+                                                        on-upload-photo="product.updateMainPhoto(mainPhoto)"
+                                                        on-change-main-photo="product.updateMainPhoto(mainPhoto)"
+                                                        on-delete-photo="product.updateMainPhoto(mainPhoto)"></product-photos>
+                                        <product-photos360 data-product-id="@Model.ProductId"></product-photos360>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--video" lozad-adv="product.scrollToActiveElement('productVideosShowed')" @RenderAttrShow("video") @*in-view="$inview ? product.productVideosShowed = true : null" in-view-options="{throttle : @inViewThrottle}"*@>
+                                <div id="video">
+                                    <product-videos ng-if="product.productVideosShowed" class="ng-cloak" data-product-id="@Model.ProductId" data-is-mobile-mode="@isMobile.ToLowerString()"></product-videos>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--description" @RenderAttrShow("description")>
+                                <div id="description">
+                                    <div>
+                                        @if (!isMobile)
+                                        {
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.Description")</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="@(isMobile ? "" : "container-fluid")">
+                                            <div class="form-group row product-mobile__form-group">
+                                                <div class="col-xs-12 col-md-2">
+                                                    <div class="@(isMobile ? "form-control-title" : "m-b-wl")">
+                                                        <div class="m-b-xs @(isMobile ? "form-control-title" : "bold")">@T("Admin.Product.Edit.ShortDescription")</div>
+                                                        <span class="font-weight-normal">@T("Admin.Product.Edit.ListedInListOfProducts")</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-10">
+                                                    <div ng-if="form.BriefDescription.$error.maxlength" class="m-b-xs error-color bold">@T("Admin.TextLengthLimit.Format", AdvantShop.Catalog.ProductService.MaxDescLength)</div>
+                                                    @Html.TextAreaFor(x => x.BriefDescription, new { @class = "wysiwyg", ckeditor = "{height: 150}", maxlength = AdvantShop.Catalog.ProductService.MaxDescLength, ng_model = "product.briefdescription" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="@(isMobile ? "" : "container-fluid")">
+                                            <div class="form-group row product-mobile__form-group">
+                                                <div class="col-xs-12 col-md-2">
+                                                    <div class="form-control-title">
+                                                        <div class="m-b-xs @(isMobile ? "form-control-title" : "bold")">@T("Admin.Product.Edit.Description")</div>
+                                                        <span class="font-weight-normal">@T("Admin.Product.Edit.DisplayedInProductCard")</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-10">
+                                                    <div ng-if="form.Description.$error.maxlength" class="m-b-xs error-color bold">@T("Admin.TextLengthLimit.Format", AdvantShop.Catalog.ProductService.MaxDescLength)</div>
+                                                    @Html.TextAreaFor(x => x.Description, new { @class = "wysiwyg", ckeditor = "", maxlength = AdvantShop.Catalog.ProductService.MaxDescLength, ng_model = "product.description" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--properties" lozad-adv="product.scrollToActiveElement('productPropertiesShowed')" @RenderAttrShow("properties") @*in-view="$inview ? product.productPropertiesShowed = true : null" in-view-options="{throttle : @inViewThrottle}"*@>
+                                <div id="properties">
+                                    <product-properties drop-down-list="@Model.IsPropertyGroupsDropDownList.ToLowerString()" ng-if="product.productPropertiesShowed" class="ng-cloak" data-product-id="@Model.ProductId" data-is-mobile-mode="@isMobile.ToLowerString()"></product-properties>
+                                </div>
+                            </div>
+
+                            <div class="product-setting product-setting--reviews" lozad-adv="product.scrollToActiveElement('productReviewsShowed')" @RenderAttrShow("reviews")>
+                                <div id="reviews" @Html.Raw(isMobile ? "data-ng-if=\"product.activeMenuId === 'reviews'\"" : "")>
+                                    <product-reviews ng-if="product.productReviewsShowed" class="ng-cloak" data-product-id="@Model.ProductId" data-is-mobile-mode="@isMobile.ToLowerString()"></product-reviews>
+                                </div>
+                            </div>
+                            @*@if (Model.HasCustomOptions)
+                                {*@
+                            <div class="product-setting product-setting--customoptions" @RenderAttrShow("customoptions")>
+                                <div id="customoptions">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h2 class="inline product-setting-title content-header">@T("Admin.Product.Edit.AdditionalOptions")</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="@(isMobile ? "" : "container-fluid")">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div>
+                                                    <ui-modal-trigger size="wl-8 modal-xs-10" data-controller="'ModalCustomOptionsCtrl'" controller-as="ctrl"
+                                                                      data-resolve="{productId: product.productId, comboEnabled: @comboEnabled.ToString().ToLower(), customOptionsPictureEnabled: @сustomOptionPicture.ToString().ToLower()}"
+                                                                      template-url="@Html.GetAssetPath("CustomOptionsModal.html")">
+                                                        <a href="">@T("Admin.Product.Edit.EditAddOptions")</a>
+                                                    </ui-modal-trigger>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*}*@
+
+                            <div class="product-setting product-setting--SEO" @RenderAttrShow("SEO")>
+                                <div id="SEO">
+                                    @Html.Partial("_Seo", Model)
+                                </div>
+                            </div>
+
+                            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveLandingFunnel)
+                            {
+                                <div class="product-setting product-setting--additionalSales" @RenderAttrShow("additionalSales")>
+                                    <div id="additionalSales">
+                                        @Html.Partial("_LandingFunnels", Model)
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="product-setting product-setting--lists" lozad-adv="product.scrollToActiveElement('productListShowed')" @RenderAttrShow("lists")>
+                                <div id="lists">
+                                    <div class="ng-cloak" bs-modifiable="false" ng-if="product.productListShowed">
+                                        @Html.Partial("_Lists", Model)
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            @if (Model.ShowAvito)
+                            {
+                                <div class="product-setting product-setting--avito" @RenderAttrShow("avito")>
+                                    <div id="avito">
+                                        @Html.Partial("_AvitoProductFields", Model)
+                                    </div>
+                                </div>
+                            }
+
+                            @for (int i = 0; i < Model.TabModules.Count; i++)
+                            {
+                                var module = Model.TabModules[i];
+
+                                <div class="product-setting" @RenderAttrShow("tab" + i)>
+                                    <div id="tab@(i)">
+                                        @Html.Action(module.Route.ActionName, module.Route.ControllerName, new { productId = Model.ProductId, area = "" })
+                                    </div>
+                                </div>
+                            }
+
+                            @Html.RenderModules("admin_product_bottom", new { productId = Model.ProductId })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

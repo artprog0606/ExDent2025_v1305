@@ -1,0 +1,280 @@
+﻿@model AdvantShop.Web.Admin.Models.Crm.Leads.LeadModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (Model.VkUser != null || Model.FacebookUser != null || Model.InstagramUser != null || Model.TelegramUser != null || Model.OkUser != null || Model.ShowVk || Model.ShowFacebook || Model.ShowInstagram || Model.ShowOk)
+{
+    <div class="@(isMobile ? "container-fluid m-b": "")">
+        <div class="ibox category-block block-additional-parameters" is-mobile>
+            <div class="ibox-content category-content block-additional-parameters-content p-r-lg border_none">
+                <h3 class="category-title setting__subtitle">@T("Admin.Leads.CustomerSocial.SocialNetworks")</h3>
+            </div>
+            @if (Model.VkUser != null || Model.ShowVk)
+            {
+                <div class="ibox-content category-content block-additional-parameters-content border_none block-additional-border-top setting__form-group @(!isMobile ? "p-r-lg": "")">
+                    <div class="customer-socials">
+                        <div class="control-label">@T("Admin.Leads.CustomerSocial.Vkontakte")</div>
+                        @if (Model.VkUser != null)
+                        {
+                            <div class="relative @(isMobile ? "flex bottom-xs" : "")">
+                                <ui-modal-trigger data-controller="'ModalSendSocialMessageCtrl'" controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("sendSocialMessage.html")"
+                                                  data-resolve="{params: {customerId: lead.instance.lead.customer.customerId, type: 'vk'}}"
+                                                  data-on-close="lead.updateLeadEventsWithDelay()">
+                                    <a ng-class="{'edit link-decoration-none m-r-xs block m-t-sm' : isMobile.value}" >@T("Admin.Leads.CustomerSocial.SendMessage")</a>
+                                </ui-modal-trigger>
+                                <div class="m-l-xs inline-block">
+                                    <span class="options-icon" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Настройки"
+                                          ng-mouseover="lead.mouseoverOptions($event)">
+                                    </span>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="js-menu-link"
+                                                              data-controller="'ModalSelectCustomerCtrl'"
+                                                              controller-as="ctrl"
+                                                              size="middle"
+                                                              template-url="@Html.GetAssetPath("selectCustomer.html")"
+                                                              data-on-close="lead.changeSocialCustomer(result, 'vk')">
+                                                <a href="">Привязать к другому пользователю</a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <a href="" ng-click="lead.deleteSocialLink('vk')" class="dropdown-menu-link js-menu-link">Удалить привязку</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        @if (Model.VkUser != null)
+                        {
+                            var vkLink = "https://vk.com/" + (!string.IsNullOrEmpty(Model.VkUser.ScreenName) ? Model.VkUser.ScreenName : "id" + Model.VkUser.Id);
+                            <div class="m-b-xs">
+                                <a data-e2e="VkLink" href="@vkLink" target="_blank">@vkLink</a>
+                            </div>
+                            <div ng-if="lead.leadEvents != null && lead.leadEvents.data != null">
+                                @T("Admin.Leads.CustomerSocial.Messages") <a href="" ng-click="lead.filterEvents('Vk')">{{lead.leadEvents.data.VkMessagesInCount}}</a> @T("Admin.Leads.CustomerSocial.Received")
+                                / <a href="" ng-click="lead.filterEvents('Vk')">{{lead.leadEvents.data.VkMessagesOutCount}}</a> @T("Admin.Leads.CustomerSocial.Sent")
+                            </div>
+                        }
+                        else if (Model.ShowVk)
+                        {
+                            <div class="row middle-xs">
+                                <div class="col-xs">
+                                    <input data-e2e="NewVk" type="text" class="form-control input-alt" ng-model="lead.vkLink"/>
+                                </div>
+                                <div class="col-xs-slim">
+                                    <a data-e2e="AddNewVk" href="" ng-click="lead.addSocialUser('vk', lead.vkLink)" ng-if="!lead.btnSocialAdding">@T("Admin.Customers.ViewSocial.Add")</a>
+                                    <span ng-if="lead.btnSocialAdding == 'vk'">@T("Admin.Customers.ViewSocial.Loading")..</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.InstagramUser != null || Model.ShowInstagram)
+            {
+                <div class="ibox-content category-content block-additional-parameters-content border_none block-additional-border-top @(!isMobile ? "p-r-lg": "")">
+                    <div class="customer-socials">
+                        <div class="order__subblock-title">Instagram</div>
+                        @if (Model.InstagramUser != null)
+                        {
+                            <div class="relative" ng-class="{'flex middle-xs m-t-sm' : isMobile.value}">
+                                <ui-modal-trigger data-controller="'ModalSendSocialMessageCtrl'" controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("sendSocialMessage.html")"
+                                                  data-resolve="{params: {customerId: lead.instance.lead.customer.customerId, type: 'instagram'}}"
+                                                  data-on-close="lead.updateLeadEventsWithDelay()">
+                                    <a href="" ng-class="{'edit link-decoration-none m-r-xs' : isMobile.value}" >@T("Admin.Leads.CustomerSocial.SendToDirect")</a>
+                                </ui-modal-trigger>
+                                <div class="m-l-xs inline-block">
+                                    <span class="options-icon" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Настройки"
+                                          ng-mouseover="lead.mouseoverOptions($event)">
+                                    </span>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link"
+                                                              data-controller="'ModalSelectCustomerCtrl'"
+                                                              controller-as="ctrl"
+                                                              size="middle"
+                                                              template-url="@Html.GetAssetPath("selectCustomer.html")"
+                                                              data-on-close="lead.changeSocialCustomer(result, 'instagram')">
+                                                <a href="" class="dropdown-menu-link-fix">Привязать к другому пользователю</a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <a href="" ng-click="lead.deleteSocialLink('instagram')" class="dropdown-menu-link js-menu-link">Удалить привязку</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.InstagramUser != null)
+                    {
+                        <div class="m-b-xs">
+                            <a data-e2e="InstLink" href="https://instagram.com/@(Model.InstagramUser.UserName)/" class="instagram-user-name" target="_blank">@Model.InstagramUser.UserName</a>
+                        </div>
+                        <div data-e2e="AllInstMessage" ng-if="lead.leadEvents != null && lead.leadEvents.data != null">
+                            @T("Admin.Customers.ViewSocial.Messages") <a href="" ng-click="lead.filterEvents('Instagram')" ng-bind="lead.leadEvents.data.InstagramReceivedMessagesCount"></a> @T("Admin.Customers.ViewSocial.Received")
+                            / <a href="" ng-click="lead.filterEvents('Instagram')" ng-bind="lead.leadEvents.data.InstagramSendedMessagesCount"></a> @T("Admin.Customers.ViewSocial.Sent")
+                        </div>
+                    }
+                    else if (Model.ShowInstagram)
+                    {
+                        <div class="row middle-xs">
+                            <div class="col-xs">
+                                <input data-e2e="NewInst" type="text" class="form-control input-alt" ng-model="lead.instagramLink"/>
+                            </div>
+                            <div class="col-xs-slim">
+                                <a data-e2e="AddNewInst" href="" ng-click="lead.addSocialUser('instagram', lead.instagramLink)" ng-if="!lead.btnSocialAdding">@T("Admin.Customers.ViewSocial.Add")</a>
+                                <span ng-if="lead.btnSocialAdding == 'instagram'">@T("Admin.Customers.ViewSocial.Loading")..</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (Model.TelegramUser != null)
+            {
+                <div class="ibox-content category-content block-additional-parameters-content border_none block-additional-border-top @(!isMobile ? "p-r-lg": "")">
+                    <div class="customer-socials" data-e2e="TelegramBlock">
+                        <div class="order__subblock-title">Telegram</div>
+                        <div class="relative" ng-class="{'flex middle-xs m-t-sm' : isMobile.value}">
+                            <ui-modal-trigger data-controller="'ModalSendSocialMessageCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("sendSocialMessage.html")"
+                                              data-resolve="{params: {customerId: lead.instance.lead.customer.customerId, type: 'telegram'}}"
+                                              data-on-close="lead.updateLeadEventsWithDelay()">
+                                <a data-e2e="SendMessageTelegram" href="" ng-class="{'edit link-decoration-none m-r-xs' : isMobile.value}" >@T("Admin.Customers.ViewSocial.SendAMessage")</a>
+                            </ui-modal-trigger>
+
+                            <div class="m-l-xs inline-block">
+                                <span class="options-icon" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Настройки"
+                                      ng-mouseover="lead.mouseoverOptions($event)">
+                                </span>
+                                <ul class="dropdown-menu pull-right">
+                                    <li class="dropdown-submenu">
+                                        <ui-modal-trigger class="dropdown-menu-link js-menu-link"
+                                                          data-controller="'ModalSelectCustomerCtrl'"
+                                                          controller-as="ctrl"
+                                                          size="middle"
+                                                          template-url="@Html.GetAssetPath("selectCustomer.html")"
+                                                          data-on-close="lead.changeSocialCustomer(result, 'telegram')">
+                                            <a href="" class="dropdown-menu-link-fix">Привязать к другому пользователю</a>
+                                        </ui-modal-trigger>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a href="" ng-click="lead.deleteSocialLink('telegram')" class="dropdown-menu-link js-menu-link">Удалить привязку</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div >
+                        <span class="telegram-user-name">@(Model.TelegramUser.LastName + " " + Model.TelegramUser.FirstName) @Model.TelegramUser.Username</span>
+                        <div data-e2e="AllTelegramMessage" ng-if="lead.leadEvents != null && lead.leadEvents.data != null">
+                            @T("Admin.Customers.ViewSocial.Messages") <a href="" ng-click="lead.filterEvents('Telegram')">{{lead.leadEvents.data.TelegramReceivedMessagesCount}}</a> @T("Admin.Customers.ViewSocial.Received") / <a href="" ng-click="lead.filterEvents('Telegram')">{{lead.leadEvents.data.TelegramSendedMessagesCount}}</a> @T("Admin.Customers.ViewSocial.Sent")
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FacebookUser != null || Model.ShowFacebook)
+            {
+                <div class="ibox-content category-content block-additional-parameters-content border_none block-additional-border-top @(!isMobile ? "p-r-lg": "")">
+                    <div class="customer-socials">
+                        <div class="order__subblock-title">Facebook</div>
+                    </div>
+                    <div>
+                        @if (Model.FacebookUser != null)
+                        {
+                            <a href="https://facebook.com/@(Model.FacebookUser.Id)/" target="_blank">
+                                @Model.FacebookUser.FirstName @Model.FacebookUser.LastName
+                            </a>
+                            <div ng-if="lead.leadEvents != null && lead.leadEvents.data != null">
+                                @T("Admin.Leads.CustomerSocial.Messages") <a href="" ng-click="lead.filterEvents('Facebook')">{{lead.leadEvents.data.FacebookReceivedMessagesCount}}</a> @T("Admin.Leads.CustomerSocial.Received") / <a href="" ng-click="lead.filterEvents('Facebook')">{{lead.leadEvents.data.FacebookSendedMessagesCount}}</a> @T("Admin.Leads.CustomerSocial.Sent")
+                            </div>
+                        }
+                        else if (Model.ShowFacebook)
+                        {
+                            <div class="row middle-xs">
+                                <div class="col-xs">
+                                    <input data-e2e="NewFb" type="text" class="form-control input-alt" ng-model="lead.fbLink"/>
+                                </div>
+                                <div class="col-xs-slim">
+                                    <a data-e2e="AddNewFb" href="" ng-click="lead.addSocialUser('facebook', lead.fbLink)" ng-if="!lead.btnSocialAdding ">@T("Admin.Customers.ViewSocial.Add")</a>
+                                    <span ng-if="lead.btnSocialAdding == 'facebook'">@T("Admin.Customers.ViewSocial.Loading")..</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.OkUser != null || Model.ShowOk)
+            {
+                <div class="ibox-content category-content block-additional-parameters-content border_none block-additional-border-top @(!isMobile ? "p-r-lg": "")">
+                    <div class="customer-socials setting__label setting--m-b-sm">
+                        <div class="order__subblock-title">@T("Admin.Leads.CustomerSocial.Ok")</div>
+                        @if (Model.ShowOk)
+                        {
+                            <div class="relative" ng-class="{'flex middle-xs m-t-sm' : isMobile.value}"> 
+                                <ui-modal-trigger data-controller="'ModalSendSocialMessageCtrl'" controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("sendSocialMessage.html")"
+                                                  data-resolve="{params: {customerId: lead.instance.lead.customer.customerId, type: 'ok'}}"
+                                                  data-on-close="lead.updateLeadEventsWithDelay()">
+                                    <a ng-class="{'edit link-decoration-none m-r-xs' : isMobile.value}" data-e2e="SendMessageOk" href="">@T("Admin.Leads.CustomerSocial.SendMessage")</a>
+                                </ui-modal-trigger>
+
+                                <div class="m-l-xs inline-block">
+                                    <span class="options-icon" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Настройки"
+                                          ng-mouseover="lead.mouseoverOptions($event)">
+                                    </span>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li class="dropdown-submenu">
+                                            <ui-modal-trigger class="dropdown-menu-link js-menu-link"
+                                                              data-controller="'ModalSelectCustomerCtrl'"
+                                                              controller-as="ctrl"
+                                                              size="middle"
+                                                              template-url="@Html.GetAssetPath("selectCustomer.html")"
+                                                              data-on-close="lead.changeSocialCustomer(result, 'ok')">
+                                                <a href="" class="dropdown-menu-link-fix">Привязать к другому пользователю</a>
+                                            </ui-modal-trigger>
+                                        </li>
+                                        <li class="dropdown-submenu">
+                                            <a href="" ng-click="lead.deleteSocialLink('ok')" class="dropdown-menu-link js-menu-link">Удалить привязку</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        @if (Model.OkUser != null)
+                        {
+                            var okLink = "https://ok.ru/profile/" + Model.OkUser.Id;
+                            <a href="@okLink" target="_blank">@okLink</a>
+                            <div ng-if="lead.leadEvents != null && lead.leadEvents.data != null">
+                                @T("Admin.Leads.CustomerSocial.Messages") <a href="" ng-click="lead.filterEvents('Ok')">{{lead.leadEvents.data.OkReceivedMessagesCount}}</a> @T("Admin.Leads.CustomerSocial.Received") / <a href="" ng-click="lead.filterEvents('Ok')">{{lead.leadEvents.data.OkSendedMessagesCount}}</a> @T("Admin.Leads.CustomerSocial.Sent")
+                            </div>
+                        }
+                        else if (Model.ShowOk)
+                        {
+                            <div class="row middle-xs">
+                                <div class="col-xs">
+                                    <input data-e2e="NewOk" type="text" class="form-control input-alt" ng-model="lead.OkLink"/>
+                                </div>
+                                <div class="col-xs-slim">
+                                    <a data-e2e="AddNewOk" href="" ng-click="lead.addSocialUser('ok', lead.OkLink)" ng-if="!lead.btnSocialAdding">@T("Admin.Customers.ViewSocial.Add")</a>
+                                    <span ng-if="lead.btnSocialAdding == 'ok'">@T("Admin.Customers.ViewSocial.Loading")..</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,137 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.SberBankAcquiringPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.Login")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.UserName, new { ng_model = "paymentMethod.Parameters.UserName", @class = "form-control  input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.SberBankAcq.Login").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.SberBankAcq.Login")">
+            @T("Admin.PaymentMethods.SberBankAcq.StoreLogin")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.Password")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "paymentMethod.Parameters.Password", @class = "form-control  input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.SberBankAcq.Password").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.SberBankAcq.Password")">
+            @T("Admin.PaymentMethods.SberBankAcq.StorePassword")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.TestMode")</span>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.TestMode, new { ng_model = "paymentMethod.Parameters.TestMode", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="TestMode" class="col-xs setting__label">
+                <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.TestMode")</span>
+            </label>
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.SberBankAcq.TestMode")">
+            @T("Admin.PaymentMethods.SberBankAcq.TestOrReal")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.SberBankAcq.MerchantName")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.MerchantLogin, new { ng_model = "paymentMethod.Parameters.MerchantLogin", @class = "form-control  input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.SberBankAcq.MerchantName")">
+            @T("Admin.PaymentMethods.SberBankAcq.MerchantName")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.SendDataForPrint")</span>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="SendReceiptData" class="col-xs setting__label">
+                <span class="text-required">@T("Admin.PaymentMethods.SberBankAcq.SendDataForPrint")</span>
+            </label>
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="">
+            @T("Admin.PaymentMethods.SberBankAcq.SendDataForPrint")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>СНО</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.Sno, Model.TypesSno, new { ng_model = "paymentMethod.Parameters.Sno", ng_init = "paymentMethod.Parameters.Sno='" + Model.Sno + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        ИНН
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Inn, new { ng_model = "paymentMethod.Parameters.Inn", @class = "form-control  input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        E-mail продавца
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Email, new { ng_model = "paymentMethod.Parameters.Email", @class = "form-control  input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>ФФД подключенной кассы</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeFfd, Model.TypesFfd, new { ng_model = "paymentMethod.Parameters.TypeFfd", ng_init = "paymentMethod.Parameters.TypeFfd='" + Model.TypeFfd + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="@Model.ExistsUnitsWithOutMeasure.ToLowerString() && paymentMethod.Parameters.SendReceiptData && paymentMethod.Parameters.TypeFfd === '1'">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <div>
+                Имеются единицы измерения без указания меры для ФФД. <a target="_blank" href="settingscatalog?catalogTab=units&gridUnits=%7B%22WithOutMeasureType%22:true%7D">Смотреть...</a>
+            </div>
+        </div>
+    </div>
+</div>

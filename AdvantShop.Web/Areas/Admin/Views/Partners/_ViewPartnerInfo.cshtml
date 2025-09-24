@@ -1,0 +1,185 @@
+﻿@using AdvantShop.Core.Services.Partners
+@model AdvantShop.Web.Admin.Models.Partners.PartnerViewModel
+@{
+    var partner = Model.Partner;
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="ibox">
+    <div class="ibox-content">
+        <div class="m-b-sm">
+            <h3 class="category-title @(isMobile ? "setting__subtitle setting--m-t-none" : "inline m-r-sm")">
+                @T("Admin.Partners.View.PartnerInformation")
+            </h3>
+            @if (!isMobile)
+            {
+                <partner-info-trigger partner-id="partnerView.partnerId" on-close="partnerView.getPartnerView()">
+                    <a data-e2e="editPartner" class="inline" href="">@T("Admin.Edit")</a>
+                </partner-info-trigger>
+            }
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-4 setting__lite-gray-label" ng-bind="partnerView.instance.Partner.Type == @EPartnerType.NaturalPerson.ConvertIntString() ? 'ФИО' : 'Наименование'"></div>
+                <div data-e2e="clientFio" class="col-xs-8 ng-cloak">{{partnerView.instance.Partner.Name}}</div>
+            </div>
+        </div>
+        <div class="form-group ng-cloak" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.Email)">
+            <div class="row">
+                <div class="col-xs-4 setting__lite-gray-label">Email</div>
+                <div class="col-xs-8">{{partnerView.instance.Partner.Email}}</div>
+            </div>
+        </div>
+        <div class="form-group ng-cloak" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.Phone)">
+            <div class="row">
+                <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.Phone")</div>
+                <div class="col-xs-8">{{partnerView.instance.Partner.Phone}}</div>
+            </div>
+        </div>
+        <div class="form-group ng-cloak" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.City)">
+            <div class="row">
+                <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.City")</div>
+                <div class="col-xs-8">{{partnerView.instance.Partner.City}}</div>
+            </div>
+        </div>
+
+        <h3 class="form-group ng-cloak  @(isMobile ? "setting__subtitle setting--m-t-none" : "")">
+            {{partnerView.instance.TypeFormatted}}
+        </h3>
+        
+        <div class="text-danger" ng-if="!partnerView.instance.Partner.RegistrationComplete">
+            Партнер не завершил регистрацию
+        </div>
+
+        <div ng-if="partnerView.instance.Partner.NaturalPerson != null" class="ng-cloak">
+            <div class="form-group setting__label">
+                @T("Admin.Partners.View.NaturalPerson.PassportData")
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.FullName")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.NaturalPerson.LastName}} {{partnerView.instance.Partner.NaturalPerson.FirstName}} {{partnerView.instance.Partner.NaturalPerson.Patronymic}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.NaturalPerson.PassportNumber)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.NaturalPerson.SeriaNumber")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.NaturalPerson.PassportSeria}} {{partnerView.instance.Partner.NaturalPerson.PassportNumber}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.NaturalPerson.PassportWhoGive)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.NaturalPerson.PassportWhoGive")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.NaturalPerson.PassportWhoGive}}, {{partnerView.instance.Partner.NaturalPerson.PassportWhenGiveFormatted}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.NaturalPerson.RegistrationAddress)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.NaturalPerson.RegistrationAddress")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.NaturalPerson.RegistrationAddress}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.NaturalPerson.Zip)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.NaturalPerson.Zip")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.NaturalPerson.Zip}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="partnerView.instance.Partner.LegalEntity != null" class="ng-cloak">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.CompanyName")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.CompanyName}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.INN)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.INN")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.INN}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.KPP)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.KPP")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.KPP}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.LegalAddress)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.LegalAddress")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.LegalAddress}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.ActualAddress)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.ActualAddress")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.ActualAddress}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.SettlementAccount)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.SettlementAccount")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.SettlementAccount}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.Bank)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.Bank")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.Bank}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.CorrespondentAccount)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.CorrespondentAccount")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.CorrespondentAccount}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.BIK)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.BIK")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.BIK}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.Director)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.Director")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.Director}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.Accountant)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.Accountant")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.Accountant}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.PostAddress)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.PostAddress")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.PostAddress}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.Zip)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.Zip")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.Zip}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.Phone)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.Phone")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.Phone}}</div>
+                </div>
+            </div>
+            <div class="form-group" ng-if="!partnerView.isNullOrEmpty(partnerView.instance.Partner.LegalEntity.ContactPerson)">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">@T("Admin.Partners.View.LegalEntity.ContactPerson")</div>
+                    <div class="col-xs-8">{{partnerView.instance.Partner.LegalEntity.ContactPerson}}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

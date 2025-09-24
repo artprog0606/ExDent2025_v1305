@@ -1,0 +1,110 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures
+@model BlockModel
+
+@{
+    var items = Model.Block.TryGetSettingAsList<GalleryItemModel>("items");
+
+    bool? useEffectZoom = Model.Block.TryGetValuableSetting<bool>("useEffectZoom");
+
+    var itemsCountInRow = (int)Model.Block.TryGetSetting("items_in_row");
+    float width = 100 / itemsCountInRow;
+    var widthString = width.ToInvariantString() + "%";
+    var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+    var blockHeight = Model.Block.TryGetValuableSetting<int>("min_height") + "px";
+}
+
+
+<style>
+                    #block_@Model.Block.Id .lp-block-columns-picture-with-text__inner {
+                        min-width: 100%;
+                        -webkit-flex-basis: 100%;
+                        -ms-flex-preferred-size: 100%;
+                        flex-basis: 100%;
+                        max-width: 100%;
+                        min-height: @(blockHeight)
+                    }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .lp-block-columns-picture-with-text__inner {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width: @(minWidth)px;
+                            }
+                        }
+</style>
+
+<div class="container-fluid">
+    <div class="lp-container">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+
+        <div class="row @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") :"center-xs")" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "data-adv-baguette-box")>
+            @for (var i = 0; i < items.Count; i++)
+            {
+                <div class="lp-block-columns-picture-with-text__inner col-xs-12 col-md-slim">
+                    <div class="lp-block-columns-picture-with-text__image-wrap @(useEffectZoom.HasValue && useEffectZoom == true ? "lp-block-columns-picture-with-text__effect-zoom" : "")">
+
+                        @{ 
+                            var bgImageTpl = "";
+                            var bgImage = "";
+                            bool bgImageIsLazyLoad = false;
+                            if (items[i].Background != null)
+                            {
+                                bgImageIsLazyLoad = items[i].Background.LazyLoadEnabled && LpService.Inplace == false;
+                                bgImageTpl = bgImageIsLazyLoad ? "data-qazy-background data-background-image=\"{0}\"" : "background-image:url('{0}')";
+                                bgImage = String.Format(bgImageTpl, items[i].Background.Src);
+                            }
+                        }
+
+                       <div class="lp-block-columns-picture-with-text__bg" @Html.Raw(bgImageIsLazyLoad ? bgImage : "") style="@Model.Block.TryGetStyleString("itemsStyle"); @(bgImageIsLazyLoad == false ? bgImage : "")" @Html.Raw(LpService.Inplace ? "ng-style=\"blocksConstructorContainer.data.Settings.itemsStyle\"" : "")></div>
+
+                        <a href="@(Model.Inplace == false ? items[i].Link : null)"
+                           class="lp-block-columns-picture-with-text__text-block link-decoration-none @(Model.Inplace == false && items[i].Link.IsNullOrEmpty() ? "pointer-events-none"  : null)">
+                            <div class="lp-block-columns-picture-with-text__text-wrap">
+                                <div class="lp-block-columns-picture-with-text__icon">
+                                    @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                               {
+                                   LandingPageId = Model.Block.LandingId,
+                                   BlockId = Model.Block.Id,
+                                   Current = items[i].Picture != null ? items[i].Picture.Src : null,
+                                   GalleryIconsEnabled = true,
+                                   Type  = items[i].Picture != null ? items[i].Picture.Type : ePictureLoaderImageType.Svg,
+                                   DeletePicture = true,
+                                   ReplacementMode = ePictureLoaderReplacementMode.Compile,
+                                   MaxHeightPicture= PictureLoaderImageSize.XSmallHeight,
+                                   MaxWidthPicture = PictureLoaderImageSize.XSmallWidth,
+                                   WidthPicture = items[i].Picture != null ? items[i].Picture.Width : null,
+                                   HeightPicture = items[i].Picture != null ? items[i].Picture.Height : null,
+                                   LazyLoadEnabled = items[i].Picture != null ? items[i].Picture.LazyLoadEnabled : true,
+                                   OnDelete= "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                   OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                   OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                   OnLazyLoadChange= "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result, " + i +")"
+                               })
+                                </div>
+                                <div class="lp-block-columns-picture-with-text__subtitle lp-font-size--large" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                    @Html.Raw(items[i].Title)
+                                </div>
+                                <div class="lp-block-columns-picture-with-text__text lp-font-size--middle" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                    @Html.Raw(items[i].Text)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>

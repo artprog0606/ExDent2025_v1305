@@ -1,0 +1,51 @@
+﻿@using BotDetect
+@model AdvantShop.ViewModel.Common.CaptchaViewModel
+@{
+    var captchaSource = new MvcCaptcha(string.IsNullOrEmpty(Model.CaptchaId) ? "CaptchaSource" : Model.CaptchaId)
+    {
+        CodeStyle = CodeStyle.Alphanumeric,
+        Locale = "en-US",
+        CodeLength = Model.CodeLength,
+        UserInputID = Model.CaptchaCode
+    };
+
+    var hint = "";
+
+    switch (Model.CaptchaMode)
+    {
+        case CaptchaMode.Numeric:
+            captchaSource.CodeStyle = CodeStyle.Numeric;
+            break;
+        case CaptchaMode.AlphaNumericRu:
+            captchaSource.Locale = "ru";
+            hint = "* " + T("Captcha.InputNote");
+            break;
+    }
+}
+
+@if (SettingsMain.IsTechDomainsReady && HttpContext.Current.Request.IsAdminTechDomain())
+{
+    @Html.Raw(Html.Captcha(captchaSource).ToHtmlString().Replace("/BotDetectCaptcha.ashx", UrlService.GetAbsoluteLink("/BotDetectCaptcha.ashx")))    
+}
+else
+{
+    @Html.Captcha(captchaSource)
+}
+
+<div class="captcha-txt">
+    @Html.TextBox(Model.CaptchaCode ??  "CaptchaCode", null, new {@class = "input-small", required = "required", data_ng_model = Model.NgModel ?? "CaptchaCode", placeholder = T("Captcha.InputPlaceholder")})
+</div>
+@if (hint != "")
+{
+    <div class="captcha-hint">@hint</div>
+}
+
+@if (SettingsMain.IsTechDomainsReady && HttpContext.Current.Request.IsAdminTechDomain())
+{
+    <link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl.Replace("/BotDetectCaptcha.ashx", UrlService.GetAbsoluteLink("/BotDetectCaptcha.ashx"))" rel="stylesheet" type="text/css" />
+}
+else
+{
+    <link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
+}
+

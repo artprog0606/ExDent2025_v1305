@@ -1,0 +1,85 @@
+﻿@using AdvantShop.Trial
+@using AdvantShop.Core.Services.Landing;
+@using AdvantShop.Core.Services.SalesChannels;
+@model AdvantShop.Web.Admin.Models.Dashboard.CreateSiteModel
+@{
+    string urlParam = string.IsNullOrEmpty(Model.Mode)
+        ? string.Empty
+        : string.Format("&mode={0}", Model.Mode);
+
+    //var isFirstTimeCreateStore = SalesChannelService.IsFirstTimeCreateStore();
+    //var redirectUrlAfterSetTemplate = isFirstTimeCreateStore ? Url.AbsoluteActionUrl("Index", "Dashboard") : Url.AbsoluteActionUrl("Index", "Design");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var redirectUrlAfterSetTemplate = isMobile ? Url.AbsoluteActionUrl("Index", "Design") + "/index?showCommon=true" : Url.AbsoluteActionUrl("Index", "Design");
+    var hoverAttributes = isMobile ? "" : "ng-style=\"createSite.hoverImgStyle[item.Name]\" " +
+                                          "ng-mouseenter=\"createSite.hoverImgStyle[item.Name]=createSite.getAnimationForImg()\" " +
+                                          "ng-mouseleave=\"createSite.hoverImgStyle[item.Name]={}\"";
+}
+
+<div class="last-item-ava" ng-class="{'template-item template-item--popular': item.IsPopular}">
+    <div ng-switch="createSite.current  === 'Store'">
+        <div ng-switch-when="true" class="link-img-abs @(isMobile ? "m-b block create-site__preview" : "")">
+            <img class="animation-img"
+                 @Html.Raw(hoverAttributes)
+                 data-index="{{item.Name}}"
+                 data-ng-src="{{item.Picture}}" />
+        </div>
+
+        <a ng-switch-when="false" ng-href="{{item.EditLink}}@urlParam" class="link-img-abs @(isMobile ? "m-b block create-site__preview" : "")">
+            <img class="animation-img"
+                 @Html.Raw(hoverAttributes)
+                 data-index="{{item.Name}}"
+                 data-ng-src="{{item.Picture}}" />
+        </a>
+    </div>
+</div>
+<div class="last-item-con"
+     ng-class="{'last-item-con-not-text-bottom': createSite.current  === 'Store' && item.Price == 0 &&  createSite.currentTypeStore === 'all' && @(TrialService.IsTrialEnabled.ToLowerString()) == true}"
+     data-e2e="template.{{item.Name}}">
+    <div class="flex between-xs full-width @(isMobile ? "m-b-sm" : "")">
+        <div class="last-item-title">
+            @if (isMobile)
+            {
+                <span class="create-site__nama-link">{{item.Name}}</span>
+            }
+            else
+            {
+                <a ng-href="{{item.EditLink}}@urlParam" class="create-site__nama-link">{{item.Name}}</a>
+            }
+        </div>
+
+        <div class="last-item-content create-site__price" ng-if="item.PriceStr != null">
+            <span>{{item.PriceStr}}</span>
+        </div>
+
+    </div>
+    <div class="flex flex-wrap middle-xs m-t-xs @(isMobile ? "between-xs" : "")" ng-switch="createSite.current  === 'Store'">
+        <div ng-switch-when="true">
+            <form ng-show="item.Price == 0 || item.Active || @(TrialService.IsTrialEnabled.ToLowerString()) == true"
+                  novalidate class="inline"
+                  ng-controller="DesignCtrl as design"
+                  ng-init="design.checkStore=true">
+                @Html.Button(T("Admin.Design.Index.Install"), type: eButtonType.Save, colorType: isMobile? eColorType.Success : eColorType.Default, 
+                             size: eButtonSize.Middle, isOutline: isMobile, attributes: new string[] { "disabled", "ng-disabled=\"!design.pageLoaded\"", "ng-click=\"design.installTemplate(item.StringId, item.Id, item.Version, '" + redirectUrlAfterSetTemplate + "')\"" },
+                             cssClass: isMobile ? "" : "m-r-md m-b-xs")
+            </form>
+
+        </div>
+        @if (!TrialService.IsTrialEnabled)
+        {
+            <div ng-switch-when="true">
+                <a ng-if="item.Price != 0 && !item.Active" href="/adminv3/service/buytemplate/{{item.StringId}}" class="btn btn-md btn-default m-r-md m-b-xs">@T("Admin.Design.Index.Buy")</a>
+            </div>
+        }
+
+        @Html.Button(T("Admin.Dashboard.CreateSite.CreateSiteTemplateItem.ReadMore"), size: eButtonSize.Middle, colorType: isMobile ? eColorType.Success : eColorType.Default, 
+                     cssClass: isMobile ? "" : "m-r-md m-b-xs", link: "{{item.EditLink}}" + urlParam, isOutline: isMobile,
+                     attributes: new string[] { "ng-switch-when=\"false\"", "data-e2e=\"funnelCreateLink\"" })
+
+        <a class="link-online-demo link @(isMobile ? "link-decoration-none" : "bold m-b-xs")" ng-href="{{item.DemoLink}}" ng-if="item.DemoLink != null" target="_blank" data-e2e="funnelDemoLink">@T("Admin.Dashboard.CreateSiteTemplateItem.OnlineDemo")</a>
+    </div>
+    @if (TrialService.IsTrialEnabled)
+    {
+        <div ng-if="createSite.current  === 'Store' && item.Price != 0" class="ng-cloak last-item-con__freedays">* @T("Admin.Dashboard.CreateSite.CreateSiteTemplateItem.FreeDays")</div>
+    }
+</div>

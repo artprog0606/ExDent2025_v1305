@@ -1,0 +1,171 @@
+﻿<form novalidate name="shippingTimeForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.DeliveryTime.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.form = shippingTimeForm">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="row">
+                    <label for="shipping-time-date" class="col-xs-12 col-md-3 control-label">
+                        {{'Admin.Js.DeliveryTime.DeliveryDate'|translate}}
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'd.m.Y', wrap: true}">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                <input
+                                    type="text"
+                                    id="shipping-time-date"
+                                    class="form-control input-alt-mobile input-alt"
+                                    ng-flatpickr-input
+                                    ng-model="ctrl.data.DeliveryDate" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row middle-xs">
+                    <label for="UseInterval" class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.DeliveryTime.UseInterval'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <label class="adv-checkbox-label">
+                            <input
+                                id="UseInterval"
+                                type="checkbox"
+                                class="adv-checkbox-input control-checkbox"
+                                ng-change="ctrl.changeDeliveryTime()"
+                                ng-model="ctrl.data.UseInterval" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label for="timeFrom" class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.DeliveryTime.Title'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <div class="row middle-xs">
+                            <div class="col-xs">
+                                <span class="form-field-input vertical-interval-middle">
+                                    <span
+                                        class="input-group flex-nowrap"
+                                        data-ng-flatpickr
+                                        fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true}">
+                                        <span class="flatpickr-custom-wrap">
+                                            <input
+                                                type="text"
+                                                id="timeFrom"
+                                                class="form-control input-small input-alt-mobile"
+                                                autocomplete="off"
+                                                data-ng-flatpickr-input
+                                                ng-change="ctrl.changeDeliveryTime()"
+                                                ng-model="ctrl.data.DeliveryInterval.TimeFrom"
+                                                required
+                                                ng-required="ctrl.data.UseInterval"
+                                                validation-input-text="{{'Admin.Js.DeliveryTime.Title'|translate}}" />
+                                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                        </span>
+                                        <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                                    </span>
+                                </span>
+                            </div>
+                            <span ng-if="ctrl.data.UseInterval">&mdash;</span>
+                            <div ng-if="ctrl.data.UseInterval" class="col-xs">
+                                <span
+                                    class="input-group flex-nowrap"
+                                    data-ng-flatpickr
+                                    fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 12, defaultMinute: 0, wrap: true}">
+                                    <span class="flatpickr-custom-wrap">
+                                        <input
+                                            type="text"
+                                            id="timeTo"
+                                            class="input-small form-control input-alt-mobile"
+                                            autocomplete="off"
+                                            data-ng-flatpickr-input
+                                            ng-change="ctrl.changeDeliveryTime()"
+                                            ng-model="ctrl.data.DeliveryInterval.TimeTo"
+                                            required
+                                            validation-input-text="{{'Admin.Js.DeliveryTime.Title'|translate}}" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label for="timeZoneOffset" class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.DeliveryTime.GMT'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <div class="input-group setting__btns-with-textbox-left">
+                            <span class="input-group-btn">
+                                <input type="hidden" ng-model="ctrl.gmtSign" />
+                                <button
+                                    type="button"
+                                    class="btn btn-default"
+                                    ng-click="ctrl.gmtSign = 1; ctrl.changeDeliveryTime()"
+                                    ng-class="{'product-currency-active':(ctrl.gmtSign > 0)}">
+                                    <span>+</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-default"
+                                    ng-click="ctrl.gmtSign = -1; ctrl.changeDeliveryTime()"
+                                    ng-class="{'product-currency-active':(ctrl.gmtSign < 0)}">
+                                    <span>-</span>
+                                </button>
+                            </span>
+                            <span class="form-field-input vertical-interval-middle flex-grow">
+                                <span
+                                    class="input-group"
+                                    data-ng-flatpickr
+                                    fp-opts="{enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 3, defaultMinute: 0, minuteIncrement: 5, wrap: true}">
+                                    <span class="flatpickr-custom-wrap flex-grow">
+                                        <input
+                                            type="text"
+                                            id="timeZoneOffset"
+                                            autocomplete="off"
+                                            class="input-small input-alt-mobile form-control"
+                                            data-ng-flatpickr-input
+                                            ng-change="ctrl.changeDeliveryTime()"
+                                            ng-model="ctrl.timeZoneOffset" />
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-clock"></i></span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row middle-xs">
+                    <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.DeliveryTime.DisplayedDeliveryTime'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <label ng-bind="ctrl.readableDeliveryTime"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            button-validation-success="ctrl.save()"
+            data-button-validation
+            disabled
+            ng-disabled="!ctrl.formInited || !shippingTimeForm.modified">
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

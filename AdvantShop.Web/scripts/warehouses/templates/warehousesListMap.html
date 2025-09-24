@@ -1,0 +1,67 @@
+﻿<div class="warehouses-list-map" data-ng-class="{'warehouses-list-map--compact-mode': warehousesMap.compactMode}">
+    <div class="p-t-sm p-b-sm" data-ng-if="warehousesMap.compactMode && warehousesMap.apiKeyMap">
+        <div class="btn-group btn-group-large">
+            <button
+                data-ng-click="warehousesMap.showListWarehouses()"
+                type="button"
+                class="btn"
+                data-ng-class="{'btn-confirm': warehousesMap.isShowList, 'btn--inactive': warehousesMap.isShowMap}">
+                {{'Js.WarehousesListMap.List' | translate}}
+            </button>
+            <button
+                data-ng-click="warehousesMap.showMapWarehouses()"
+                type="button"
+                class="btn"
+                data-ng-class="{'btn-confirm': warehousesMap.isShowMap, 'btn--inactive': warehousesMap.isShowList}">
+                {{'Js.WarehousesListMap.Map' | translate}}
+            </button>
+        </div>
+    </div>
+    <div class="warehouses-list-map__filters">
+        <label data-ng-repeat="filter in warehousesMap.filterTypes" class="warehouses-list-map__filter-item">
+            <input
+                class="custom-input-native"
+                type="radio"
+                name="warhousesFilter"
+                data-ng-change="warehousesMap.filterBy(filter)"
+                data-ng-model="warehousesMap.warehouseFilterType"
+                data-ng-value="filter" />
+            <span class="custom-input-radio"></span>
+            <span class="custom-input-text" data-ng-bind="filter"></span>
+        </label>
+    </div>
+    <div class="row warehouses-list-map__row" data-ng-class="{'warehouses-list-map__row--nowrap': warehousesMap.compactMode}">
+        <div
+            data-ng-class="{'col-xs-12': warehousesMap.compactMode || !warehousesMap.apiKeyMap, 'col-xs-4': !warehousesMap.compactMode, 'ng-hide': !warehousesMap.isShowList && warehousesMap.compactMode && warehousesMap.apiKeyMap}">
+            <warehouses-list
+                class="warehouses-list-map__list"
+                data-warehouses="warehousesMap.warehousesMapDataList"
+                data-show-details-warehouse="warehousesMap.showDetailsWarehouse"
+                data-on-click-warehouse="warehousesMap.runBalloon(warehouse, index)"
+                data-active-warehouse="warehousesMap.activeBalloon"></warehouses-list>
+        </div>
+        <div
+            class="relative warehouses-list-map__map-wrap"
+            data-ng-if="warehousesMap.apiKeyMap"
+            data-ng-style="{'height': !warehousesMap.isShowMap && warehousesMap.compactMode ? 0 : 'auto', 'width': !warehousesMap.isShowMap && warehousesMap.compactMode ? 0 : 'auto', 'overflow': !warehousesMap.isShowMap && warehousesMap.compactMode ? 'hidden' : 'auto' }"
+            data-ng-class="{'col-xs-12': warehousesMap.compactMode, 'col-xs-8': !warehousesMap.compactMode}">
+            <div class="warehouses-list-map__spinner" data-ng-if="!warehousesMap.isLoadedMap">
+                <div class="icon-spinner-before icon-animate-spin-before"></div>
+            </div>
+            <ya-map
+                class="warehouses-list-map__map"
+                data-ya-after-init="warehousesMap.handleAfterInitMap($target)"
+                data-ya-map-key="warehousesMap.apiKeyMap"
+                data-ya-zoom="{{warehousesMap.zoom}}"
+                data-ya-options="{{warehousesMap.mapOptions}}"
+                data-ya-controls="{{warehousesMap.mapControls}}">
+                <ya-collection data-show-all="true" ya-options="{preset:'twirl#blueIcon'}" data-ya-after-init="warehousesMap.setCollection($target)">
+                    <ya-geo-object
+                        data-ng-repeat="balloon in warehousesMap.warehousesMapDataList track by $index"
+                        data-ya-source="balloon"
+                        data-ya-event-click="warehousesMap.showBalloonPlace($event, balloon)"></ya-geo-object>
+                </ya-collection>
+            </ya-map>
+        </div>
+    </div>
+</div>

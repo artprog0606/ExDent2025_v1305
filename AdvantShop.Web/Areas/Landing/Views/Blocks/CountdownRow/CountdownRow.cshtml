@@ -1,0 +1,38 @@
+﻿@using AdvantShop.Helpers;
+@using System;
+
+@model BlockModel
+@{
+    var date = Model.Block.TryGetSetting("date");
+    string countdownDate = "";
+    int loopMinutes = 0;
+    bool isLoop = date.selectType.value == "loop";
+
+    if (isLoop)
+    {
+
+        loopMinutes = (int)Model.Block.TryGetSetting("date").end_date;
+    }
+    else
+    {
+        countdownDate = date.end_date != null ? date.end_date.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'") : DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+    }
+}
+
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs start-sm middle-xs">
+            @*@if (Model.Block.TryGetSetting("show_title") == true)
+            {*@
+                <div class="col-xs-12 col-md-5 col-lg-6">
+                    <div class="lp-h2 lp-h2--color countdown-row__title text-align-center-xs" data-e2e="TitleCountdownrow">@Html.SubBlock(Model, "title")</div>
+                </div>
+            @*}*@
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div countdown @Html.Raw(isLoop == true ? "is-loop=\"" + loopMinutes + "\"" : "end-time=\"'" + countdownDate + "'\"") class="ng-cloak" data-e2e="ContentCountdownrow"></div>
+            </div>
+        </div>
+    </div>
+</div>
+

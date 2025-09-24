@@ -1,0 +1,76 @@
+﻿<div class="row between-xs block-constructor-menu__options">
+    <div class="col-xs-12 col-sm-6" ng-if="$ctrl.menuData.Settings.font_size != null || $ctrl.menuData.Settings.menu_items_spacing != null">
+        <div class="blocks-constructor-settings-col--alt">
+            <div class="blocks-constructor-row" ng-if="$ctrl.menuData.Settings.style['font-size'] != null">
+                <div class="blocks-constructor-row__name">Размер шрифта</div>
+                <input
+                    class="blocks-constructor-input"
+                    id="modalSettingsMenuFontSize"
+                    type="number"
+                    required
+                    min="0"
+                    ng-change="$ctrl.menuData.Settings.font_size != null ? $ctrl.menuData.Settings.style['font-size'] = $ctrl.menuData.Settings.font_size + 'px' : null"
+                    ng-model="$ctrl.menuData.Settings.font_size" />
+            </div>
+            <div ng-if="$ctrl.menuData.Settings.menu_items_spacing != null">
+                <div class="blocks-constructor-row__name">Расстояние между пунктами</div>
+                <span
+                    class="blocks-constructor-slider"
+                    data-e2e="MenuSpacing"
+                    range-slider
+                    pin-handle="min"
+                    min="$ctrl.rangeOptions.min"
+                    max="$ctrl.rangeOptions.max"
+                    model-max="$ctrl.menuData.Settings.menu_items_spacing"
+                    step="$ctrl.rangeOptions.step"
+                    show-inputs="false"
+                    attach-handle-values="true"
+                    show-values="true"
+                    caption="px"
+                    on-handle-move-up="$ctrl.rangeOptions.change(event, modelMin, modelMax, $ctrl.menuData)"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6" ng-if="$ctrl.modalData.settings.show_menu != null">
+        <div class="blocks-constructor-settings-col--alt">
+            <div class="blocks-constructor-row__name">&nbsp;</div>
+            <label class="blocks-constructor-label" data-e2e="ShowMenuOnDesktop">
+                <input class="blocks-constructor-checkbox-native" type="checkbox" ng-model="$ctrl.modalData.settings.show_menu" />
+                <span class="blocks-constructor-checkbox"></span>
+                <span class="blocks-constructor-label-text"> Отображать в десктопной версии </span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="blocks-constructor-settings-col--alt block-constructor-grid">
+    <lp-grid
+        lp-id="$ctrl.modalData.landingpageId"
+        block-id="$ctrl.modalData.blockId"
+        source="$ctrl.modalData.settings.menu_items"
+        data-e2e="MenuGrid">
+        <lp-grid-column type="picture" field="picture" classes="'col-xs-2'" title="Изображение" visible="!$ctrl.hasPicture"></lp-grid-column>
+        <lp-grid-column type="text" field="text" classes="'col-xs'" title="Название" main="Название"></lp-grid-column>
+        <lp-grid-column type="text" field="href" classes="'col-xs-3'" title="Ссылка"></lp-grid-column>
+        <lp-grid-column type="template" field="block" classes="'col-xs-2'"
+            ><span class="link-service" blocks-constructor-select="$ctrl.onSelectBlock({item : lpGridRow.entity, blockSelected : blockSelected})"
+                >Выбрать блок</span
+            ></lp-grid-column
+        >
+        <lp-grid-column type="checkbox" field="target" classes="'col-xs-1'" title="Открыть ссылку в новой вкладке"></lp-grid-column>
+
+        <script type="text/ng-template" id="test" lp-add-group-grid>
+            <div class="lp-grid__sub">
+                <lp-grid lp-id="$ctrl.modalData.landingpageId"
+                         show-header="false"
+                         block-id="$ctrl.modalData.blockId"
+                         source="lpGridRow.entity.childs"
+                         data-e2e="SubMenuGrid">
+                    <lp-grid-column type="text" field="text" classes="'col-xs'" title="Название" main="Название"></lp-grid-column>
+                    <lp-grid-column type="text" field="href" classes="'col-xs-4'" title="Ссылка"></lp-grid-column>
+                    <lp-grid-column type="template" field="block" classes="'col-xs-2'"><span class="link-service" blocks-constructor-select="$ctrl.onSelectBlock({item : lpGridRow.entity, blockSelected : blockSelected})">Выбрать блок</span></lp-grid-column>
+                    <lp-grid-column type="checkbox" field="target" classes="'col-xs-1'" title="Открыть ссылку в новой вкладке"></lp-grid-column>
+                </lp-grid>
+            </div>
+        </script>
+    </lp-grid>
+</div>

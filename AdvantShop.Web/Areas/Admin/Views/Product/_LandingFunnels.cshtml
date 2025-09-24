@@ -1,0 +1,91 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Catalog.Products.AdminProductModel
+@{
+    bool isAdminV3 = AdminAreaTemplate.Current != null;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div>
+    @if (!isMobile) { 
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2 class="inline product-setting-title content-header">
+                        @T("Admin.Product.LandingFunnels.AdditionalSales")
+                    </h2>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container-fluid">
+        <div class="form-group row">
+            <div class="col-xs-12" ng-init="product.getLandingFunnelLink()">
+                <div ng-if="product.landingFunnelLink == null" class="ng-cloak">
+                    <div class="m-b">
+                        <p>@T("Admin.Product.LandingFunnels.AfterPlacingFunnel")</p>
+                        <p>
+                            @T("Admin.Product.LandingFunnels.FirstCrossSell")
+                        </p>
+                    </div>
+                    <div>
+                        @if (Model.IsLandingFunnelsEnabled)
+                        {
+                            <ui-modal-trigger data-controller="'ModalAddLandingSiteCtrl'" controller-as="ctrl" size="lg"
+                                              template-url="@Html.GetAssetPath("addLandingSite.html")"
+                                              data-resolve="{data: {'additionalSalesProductId': @Model.ProductId, 'productId': @Model.ProductId, 'lpType': 'ProductCrossSellDownSell', 'template': 'ProductCrossSellDownSell'}}"
+                                              data-on-close="product.onAddLandingFunnelLink()">
+                                <a href="" data-e2e="ProductLanding" class="btn btn-sm btn-success">
+                                    @T("Admin.Product.LandingFunnels.CreateLandingFunnel")
+                                </a>
+                            </ui-modal-trigger>
+                            if (Model.HasFunnels)
+                            {
+                                <ui-modal-trigger data-controller="'ModalChooseLandingFunnelCtrl'" controller-as="ctrl" size="lg"
+                                                  template-url="@Html.GetAssetPath("chooseLandingFunnel.html")"
+                                                  data-on-close="product.onAddExistingLandingFunnel(result)">
+                                    <a href="" class="btn btn-sm btn-action @(isMobile ? "block m-t-sm" : "")">
+                                        @T("Admin.Product.LandingFunnels.SelectExistingFunnel")
+                                    </a>
+                                </ui-modal-trigger>
+                            }
+                        }
+                        else if (isAdminV3)
+                        {
+                            if (CustomerContext.CurrentCustomer.IsAdmin)
+                            {
+                                <ui-modal-trigger data-controller="'ModalSalesChannelsCtrl'" controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("salesChannels.html")"
+                                                  class="sidebar-unit-modal-trigger"
+                                                  window-class="simple-modal modal-sales-channels"
+                                                  data-resolve="{data: {'selectedChannelTypeStr': 'funnel'}}">
+                                    <a href="" data-e2e="InstallLandingFunnels" class="btn btn-sm btn-success">
+                                        @T("Admin.Product.LandingFunnels.InstallLandingFunnels")
+                                    </a>
+                                </ui-modal-trigger>
+                            }
+                            else
+                            {
+                                <a href="" class="btn btn-sm btn-action disabled">
+                                    @T("Admin.Product.LandingFunnels.SalesFunnelsNotConnected")
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a href="settingssystem?systemTab=applications" data-e2e="InstallLandingFunnels" class="btn btn-sm btn-success">
+                                @T("Admin.Product.LandingFunnels.InstallLandingFunnels")
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div ng-if="product.landingFunnelLink != null" class="ng-cloak">
+                    <div>
+                        <h3>@T("Admin.Product.LandingFunnels.UpsellingFunnel")</h3>
+                    </div>
+                    <a href="{{product.landingFunnelLink}}" target="_blank">{{product.landingFunnelLink}}</a>
+                    <a href="" ng-click="product.deleteLinkLandingFunnel()" class="link-invert m-l-xs">@T("Admin.Product.LandingFunnels.UntieFunnel")</a>
+                    <a href="" ng-click="product.deleteLandingFunnel()" class="link-danger m-l-xs">@T("Admin.Product.LandingFunnels.DeleteFunnel")</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

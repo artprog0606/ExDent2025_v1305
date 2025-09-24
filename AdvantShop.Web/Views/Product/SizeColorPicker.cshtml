@@ -1,0 +1,41 @@
+﻿@using AdvantShop.ViewModel.ProductDetails
+@model SizeColorPickerViewModel
+
+<div class="details-size-color-picker @(Model.Colors.IsNotEmpty() && Model.Sizes.IsNotEmpty() && SettingsCatalog.ColorsViewMode == ColorsViewMode.Icon ? "details-size-color-picker--cols-2": "details-size-color-picker--cols-1")">
+    @if (Model.Colors.IsNotEmpty())
+    {
+        <div class="details-row details-colors" data-ng-init="product.colorsExist = true">
+            @Html.Partial("_Colors", new ColorsViewModel
+            {
+                NgColors = Model.Colors,
+                ColorWidth = Model.ColorIconWidthDetails,
+                ColorHeight = Model.ColorIconHeightDetails,
+                NgColorSelected = "product.colorSelected",
+                NgInitColors = "product.initColors(colorsViewer)",
+                NgChangeColor = "product.changeColor(color)",
+                EnabledSlider = false,
+                HeaderText = Model.ColorsHeader,
+                ImageType = AdvantShop.FilePath.ColorImageType.Details,
+                ColorsViewMode = SettingsCatalog.ColorsViewMode,
+                IsHiddenColorName = SettingsCatalog.ColorsViewMode == ColorsViewMode.IconAndText && Model.ColorsControlType != SettingsDesign.eSizeColorControlType.Select,
+                SelectedColors = "[" + Model.SelectedColorId + "]",
+                ControlType = Model.ColorsControlType
+            })
+        </div>
+    }
+    @if (Model.Sizes.IsNotEmpty())
+    {
+        <div class="details-row details-sizes" data-ng-init="product.sizesExist = true">
+            @Html.Partial("_Sizes", new SizesViewModel
+            {
+                NgSizes = Model.Sizes,
+                NgSizeSelected = "product.sizeSelected",
+                NgInitSizes = "product.initSizes(sizesViewer)",
+                NgChangeSize = "product.changeSize(size)",
+                HeaderText = Model.SizesHeader,
+                SelectedSizes = "[" + Model.SelectedSizeId + "]",
+                ControlType = Model.SizesControlType
+            })
+        </div>
+    }
+</div>

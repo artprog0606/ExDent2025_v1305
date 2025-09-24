@@ -1,0 +1,23 @@
+﻿<div class="color-viewer" ng-class="'color-viewer--' + colorsViewer.viewMode">
+    <div class="color-viewer-item-wrap" data-ng-repeat="color in colorsViewer.colors | limitTo: colorsViewer.countVisibleItems track by $index">
+        <div
+            class="color-viewer-item-block"
+            title="{{color.ColorName || color.Title || color.Name}}"
+            data-ng-click="colorsViewer.selectColor($event, color)"
+            data-ng-class="{'color-viewer-item-disabled': color.Available === false,'color-viewer-item-selected cs-br-2': colorsViewer.multiselect ? colorsViewer.colorSelected.indexOf(color) !== -1 : colorsViewer.colorSelected.ColorId != null ? colorsViewer.colorSelected.ColorId === color.ColorId : colorsViewer.colorSelected.Name === color.Name }">
+            <ng-transclude ng-transclude-slot="colorsViewerItemBefore"></ng-transclude>
+            <!--Сравнение по имени для цветовых схем-->
+            <div
+                class="color-viewer-inner cs-br-1"
+                data-ng-if="::colorsViewer.viewMode !== 'text'"
+                data-ng-style="{'background-color': color.ColorCode != null && color.ColorCode.length > 0 ? color.ColorCode : 'transparent', 'width': colorsViewer.colorWidth, 'height': colorsViewer.colorHeight }"
+                data-background-image="{{color.PhotoName != null && color.PhotoName.length > 0 ?  colorsViewer.getImagePath(color.PhotoName) : ''}}"
+                data-qazy-background></div>
+            <span
+                class="color-viewer-item-name text-overflow"
+                data-ng-style="::{'max-width': colorsViewer.viewMode !== 'text' ? 'calc(100% - 4px - ' + colorsViewer.colorWidth + ')' : 'auto'}"
+                data-ng-if="::colorsViewer.isHiddenColorName !== true && (colorsViewer.viewMode === 'text' || colorsViewer.viewMode === 'iconandtext')"
+                data-ng-bind="color.ColorName"></span>
+        </div>
+    </div>
+</div>

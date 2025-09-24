@@ -1,0 +1,85 @@
+﻿@using AdvantShop.Customers;
+@using AdvantShop.Orders
+@using AdvantShop.Core.Services.Configuration.Settings
+
+@{
+    var isHomePage = (string)Request.RequestContext.RouteData.Values["controller"] == "Home" && (string)Request.RequestContext.RouteData.Values["action"] == "Index";
+    var isWishlistPage = (string)Request.RequestContext.RouteData.Values["controller"] == "Wishlist" && (string)Request.RequestContext.RouteData.Values["action"] == "Index";
+    var isCatalogPage = (string)Request.RequestContext.RouteData.Values["controller"] == "Catalog" || (string)Request.RequestContext.RouteData.Values["controller"] == "Product";
+    var isCart = (string)Request.RequestContext.RouteData.Values["controller"] == "Cart";
+    var isAccountPage = (string)Request.RequestContext.RouteData.Values["controller"] == "User" || (string)Request.RequestContext.RouteData.Values["controller"] == "MyAccount";
+    var isRegistred = CustomerContext.CurrentCustomer.RegistredUser;
+}
+
+<div class="bottom-panel">
+    <div class="bottom-panel__menu-block">
+        <a class="bottom-panel__menu-link @(isHomePage ? "cs-l-6" : "color-gray")" href="@UrlService.GetUrl()">
+            <div class="bottom-panel__menu-icon">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 23.5V19C12.5 17.619 13.619 16.5 15 16.5V16.5C16.381 16.5 17.5 17.619 17.5 19V23.5H23V14.914C23 14.384 22.789 13.875 22.414 13.5L15.707 6.79301C15.316 6.40201 14.683 6.40201 14.293 6.79301L7.586 13.5C7.211 13.875 7 14.384 7 14.914V23.5H12.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.54" />
+                </svg>
+            </div>
+            <div class="bottom-panel__menu-descr">@T("Common.BottomPanel.Main")</div>
+        </a>
+        @if (SettingsMobile.BottomPanelCatalogMenuMode == "Link")
+        {
+            <a data-ng-controller="HeaderCtrl as header" class="bottom-panel__menu-link @(isCatalogPage ? "cs-l-6" : "color-gray")" data-ng-click="header.toggleMenu($event)" data-sidebar-container-state="sidebarMenu">
+                <div class="bottom-panel__menu-icon">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M18.965 17.255H19.755L24.745 22.255L23.255 23.745L18.255 18.755V17.965L17.985 17.685C16.845 18.665 15.365 19.255 13.755 19.255C10.165 19.255 7.255 16.345 7.255 12.755C7.255 9.165 10.165 6.255 13.755 6.255C17.345 6.255 20.255 9.165 20.255 12.755C20.255 14.365 19.665 15.845 18.685 16.985L18.965 17.255ZM9.255 12.755C9.255 15.245 11.265 17.255 13.755 17.255C16.245 17.255 18.255 15.245 18.255 12.755C18.255 10.265 16.245 8.255 13.755 8.255C11.265 8.255 9.255 10.265 9.255 12.755Z" fill="currentColor" fill-opacity="0.54" />
+                        <path d="M10 21H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                        <path d="M6 17H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                        <path d="M4 13H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                    </svg>
+                </div>
+                <div class="bottom-panel__menu-descr">@T("Common.BottomPanel.Catalog")</div>
+            </a>
+        }
+        else
+        {
+            <a href="catalog"  class="bottom-panel__menu-link @(isCatalogPage ? "cs-l-6" : "color-gray")" >
+                <div class="bottom-panel__menu-icon">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M18.965 17.255H19.755L24.745 22.255L23.255 23.745L18.255 18.755V17.965L17.985 17.685C16.845 18.665 15.365 19.255 13.755 19.255C10.165 19.255 7.255 16.345 7.255 12.755C7.255 9.165 10.165 6.255 13.755 6.255C17.345 6.255 20.255 9.165 20.255 12.755C20.255 14.365 19.665 15.845 18.685 16.985L18.965 17.255ZM9.255 12.755C9.255 15.245 11.265 17.255 13.755 17.255C16.245 17.255 18.255 15.245 18.255 12.755C18.255 10.265 16.245 8.255 13.755 8.255C11.265 8.255 9.255 10.265 9.255 12.755Z" fill="currentColor" fill-opacity="0.54" />
+                        <path d="M10 21H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                        <path d="M6 17H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                        <path d="M4 13H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.54" />
+                    </svg>
+                </div>
+                <div class="bottom-panel__menu-descr">@T("Common.BottomPanel.Catalog")</div>
+            </a>
+        }
+
+        <a data-ng-controller="HeaderCtrl as header" @Html.Raw(SettingsDesign.EnableShoppingCartPopup ? "data-ng-click=\"header.toggleCart($event)\"" : "") class="bottom-panel__menu-link @(isCart ? "cs-l-6" : "color-gray")" href="cart">
+            <div class="bottom-panel__menu-icon">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21.2963 14.97C20.9563 15.59 20.2963 16 19.5463 16H12.0963L10.9963 18H22.9963V20H10.9963C9.47629 20 8.51629 18.37 9.24629 17.03L10.5963 14.59L6.99629 7H4.99629V5H8.26629L9.20629 7H24.0063C24.7663 7 25.2463 7.82 24.8763 8.48L21.2963 14.97ZM22.3063 9H10.1563L12.5263 14H19.5463L22.3063 9ZM10.9963 21C9.89629 21 9.00629 21.9 9.00629 23C9.00629 24.1 9.89629 25 10.9963 25C12.0963 25 12.9963 24.1 12.9963 23C12.9963 21.9 12.0963 21 10.9963 21ZM19.0063 23C19.0063 21.9 19.8963 21 20.9963 21C22.0963 21 22.9963 21.9 22.9963 23C22.9963 24.1 22.0963 25 20.9963 25C19.8963 25 19.0063 24.1 19.0063 23Z" fill="currentColor" fill-opacity="0.54" />
+                </svg>
+                <span class="mobile-header__cart-count cs-bg-6 cs-t-4 ng-cloak" data-ng-show="cartCount.cartData.TotalItems > 0" data-cart-count data-ng-bind-html="cartCount.getValue()">@ShoppingCartService.CurrentShoppingCart.TotalItems</span>
+            </div>
+            <div class="bottom-panel__menu-descr">@T("Common.BottomPanel.Cart")</div>
+        </a>
+        @if (SettingsDesign.WishListVisibility)
+        {
+            <a class="bottom-panel__menu-link @(isWishlistPage ? "cs-l-6" : "color-gray")" href="wishlist">
+                <div class="bottom-panel__menu-icon">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15 7.91501C16.09 6.63501 17.76 5.82501 19.5 5.82501C22.58 5.82501 25 8.24501 25 11.325C25 15.1019 21.6056 18.18 16.4627 22.8435L16.45 22.855L15 24.175L13.55 22.865L13.5105 22.8291C8.38263 18.1693 5 15.0953 5 11.325C5 8.24501 7.42 5.82501 10.5 5.82501C12.24 5.82501 13.91 6.63501 15 7.91501ZM15 21.475L15.1 21.375C19.86 17.065 23 14.215 23 11.325C23 9.32501 21.5 7.82501 19.5 7.82501C17.96 7.82501 16.46 8.81501 15.94 10.185H14.07C13.54 8.81501 12.04 7.82501 10.5 7.82501C8.5 7.82501 7 9.32501 7 11.325C7 14.215 10.14 17.065 14.9 21.375L15 21.475Z" fill="currentColor" fill-opacity="0.54" />
+                    </svg>
+                    <span class="mobile-header__wishlist-count cs-bg-6 cs-t-4 ng-cloak" data-ng-show="wishlistCount.countObj.count > 0" data-wishlist-count data-start-count="@ShoppingCartService.CurrentWishlist.Count" data-ng-bind="wishlistCount.countObj.count">@ShoppingCartService.CurrentWishlist.Count</span>
+                </div>
+                <div class="bottom-panel__menu-descr">@T("Common.BottomPanel.WishList")</div>
+            </a>
+        }
+
+        <a class="bottom-panel__menu-link @(isAccountPage ? "cs-l-6" : "color-gray")" href="@Url.AbsoluteRouteUrl(CustomerContext.CurrentCustomer.RegistredUser ? "MyAccount" : "Login")">
+            <div class="bottom-panel__menu-icon">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15 5C9.48 5 5 9.48 5 15C5 20.52 9.48 25 15 25C20.52 25 25 20.52 25 15C25 9.48 20.52 5 15 5ZM10.07 21.28C10.5 20.38 13.12 19.5 15 19.5C16.88 19.5 19.51 20.38 19.93 21.28C18.57 22.36 16.86 23 15 23C13.14 23 11.43 22.36 10.07 21.28ZM15 17.5C16.46 17.5 19.93 18.09 21.36 19.83C22.38 18.49 23 16.82 23 15C23 10.59 19.41 7 15 7C10.59 7 7 10.59 7 15C7 16.82 7.62 18.49 8.64 19.83C10.07 18.09 13.54 17.5 15 17.5ZM15 9C13.06 9 11.5 10.56 11.5 12.5C11.5 14.44 13.06 16 15 16C16.94 16 18.5 14.44 18.5 12.5C18.5 10.56 16.94 9 15 9ZM13.5 12.5C13.5 13.33 14.17 14 15 14C15.83 14 16.5 13.33 16.5 12.5C16.5 11.67 15.83 11 15 11C14.17 11 13.5 11.67 13.5 12.5Z" fill="currentColor" fill-opacity="0.54" />
+                </svg>
+            </div>
+            <div class="bottom-panel__menu-descr">@(isRegistred ? T("Common.BottomPanel.Account") : T("Common.BottomPanel.SignIn"))</div>
+        </a>
+    </div>
+</div>
+

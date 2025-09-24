@@ -1,0 +1,214 @@
+﻿@using AdvantShop.Web.Admin.Models.Catalog
+@model AdvantShop.Web.Admin.ViewModels.Catalog.AdminCatalog
+@{
+    Layout = "~/Areas/Admin/Views/Catalog/_CatalogLayout.cshtml";
+    ViewBag.CategoryId = Model.CategoryId;
+    ViewBag.CatalogLeftMenuNgCallbackOnInit = "catalog.initCatalogLeftMenu(catalogLeftMenu)";
+}
+@{
+    Html.AddAsset("catalog");
+}
+
+@{
+    var Items = new List<MoreButtonPopoverItem>(){
+        new MoreButtonPopoverItem(){
+            Text = T("Admin.Catalog.CatalogLeftMenu.ProductsCount"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Index", "Catalog", new { showMethod = ECatalogShowMethod.AllProducts })
+        },
+          new MoreButtonPopoverItem(){
+            Text = T("Admin.Catalog.CatalogLeftMenu.ProductsWithoutCategoriesCount"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Index", "Catalog", new { showMethod = ECatalogShowMethod.OnlyWithoutCategories })
+        },
+         new MoreButtonPopoverItem(){
+            Text = T("Admin.Catalog.Export"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Indexcsv", "Exportfeeds")
+        },
+        new MoreButtonPopoverItem(){
+            Text = T("Импорт данных"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl(null, "Import")
+        },
+        new MoreButtonPopoverItem(){
+            Text = T("Отзывы о товарах"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl(null, "Reviews")
+        },
+        new MoreButtonPopoverItem(){
+            HtmlElement = "<recalc-trigger css-class=\"btn btn--simple btn-link btn--horizontal-padding-zero\"><span>" + T("Admin.Catalog.CatalogLeftMenu.RecountOfQuantityOfGoods") + "</recalc-trigger>",
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            }
+        },
+        new MoreButtonPopoverItem(){
+            RowAttributes = new { ng_if = "" +Model.CategoryId + " !== 0" },
+            HtmlElement = "<a href=\"\" data-ng-controller=\"CatalogCtrl as catalog\" class=\"btn btn--link  btn-danger btn--simple btn--horizontal-padding-zero\" ng-click=\"catalog.deleteCategory(" + Model.CategoryId +")\">" + T("Admin.Mobile.Category.Index.Delete") + "</a>",
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            }
+        },
+    };
+
+    if (Model.ShowMethod == ECatalogShowMethod.Normal)
+    {
+        Items.Insert(0, new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Mobile.Category.Index.Edit"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Link = Url.AbsoluteActionUrl("Edit", "Category", new { id = Model.CategoryId })
+        });
+    }
+
+    if (AdvantShop.Trial.TrialService.IsTrialEnabled && AdvantShop.Trial.TrialService.HasDemoProducts())
+    {
+        Items.Insert(Items.Count - 1, new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Catalog.ClearDemoData"),
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            WrapStart = " <ui-modal-trigger data-controller=\"'ModalClearDataCtrl'\" template-url=\"" + Html.GetAssetPath("ClearData.html") + "\" controller-as=\"ctrl\" data-resolve=\"{\'params\': {\'mode\': \'catalog\'}}\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        });
+    }
+
+}
+
+    <div class="catalog-page">
+
+        @Html.Header(new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel()
+   {
+       EnabledBack = true,
+       Back = Model.Category != null && Model.CategoryId != Model.Category.ParentCategoryId ? new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+       {
+           Url = Url.AbsoluteActionUrl("Index", "Catalog", new { categoryId =  Model.Category.ParentCategoryId }),
+       } : new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+       {
+           Url = Url.AbsoluteActionUrl("Index", "Catalog"),
+       },
+       Title = Model.Title,
+       Controls = new List<IButton>()
+            {
+
+                new MoreButtonModel(){
+                    Items = new List<MoreButtonPopoverItem>(){
+                        new MoreButtonPopoverItem(){
+                            Text = T("Admin.AddProduct"),
+                            WrapStart = "<ui-modal-trigger class=\"header-subtext\" data-controller=\"'ModalAddProductCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addProduct.html") + "\">",
+                            WrapEnd = "</ui-modal-trigger>",
+                            ColorType = eColorType.Link,
+                            Modificators = new List<eButtonModificators>()
+                            {
+                                eButtonModificators.HorizontalPaddingZero
+                            },
+
+                        },
+                        new MoreButtonPopoverItem(){
+                            Text = T("Admin.AddCategory"),
+                            ColorType = eColorType.Link,
+                            Modificators = new List<eButtonModificators>()
+                            {
+                                eButtonModificators.HorizontalPaddingZero
+                            },
+                            Link = Url.AbsoluteActionUrl("Add", "Category", new {parentId = Model.CategoryId})
+
+                        }
+                    },
+                    NgTemplateId = "moreButtonHeaderCatalogTemplate",
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "plus-alt",
+                        Attributes = new { width = 16, height = 16 },
+                    }
+                },
+                new MoreButtonModel(){
+                    Items = Items,
+                    NgTemplateId = "moreButtonRightHeaderCatalogTemplate"
+                }
+            }
+   })
+
+        @if (Model.Category != null && (Model.HasChildCategories || Model.CategoryId == 0))
+        {
+            <div class="flex">
+                <categories-block class="catalog-page__categories-block m-t-sm" category-id="@Model.CategoryId" photo-height="@(SettingsPictureSize.SmallCategoryImageHeight)px" categorysearch="@Model.CategorySearch" on-delete="catalog.onDeleteChildCategories()"></categories-block>
+            </div>
+        }
+
+
+        @if (Model.ShowMethod != ECatalogShowMethod.Normal || Model.CategoryId != 0)
+        {
+
+            @*if (Model.Category != null)
+            {
+                <div class="row between-xs middle-xs m-b-sm">
+                    <div class="col-xs-slim">
+                        <h2 class="inline content-header m-b-none m-r-sm middle-cell">@T("Admin.Catalog.Index.Products")</h2>
+
+                    </div>
+                    <div class="col-xs-slim">
+                        <ui-modal-trigger class="header-subtext" data-controller="'ModalAddProductCtrl'" controller-as="ctrl" template-url="@Html.GetAssetPath("AddProduct.html")">
+                            <button type="button" class="btn btn-sm btn-success">@T("Admin.AddProduct")</button>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            }*@
+            <div ng-init="catalog.catalogInit(@Model.IsTagsVisible.ToLowerString(), @Model.IsWarehouseFilterVisible.ToLowerString())">
+                <ui-grid-custom grid-unique-id="grid"
+                                grid-row-identificator="'ProductId'"
+                                grid-options="catalog.gridOptions"
+                                grid-params="{categoryId:@Model.CategoryId, showMethod:'@Model.ShowMethod', search: '@Model.Search'}"
+                                grid-on-init="catalog.gridOnInit(grid)"
+                                grid-url="'catalog/getcatalog'"
+                                grid-inplace-url="'catalog/inplaceproduct'"
+                                grid-search-placeholder="'@T("Admin.Catalog.Index.ProductSearch")'"
+                                grid-on-delete="catalog.onGridDeleteItem()"
+                                grid-swipe-line="true"
+                                grid-selection-mass-apply="catalog.onGridDeleteItem()"
+                                grid-on-inplace-apply="catalog.grid.fetchData()"
+                                class="ng-cloak">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div data-product-grid-item
+                             data-row="row"
+                             data-custom-link="true"
+                             data-grid-scope="grid.appScope"
+                             data-renderer-columns="colContainer.renderedColumns"
+                             ></div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+
+
+        }
+    </div>

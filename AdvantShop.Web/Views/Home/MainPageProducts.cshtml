@@ -1,0 +1,36 @@
+﻿@using AdvantShop.Catalog
+@model AdvantShop.ViewModel.Home.MainPageProductsViewModel
+
+@Html.RenderModules("mainpage_products_before")
+<div class="products-specials-container">
+    @foreach (var productList in Model.ProductLists)
+    {
+        if (productList.Products.Count > 0)
+        {
+            <article class="products-specials-block products-specials-list cs-br-1">
+                <header class="products-specials-header">
+                    <div class="h2 h-inline" 
+                         data-ng-class="{'products-specials-best-h' : @((productList.Type == EProductOnMain.Best).ToLowerString()), 
+                                     'products-specials-new-h': @((productList.Type == EProductOnMain.New || productList.Type == EProductOnMain.NewArrivals).ToLowerString()), 
+                                     'products-specials-discount-h': @((productList.Type == EProductOnMain.Sale).ToLowerString())}">
+                        @Html.Raw(productList.Title)
+                    </div>
+                    @{
+                        var routeParams = new
+                        {
+                            type = productList.Type.ToString().ToLower(),
+                            list = productList.Type == EProductOnMain.List ? productList.UrlPath : null
+                        };
+                    }
+                    <a href="@Url.AbsoluteRouteUrl("ProductList", routeParams)" class="products-specials-more">
+                        @Html.Raw(productList.LinkText)
+                    </a>
+                </header>
+                <div class="products-view products-view-tile row">
+                    @Html.Partial("_ProductView", productList)
+                </div>
+            </article>   
+        }
+    }
+</div>
+@Html.RenderModules("mainpage_products")

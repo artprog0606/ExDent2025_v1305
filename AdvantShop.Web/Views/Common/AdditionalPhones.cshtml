@@ -1,0 +1,112 @@
+﻿@using AdvantShop.Core.Services.Repository
+@model List<AdditionalPhone>
+
+<div class="phones-number">
+    <vanilla-dropdown class="phones-number__dropdown vanilla-dropdown">
+        <div class="phones-number__field-dropdown">
+            <div class="phones-number__icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <use xlink:href="~/images/additional-phones-icon/icons.svg#tel"></use>
+                </svg>
+            </div>
+            <div class="phones-number__text">
+                <vanilla-dropdown-selected>
+                    <div class="phones-number__tel" data-zone-current data-start-val="{Phone: '@Html.GetCityPhone(true)'}">
+                        <a rel="nofollow" href="tel: {{zone.MobilePhone}}">
+                            <span data-ng-bind-html="zone.Phone">
+                                @Html.GetCityPhone()
+                            </span>
+                        </a>
+                    </div>
+                </vanilla-dropdown-selected>
+                <div class="phones-number__order-call">
+                    @Html.StaticBlock("email", "static-block-email-header phones-number__callback-link")              
+                </div>
+            </div>
+
+            @if (Model.Count > 0)
+            {
+                <button type="button"
+                        role="listbox"
+                        data-vanilla-dropdown-trigger
+                        class="phones-number__trigger vanilla-dropdown__trigger phones-number__trigger--top">
+                    <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                        <path d="M1.42259 0.577411C1.09715 0.251975 0.569515 0.251975 0.244078 0.577411C-0.0813592 0.902848 -0.0813592 1.43049 0.244078 1.75592L5.24408 6.75592C5.56952 7.08136 6.09715 7.08136 6.42259 6.75592L11.4226 1.75592C11.748 1.43049 11.748 0.902848 11.4226 0.577411C11.0972 0.251975 10.5695 0.251975 10.2441 0.577411L5.83333 4.98816L1.42259 0.577411Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <vanilla-dropdown-list class="phones-number__list vanilla-dropdown__list" hidden>
+                    @foreach (var phone in Model)
+                    {
+                        <vanilla-dropdown-item class="phones-number__list-item vanilla-dropdown__list-item">
+                            <vanilla-dropdown-value class="phones-number__list-item-text">
+                                <div class="phones-number__field-dropdown">
+                                    @if (phone.Type == EAdditionalPhoneType.Phone)
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-phone">
+                                            <svg width="25" height="25">
+                                                <use xlink:href="images/additional-phones-icon/icons.svg#mobilePhone"></use>
+                                            </svg>
+                                        </div>
+                                    }
+                                    else if (phone.Type == EAdditionalPhoneType.WhatsApp)
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-whatsapp">
+                                            <svg width="25" height="25">
+                                                <use xlink:href="images/additional-phones-icon/icons.svg#whatsapp"></use>
+                                            </svg>
+                                        </div>
+                                    }
+                                    else if (phone.Type == EAdditionalPhoneType.Viber)
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-viber">
+                                            <svg width="25" height="25">
+                                                <use xlink:href="images/additional-phones-icon/icons.svg#viber"></use>
+                                            </svg>
+                                        </div>
+                                    }
+                                    else if (phone.Type == EAdditionalPhoneType.Telegram)
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-telegram">
+                                            <svg width="25" height="25">
+                                                <use xlink:href="images/additional-phones-icon/icons.svg#tg"></use>
+                                            </svg>
+                                        </div>
+                                    }
+                                    else if (phone.Type == EAdditionalPhoneType.Skype)
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-telegram">
+                                            <svg width="25" height="25">
+                                                <use xlink:href="images/additional-phones-icon/icons.svg#skype"></use>
+                                            </svg>
+                                        </div>
+                                    }
+                                    else if (phone.Type == EAdditionalPhoneType.Svg && !string.IsNullOrEmpty(phone.Icon))
+                                    {
+                                        <div class="phones-number__icon phones-number__icon-other">
+                                            @Html.Raw(phone.Icon)
+                                        </div>
+                                    }
+                                    <div class="phones-number__text">
+                                        <vanilla-dropdown-selected>
+                                            <a rel="nofollow" href="@phone.PhoneLinkByType">
+                                                <span class="phones-number__tel">
+                                                    @phone.PhoneTextByType
+                                                </span>
+                                            </a>
+                                            @if (!string.IsNullOrEmpty(phone.Description) && phone.Type != EAdditionalPhoneType.Telegram)
+                                            {
+                                                <span class="phones-number__descr">
+                                                    @Html.Raw(phone.Description)
+                                                </span>
+                                            }
+                                        </vanilla-dropdown-selected>
+                                    </div>
+                                </div>
+                            </vanilla-dropdown-value>
+                        </vanilla-dropdown-item>
+                    }
+                </vanilla-dropdown-list>
+            }
+        </div>
+    </vanilla-dropdown>
+</div>

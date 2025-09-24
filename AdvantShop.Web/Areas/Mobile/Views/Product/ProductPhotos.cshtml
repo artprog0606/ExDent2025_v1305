@@ -1,0 +1,208 @@
+﻿@model AdvantShop.Areas.Mobile.Models.ProductDetails.ProductPhotosMobileViewModel
+@using AdvantShop.Catalog;
+@using AdvantShop.Core.Services.Configuration.Settings
+@using AdvantShop.FilePath
+@{
+    var labels = @Html.RenderLabels(Model.Product.Recomended, Model.Product.OnSale, Model.Product.BestSeller, Model.Product.New, Model.Discount, customLabels: Model.Labels, warranty: Model.Product.ExportOptions.ManufacturerWarranty);
+}
+@helper IconTriggerVideo()
+{
+    if (Model.Video != null)
+    {
+        <button type="button" class="btn-link cs-l-3 details-photos__trigger details-photos__trigger-video" data-ng-click="product.showVideo(true)" data-modal-open="modalProductVideo">
+            <svg width="30px" height="30px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 351.719 351.719" xml:space="preserve">
+            <path fill="currentColor" d="M48.528,123.507l278.652-78.792L314.547,0L14.727,84.776l10.953,38.731h-0.258v38.266v8.196v181.75h311.57v-181.75
+				v-8.196v-38.266H48.528z M317.057,39.059l-27.952,7.908l20.044-35.885L317.057,39.059z M254.896,25.403L234.13,62.51
+				l-38.244,10.818l20.734-37.122L254.896,25.403z M161.662,51.75l-20.752,37.116l-42.544,12.027l20.752-37.121L161.662,51.75z
+				    M64.146,79.314l-20.752,37.122l-10.374,2.933l-8.166-28.931L64.146,79.314z M272.85,131.703l-30.066,30.063h-39.781
+				l30.084-30.063H272.85z M175.971,131.703l-30.081,30.063h-44.192l30.069-30.063H175.971z M44.574,161.767h-10.95v-30.063h41.013
+				L44.574,161.767z M328.79,161.767h-28.896l28.896-28.883V161.767z"></path>
+            </svg>
+        </button>
+    }
+}
+@helper IconTrigger360()
+{
+    if (Model.ActiveThreeSixtyView)
+    {
+        <button type="button" class="cs-l-3 m-r-sm details-photos__trigger details-photos__trigger-360" data-ng-click="product.showRotate(true)" data-modal-open="modalProductRotate">
+            <svg width="30px" height="30px" viewBox="0 0 512 512">
+                <path fill="currentColor" d="M144,296H80c-8.837,0-16-7.163-16-16s7.163-16,16-16h48v-96H80c-8.837,0-16-7.163-16-16s7.163-16,16-16h64
+	            c8.837,0,16,7.163,16,16v128C160,288.837,152.837,296,144,296z"></path>
+                <path fill="currentColor" d="M256,296h-32c-17.673,0-32-14.327-32-32v-96c0-17.673,14.327-32,32-32h48c8.837,0,16,7.163,16,16s-7.163,16-16,16h-48v32h32
+	            c17.673,0,32,14.327,32,32v32C288,281.673,273.673,296,256,296z M224,232v32h32v-32H224z"></path>
+                <path fill="currentColor" d="M384,296h-32c-17.673,0-32-14.327-32-32v-96c0-17.673,14.327-32,32-32h32c17.673,0,32,14.327,32,32v96
+	            C416,281.673,401.673,296,384,296z M352,168v96h32v-96H352z"></path>
+                <path fill="currentColor" d="M144,232H80c-8.837,0-16-7.163-16-16s7.163-16,16-16h64c8.837,0,16,7.163,16,16S152.837,232,144,232z"></path>
+                <path fill="currentColor" d="M256,424C112.448,424,0,367.776,0,296c1.294-27.41,15.428-52.607,38.144-68c6.972-5.443,17.037-4.204,22.48,2.768
+	            c5.443,6.972,4.204,17.037-2.768,22.48l0,0C43.249,262.887,33.753,278.587,32,296c0,45.408,92,96,224,96c8.837,0,16,7.163,16,16S264.837,424,256,424z"></path>
+                <path fill="currentColor" d="M304,421.76c-8.837,0.424-16.344-6.395-16.768-15.232s6.395-16.344,15.232-16.768C403.68,380.064,480,339.712,480,296
+	            c-1.753-17.413-11.249-33.113-25.856-42.752c-6.963-5.443-8.195-15.501-2.752-22.464c5.443-6.963,15.501-8.195,22.464-2.752l0,0
+	            C496.578,243.404,510.716,268.596,512,296c0,62.24-84.896,113.952-206.464,125.696L304,421.76z"></path>
+                <path fill="currentColor" d="M208,472c-8.837,0.016-16.013-7.135-16.029-15.971c-0.008-4.26,1.684-8.348,4.701-11.357L233.376,408l-36.704-36.672
+	            c-6.256-6.256-6.256-16.4,0-22.656s16.4-6.256,22.656,0l48,48c6.256,6.24,6.269,16.371,0.029,22.627
+	            c-0.01,0.01-0.019,0.019-0.029,0.029l-48,48C216.322,470.327,212.246,472.008,208,472z"></path>
+                <path fill="currentColor" d="M464,136c-26.51,0-48-21.49-48-48s21.49-48,48-48s48,21.49,48,48S490.51,136,464,136z M464,72c-8.837,0-16,7.163-16,16
+	            s7.163,16,16,16s16-7.163,16-16S472.837,72,464,72z"></path>
+            </svg>
+        </button>
+    }
+}
+<div class="gallery-photos-mobile details-carousel details-carousel-mobile" data-ng-class="{'details-carousel' : product.carouselHidden}" data-ng-init="product.carouselExist = true">
+    @if (Model.Photos.Count > 0)
+    {
+        <div class="gallery-photos-slider__wrap">
+            <div class="carousel gallery-photos-slider gallery-photos-slider--main carousel--not-hidden-on-update"
+                 style="height: @(SettingsMobile.BlockProductPhotoMiddleHeight)px">
+                <div class="carousel-inner" data-photo-viewer data-photo-viewer-on-load="product.addChangeSizeAndColorCallback(photoViewer.update)">
+                    <div id="carousel"
+                         class="gallery-photos-slider-list-horizontal"
+                         data-ng-init="product.addControlToQueue('carousel')"
+                         data-carousel
+                         data-visible-max="1"
+                         data-init-fn="product.addCarousel(carousel)"
+                         data-item-select="product.carouselItemSelect(carousel, item, index)"
+                         data-stretch="true"
+                         data-dots="false"
+                         data-nav="false"
+                         data-as-nav-for="carouselPreview">
+                        @{
+                            var i = 0;
+                        }
+                        @foreach (var photo in Model.Photos)
+                        {
+                            <div class="details-carousel-item"
+                                 data-parameters="{'colorId':@(photo.ColorID != null ? photo.ColorID.ToString() : "null") ,'main':@photo.Main.ToString().ToLower() ,'previewPath':'@photo.ImageSrcBig()' ,'originalPath':'@photo.ImageSrcBig()','title':'@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                <figure class="gallery-photos-item">
+                                    <a href="@photo.ImageSrcBig()" onclick="event.preventDefault()">
+                                        <img @Html.Raw(i == 0 ? "src" : "src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" data-src")="@photo.ImageSrcBig()"
+                                             class="gallery-photos-item-obj" alt="@photo.Alt" title="@photo.Title"
+                                             onerror="this.src = '@PhotoService.GetNoPhotoPath(ProductImageType.Middle)'"
+                                             width="375"
+                                             height="150"
+                                             style="max-height: @(SettingsMobile.BlockProductPhotoMiddleHeight)px"
+                                             @Html.Raw(i == 0 ? "itemprop=\"image\"" : "") />
+                                    </a>
+                                </figure>
+                            </div>
+                            i++;
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-picture-labels">@labels</div>
+        </div>
+
+        <div class="details-photos__left text-align-center m-t-sm">
+            @IconTrigger360()
+            @IconTriggerVideo()
+        </div>
+
+
+        if (Model.Photos.Count > 1)
+        {
+            <div class="carousel gallery-photos-slider gallery-photos-slider--preview details-carousel-preview--loading  carousel--not-hidden-on-update"
+                 data-ng-class="{'details-carousel-preview--loading' : product.carouselHidden}">
+                <div class="carousel-inner">
+                    <div id="carouselPreview"
+                         class="gallery-photos details-carousel carousel-list details-carousel--preview"
+                         data-carousel
+                         data-item-active-class="product-carousel-active--preview"
+                         data-item-select-class="product-carousel-select--preview cs-br-2"
+                         data-stretch="true"
+                         data-dots="false"
+                         data-nav="false"
+                         data-as-nav-for="carousel"
+                         data-scroll-nav="true">
+                        @{
+                            var j = 0;
+                            int countVisiblePhotosInPreview = 320 / SettingsPictureSize.XSmallProductImageWidth;
+                        }
+                        @foreach (var photo in Model.Photos)
+                        {
+                            <div class="details-carousel-item details-carousel-item--preview @(j == 0 ? "product-carousel-active--preview product-carousel-select--preview cs-br-2" : "") @(Model.ColorId.HasValue && Model.ColorId != photo.ColorID ? "details-carousel__item--hidden-onload" : "")"
+                                 data-parameters="{'colorId':@(photo.ColorID != null ? photo.ColorID.ToString() : "null") ,'main':@photo.Main.ToString().ToLower() ,'previewPath':'@photo.ImageSrcBig()' ,'originalPath':'@photo.ImageSrcBig()','title':'@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                <figure class="gallery-photos-item">
+                                    <img class="gallery-photos-item-obj"
+                                         @Html.Raw(j < countVisiblePhotosInPreview ? "src" : "src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" data-src")="@photo.ImageSrcSmall()"
+                                         onerror="this.src = '@PhotoService.GetNoPhotoPath(ProductImageType.XSmall)'"
+                                         alt="@photo.Alt" title="@photo.Title" width="@Model.CarouselPhotoWidth" height="@Model.CarouselPhotoHeight" />
+                                </figure>
+                            </div>
+                            j++;
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <figure class="gallery-photos-item text-align-center">
+            <img class="gallery-photos-item-obj" src="@PhotoService.GetNoPhotoPath(ProductImageType.Middle)" itemprop="image" />
+            <span class="gallery-picture-labels">@labels</span>
+        </figure>
+        <div class="details-photos__left text-align-center m-t-sm">
+            @IconTrigger360()
+            @IconTriggerVideo()
+        </div>
+
+    }
+
+
+    @if (Model.ActiveThreeSixtyView)
+    {
+        <div class="ng-cloak">
+            <div id="modalProductRotate" data-modal-control  data-modal-class="modal-rotate" data-callback-close="product.showRotate(false)">
+                <div>
+                    @*<div class="page-title-row details-title-row modal-header modal-product-rotate-header-wrap">
+                            <div class="details-title page-title modal-product-rotate-header"></div>
+                        </div>*@
+                    <figure class="details-rotate modal-content" data-ng-if="product.visibleRotate === true">
+                        <div data-rotate
+                             data-image-path="pictures/product/rotate/@Html.Raw(Model.Product.ProductId)/"
+                             data-total-frames="@Model.Photos360.Count"
+                             data-height="@(Model.PreviewPhotoHeight)"
+                             data-end-frame="@Model.Photos360.Count"
+                             data-img-list=".threesixty_images"
+                             data-progress=".spinner"
+                             data-width="@(Model.PreviewPhotoWidth)"
+                             data-ext="@Model.Photos360Ext">
+                        </div>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.Video != null)
+    {
+        <div class="ng-cloak">
+            <div id="modalProductVideo" data-modal-control  data-modal-class="modal-video modal-product-video" data-callback-close="product.showVideo(false);">
+                <div class="modal-content" data-ng-if="product.visibleVideo === true" data-ng-class="{'carousel-product-video-in-modal-content': !product.carouselVideosInModalInit}">
+                    <div data-carousel
+                         initilaze-to="#productVideoInModal"
+                         data-init-on-load="true"
+                         data-load="product.videosInModalReceived"
+                         data-visible-max="1"
+                         data-stretch="true"
+                         data-carousel-class="carousel-product-video-in-modal"
+                         data-next-class="carousel-product-video-in-modal-btn"
+                         data-prev-class="carousel-product-video-in-modal-btn"
+                         data-init-fn="product.onInitCarouselVideosInModal()"
+                         class="carousel-product-video-in-modal--wrap">
+                        <div id="productVideoInModal" class="product-videos-in-modal" data-videos data-product-id="@Model.Product.ProductId" data-on-receive="product.onReceiveVideosInModal()"></div>@*@Html.Raw(Model.Video.PlayerCode)*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Product.HasGifts())
+{
+    <div class="mobile-product-main-info">
+        <h2>@T("Mobile.Product.ProductPhotos.GiftsTitle")</h2>
+        @Html.Action("ProductGifts", "Product", new { productModel = Model.ProductModel, Area = "" })
+    </div>
+}

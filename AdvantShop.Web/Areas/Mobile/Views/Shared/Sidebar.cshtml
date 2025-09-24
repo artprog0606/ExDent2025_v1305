@@ -1,0 +1,238 @@
+﻿@using AdvantShop.Customers;
+@using AdvantShop.Helpers;
+@using AdvantShop.Core.Services.Configuration.Settings;
+
+@model AdvantShop.Areas.Mobile.Models.Sidebar.SidebarMobileViewModel
+@{ 
+    var customer = CustomerContext.CurrentCustomer;
+}
+<aside data-mobile-menu-root>
+    <div class="menu--root sidebar-menu-flex" data-ng-style="mobileMenuRoot.styles">
+        <div class="menu" data-mobile-menu="">
+            @if (Model.CatalogMenuViewMode == SettingsMobile.eCatalogMenuViewMode.RootCategories)
+            {
+                <div class="menu_item--catalog">
+                    @Html.Action("CatalogMenu", "Catalog", new { categoryId = 0, showRoot = SettingsMobile.CatalogMenuViewMode.ToLower() == SettingsMobile.eCatalogMenuViewMode.Link.ToString().ToLower(), isRootItems = true })
+                </div>
+            }
+            <div class="menu_item--nav-site">
+                @if (Model.DisplayCity)
+                {
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root">
+                            <div class="menu__link menu__link--thin cs-l-2">
+                                @T("Common.TopPanel.LocationYourCity"):
+                                <button type="button" class="menu__city">
+                                    @Html.Action("ZoneDialogTrigger", "Common", new { area = ""})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root ">
+                            <a class="menu__link menu__link--thin menu__link--with-icon cs-l-2"
+                               href="@Url.AbsoluteRouteUrl(CustomerContext.CurrentCustomer.RegistredUser ? "MyAccount" : "Login")">
+                                @T("Common.TopPanel.MyAccount")
+                                <svg width="24" height="24" class="menu__icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 612 612">
+                                    <path fill="currentColor" d="M612,306.036C612,137.405,474.595,0,305.964,0S0,137.405,0,306.036c0,92.881,42.14,176.437,107.698,232.599
+		                        c0.795,0.795,1.59,1.59,3.108,2.313C163.86,585.473,231.804,612,306.759,612c73.365,0,141.309-26.527,194.363-69.462
+		                        c3.108-0.795,5.493-3.108,7.011-5.493C571.451,480.088,612,398.122,612,306.036z M28.117,306.036
+		                        c0-153.018,124.901-277.919,277.919-277.919s277.919,124.901,277.919,277.919c0,74.955-29.635,142.826-78.063,192.845
+		                        c-7.806-36.719-31.225-99.169-103.072-139.718c16.408-20.311,25.732-46.838,25.732-74.955c0-67.149-54.644-121.793-121.793-121.793
+		                        s-121.793,54.644-121.793,121.793c0,28.117,10.119,53.849,25.732,74.955c-72.497,40.549-95.916,103-102.928,139.718
+		                        C58.547,449.658,28.117,380.991,28.117,306.036z M212.36,284.93c0-51.536,42.14-93.676,93.676-93.676s93.676,42.14,93.676,93.676
+		                        s-42.14,93.676-93.676,93.676S212.36,336.466,212.36,284.93z M132.707,523.023c1.59-22.624,14.022-99.169,98.374-142.104
+		                        c21.106,16.408,46.838,25.732,74.955,25.732c28.117,0,54.644-10.119,75.75-26.527c83.556,42.935,96.784,117.89,99.169,142.104
+		                        c-47.633,38.237-108.493,61.655-174.052,61.655C240.478,583.955,180.34,561.331,132.707,523.023z" />
+                                </svg>
+                                @if (customer.RegistredUser)
+                                {
+                                    if (customer.CustomerCompanyName.IsNullOrEmpty())
+                                    {
+                                        <span class="m-l-xs">@customer.FirstName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="m-l-xs">@customer.CustomerCompanyName</span>
+                                    }
+                                }
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.IsShowCurrency)
+                {
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root" data-oc-lazy-load="[{serie:true, files: [@Html.RenderAssetFilesList("currency", "")]}]">
+                            <div class="menu__link menu__link--thin cs-l-2">
+                                <div class="currency-change__wrap">
+                                    <span class="currency-change">
+                                        <span>Валюта:</span>
+                                        <span class="currency-change__select-block" data-ng-controller="currencyController as curCtrl">
+                                            <button type="button" class="menu__currency">@Model.CurrentCurrency.Name</button>
+                                            @Html.DropDownList("ddlCurrency", Model.Currencies, new { @class = "currency-change__select", data_ng_change = "curCtrl.changeCurrency(curCtrl.currency)", data_ng_model = "curCtrl.currency", data_ng_init = "curCtrl.currency = '" + Model.CurrentCurrency.Iso3 + "'" })
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.DisplayCity)
+                {
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root">
+                            <a class="menu__link menu__link--thin menu__link--with-icon cs-l-2"
+                               href="@(CustomerContext.CurrentCustomer.RegistredUser ? Url.AbsoluteRouteUrl("MyAccount") : Url.AbsoluteRouteUrl("Login"))">
+                                @T("Common.TopPanel.MyAccount")
+                                <svg width="24" height="24" class="menu__icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 612 612">
+                                    <path fill="currentColor" d="M612,306.036C612,137.405,474.595,0,305.964,0S0,137.405,0,306.036c0,92.881,42.14,176.437,107.698,232.599
+		                        c0.795,0.795,1.59,1.59,3.108,2.313C163.86,585.473,231.804,612,306.759,612c73.365,0,141.309-26.527,194.363-69.462
+		                        c3.108-0.795,5.493-3.108,7.011-5.493C571.451,480.088,612,398.122,612,306.036z M28.117,306.036
+		                        c0-153.018,124.901-277.919,277.919-277.919s277.919,124.901,277.919,277.919c0,74.955-29.635,142.826-78.063,192.845
+		                        c-7.806-36.719-31.225-99.169-103.072-139.718c16.408-20.311,25.732-46.838,25.732-74.955c0-67.149-54.644-121.793-121.793-121.793
+		                        s-121.793,54.644-121.793,121.793c0,28.117,10.119,53.849,25.732,74.955c-72.497,40.549-95.916,103-102.928,139.718
+		                        C58.547,449.658,28.117,380.991,28.117,306.036z M212.36,284.93c0-51.536,42.14-93.676,93.676-93.676s93.676,42.14,93.676,93.676
+		                        s-42.14,93.676-93.676,93.676S212.36,336.466,212.36,284.93z M132.707,523.023c1.59-22.624,14.022-99.169,98.374-142.104
+		                        c21.106,16.408,46.838,25.732,74.955,25.732c28.117,0,54.644-10.119,75.75-26.527c83.556,42.935,96.784,117.89,99.169,142.104
+		                        c-47.633,38.237-108.493,61.655-174.052,61.655C240.478,583.955,180.34,561.331,132.707,523.023z" />
+                                </svg>
+                                @if (customer.RegistredUser)
+                                {
+                                    if (customer.CustomerCompanyName.IsNullOrEmpty())
+                                    {
+                                        <span class="m-l-xs">@customer.FirstName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="m-l-xs">@customer.CustomerCompanyName</span>
+                                    }
+                                }
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.CatalogMenuViewMode == SettingsMobile.eCatalogMenuViewMode.Link)
+                {
+                    @Html.Action("CatalogMenu", "Catalog", new { categoryId = 0, showRoot = SettingsMobile.CatalogMenuViewMode.ToLower() == SettingsMobile.eCatalogMenuViewMode.Link.ToString().ToLower(), isRootItems = true })
+                }
+
+                @foreach (var item in Model.Menu)
+                {
+                    if (item.NoFollow)
+                    {<!--noindex--> }
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root">
+                            <a class="menu__link menu__link--thin cs-l-2"
+                               href="@(item.UrlPath == "/" ? Url.AbsoluteRouteUrl("Home") : item.UrlPath)" @Html.Raw(item.Blank ? "target=\"_blank\"" : "") @Html.Raw(item.NoFollow ? "rel=\"nofollow\"" : "")>
+                                <span class="menu__link-inside">
+                                    @if (item.IconPath.IsNotEmpty())
+                                    {
+                                        <span class="menu-icon-cms"><img src="pictures/icons/@item.IconPath" alt="@item.Name" loading="lazy" width="20" height="25" /></span>
+                                    }
+                                    @item.Name
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    if (item.NoFollow)
+                    {<!--/noindex-->}
+                }
+                @if (Model.IsShowAdminLink)
+                {
+                    var cookie = CommonHelper.GetCookie("oldadmin");
+                    var isOldAdmin = cookie != null && cookie.Value == "true";
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root">
+                            <a class="menu__link menu__link--thin cs-l-2"
+                               href="@UrlService.GetUrl(isOldAdmin ? "admin" : "adminv2")"
+                               rel="nofollow">
+                                <strong>@T("Common.TopPanel.Administration")</strong>
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                @if (SettingsDesign.ShowClientId)
+                {
+                    <div class="menu__item menu__item--root menu__item--alt cs-br-1" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                        <div class="menu__item-inner menu__item-inner--root">
+                            <div class="menu__link menu__link--thin cs-l-2">
+                                @Html.Action("ClientCode", "User", new { area = "" })
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="sidebar__social-links" data-mobile-menu-item data-ng-hide="mobileMenuItem.isHidden">
+                <div class="row">
+                    @Html.Partial("~/Views/Common/SocialLinks.cshtml")
+                </div>
+            </div>
+            @if (Model.IsShowMobileAppLink && Model.IsModuleMobileAppActive)
+            {
+                <div class="menu_item--mobile_app">
+                    @*<div class="m-b-md menu__item-inner menu__item menu__item--alt cs-br-1">@T("MobileApp.Title")</div>*@
+                    <div class="menu__item-inner">
+                        <div class="menu__item--mobile_app-grid-icons">
+                            @if (Model.MobileAppGooglePlayMarket.IsNotEmpty())
+                            {
+                                <div class="mobile-app-links__link-wrap">
+                                    <a href='@Model.MobileAppGooglePlayMarket' target="_blank" class="mobile-app-links__link">
+                                        <img alt='Get it on Google Play' src='~/Areas/Mobile/images/googlePlay.png' />
+                                    </a>
+                                </div>
+                            }
+                            @if (Model.MobileAppAppleAppStoreLink.IsNotEmpty())
+                            {
+                                <div class="mobile-app-links__link-wrap">
+                                    <a href='@Model.MobileAppAppleAppStoreLink' target="_blank" class="mobile-app-links__link">
+                                        <img alt='Get it on App Store' src='~/Areas/Mobile/images/appStore.png' />
+                                    </a>
+                                </div>
+                            }
+                            @if (Model.MobileAppRustoreLink.IsNotEmpty())
+                            {
+                                <div class="mobile-app-links__link-wrap">
+                                    <a href='@Model.MobileAppRustoreLink' target="_blank" class="mobile-app-links__link">
+                                        <img alt='Get it on RuStore' src='~/Areas/Mobile/images/ruStore.png' />
+                                    </a>
+                                </div>
+                            }
+                            @if (Model.MobileAppGalleryLink.IsNotEmpty())
+                            {
+                                <div class="mobile-app-links__link-wrap">
+                                    <a href='@Model.MobileAppGalleryLink' target="_blank" class="mobile-app-links__link">
+                                        <img alt='Get it on RuStore' src='~/Areas/Mobile/images/appGallery.png' />
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div data-oc-lazy-load="[{serie:true, files: [@Html.RenderAssetFilesList("mobileOverlap", "")]}]" class="">
+            <a class="sidebar-return-desktop"
+               role="link"
+               data-ng-click="mOverlap.goToDesktop('deviceMode', 'desktop')"
+               data-ng-controller="mobileOverlapCtrl as mOverlap">
+                <svg class="footer-return-desktop__icon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 115.383 115.383">
+                    <path d="M11.025,87.78h93.333c1.931,0,3.5-1.57,3.5-3.5v-60c0-1.93-1.569-3.5-3.5-3.5H11.025c-1.93,0-3.5,1.57-3.5,3.5v60
+		                C7.525,86.21,9.096,87.78,11.025,87.78z M10.525,24.28c0-0.276,0.224-0.5,0.5-0.5h93.333c0.276,0,0.5,0.224,0.5,0.5v60
+		                c0,0.276-0.224,0.5-0.5,0.5H11.025c-0.276,0-0.5-0.224-0.5-0.5V24.28z M115.383,90.458v2.801c0,0.742-0.602,1.344-1.344,1.344
+		                H1.344C0.602,94.603,0,94.001,0,93.259v-2.801h47.387c0.234,0.781,0.95,1.354,1.807,1.354h16.996c0.856,0,1.572-0.572,1.807-1.354
+		                H115.383z"></path>
+                </svg>
+                @T("Checkout.Success.FullVersionWebsite")
+            </a>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,144 @@
+﻿@using AdvantShop.App.Landing.Domain.SubBlocks
+@model SubBlockModel
+
+@{
+    var id = "menu_" + Model.SubBlock.Id;
+    string typeMenu = Model.ParentBlock.TryGetSetting("type_menu");
+    bool isBurgerType = typeMenu == "burger" || typeMenu == "burger_right";
+    bool renderSocials = Model.ParentBlock.ExistSocials();
+    string viewMode = Model.SubBlock.TryGetSetting("view_mode");
+    bool isViewModeStatic = viewMode == "static";
+    ViewBag.RenderLogo = null;
+
+    HtmlString style = Model.SubBlock.TryGetStyleString();
+}
+
+<style>
+    #block_@Model.ParentBlock.Id  .lp-menu-header__item{
+        @style
+    }
+    @if (!isViewModeStatic) {
+        <text>
+        #block_@Model.ParentBlock.Id  .lp-menu-header__submenu-item{
+            padding-left: @Model.SubBlock.TryGetSetting("style")["padding-left"];
+            padding-right: @Model.SubBlock.TryGetSetting("style")["padding-right"];
+            }
+        </text>
+     }
+</style>
+
+@if (!isViewModeStatic)
+{
+    <button type="button" data-lp-menu-trigger="@id" data-ng-click="lpMenuTrigger.open()" data-e2e="BurgerMenuBtn" class="lp-menu-header__label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="14px" class="lp-menu-header__label-obj">
+            <path fill="currentColor"
+                  d="M-0.000,0.000 L20.000,0.000 L20.000,2.000 L-0.000,2.000 L-0.000,0.000 ZM-0.000,6.000 L20.000,6.000 L20.000,8.000 L-0.000,8.000 L-0.000,6.000 ZM-0.000,12.000 L20.000,12.000 L20.000,14.000 L-0.000,14.000 L-0.000,12.000 Z" />
+        </svg>
+    </button>
+}
+
+<div id="@id" class="color-scheme__bg @(viewMode != null ? "lp-menu-container--" + viewMode : "") @(!isViewModeStatic ? "lp-menu-header-container" : "")" data-lp-menu-state="@id" @Html.Raw(!isViewModeStatic ? "data-ng-class=\"{'lp-menu-header-container--open': lpMenuState.data.state.open === true}\"" : "")>
+    <div class="lp-menu-header__mobile-padding-for-panel">
+        @if (!isViewModeStatic)
+        {
+            <button type="button" data-lp-menu-trigger="@id" data-ng-click="lpMenuTrigger.close()" data-e2e="BurgerMenuClose" class="lp-menu-header__close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="23px" height="23px">
+                    <path fill="currentColor"
+                          d="M22.605,1.692 L21.343,0.430 L11.463,10.315 L1.582,0.430 L0.321,1.692 L10.202,11.577 L0.321,21.463 L1.582,22.725 L11.463,12.839 L21.343,22.725 L22.603,21.463 L12.725,11.577 L22.605,1.692 Z" />
+                </svg>
+            </button>
+        }
+
+        @if (Model.ParentBlock.TryGetSetting("show_logo") == true && !isViewModeStatic)
+        {
+            <div class="lp-menu-header__logo @(!isBurgerType ? "hidden-md" :"")">
+                @Html.SubBlock(Model.ParentBlock, "logo", false)
+            </div>
+        }
+        @{
+            var menuItems = Model.ParentBlock.TryGetSettingAsList<LpMenuItem>("menu_items");
+        }
+        @if (menuItems != null && menuItems.Count > 0)
+        {
+            <ul class="lp-menu-header @(viewMode != null ? "lp-menu--" + viewMode : "") @(Model.ParentBlock.TryGetSetting("show_menu") == true ? "" : "hidden-md")" @Html.Raw(!isViewModeStatic ? "data-submenu-container=\"{'type':" + (isBurgerType ? "'accordion'" : "'modern'") + ",'checkOrientation': true, 'blockOrientation': 'body', 'breakpoints': [{'media': '64', 'type': 'accordion'}]}\"" : "")>
+                @foreach (var item in menuItems)
+                {
+                    var href = !string.IsNullOrEmpty(item.Href)
+                        ? (item.Href[0] == '#' ? UrlService.GetCurrentUrl(item.Href) : item.Href)
+                        : "";
+                    <li class="lp-menu-header__item @(viewMode != null ? "lp-menu__item--" + viewMode : "") @(!string.IsNullOrEmpty(item.Class) ? item.Class : "")" @(!isViewModeStatic ? "data-submenu-parent" : "")>
+                        <a @Html.Raw(!string.IsNullOrEmpty(href) ? "href='" + href + "'" : "")
+                           class="lp-link--text lp-menu-header__link pointer @(viewMode != null ? "lp-menu__link--" + viewMode : "") @(href.IsNullOrEmpty() ? "" : "")" @Html.Raw(item.Target ? " target=\"_blank\"" : "") 
+                           @Html.Raw(href.IsNullOrEmpty() ? "data-ng-click=\"$event.stopPropagation(); (submenuContainer.activeMatch.type === 'accordion' || submenuContainer.options.type === 'accordion'? submenuContainer.showOneOnly(submenuParent, $event) : '')\"" : "")>
+                            @Html.Raw(item.Text)
+                        </a>
+                        @if (item.Childs != null && item.Childs.Count > 0)
+                        {
+                            if (!isViewModeStatic)
+                            {
+                                <svg version="1.1" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129 129">
+                                    <path fill="currentColor" d="m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z" />
+                                </svg>
+                            }
+                            <ul class="lp-menu-header__submenu color-scheme__divider--border color-scheme__bg @(viewMode != null ? "lp-menu__submenu--" + viewMode : "") @(!isBurgerType && !isViewModeStatic ? "lp-menu-header__submenu--abs" : "") @(!isViewModeStatic ? "lp-menu-header__submenu--hidden" : "")" @Html.Raw(!isViewModeStatic ? "data-submenu" : "")>
+                                @foreach (var submenu in item.Childs)
+                                {
+                                    var submenuHref = !string.IsNullOrEmpty(submenu.Href)
+                                            ? (submenu.Href[0] == '#' ? UrlService.GetCurrentUrl(submenu.Href) : submenu.Href)
+                                            : "";
+                                    <li class="lp-menu-header__submenu-item @(viewMode != null ? "lp-menu__submenu-item--" + viewMode : "") @(!string.IsNullOrEmpty(submenu.Class) ? submenu.Class : "")" @(!isViewModeStatic ? "data-submenu-parent" : "")>
+                                        <a href="@submenuHref" class="lp-link--text lp-menu-header__submenu-link @(viewMode != null ? "lp-menu__submenu-link--" + viewMode : "") @(submenuHref.IsNullOrEmpty() ? "pointer-events-none" : "")" @Html.Raw(submenu.Target ? " target=\"_blank\"" : "")>@Html.Raw(submenu.Text)</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @if (!isViewModeStatic)
+                        {
+                            <span class="lp-menu-header__submenu-tile"></span>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        @if (!isViewModeStatic)
+        {
+            <div class="lp-menu-header__contacts text-center @(!isBurgerType ? "hidden-md" :"")">
+                @if (Model.ParentBlock.TryGetSetting("show_email") == true)
+                {
+                    <div class="lp-header__email lp-menu-header__contacts-item" data-e2e="HeadersEmail">
+                        @Html.SubBlock(Model.ParentBlock, "email")
+                    </div>
+                }
+                @if (Model.ParentBlock.TryGetSetting("show_phone") == true)
+                {
+                    <div class="lp-header__phone lp-menu-header__contacts-item" data-e2e="HeadersPhone">
+                        @Html.SubBlock(Model.ParentBlock, "phone")
+                    </div>
+                }
+                @if (Model.ParentBlock.TryGetSetting("show_button2") == true)
+                {
+                    <div class="lp-header__callback lp-menu-header__contacts-item" data-e2e="HeadersBtn2">
+                        @Html.Button(Model.ParentBlock, "button2")
+                    </div>
+                }
+                @if (Model.ParentBlock.TryGetSetting("show_button") == true)
+                {
+                    <div class="lp-header__callback lp-menu-header__contacts-item" data-e2e="HeadersBtn">
+                        @Html.Button(Model.ParentBlock, "button")
+                    </div>
+                }
+
+                @if (renderSocials)
+                {
+                    <div class="lp-header__socials lp-menu-header__contacts-item">
+                        @Html.Partial("_Socials", Model.ParentBlock)
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+@if (!isViewModeStatic)
+{
+    <button type="button" data-lp-menu-trigger="@id" data-ng-click="lpMenuTrigger.close()" class="lp-menu-header__over color-scheme__bg"></button>
+}

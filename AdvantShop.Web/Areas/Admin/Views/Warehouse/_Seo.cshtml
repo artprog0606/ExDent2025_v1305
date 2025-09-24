@@ -1,0 +1,149 @@
+﻿@using AdvantShop.SEO
+@model AdvantShop.Web.Admin.Models.Catalog.Warehouses.WarehouseModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="row @(isMobile ? "form-group" : "")">
+    <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+        <h2 class="category-title category-page__title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.SEO")</h2>
+        <div class="category-page__description" style="@(isMobile ? "margin:-15px 0 15px 0;" : "")">
+            @T("Admin.Warehouse.AddEdit.SEO.About")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox category-block">
+            <div class="ibox-content category-content border_none">
+
+                <div class="@(isMobile ? "form-group" : "")">
+                    @if (isMobile)
+                    {
+                        <div class="flex middle-xs between-xs">
+                            <span class="control-label">@T("Admin.Warehouse.AddEdit.SEOSynonym")</span>
+                            <help-trigger class="ng-cloak m-l-xs m-b-sm" data-title="@T("Admin.Warehouse.AddEdit.SEOSynonym")">
+                                @T("Admin.Warehouse.AddEdit.SEOSynonym.Help")
+                            </help-trigger>
+                        </div>
+                        <div class="card card--form-control">
+                            <div class="card__label p-b-xs">
+                                @(SettingsMain.SiteUrl)/@UrlService.NamesAndWords[ParamType.Warehouse]/
+                            </div>
+                            <div class="">
+                                @Html.TextBoxFor(x => x.UrlPath, new { @class = "card__input", ng_model = "warehouse.UrlPath", required = "required", validation_input_text = T("Admin.Warehouse.AddEdit.SEOSynonym") })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row middle-xs category-row">
+                            <div class="flex-grow-n col-fixed-size-md">
+                                <span class="form-label form-label--block text-required">@T("Admin.Warehouse.AddEdit.SEOSynonym")</span>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n flex middle-xs">
+                                <label class="input-group flex-grow">
+                                    <span class="input-group-addon fs-xs">@(SettingsMain.SiteUrl)/@UrlService.NamesAndWords[ParamType.Warehouse]/</span>
+                                    @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control", ng_model = "warehouse.UrlPath", required = "required", validation_input_text = T("Admin.Warehouse.AddEdit.SEOSynonym") })
+                                </label>
+                                <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Warehouse.AddEdit.SEOSynonym")">
+                                    @T("Admin.Warehouse.AddEdit.SEOSynonym.Help")
+                                </help-trigger>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <div>
+                    <label class="adv-checkbox-label @(isMobile ? "flex" : "col-fixed-offset-md")">
+                        @Html.CheckBoxFor(x => x.DefaultMeta, new { ng_model = "warehouse.defaultMeta", ng_init = "warehouse.defaultMeta=" + Model.DefaultMeta.ToLowerString(), @class = "adv-checkbox-input" })
+                        <span class="adv-checkbox-emul "></span>
+                        <span class="@(isMobile ? "flex-grow m-l-xs" : "")">@T("Admin.Warehouse.AddEdit.MetaDefault")</span>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Warehouse.AddEdit.MetaDefault")">
+                            @T("Admin.Warehouse.AddEdit.Seo.IfEnable")<br>
+                            <br>
+                            @T("Admin.Warehouse.AddEdit.Seo.IfDisable")<br>
+                            <br>
+                            @T("Admin.Warehouse.AddEdit.Seo.MoreInfo")<br>
+                            <a href="http://www.advantshop.net/help/pages/settings-of-seo-module">@T("Admin.Warehouse.AddEdit.Seo.DefaultMetaSettings")</a>
+                        </help-trigger>
+                    </label>
+                </div>
+
+                <div class="category-seo-custom-block ng-cloak @(isMobile ? "m-t-md" : "")" ng-if="!warehouse.defaultMeta">
+                    <div>
+                        <div class="row middle-xs category-row @(isMobile ? "form-group" : "")">
+                            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md ")">
+                                <span class="form-label form-label--block text-required @(isMobile ? "control-label" : "")">@T("Admin.Warehouse.AddEdit.Seo.SeoTitle")</span>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n">
+                                @Html.TextBoxFor(x => x.SeoTitle,
+                                    new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "warehouse.seoTitle",
+                                        textcomplete = "",
+                                        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Warehouse }),
+                                        required = "required",
+                                        validation_input_text = T("Admin.Warehouse.AddEdit.Seo.SeoTitle")
+                                    })
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row middle-xs category-row @(isMobile ? "form-group" : "")">
+                            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                                <span class="form-label form-label--block text-required @(isMobile ? "control-label" : "")">@T("Admin.Warehouse.AddEdit.Seo.SeoH1")</span>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n">
+                                @Html.TextBoxFor(x => x.SeoH1,
+                                    new
+                                    {
+                                        @class = "form-control input-alt",
+                                        ng_model = "warehouse.seoH1",
+                                        textcomplete = "",
+                                        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Warehouse }),
+                                        required = "required",
+                                        validation_input_text = T("Admin.Warehouse.AddEdit.SeoH1")
+                                    })
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row middle-xs category-row @(isMobile ? "form-group" : "")">
+                            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                                <span class="form-label form-label--block @(isMobile ? "control-label" : "")">@T("Admin.Warehouse.AddEdit.Seo.SeoKeywords")</span>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n">
+                                @Html.TextAreaFor(x => x.SeoKeywords, new
+                                {
+                                    @class = "form-control input-alt", 
+                                    ng_model = "warehouse.seoKeywords", 
+                                    textcomplete = "", 
+                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Warehouse })
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row middle-xs category-row @(isMobile ? "m-b-sm" : "")">
+                            <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                                <span class="form-label form-label--block @(isMobile ? "control-label" : "")">@T("Admin.Warehouse.AddEdit.Seo.SeoDescription")</span>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n">
+                                @Html.TextAreaFor(x => x.SeoDescription, new
+                                {
+                                    @class = "form-control input-alt", 
+                                    ng_model = "warehouse.seoDescription", 
+                                    textcomplete = "", 
+                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Warehouse })
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="@(isMobile ? "fs-xs" : "col-fixed-offset-md")">
+                        @Html.Action("MetaVariablesDescription", "Common", new { type = MetaType.Warehouse })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

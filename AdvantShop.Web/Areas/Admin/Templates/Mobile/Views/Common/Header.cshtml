@@ -1,0 +1,75 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel
+
+@Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/Common/_SaasWarningMessage.cshtml")
+<div class="page-head page-head--negitive-indents page-head--sticky @Model.CSSClass" ng-class="{'header-setting__page-head': app.searchOpen == 'true'}"
+     ng-init="@Html.Raw(Model.DefaultTitle.IsNotEmpty() ? "app.setTitle('" + Model.DefaultTitle +"', true)" : null)">
+
+    <div class="page-head__back">
+        @if (Model.EnabledBack && Model.Back != null)
+        {
+            @Html.Back(Model.Back.Text, Model.Back.Url, Model.Back.Classes, Model.Back.Attributes, Model.Back.NgBackTriggerCallback)
+        }
+    </div>
+
+    <div class="page-head__content">
+        <h1 class="page-head__name">@Html.Raw(Model.Title)</h1>
+    </div>
+    <div class="page-head__controls">
+            <div class="page-head__controls-inner ng-cloak" ng-class="{'page-head__controls--visible': app.pageControlsVisible}" ng-init="app.pageControlsVisible = true">
+                @if (Model.EnabledSearch || Model.Controls.Count > 0)
+                {
+                    if (Model.EnabledSearch)
+                    {
+                        //Model.Controls.Add(new ButtonModel()
+                        //{
+                        //    Text = T("Поиск"),
+                        //    Type = eButtonType.Simple,
+                        //    ColorType = eColorType.Secondary,
+                        //    Modificators = new List<eButtonModificators>() { eButtonModificators.OnlyIcon },
+                        //    Icon = new ButtonIcon()
+                        //    {
+                        //        SvgName = "search",
+                        //        Attributes = new { width = 24, height = 24 }
+                        //    }
+                        //});
+                        <div class="header-setting__search">
+                            <input type="radio" id="header-setting-search-icon1" name="header-setting__search-icon" class="header-setting__search-icon" checked value="false"  ng-model="app.searchOpen"/>
+                            <input type="radio" id="header-setting-search-icon2" name="header-setting__search-icon" class="header-setting__search-icon" value="true" ng-model="app.searchOpen" />
+                            <label for="header-setting-search-icon2" class="header-setting__search-label1" ng-click="app.showInput()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 19C5.80558 19 2 15.1944 2 10.5C2 5.80558 5.80558 2 10.5 2C15.1944 2 19 5.80558 19 10.5C19 12.4869 18.3183 14.3145 17.176 15.7618L21.7071 20.2929C22.0976 20.6834 22.0976 21.3166 21.7071 21.7071C21.3166 22.0976 20.6834 22.0976 20.2929 21.7071L15.7618 17.176C14.3145 18.3183 12.4869 19 10.5 19ZM15.1598 15.0317C15.1368 15.0509 15.1145 15.0713 15.0929 15.0929C15.0713 15.1145 15.0509 15.1368 15.0317 15.1598C13.8609 16.2986 12.2624 17 10.5 17C6.91015 17 4 14.0899 4 10.5C4 6.91015 6.91015 4 10.5 4C14.0899 4 17 6.91015 17 10.5C17 12.2624 16.2986 13.8609 15.1598 15.0317Z" fill="#242424" />
+                                </svg>
+                            </label>
+                            <label for="header-setting-search-icon1" class="header-setting__search-label2">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13.465 2.15127L8.61625 7L13.465 11.8487L11.8487 13.465L7 8.61624L2.15127 13.465L0.535027 11.8487L5.38376 7L0.535027 2.15127L2.15127 0.535024L7 5.38376L11.8487 0.535024L13.465 2.15127Z" fill="#242424" />
+                                </svg>
+                            </label>
+                            <div class="header-setting__search-form">
+                                @Html.Action("SearchBlock", "Search")
+                            </div>
+                        </div>
+                    }
+                    foreach (var button in Model.Controls)
+                    {
+        
+                        if (button.GetType() == typeof(MoreButtonModel))
+                        {
+                            var modificators = new List<eButtonModificators> {
+                            eButtonModificators.OnlyIcon
+                        };
+                            var moreButton = button as MoreButtonModel;
+                            @Html.MoreButton(T("Больше"), colorType: eColorType.Secondary, items: moreButton.Items, ngTemplateId: moreButton.NgTemplateId, icon: moreButton.Icon, modificators: modificators, attributes: moreButton.Attributes, ngIsOpen: moreButton.NgIsOpen)
+                        }
+                        else if (button.GetType() == typeof(ButtonModel))
+                        {
+                            @Html.Button(button.Text, button.Type, button.Size, button.ColorType, button.Link, button.CssClass, button.Name, button.Validation, button.Attributes, button.IsOutline, button.Icon, button.Modificators, button.WrapStart, button.WrapEnd)
+        
+                        }
+        
+                    }
+                }
+            </div>
+    </div>
+
+</div>

@@ -1,0 +1,59 @@
+﻿<div style="max-width: 850px" is-mobile>
+    <div class="m-b-sm" ng-class="{'flex middle-xs' : isMobile.value}">
+        <span ng-class="{'setting__label flex-grow' : isMobile.value}">Востребованность %</span>
+        <help-trigger class="ng-cloak m-l-xs" use-template="true">
+            <div class="help-content">Кол-во слотов для бронирования деленное на кол-во броней</div>
+        </help-trigger>
+    </div>
+    <div class="booking-analytics-table-wrap">
+        <div class="booking-analytics-table">
+            <div class="booking-analytics-table__thead" ng-if="isMobile.value">
+                <div>Ресурс</div>
+                <div>Кол-во броней</div>
+                <div>Сумма броней</div>
+                <div>Средний чек</div>
+                <div>Востребованность %</div>
+                <div></div>
+            </div>
+
+            <ui-grid-custom
+                grid-unique-id="gridAnaliticsReservationResources"
+                grid-on-init="$ctrl.gridOnInit(grid)"
+                grid-filter-enabled="false"
+                grid-pagination-enabled="false"
+                grid-selection-enabled="false"
+                grid-options="$ctrl.gridOptions"
+                grid-extend-ctrl="$ctrl"
+                grid-empty-text="'Нет данных'">
+                <ui-grid-custom-override-control>
+                    <div class="booking-analytics-table__tbody">
+                        <div>
+                            <a
+                                class="m-r-sm"
+                                ng-click="grid.appScope.$ctrl.gridExtendCtrl.showReservationResourceSheduler(row.entity.Id); $event.preventDefault();"
+                                >{{row.entity.Name}}</a
+                            >
+                            <a
+                                href=""
+                                ng-click="grid.appScope.$ctrl.gridExtendCtrl.loadReservationResource(row.entity.Id); $event.preventDefault();"
+                                class="ui-grid-custom-service-icon fas fa-pencil-alt"></a>
+                        </div>
+                        <div>
+                            <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.showBookings(row.entity.Id); $event.preventDefault();"
+                                >{{row.entity.BookingsCount}}</a
+                            >
+                        </div>
+                        <div><span>{{row.entity.BookingsSum}}</span></div>
+                        <div><span>{{row.entity.AvgCheck}}</span></div>
+                        <div><span>{{row.entity.FillingPlace}}</span></div>
+                        <div>
+                            <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.showServicesAnalytics(row.entity.Id); $event.preventDefault();"
+                                >Оказанные услуги</a
+                            >
+                        </div>
+                    </div>
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

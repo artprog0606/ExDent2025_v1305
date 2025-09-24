@@ -1,0 +1,32 @@
+﻿@{
+    var hash = AdvantShop.Configuration.SettingsGeneral.SiteVersion.GetHashCode();
+}
+<!DOCTYPE html>
+<html data-ng-app="app" class="js-landing-page" @Html.GetNgController() lang="@AdvantShop.Configuration.SettingsMain.Language.Split('-')[0].ToLower()">
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telePhone=no">
+    <base href="@UrlService.GetUrl()" />
+    <title>@Html.GetPageTitle()</title>
+    <meta name="Description" content="@Html.GetPageDescription()" />
+    @Html.GetPageKeywords(asMetaLink: true)
+    @Html.GetLandingCanonicalTag()
+    @Html.Partial("_HeaderScripts")
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+    </script>
+</head>
+<body>
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    @Html.Action("GaScript", "LandingTracking")
+    @Html.Action("GtmScript", "LandingTracking")
+    @Html.Action("YandexMetrikaScript", "LandingTracking")
+    @RenderBody()
+    @Html.Partial("_FooterScripts")
+    @Html.GetNotifyMessages()
+</body>
+</html>

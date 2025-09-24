@@ -1,0 +1,193 @@
+﻿@using AdvantShop.Core.Services.ChangeHistories
+@using AdvantShop.Saas
+@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    if (Request.RawUrl.Contains("customerscrm"))
+    {
+        Layout = "~/Areas/Admin/Views/Leads/_CrmLayout.cshtml";
+        ViewBag.NavMenu = "customers";
+    }
+    var isRegistered = Model.Customer.RegistredUser;
+}
+
+@{
+    Html.AddAsset("customer");
+}
+
+<div ng-init="customerView.init('@Model.Customer.Id', '@Model.Customer.Code')" class="customer-data">
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        var titlePage = "";
+        if (Model.Customer.RegistredUser)
+        {
+            titlePage = T("Admin.Customers.ViewInfo.Customer").ToString();
+        }
+        else
+        {
+            titlePage = String.Format("{0} {1}",
+                T("Admin.Customers.ViewInfo.Customer"),
+                Model.Customer.Code != null ? T("Admin.Customers.ViewCustomerHeader.CustomerCode") + Model.Customer.Code : "");
+        }
+        headerModel.Title = titlePage;
+        headerModel.EnabledBack = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "Customers")
+        };
+        headerModel.Controls = new List<IButton>();
+        
+        if (isRegistered)
+        {
+            var Items = new List<MoreButtonPopoverItem>();
+            
+            Items.Add(
+                new MoreButtonPopoverItem()
+                {
+                    Text = T("Admin.Customers.View.Edit"),
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.HorizontalPaddingZero
+                    },
+                    Type = eButtonType.Link,
+                    ColorType = eColorType.Link,
+                    WrapStart = "<customer-info-trigger customer-id=\"customerView.customerId\" on-close=\"customerView.editCustomerClose()\">",
+                    WrapEnd = "</customer-info-trigger>"
+                }
+            );
+            
+            if (CustomerService.CanDelete(Model.Customer.Id))
+            {
+                Items.Add(
+                    new MoreButtonPopoverItem()
+                    {
+                        Text = T("Admin.Delete"),
+                        Modificators = new List<eButtonModificators>()
+                        {
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+                        Type = eButtonType.Link,
+                        ColorType = eColorType.Danger,
+                        Attributes = new[] { "ng-click=\"customerView.delete()\"" }
+                    }
+                );
+            }
+            headerModel.Controls.Add(new MoreButtonModel()
+            {
+                Items = Items,
+                NgTemplateId = "moreButtonCustomerViewTemplate"
+            });
+        }
+    }
+    @Html.Header(headerModel)
+        
+    
+    
+    <div class="customer-data__content">
+        <div class="customer-data__view-info">
+            @Html.Partial("~/Areas/Admin/Views/Customers/_ViewInfo.cshtml", Model)
+        </div>
+        @if (isRegistered)
+        {
+            @Html.Partial("~/Areas/Admin/Views/Customers/_ViewSocial.cshtml", Model)
+            if (Model.CustomerSegments != null && Model.CustomerSegments.Count > 0)
+            {
+                <div>
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewSegments.cshtml", Model)
+                </div>
+            }
+            if (Model.ShowBonuses && SaasDataService.IsEnabledFeature(ESaasProperty.BonusSystem))
+            {
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewBonusCard.cshtml", Model)
+            }
+            if (Model.ShowPartners)
+            {
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewPartner.cshtml", Model)
+            }
+
+            <div class="customer-data__view-interests" ng-if="customerView.instance.CustomerInterestingCategories != null && customerView.instance.CustomerInterestingCategories.length > 0">
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewInterests.cshtml", Model)
+            </div>
+
+            <div class="customer-data__view-tags" ng-if="customerView.instance.Customer.Tags != null && customerView.instance.Customer.Tags.length > 0">
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewTags.cshtml", Model)
+            </div>
+            
+            <div class="ibox view-partner ng-cloak" ng-if="customerView.instance.CustomerFcmToken != null && customerView.instance.CustomerFcmToken.length > 0">
+                <div class="ibox-content">
+                    <h3 class="category-title view-partner__title">Firebase Cloud Messaging Token</h3>
+                    <div class="form-group row">
+                        <div class="col-xs-12" data-ng-bind="customerView.instance.CustomerFcmToken">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <ui-modal-trigger data-controller="'ModalSendMobileAppNotificationCtrl'" controller-as="ctrl"
+                                              data-resolve="{params: { customerId: customerView.customerId }}"
+                                              template-url="../areas/admin/content/src/customer/modals/sendMobileAppNotification/sendMobileAppNotification.html">
+                                <a href="" class="btn btn-sm btn-success" ng-class="{'m-t-sm inline-block' : isMobile.value}">@T("Admin.Customers.View.MobileAppNotification.SendNotification")</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (isRegistered)
+        {
+            <div class="customer-data__row">
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AmountOfPurchases")</div>
+                    <div data-e2e="orderSum" class="customer-data__count" ng-bind="customerView.instance.OrdersSum">@Model.OrdersSum</div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AverageCheck")</div>
+                    <div data-e2e="averageCheck" class="customer-data__count" ng-bind="customerView.instance.AverageCheck">@Model.AverageCheck</div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AmountOrders")</div>
+                    <div data-e2e="OrdersCount" class="customer-data__count" ng-bind="customerView.instance.OrdersCount">@Model.OrdersCount</div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.DurationDate")</div>
+                    <div data-e2e="durationTime" class="customer-data__count" ng-bind="customerView.instance.DurationDate">@Model.DurationDate</div>
+                </div>
+            </div>
+            <div class="customer-data__row" ng-if="customerView.leadEvents != null">
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.IncomingCalls")</div>
+                    <div data-e2e="InCallsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.InCallsCount"></div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.OutgoingCalls")</div>
+                    <div data-e2e="OutCallsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.OutCallsCount"></div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.EmailsSended")</div>
+                    <div data-e2e="SendedEmailsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.SendedEmailsCount"></div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.EmailsReceived")</div>
+                    <div data-e2e="ReceivedEmailsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.ReceivedEmailsCount"></div>
+                </div>
+                <div class="customer-data__item">
+                    <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.SmsSended")</div>
+                    <div data-e2e="SmsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.SmsCount"></div>
+                </div>
+            </div>
+            <div class="customer-data__view-comment">
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewComment.cshtml", Model)
+            </div>
+        }
+
+        @if (isRegistered)
+        {
+            @Html.Partial("_ViewOrders", Model)
+
+            if (Model.ShowCrm)
+            {
+                @Html.Partial("_ViewLeads", Model)
+            }
+
+        }
+    </div>
+</div>

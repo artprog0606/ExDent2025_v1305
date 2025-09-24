@@ -1,0 +1,1149 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SEOSettingsModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="flex middle-xs m-t-none setting-title setting--flex-column @(isMobile ? "m-b-md" : "")">
+    <h3 class="setting__subtitle setting--align-top">@T("Admin.Settings.SeoSettings.Default")</h3>
+    <div class="@(isMobile ? "setting--align-top" : "")">
+        <a class="inline-flex link-academy link-invert middle-xs @(isMobile ? "setting--help-link" : "m-l-md")" href="https://www.advantshop.net/help/pages/seo-module" target="_blank">
+            <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+            </svg>
+            <span>@T("Admin.SettingsSeo.SeoSettings.InstructionSettingDefaultMeta")</span>
+        </a>
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.DefaultTitle, T("Admin.Settings.SeoSettings.DefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.DefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.DefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Default}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.Default"), T("Admin.Settings.SeoSettings.DefaultTitle"))
+            })
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.DefaultMetaKeywords, T("Admin.Settings.SeoSettings.DefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.DefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.DefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Default})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.DefaultMetaDescription, T("Admin.Settings.SeoSettings.DefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.DefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.DefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Default})
+            })
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new { type = AdvantShop.SEO.MetaType.Default, showInstruction = false })
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.CategoriesMeta")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.CategoriesDefaultTitle, T("Admin.Settings.SeoSettings.CategoriesDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.CategoriesDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoriesDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Category}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.CategoriesMeta"), T("Admin.Settings.SeoSettings.CategoriesDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.CategoriesDefaultH1, T("Admin.Settings.SeoSettings.CategoriesDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.CategoriesDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoriesDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Category}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.CategoriesMeta"), T("Admin.Settings.SeoSettings.CategoriesDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CategoriesDefaultMetaKeywords, T("Admin.Settings.SeoSettings.CategoriesDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.CategoriesDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoriesDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Category})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CategoriesDefaultMetaDescription, T("Admin.Settings.SeoSettings.CategoriesDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.CategoriesDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoriesDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Category})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.Category, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.Category.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaCategories")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.TagsMeta")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.TagsDefaultTitle, T("Admin.Settings.SeoSettings.TagsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.TagsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.TagsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Tag}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.TagsMeta"), T("Admin.Settings.SeoSettings.TagsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.TagsDefaultH1, T("Admin.Settings.SeoSettings.TagsDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.TagsDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.TagsDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Tag}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.TagsMeta"), T("Admin.Settings.SeoSettings.TagsDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.TagsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.TagsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.TagsDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.TagsDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Tag})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.TagsDefaultMetaDescription, T("Admin.Settings.SeoSettings.TagsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.TagsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.TagsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Tag})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.Tag, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.Tag.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaTags")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.ProductMeta")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.ProductsDefaultTitle, T("Admin.Settings.SeoSettings.ProductsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.ProductsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.ProductsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Product}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.ProductMeta"), T("Admin.Settings.SeoSettings.ProductsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.ProductsDefaultH1, T("Admin.Settings.SeoSettings.ProductsDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.ProductsDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.ProductsDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Product}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.ProductMeta"), T("Admin.Settings.SeoSettings.ProductsDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2"> 
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ProductsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.ProductsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.ProductsDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.ProductsDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Product})
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ProductsDefaultMetaDescription, T("Admin.Settings.SeoSettings.ProductsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.ProductsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.ProductsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Product})
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ProductsDefaultAdditionalDescription, T("Admin.Settings.SeoSettings.ProductsDefaultAdditionalDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.ProductsDefaultAdditionalDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.ProductsDefaultAdditionalDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Product})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.Product, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.Product.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaProducts")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.StaticPage")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.StaticPageDefaultTitle, T("Admin.Settings.SeoSettings.StaticPageDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.StaticPageDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.StaticPageDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.StaticPage}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.StaticPage"), T("Admin.Settings.SeoSettings.StaticPageDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.StaticPageDefaultH1, T("Admin.Settings.SeoSettings.StaticPageDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.StaticPageDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.StaticPageDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.StaticPage}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.StaticPage"), T("Admin.Settings.SeoSettings.StaticPageDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.StaticPageDefaultMetaKeywords, T("Admin.Settings.SeoSettings.StaticPageDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.StaticPageDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.StaticPageDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.StaticPage})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.StaticPageDefaultMetaDescription, T("Admin.Settings.SeoSettings.StaticPageDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.StaticPageDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.StaticPageDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.StaticPage})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.StaticPage, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.StaticPage.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaStaticPages")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.CategoryNewsMeta")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.CategoryNewsDefaultTitle, T("Admin.Settings.SeoSettings.CategoryNewsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.CategoryNewsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoryNewsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.NewsCategory}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.CategoryNewsMeta"), T("Admin.Settings.SeoSettings.CategoryNewsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.CategoryNewsDefaultH1, T("Admin.Settings.SeoSettings.CategoryNewsDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.CategoryNewsDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoryNewsDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.NewsCategory}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.CategoryNewsMeta"), T("Admin.Settings.SeoSettings.CategoryNewsDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CategoryNewsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.CategoryNewsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.CategoryNewsDefaultMetaKeywords, new
+        {
+            @class = "form-control input-alt",
+            ng_model = "settingsSeo.CategoryNewsDefaultMetaKeywords",
+            textcomplete = "",
+            textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.NewsCategory})
+        })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CategoryNewsDefaultMetaDescription, T("Admin.Settings.SeoSettings.CategoryNewsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.CategoryNewsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.CategoryNewsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.NewsCategory})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.NewsCategory, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.NewsCategory.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaNewsCategories")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.NewsMeta")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.NewsDefaultTitle, T("Admin.Settings.SeoSettings.NewsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.NewsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.NewsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.News}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.NewsMeta"), T("Admin.Settings.SeoSettings.NewsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.NewsDefaultH1, T("Admin.Settings.SeoSettings.NewsDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.NewsDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.NewsDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.News}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.NewsMeta"), T("Admin.Settings.SeoSettings.NewsDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.NewsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.NewsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.NewsDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.NewsDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.News})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.NewsDefaultMetaDescription, T("Admin.Settings.SeoSettings.NewsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.NewsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.NewsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.News})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.News, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.News.ToString()')">@T("Admin.SettingsSeo.SeoSettings.News")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.Brands")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BrandsDefaultTitle, T("Admin.Settings.SeoSettings.BrandsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BrandsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageBrands}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.Brands"), T("Admin.Settings.SeoSettings.BrandsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BrandsDefaultH1, T("Admin.Settings.SeoSettings.BrandsDefaultH1"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BrandsDefaultH1,
+                 new
+                 {
+                     @class = "form-control input-alt",
+                     ng_model = "settingsSeo.BrandsDefaultH1",
+                     textcomplete = "",
+                     textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.MainPageBrands }),
+                     required = "required",
+                     validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.Brands"), T("Admin.Settings.SeoSettings.BrandsDefaultH1"))
+                 })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BrandsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.BrandsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BrandsDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandsDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageBrands})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BrandsDefaultMetaDescription, T("Admin.Settings.SeoSettings.BrandsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BrandsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageBrands})
+            })
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new { type = AdvantShop.SEO.MetaType.MainPageBrands, showInstruction = false })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.MainPageBrands.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaListBrands")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.BrandItem")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BrandItemDefaultTitle, T("Admin.Settings.SeoSettings.BrandItemDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BrandItemDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandItemDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Brand}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.BrandItem"), T("Admin.Settings.SeoSettings.BrandItemDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BrandItemDefaultH1, T("Admin.Settings.SeoSettings.BrandItemDefaultH1"))
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BrandItemDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandItemDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Brand}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.BrandItem"), T("Admin.Settings.SeoSettings.BrandItemDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BrandItemDefaultMetaKeywords, T("Admin.Settings.SeoSettings.BrandItemDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BrandItemDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandItemDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Brand})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BrandItemDefaultMetaDescription, T("Admin.Settings.SeoSettings.BrandItemDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BrandItemDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.BrandItemDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.Brand})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.Brand, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.Brand.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaBrands")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.MainPageProducts")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.MainPageProductsDefaultTitle, T("Admin.Settings.SeoSettings.MainPageProductsDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.MainPageProductsDefaultTitle,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.MainPageProductsDefaultTitle",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageProducts}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.MainPageProducts"), T("Admin.Settings.SeoSettings.MainPageProductsDefaultTitle"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.MainPageProductsDefaultH1, T("Admin.Settings.SeoSettings.MainPageProductsDefaultH1"))
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.MainPageProductsDefaultH1,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.MainPageProductsDefaultH1",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageProducts}),
+                required = "required",
+                validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.MainPageProducts"), T("Admin.Settings.SeoSettings.MainPageProductsDefaultH1"))
+            })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.MainPageProductsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.MainPageProductsDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.MainPageProductsDefaultMetaKeywords,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.MainPageProductsDefaultMetaKeywords",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageProducts})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.MainPageProductsDefaultMetaDescription, T("Admin.Settings.SeoSettings.MainPageProductsDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.MainPageProductsDefaultMetaDescription,
+            new
+            {
+                @class = "form-control input-alt",
+                ng_model = "settingsSeo.MainPageProductsDefaultMetaDescription",
+                textcomplete = "",
+                textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.MainPageProducts})
+            })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.MainPageProducts, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row ">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.MainPageProducts.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaMainPageProducts")</a>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.Shop")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.ShopsDefaultTitle, T("Admin.Settings.SeoSettings.ShopDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.ShopsDefaultTitle,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.ShopDefaultTitle",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.PageWarehouses}),
+        required = "required",
+        validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.Shop"), T("Admin.Settings.SeoSettings.ShopDefaultTitle"))
+        })
+    </div>
+    <div class="col-xs-12 col-md-2" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.ShopDefaultTitle.length"></span></div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.ShopsDefaultH1, T("Admin.Settings.SeoSettings.ShopDefaultH1"))
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.ShopsDefaultH1,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.ShopDefaultH1",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.PageWarehouses}),
+        required = "required",
+        validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.MainPageProducts"), T("Admin.Settings.SeoSettings.MainPageProductsDefaultH1"))
+        })
+    </div>
+    <div class="col-xs-12 col-md-2" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.ShopDefaultH1.length"></span></div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ShopsDefaultMetaKeywords, T("Admin.Settings.SeoSettings.ShopDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.ShopsDefaultMetaKeywords,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.ShopDefaultMetaKeywords",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.PageWarehouses})
+        })
+    </div>
+    <div class="col-xs-12 col-md-2" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.ShopDefaultMetaKeywords.length"></span></div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ShopsDefaultMetaDescription, T("Admin.Settings.SeoSettings.ShopDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.ShopsDefaultMetaDescription,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.ShopDefaultMetaDescription",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.PageWarehouses})
+        })
+    </div>
+    <div class="col-xs-12 col-md-2" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.ShopDefaultMetaDescription.length"></span></div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.PageWarehouses, showInstruction = false})
+    </div>
+</div>
+
+<div class="form-group row ">
+    <div class="col-xs-12 col-md-offset-2">
+        <a href="" ng-click="settingsSeo.resetMeta('@AdvantShop.SEO.MetaType.PageWarehouses.ToString()')">@T("Admin.SettingsSeo.SeoSettings.ResetMetaShop")</a>
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.BonusProgram")</h3>
+</div>
+
+<div class="form-group middle-xs row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BonusProgramDefaultTitle, T("Admin.Settings.SeoSettings.BonusProgramDefaultTitle"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BonusProgramDefaultTitle,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.BonusProgramDefaultTitle",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.BonusProgram}),
+        required = "required",
+        validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.BonusProgram"), T("Admin.Settings.SeoSettings.BonusProgramDefaultTitle"))
+        })
+    </div>
+    <div class="col-xs-12 col-md-2 @(isMobile ? "m-t-xs" : "")" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.BonusProgramDefaultTitle.length"></span></div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap text-required setting__label">
+            @Html.LabelFor(x => x.BonusProgramDefaultH1, T("Admin.Settings.SeoSettings.BonusProgramDefaultH1"))
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+        @Html.TextBoxFor(x => x.BonusProgramDefaultH1,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.BonusProgramDefaultH1",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.BonusProgram}),
+        required = "required",
+        validation_input_text = string.Format("{0} - {1}", T("Admin.Settings.SeoSettings.MainPageProducts"), T("Admin.Settings.SeoSettings.MainPageProductsDefaultH1"))
+        })
+    </div>
+    <div class="col-xs-12 col-md-2 @(isMobile ? "m-t-xs" : "")" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.BonusProgramDefaultH1.length"></span></div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BonusProgramDefaultMetaKeywords, T("Admin.Settings.SeoSettings.BonusProgramDefaultMetaKeywords"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BonusProgramDefaultMetaKeywords,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.BonusProgramDefaultMetaKeywords",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.BonusProgram})
+        })
+    </div>
+    <div class="col-xs-12 col-md-2 @(isMobile ? "m-t-xs" : "")" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.BonusProgramDefaultMetaKeywords.length"></span></div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.BonusProgramDefaultMetaDescription, T("Admin.Settings.SeoSettings.BonusProgramDefaultMetaDescription"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.TextAreaFor(x => x.BonusProgramDefaultMetaDescription,
+        new
+        {
+        @class = "form-control input-alt",
+        ng_model = "settingsSeo.BonusProgramDefaultMetaDescription",
+        textcomplete = "",
+        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new {type = AdvantShop.SEO.MetaType.BonusProgram})
+        })
+    </div>
+    <div class="col-xs-12 col-md-2 @(isMobile ? "m-t-xs" : "")" >@T("Admin.Settings.SeoSettings.CharactersCount"): <span data-ng-bind="settingsSeo.BonusProgramDefaultMetaDescription.length"></span></div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        @Html.Action("MetaVariablesDescription", "Common", new {type = AdvantShop.SEO.MetaType.BonusProgram, showInstruction = false})
+    </div>
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.SeoSettings.Other")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.EnableCyrillicUrl, T("Admin.Settings.OpenGraph.EnableCyrillicUrl"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6  @(isMobile ? "flex middle-xs setting--label-with-checkbox-reverse" : "")">
+        <label for="EnableCyrillicUrl" class="@(isMobile ? "col-xs-11" : "")">@T("Admin.SettingsSeo.SeoSettings.Attention")</label>
+        <label class="adv-checkbox-label @(isMobile ? "col-xs-1" : "")">
+            @Html.CheckBoxFor(x => x.EnableCyrillicUrl, new {@class = "adv-checkbox-input", ng_init = "settingsSeo.EnableCyrillicUrl=" + Model.EnableCyrillicUrl.ToLowerString(), ng_model = "settingsSeo.EnableCyrillicUrl"})
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info">
+            <a data-e2e="metaInstruction" href="http://www.advantshop.net/help/pages/settings-of-seo-module" target="_blank">@T("Admin.SettingsSeo.SeoSettings.InstructionSettingDefaultMeta")</a>
+        </div>
+    </div>
+</div>

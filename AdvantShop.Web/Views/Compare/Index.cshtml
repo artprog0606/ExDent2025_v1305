@@ -1,0 +1,184 @@
+﻿@using AdvantShop.Core.Common.Extensions
+@using AdvantShop.ViewCommon
+@model AdvantShop.ViewModel.Compare.CompareProductsViewModel
+
+@{ 
+    Html.AddAsset("compare");
+}
+
+@{
+    var showBrandRow = Model.Products.Any(pr => pr.Brand != null);
+    var titleIndex = 0;
+    var valueIndex = 0;
+    var showNotAvaliableLable = SettingsCatalog.ShowNotAvaliableLable;
+}
+
+<div class="site-body-cell desktop-col-p-v">
+
+    <div class="page-title-row compare-title-row">
+        <div class="compare-title page-title cs-bg-4--mobile">
+            <h1 class="main-title">@T("Compare.Index.ComparisonHeader")</h1>
+        </div>
+    </div>
+
+    @if (Model.Products.Count > 0)
+    {
+
+        <div class="compareproduct-container compareproduct-container-processing js-compareproduct-container container-fluid">
+            <div class="js-compareproduct-removeall-container">
+                <div class="compareproduct-remove-all">
+                    <a href="javascript:void(0);" class="js-compareproduct-remove-all link-dotted" data-compare-remove-all>@T("Compare.Index.СlearList")</a>
+                </div>
+                <div class="row">
+                    <div class="compareproduct-properties-col col-xs-6 col-sm-3">
+                        <ul class="compareproduct-properties js-compareproduct-block js-compareproduct-block-properties">
+                            <li class="compareproduct-properties-row js-compareproduct-block-row" data-row-index="@(titleIndex++)">
+                                <div class="compareproduct-properties-item">
+                                </div>
+                            </li>
+
+                            <li class="compareproduct-properties-row js-compareproduct-block-row" data-row-index="@(titleIndex++)">
+                                <div class="compareproduct-properties-item">
+                                    @T("Js.Cart.Price")
+                                </div>
+                            </li>
+                            @if (showBrandRow)
+                            {
+                                <li class="compareproduct-properties-row js-compareproduct-block-row" data-row-index="@(titleIndex++)">
+                                    <div class="compareproduct-properties-item">
+                                        @T("Compare.Index.Brand")
+                                    </div>
+                                </li>
+                            }
+                            @foreach (var prop in Model.Properties)
+                            {
+                                <li class="compareproduct-properties-row js-compareproduct-block-row" data-row-index="@(titleIndex++)">
+                                    <div class="compareproduct-properties-item">@Html.Raw(prop.NameDisplayed + (prop.Unit.IsNotEmpty() ? " (" + prop.Unit + ")" : string.Empty))</div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="compareproduct-products-col col-xs-6 col-sm-9">
+                        <div class="compareproduct-products-wrapper">
+                            <ul class="compareproduct-product js-compareproduct-block js-compareproduct-block-products @(SettingsCatalog.ShowUnitsInCatalog ? "with-unit" : "")">
+                                <li class="compareproduct-product-row js-compareproduct-block-row" data-row-index="@(valueIndex++)">
+
+                                    @foreach (var p in Model.Products)
+                                    {
+                                        var productUrl = Url.RouteUrl("Product", new { url = p.UrlPath });
+                                        var notAvailable = p.Amount <= 0;
+
+                                        <div class="compareproduct-product-item js-compareproduct-product-item" data-compare-product-id="@p.ProductId">
+                                            <div class="compareproduct-product-item-wrap">
+                                                <div class="compareproduct-product-name">
+                                                    <a href="@productUrl" class="compareproduct-product-name-link">@Html.Raw(p.Name)</a>
+                                                </div>
+                                                <div class="compareproduct-product-sku">@p.ArtNo</div>
+                                                <figure class="compareproduct-product-pic-wrap" style="height: @(SettingsPictureSize.SmallProductImageHeight)px">
+                                                    <a href="@productUrl" aria-label="@p.Photo.Alt" class="compare-link-picture">
+                                                        <img src="@p.Photo.ImageSrcSmall()" class="compare-picture">
+                                                    </a>
+                                                </figure>
+                                                @if (SettingsCatalog.EnableProductRating)
+                                                {
+                                                    <div class="compareproduct-product-rating">
+                                                        @Html.Rating(p.ManualRatio ?? p.Ratio, p.ProductId, "productExt/addrating", true)
+                                                    </div>
+                                                }
+                                                @if (notAvailable && showNotAvaliableLable)
+                                                {
+                                                    <div class="product-view-noAvailable">@T("Product.NotAvailable")</div>
+                                                }
+                                                @if (!Model.HidePrice)
+                                                {
+                                                    <div class="compareproduct-product-btns">
+                                                        @if (p.BasePrice > 0 && p.Amount > 0)
+                                                        {
+
+                                                            @Html.Partial("_CartAdd", new CartAddViewModel()
+                                                            {
+                                                                Classes = "btn btn-buy icon-bag-before",
+                                                                Href = productUrl,
+                                                                OfferId = p.OfferId,
+                                                                ProductId = p.ProductId,
+                                                                Amount = p.Multiplicity,
+                                                                BtnContent = Model.BuyButtonText,
+                                                                Size = CardAddSize.Small
+                                                            })
+                                                        }
+                                                        @if ((p.BasePrice == 0 || p.Amount <= 0) && p.AllowPreorder)
+                                                        {
+                                                            <a href="@productUrl" class="btn btn-small btn-action icon-bag-before">
+                                                                @Model.PreOrderButtonText
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
+
+                                                <a href="javascript:void(0);" class="compareproduct-product-remove icon-cancel-circled-before link-text-decoration-none cs-l-5" data-compare-product-id="@p.ProductId" data-compare-remove="@p.OfferId"></a>
+                                            </div>
+                                        </div>
+                                    }
+                                </li>
+
+                                <li class="compareproduct-product-row js-compareproduct-block-row" data-row-index="@(valueIndex++)">
+                                    @foreach (var p in Model.Products)
+                                    {
+                                        <div class="compareproduct-product-item js-compareproduct-product-item" data-compare-product-id="@p.ProductId">
+                                            @if (!Model.HidePrice)
+                                            {
+                                                <div class="price-container">
+                                                    <div class="price">
+                                                        @Html.Raw(p.PreparedPrice)
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="price">
+                                                    @Html.Raw(Model.TextInsteadOfPrice)
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </li>
+
+                                @if (showBrandRow)
+                                {
+                                    <li class="compareproduct-product-row js-compareproduct-block-row" data-row-index="@(valueIndex++)">
+                                        @foreach (var p in Model.Products)
+                                        {
+                                            <div class="compareproduct-product-item js-compareproduct-product-item" data-compare-product-id="@p.ProductId">
+                                                @if (p.Brand != null)
+                                                {
+                                                    <a href="@Url.AbsoluteRouteUrl("Brand", new {url = p.Brand.UrlPath})">@p.Brand.Name</a>
+                                                }
+                                            </div>
+                                        }
+                                    </li>
+                                }
+
+                                @foreach (var prop in Model.Properties)
+                                {
+                                    <li class="compareproduct-product-row js-compareproduct-block-row" data-row-index="@(valueIndex++)">
+                                        @foreach (var product in Model.Products)
+                                        {
+                                            <div class="compareproduct-product-item js-compareproduct-product-item" data-compare-product-id="@product.ProductId">
+                                                @Html.Raw(product.ProductPropertyValues.Where(p => p.PropertyId == prop.PropertyId).Select(p => p.Value).AggregateString(", "))
+                                            </div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="js-compareproduct-empty compareproduct-empty" @Html.Raw(Model.Products.Count == 0 ? "style=\"display:block;\"" : "")>
+        <div class="compareproduct-empty-title">@T("Compare.Index.EmptyList")</div>
+        <div class="compareproduct-empty-text">@T("Compare.Index.EmptyList.Info") <a href="@Url.Action("Index", "Catalog")">@T("Compare.Index.EmptyList.Info.Link")</a></div>
+    </div>
+</div>

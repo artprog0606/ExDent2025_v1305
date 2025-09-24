@@ -1,0 +1,60 @@
+﻿@using System.Globalization;
+
+@model BlockModel
+
+@{
+    var items = Model.Block.TryGetSettingAsList<CoverCarouselModel>("items");
+}
+<div class="lp-area" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+    @if (items != null)
+    {
+        var itemsCount = LpService.PreviewInAdmin ? Math.Min(items.Count, 1) : items.Count;
+
+        <slick settings='@Html.Raw(Model.Block.TryGetSetting("carouselOptions"))' class="cover-carousel__items-wrap">
+            @for (var i = 0; i < itemsCount; i++)
+            {
+                <div class="cover-carousel__item block-padding-top--@Html.Raw(Model.Block.TryGetSetting("padding_top")) block-padding-bottom--@Html.Raw(Model.Block.TryGetSetting("padding_bottom"))" @Html.Raw(Model.Inplace ? "ng-class=\"['block-padding-top--' + blocksConstructorContainer.data.Settings.padding_top, 'block-padding-bottom--' + blocksConstructorContainer.data.Settings.padding_bottom ]\"" : "")>
+                    <div class="container-fluid">
+                        <div class="row start-xs center-sm middle-xs cover-carousel__item-inner">
+                            <div class="col-sm-8 @Model.Block.GetWidthInColumnsAsClasses()">
+                                @if (!string.IsNullOrEmpty(items[i].Title))
+                                {
+                                    <div class="lp-cover-header lp-h1 lp-h1--color" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                        @Html.Raw(items[i].Title)
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(items[i].Text))
+                                {
+                                    <div class="lp-cover-text lp-h3 lp-h3--color" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                        @Html.Raw(items[i].Text)
+                                    </div>
+                                }
+                                @if (items[i].ShowButton == true)
+                                {
+                                    <div class="lp-cover-btn-wrap">
+                                        <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="CoverBtnRow">
+                                            <div class="col-xs-12">
+
+                                                <a class="lp-btn lp-btn--primary lp-btn--xs" href="@Html.Raw(items[i].UrlButton)">
+                                                    @Html.Raw(items[i].TextButton)
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(items[i].Background.Src))
+                    {
+                        <div class="cover-carousel__image" @Html.Raw(Model.Inplace ? "ng-style=\"{'box-shadow': '200vh 200vw 0 rgba(0,0,0,' + blocksConstructorContainer.data.Settings.darken + ') inset'}\"" : "") style="box-shadow: 200vh 200vw 0 rgba(0,0,0, @Html.Raw(Model.Block.TryGetSetting("darken").ToString(CultureInfo.InvariantCulture))) inset;background-image: url(@items[i].Background.Src)">
+                        </div>
+                    }
+                </div>
+
+            }
+        </slick>
+    }
+</div>
+

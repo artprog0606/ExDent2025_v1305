@@ -1,0 +1,24 @@
+﻿@{
+    var baseUrl = UrlService.GetUrl();
+    var staticUrl = baseUrl + "areas/partners/content/";
+}
+
+@if (AdvantShop.Core.Services.InplaceEditor.InplaceEditorService.DisplayInplace())
+{
+    if (SettingsMain.EnableInplace)
+    {
+        <script>
+        window.CKEDITOR_BASEPATH = '@(baseUrl)vendors/ckeditor/';
+        window.CKEDITOR_LANGUAGE = '@SettingsMain.Language.Split('-')[0].ToLower()';
+        </script>
+        <script src="@(baseUrl)vendors/ckeditor/ckeditor.js"></script>
+        <script>
+        //выключаем автоматическую инициализацию inline редактирования
+        CKEDITOR.disableAutoInline = true;
+        </script>
+    }
+    <div data-oc-lazy-load="[{serie:true, files: [ @Html.RenderAssetFilesList("inplaceMax") ]}]">
+        <div data-inplace-start></div>
+        <div data-inplace-progress></div>
+    </div>
+}

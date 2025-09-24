@@ -1,0 +1,68 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="col-xs-12 col-sm-4">
+                <div class="flex end-sm center-xs">
+                    <div>
+                        <div class="lp-block-product-details-brief__image-wrap">
+                            @Html.SubBlockPicture(Model.Block, "picture", new PictureLoaderTriggerModel()
+                           {
+                               GalleryIconsEnabled = false,
+                               DeletePicture = false,
+                               LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                               MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                               MaxHeightPicture = PictureLoaderImageSize.SmallHeight
+                           }, Model.Inplace)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="lp-block-product-details-brief__content text-left">
+                    <div class="lp-h2--color lp-block-product-details-brief__name">
+                        @Html.SubBlock(Model, "product_name")
+                    </div>
+                    <div class="row middle-xs">
+                        <div class="col-xs-slim">
+                            <div class="lp-block-product-details-brief__old-price">
+                                @Html.SubBlock(Model, "old_price", hidePlaceholder: true)
+                            </div>
+                        </div>
+                        <div class="col-xs-slim">
+                            <div class="lp-block-product-details-brief__discount">
+                                @Html.SubBlock(Model, "discount", hidePlaceholder: true)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lp-block-product-details-brief__price">@Html.SubBlock(Model, "price")</div>
+                    @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                    {
+                        <div class="lp-block-product-details-brief__button">
+                            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ProductBtnRow">
+                                <div class="col-xs-12">
+                                    <div class="lp-btn-group @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")">
+                                        @if (Model.Block.TryGetSetting("show_button") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent">
+                                                @Html.Button(Model.Block, "button")
+                                            </div>
+                                        }
+                                        @if (Model.Block.TryGetSetting("show_button2") == true)
+                                        {
+                                            <div class="lp-btn-group__item--indent">
+                                                @Html.Button(Model.Block, "button2")
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+﻿<div class="row between-xs middle-xs start-sm flex-wrap">
+    <h2 ng-if="$ctrl.OfferName != null" class="inline reports-title col-xs-12 col-md-slim">{{$ctrl.OfferName}}</h2>
+
+    <ui-modal-trigger
+        size="xs-11"
+        class="col-xs-12 col-md-slim"
+        data-controller="'ModalOffersSelectvizrCtrl'"
+        data-controller-as="ctrl"
+        resolve="{ multiSelect: false }"
+        on-close="$ctrl.selectOffer(result)"
+        template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+        <a href="">{{'Admin.Js.OfferReport.ChooseOffer'|translate}}</a>
+    </ui-modal-trigger>
+</div>
+
+<div class="reports-graphic reports-graphic-card" ng-if="$ctrl.offerId != null">
+    <div class="row between-xs middle-xs">
+        <h2 class="col-xs-12 reports-title">{{'Admin.Js.OfferReport.Sum'|translate}}</h2>
+        <div class="col-xs-slim col-sm-12 flex start-xs end-sm">
+            <div class="btn-group reports-graphic-filters">
+                <button
+                    type="button"
+                    class="btn btn-xs btn-white"
+                    ng-class="{'active': $ctrl.groupFormatString == 'dd'}"
+                    ng-click="$ctrl.changeGroup('dd')">
+                    {{'Admin.Js.AnalyticsReport.ByDays'|translate}}
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-xs btn-white"
+                    ng-class="{'active': $ctrl.groupFormatString == 'wk'}"
+                    ng-click="$ctrl.changeGroup('wk')">
+                    {{'Admin.Js.AnalyticsReport.ByWeeks'|translate}}
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-xs btn-white"
+                    ng-class="{'active': $ctrl.groupFormatString == 'mm'}"
+                    ng-click="$ctrl.changeGroup('mm')">
+                    {{'Admin.Js.AnalyticsReport.ByMonths'|translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+    <canvas
+        class="chart chart-line"
+        chart-data="$ctrl.SumData.Data"
+        chart-labels="$ctrl.SumData.Labels"
+        chart-series="$ctrl.SumData.Series"
+        chart-colors="$ctrl.SumData.Colors"></canvas>
+</div>
+
+<div class="reports-graphic" ng-if="$ctrl.offerId != null">
+    <ui-grid-custom
+        grid-unique-id="gridOfferReport"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-options="$ctrl.gridOptions"
+        grid-url="'analytics/getOfferStatisticsList'"
+        grid-params="{offerId: $ctrl.offerId, dateFrom:  $ctrl.dateFrom, dateTo: $ctrl.dateTo, paid: $ctrl.paid}"
+        grid-selection-enabled="false"
+        grid-extend-ctrl="$ctrl"
+        grid-show-export="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <a ng-href="orders/edit/{{row.entity.OrderId}}" class="card card--gap-row-sm m-b-md">
+                <div class="card__row">
+                    <div class="card__col">
+                        <span class="card__text--alt">#<span ng-bind="row.entity.Number"></span></span>
+                        <span class="card__text" ng-style="{'color': '#' + row.entity.Color}" ng-bind="row.entity.StatusName"></span>
+                    </div>
+                    <div class="card__col card__col--end">
+                        <span class="card__text--alt" ng-bind="row.entity.SumFormatted"></span>
+                    </div>
+                </div>
+                <div class="card__row">
+                    <div class="card__col">
+                        <span class="card__text" ng-bind="row.entity.BuyerName"></span>
+                    </div>
+                    <div class="card__col card__col--end">
+                        <span
+                            class="card__text"
+                            ng-style="row.entity.IsPaid ? {'color':'green'} : {'color':'red'}"
+                            ng-bind="row.entity.IsPaid ? 'Оплачен' : 'Не оплачен'"></span>
+                    </div>
+                </div>
+                <div class="card__row">
+                    <div class="card__col">
+                        <span class="card__text card__text--color-alt" ng-bind="row.entity.City"></span>
+                    </div>
+                    <div class="card__col card__col--end">
+                        <span class="card__text card__text--color-alt" ng-bind="row.entity.OrderDateFormatted"></span>
+                    </div>
+                </div>
+            </a>
+        </ui-grid-custom-override-control>
+
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.grid.gridOptions.TotalString"> </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>

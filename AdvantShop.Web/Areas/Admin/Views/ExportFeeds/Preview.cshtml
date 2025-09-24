@@ -1,0 +1,75 @@
+﻿@using AdvantShop.ExportImport
+@model AdvantShop.Web.Admin.ViewModels.Catalog.ExportFeeds.ExportFeedsModel
+
+@{ 
+    Html.AddAsset("exportFeeds");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Controls = new List<IButton>();
+    headerModel.DefaultTitle = "Яндекс. Маркет";
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        Attributes = new[] { "ng-click=\"exportFeeds.deleteSaleChannel('Yandex')\"" },
+        Text = T("Отключить канал"),
+        Icon = new ButtonIcon()
+        {
+            SvgName = "on",
+            Attributes = new { width = 24, height = 24 }
+        }
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+}
+
+@if (Model.CurrentExportFeedsType == EExportFeedType.YandexMarket)
+{
+<div class="@(isMobile ? "" : "flex middle-xs  m-l-lg")" style="@(isMobile ? "" : "height: 100%;")">
+    <div class="row @(isMobile ? "setting--flex-column-reverse" : "")">
+        <div class="col-xs-12 col-md-6">
+            <h1 class="bold">
+                Продавайте товары через Яндекс. Маркет
+            </h1>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">Выгружайте товары в Яндекс. Маркет</div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">
+                Загружайте ассортимент вашего магазина в Яндекс. Маркет и предлагайте товары миллионной аудитории. Список и стоимость товаров синхронизируется с вашим сайтом. Достаточно один раз правильно все настроить и больше никакие данные вводить не придется.
+            </div>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">Рекламируйте свои товары в каталоге Яндекс. Маркет</div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">Размещенные на Маркете товары показываются не только в самом сервисе, но и в поисковой выдаче Яндекса, в Яндекс.Картинках, на страницах карточки товара и в сервисах Яндекса. Это сильно расширяет аудиторию потенциальных покупателей.</div>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">Работайте по модели маркетплейса</div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">На Яндекс. Маркете вы получаете огромный охват только заинтересованной аудитории, цель которой – выбрать и купить товар. Кроме того, покупатели оставляют реальные отзывы на площадке, что способствует новым продажам и открытому диалогу с клиентами.</div>
+
+            <div class="m-t-lg @(isMobile ? "m-b-lg" : "")">
+                <ui-modal-trigger data-controller="'ModalAddExportFeedCtrl'"
+                                  controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("AddExportFeed.html")"
+                                  data-resolve="{params: {type: '@Model.CurrentExportFeedsType'}}">
+                    <a href="" class="btn btn-success btn-md">Подключить Яндекс.Маркет</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <img src="../areas/admin/content/src/_shared/modal/salesChannels/images/ymarket3.png">
+        </div>
+    </div>
+</div>
+}

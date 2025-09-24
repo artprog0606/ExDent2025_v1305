@@ -1,0 +1,22 @@
+﻿@model List<AdvantShop.Web.Admin.Models.Cms.Menus.AdminMenuModel>
+@{
+    var items = Model != null ? Model.Where(x => x.IsAccessibleToUser()).ToList() : null;
+}
+
+@if (items != null && items.Count > 0 && items.Any(x => x.Selected))
+{
+    <ul class="nav nav-tabs nav-tabs--slim nav-tabs--indent-bottom">
+        @foreach (var menuItem in items)
+        {
+            <li class="uib-tab nav-item ng-tab @(menuItem.Selected ? "active" : "")">
+                <a class="nav-link" href="@(menuItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(menuItem.Action, menuItem.Controller, menuItem.RouteDictionary))">
+                    @T(menuItem.Name)
+                </a>
+                @if (!string.IsNullOrEmpty(menuItem.StatisticsDataType))
+                {
+                    <span class="new-item new-item--vertcal-center" data-statistics-count data-type="@menuItem.StatisticsDataType" data-ng-bind-html="statisticsCount.getValue()"></span>
+                }
+            </li>
+        }
+    </ul>
+}

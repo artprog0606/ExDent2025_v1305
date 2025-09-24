@@ -1,0 +1,77 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings;
+<!DOCTYPE html>
+<html class="is-mobile mobile-version @Html.Raw(SettingsDesign.MobileTemplate.IsNotEmpty() ? "mobile-template--" + SettingsDesign.MobileTemplate.ToLower() : "")" lang="@SettingsMain.Language.Split('-')[0].ToLower()" data-ng-strict-di data-ng-app="app" @Html.GetNgController() data-sidebar-container-state data-ng-class="{'sidebar--open-root': sidebarContainerState.isOpen}">
+<head>
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl()" />
+    <meta charset="utf-8">
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <meta content="Dynamic" name="document-state">
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    
+    @*для Safari*@
+    @Html.RenderModules("mobile_app_meta")
+    
+    @if (SettingsMobile.BrowserColorVariantsSelected != "None")
+    {
+        <meta name="theme-color" content="#@(SettingsMobile.BrowserColor)">
+    }
+    @Html.GetPageDescription(asMetaLink: true)
+    @Html.GetPageKeywords(asMetaLink: true)
+    @if (SettingsMobile.MobileAppActive && !string.IsNullOrEmpty(SettingsMobile.MobileAppManifestName))
+    {
+        <link rel="manifest" href="@UrlService.GetUrl()/@(SettingsMobile.MobileAppManifestName)">
+    }
+    @Html.GetNoFollowTag()
+    @Html.GetCanonicalTag()
+    <script>
+        if (document.cookie != null && document.cookie.length > 0 && document.cookie.indexOf('mobileSession') === -1) {
+            window.location.reload(true);
+        }
+    </script>
+    @Html.Action("Favicon", "Common", new { area = "" })
+    @Html.Partial("_HeadScripts", new { area = "Mobile" })
+</head>
+<body class="cs-t-1 text-floating" data-full-height-mobile>
+    @* <api-map-key data-map-api-key=""></api-map-key> *@
+    @* @Html.Action("GeoSuggestion", "Common", new { area = "" }) *@
+<div data-mask-config="{enablePhoneMask: @SettingsMain.EnablePhoneMask.ToLowerString()}"></div>
+    @Html.RenderModules("mobile_app_smart_banner")
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    @Html.GoggleTagManagerCounter()
+    <div hidden>@Html.StaticBlock("LiveCounter")</div>
+    @Html.Action("GoogleAnalytics", "Common", new { area = "" })
+    @Html.RenderModules("mobile_body_start")
+    <div id="layout">
+        @* <div> *@
+        @Html.Partial("_Header", new { area = "Mobile" })
+        @RenderBody()
+        @* </div> *@
+
+        @Html.Action("Footer", "Common", new { area = "Mobile" })
+        @Html.Action("BottomPanel", "Common", new { area = "Mobile" })
+    </div>
+    @Html.Partial("_BottomContainer")
+    @Html.Action("CookiesPolicy", "Common", new { area = "" })
+    @Html.RenderModules("mobile_body_end")
+    @Html.Partial("_FooterMobileScripts", new { area = "Mobile" })
+    @Html.GetNotifyMessages()
+    @Html.Action("MobileScript", "SocialWidget", new { area = "" })
+    @Html.StaticBlock("body_end")
+    @Html.Action("ZonePopover", "Common", new { area = "" })
+    @Html.Action("DiscountByTime", "Common", new { area = "" })
+
+    <script>
+        (function () {
+            try {
+                if (window.self !== window.top) {
+                    document.querySelector('.mobile-version').classList.add('in-iframe');
+                }
+            } catch (e) { }
+        })();
+    </script>
+</body>
+</html>

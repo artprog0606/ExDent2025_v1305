@@ -1,0 +1,229 @@
+﻿<form>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">Шаблон замены</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="form-group row">
+                    <label class="col-xs-3 control-label">
+                        <span class="text-required">Тип доставки</span>
+                    </label>
+                    <div class="col-xs-9">
+                        <ui-select
+                            ng-model="ctrl.model.ShippingType"
+                            required
+                            validation-input-text="Тип доставки"
+                            ng-disabled="ctrl.mode === 'edit'"
+                            autofocus>
+                            <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.types | filter: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12 text-center">In</div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Страна </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.InCountryName"
+                                    validation-input-text="Страна"
+                                    maxlength="70" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> ISO2 </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.InCountryISO2"
+                                    validation-input-text="ISO2"
+                                    maxlength="2" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12 text-center">Out</div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Страна </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.OutCountryName"
+                                    validation-input-text="Страна"
+                                    disabled
+                                    ng-disabled="!ctrl.model.InCountryName && !ctrl.model.InCountryISO2"
+                                    maxlength="70" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Регион </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.InRegionName"
+                                    validation-input-text="Регион"
+                                    maxlength="70" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Район региона </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.InDistrict"
+                                    validation-input-text="Район региона"
+                                    maxlength="255" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Регион </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.OutRegionName"
+                                    validation-input-text="Регион"
+                                    maxlength="70"
+                                    disabled
+                                    ng-disabled="!ctrl.model.InRegionName" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Район региона </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.OutDistrict"
+                                    validation-input-text="Район региона"
+                                    maxlength="255"
+                                    disabled
+                                    ng-disabled="!ctrl.model.InDistrict && !ctrl.model.InCityName" />
+                                <label class="adv-checkbox-label control-checkbox">
+                                    <input
+                                        type="checkbox"
+                                        class="adv-checkbox-input"
+                                        ng-model="ctrl.model.OutDistrictClear"
+                                        disabled
+                                        ng-disabled="!ctrl.model.InCountryName && !ctrl.model.InCountryISO2 && !ctrl.model.InRegionName && !ctrl.model.InDistrict && !ctrl.model.InCityName && !ctrl.model.InZip" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    обнулять поле
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Город </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.InCityName"
+                                    validation-input-text="Город"
+                                    maxlength="255" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Индекс </label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" ng-model="ctrl.model.InZip" validation-input-text="Индекс" maxlength="70" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Город </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.OutCityName"
+                                    validation-input-text="Город"
+                                    maxlength="255"
+                                    disabled
+                                    ng-disabled="!ctrl.model.InCityName" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xs-3 control-label"> Индекс </label>
+                            <div class="col-xs-9">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-model="ctrl.model.OutZip"
+                                    validation-input-text="Индекс"
+                                    maxlength="70"
+                                    disabled
+                                    ng-disabled="!ctrl.model.InZip && !ctrl.model.InCityName" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-xs-3 control-label">Порядок сортировки</label>
+                    <div class="col-xs-9">
+                        <input type="number" ng-model="ctrl.model.Sort" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-3 control-label">Активность</label>
+                    <div class="col-xs-9">
+                        <label class="adv-checkbox-label control-checkbox">
+                            <input type="checkbox" class="adv-checkbox-input" ng-model="ctrl.model.Enabled" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-3 control-label"> Комментарий </label>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" ng-model="ctrl.model.Comment" validation-input-text="Комментарий" maxlength="255" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnLoading"
+            type="button"
+            data-button-validation-success="ctrl.save(); ctrl.btnLoading = true;"
+            data-button-validation>
+            {{ctrl.mode === 'add' ? 'Добавить' : 'Сохранить'}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.dismiss()">Отмена</button>
+    </div>
+</form>

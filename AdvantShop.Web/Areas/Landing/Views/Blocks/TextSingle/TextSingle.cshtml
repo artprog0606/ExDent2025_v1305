@@ -1,0 +1,46 @@
+﻿@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            <div class="flex-grow">
+                @Html.BlockHeader(Model)
+
+
+                <div class="row @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") :"center-xs")">
+                    <div class="@Model.Block.GetWidthInColumnsAsClasses()">
+                        <div class="lp-block-text--large lp-font-size--large lp-block-text-single__content @(Model.Block.TryGetSetting("align_text") != null ? Model.Block.TryGetSetting("align_text") : "center-xs")">
+                            @Html.SubBlock(Model, "text")
+                        </div>
+                    </div>
+                </div>
+
+
+                @if (Model.Block.TryGetSetting("show_button") == true || Model.Block.TryGetSetting("show_button2") == true)
+                {
+                    <div class="lp-block-text-button row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TextBtnRow">
+                        <div class="col-xs-12">
+                            <div class="lp-btn-group @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")">
+                                @if (Model.Block.TryGetSetting("show_button") == true)
+                                {
+                                    <div class="lp-btn-group__item--indent">
+                                        @Html.Button(Model.Block, "button")
+                                    </div>
+                                }
+                                @if (Model.Block.TryGetSetting("show_button2") == true)
+                                {
+                                    <div class="lp-btn-group__item--indent">
+                                        @Html.Button(Model.Block, "button2")
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

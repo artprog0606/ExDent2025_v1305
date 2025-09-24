@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Catalog/_CatalogLayout.cshtml";
+    ViewBag.CatalogLeftMenuNgCallbackOnInit = "productlists.initCatalogLeftMenu(catalogLeftMenu)";
+}
+
+<div class="clearfix ibox-content-header">
+    <div class="pull-right btns-in-header">
+        <ui-modal-trigger data-controller="'ModalAddEditProductListCtrl'" controller-as="ctrl" size="lg"
+                          template-url="@Html.GetAssetPath("addEditProductList.html")"
+                          data-on-close="productlists.onAddList()">
+            <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="productListAdd">
+                <span class="fa fa-plus"></span> @T("Admin.ProductLists.Index.AddList")
+            </button>
+        </ui-modal-trigger>
+    </div>
+    <h2 class="inline content-header">
+        <span class="bottom-cell inline m-r-xs">@T("Admin.ProductLists.Index.Title")</span>
+    </h2>
+</div>
+
+
+<ui-grid-custom grid-unique-id="gridProductLists"
+                grid-options="productlists.gridProductListsOptions"
+                grid-on-init="productlists.gridOnInit(grid)"
+                grid-url="'productlists/getproductLists'"
+                grid-on-delete="productlists.onGridDeleteItem()"
+                grid-selection-mass-apply="productlists.onGridDeleteItem()">
+</ui-grid-custom>

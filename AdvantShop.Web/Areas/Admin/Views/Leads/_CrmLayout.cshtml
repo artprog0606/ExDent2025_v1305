@@ -1,0 +1,161 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Crm.Leads.LeadsListViewModel
+@using AdvantShop.Core.Services.Admin
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+@section TopContent {
+    <div class="balance__padding-page balance__padding-page--bg-white m-b-md">
+        <div class="main-panel-page">
+            <div class="sticky-page-name p-b-n" sticky sticky-top="0" ng-init="leads.changeSalesFunnel(@Model.SalesFunnelId); leads.init(@Model.UseKanban.ToString().ToLower(), @CustomerContext.CurrentCustomer.IsAdmin.ToString().ToLower())">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="page-name-block-item-main">
+                        <div class="m-r-sm inline vertical-middle" data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': 'body', 'delayHover': 100}">
+                            <div class="dropdown" data-submenu-parent>
+                                <span class="dropdown-toggle header-bottom-menu-link">
+                                    @{
+                                        string salesFunnelName = !string.IsNullOrEmpty(Model.SalesFunneName) ? Model.SalesFunneName : T("Admin.Leads.Index.Title").ToString();
+                                    }
+                                    <span class="dropdown-page-name-text">
+                                        <span class="page-name-block-text sticky-page-name-text original-header-page vertical-middle page-name-block-text--bigger inline" 
+                                              ng-init="leads.salesFunnelName = '@salesFunnelName'" 
+                                              ng-bind="leads.salesFunnelName">
+                                            @salesFunnelName
+                                        </span>
+                                        <span class="fa fa-angle-down font-bold vertical-middle p-t-xs"></span>
+                                    </span>
+                                </span>
+
+                                <ul role="menu" class="dropdown-menu submenu dropdown-menu--limited header-dropdown-menu" data-submenu>
+                                    <li leads-list exclude-lead-list-id="@(Model.SalesFunnelId)"></li>
+                                </ul>
+                            </div>
+                        </div>
+                        @if (Model.SalesFunnelId > 0 && Model.IsFullAccess)
+                        {
+                            <ui-modal-trigger data-controller="'ModalAddEditSalesFunnelCtrl'" controller-as="ctrl" size="middle"
+                                              template-url="@Html.GetAssetPath("addEditSalesFunnel.html")"
+                                              data-on-close="leads.updateSalesFunnel(result)"
+                                              data-resolve="{'Id': @Model.SalesFunnelId}"
+                                              class="m-r-sm ">
+                                <a href="" class="link-invert fas fa-pencil-alt text-decoration-none js-task-group-edit"></a>
+                            </ui-modal-trigger>
+                        }
+                        @if (Model.SalesFunnelId > 0)
+                        {
+                            <div class="inline vertical-middle m-r-sm">
+                                <label class="adv-checkbox-label pointer m-r">
+
+                                    <input class="adv-radio-input" name="UseKanban" ng-change="leads.changeView('kanban', true)"
+                                           ng-model="leads.useKanban" type="radio" ng-value="true">
+                                    <span class="adv-radio-text">
+                                        @T("Admin.Leads.Index.Kanban")
+                                    </span>
+                                    @*<span class="adv-radio-emul" data-e2e="UseKanban"></span>*@
+                                    <span class="adv-radio-emul--icon" data-e2e="UseKanban">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M4 3h3v14H4V3zm5 0h3v14H9V3zm5 0h3v14h-3V3z" fill="currentColor" fill-rule="evenodd" /></svg>
+                                    </span>
+
+                                </label>
+                                <label class="adv-checkbox-label pointer">
+
+                                    <input class="adv-radio-input" name="UseKanban" ng-change="leads.changeView('grid', true)"
+                                           ng-model="leads.useKanban" type="radio" ng-value="false">
+                                    <span class="adv-radio-text">
+                                        @T("Admin.Leads.Index.Table")
+                                    </span>
+                                    @*<span class="adv-radio-emul" data-e2e="UseGrid"></span>*@
+                                    <span class="adv-radio-emul--icon" data-e2e="UseGrid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M3 4h3v3H3V4zm4 0h10v3H7V4zM3 9h3v3H3V9zm4 0h10v3H7V9zm-4 5h3v3H3v-3zm4 0h10v3H7v-3z" fill="currentColor" fill-rule="evenodd" /></svg>
+                                    </span>
+
+                                </label>
+                            </div>
+                        }
+                        @if (Model.SalesFunnelId > 0 && Model.IsFullAccess)
+                        {
+                            <div class="inline vertical-middle m-r-sm">
+                                <a ng-class="{'link-as-label-icon--selected' : leads.viewMode === 'analytics'}" class="link-decoration-none link-as-label-icon sticky-link-text-decoration" href="@Url.AbsoluteActionUrl("Index", "Leads", new { salesFunnelId = Model.SalesFunnelId, useKanban = Model.UseKanban, viewmode = "analytics" })" data-e2e="analytics">
+                                    <svg width="20" height="20" class="vertical-middle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+                                        <path d="M116.364 29.09c-6.4 0-11.636 5.237-11.636 11.637 0 1.047.116 2.036.407 2.967L84.48 64.407c-.93-.29-1.978-.407-3.025-.407s-2.095.116-3.026.407L63.593 49.571c.291-.931.407-1.978.407-3.026 0-6.4-5.236-11.636-11.636-11.636-6.4 0-11.636 5.236-11.636 11.636 0 1.048.116 2.095.407 3.026L14.604 76.044c-.931-.291-1.92-.408-2.967-.408C5.236 75.636 0 80.873 0 87.273s5.236 11.636 11.636 11.636c6.4 0 11.637-5.236 11.637-11.636 0-1.048-.117-2.037-.408-2.968l26.473-26.53c.931.29 1.978.407 3.026.407 1.047 0 2.094-.117 3.025-.408l14.836 14.837c-.29.93-.407 1.978-.407 3.025 0 6.4 5.236 11.637 11.636 11.637 6.4 0 11.637-5.237 11.637-11.637 0-1.047-.117-2.094-.408-3.025l20.713-20.655c.931.291 1.92.408 2.967.408 6.4 0 11.636-5.237 11.636-11.637.001-6.4-5.235-11.636-11.635-11.636z" fill="currentColor" />
+                                    </svg>
+                                    <span class="vertical-middle">Аналитика</span>
+                                </a>
+                            </div>
+                        }
+                        @if (Model.SalesFunnelId > 0 && Model.IsFullAccess)
+                        {
+                            <div class="inline vertical-middle m-r-sm">
+                                <div class="flex middle-xs" data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': 'body', 'delayHover': 100}">
+                                    <div class="dropdown m-r-md" data-submenu-parent>
+                                        <a class="link-as-label-icon dropdown-toggle link-decoration-none sticky-link-text-decoration" id="importExportDropdown">
+                                            <svg class="vertical-middle" viewBox="0 0 128 128" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path d="M128 42.667L99.556 14.223v21.333H49.778v14.222h49.778v21.334L128 42.667zM28.444 92.445h49.778V78.223H28.444V56.889L0 85.334l28.444 28.444V92.445z" fill="currentColor" /></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h128v128H0z" /></clipPath></defs></svg>
+                                            <span class="vertical-middle">@T("Admin.Leads.Index.ImportAndExport")</span>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="importExportDropdown" data-submenu>
+                                            <li>
+                                                <a ng-click="leads.export()">@T("Admin.Leads.Index.Export")</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.AbsoluteActionUrl("index","settingscrm")?crmTab=importLeads">@T("Admin.Leads.Index.Import")</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="page-name-block-item-additional">
+                        <ui-modal-trigger data-controller="'ModalAddLeadCtrl'" controller-as="ctrl" size="lg" backdrop="static"
+                                          data-resolve="{params: {'salesFunnelId': @Model.SalesFunnelId}}"
+                                          data-close="leads.modalAddLeadClose()"
+                                          template-url="@Html.GetAssetPath("addLead.html")" class="pull-right">
+                            <button class="btn btn-sm btn-success" data-e2e="btnAdd" type="button">
+                                <span class="fa fa-plus"></span>
+                                @T("Admin.AddLead")
+                            </button>
+                        </ui-modal-trigger>
+                        @if (Model.SalesFunnelId > 0)
+                        {
+                            <div class="pull-right ng-cloak" ng-if="leads.viewMode !== 'analytics'">
+                                <div class="flex middle-xs">
+                                    <div class="dropdown m-r-sm">
+                                        <button class="btn btn-sm btn-default dropdown-toggle" id="communicationDropdown" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            @T("Admin.CustomerSegments.AddEdit.SendMessage")
+                                            <span class="caret"></span>
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="communicationDropdown">
+                                            @*<li>
+                                                    <a ng-click="leads.export()">@T("Admin.CustomerSegments.AddEdit.ExportCustomers")</a>
+                                                </li>*@
+                                            <li>
+                                                <a href="" ng-click="leads.sendEmail()">@T("Admin.CustomerSegments.AddEdit.WriteEmail")</a>
+                                            </li>
+                                            <li>
+                                                <a href="" class="edit link-decoration-none m-l-xs" ng-click="leads.sendSms()">@T("Admin.CustomerSegments.AddEdit.SendSMS")</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section NavMenu {
+    @if (AdminAreaTemplate.Current == null)
+    {
+        @Html.Action("CrmNavMenu", "Leads", new { selected = ViewBag.NavMenu })
+    }
+}
+@RenderBody()

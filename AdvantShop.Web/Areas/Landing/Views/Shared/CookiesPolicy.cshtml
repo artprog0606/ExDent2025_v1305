@@ -1,0 +1,25 @@
+﻿@model string
+@using AdvantShop.Configuration;
+<!--noindex-->
+<div data-oc-lazy-load="[{serie:true, files: [@Html.RenderAssetFilesList("cookiesPolicy", "")]}]">
+    <div class="cookies-policy color-scheme--light" data-cookies-policy-modal="true" data-ng-show="!cookiesPolicy.accepted" data-cookie-name="@Model">
+        <div class="cookies-policy-block link-text-decoration-none">
+            <div class="cookies-policy-cell">
+                @{
+                    var site = new LpSiteService().Get(LpService.CurrentSiteId);
+                    var siteUrl =
+                        site != null
+                            ? !string.IsNullOrEmpty(site.DomainUrl)
+                                ? site.DomainUrl
+                                : SettingsMain.SiteUrlPlain + "/lp/" + site.Url
+                            : SettingsMain.SiteUrlPlain + "/lp/" + LpService.CurrentLanding.Url;
+                }
+                @Html.Raw(SettingsNotifications.CookiesPolicyMessage.DefaultOrEmpty().Replace("#STORE_URL#", siteUrl))
+                <div class="cookies-policy-button">
+                    <button data-ng-click="cookiesPolicy.accept()" type="button" class="lp-btn lp-btn--primary lp-btn--sm">@T("Js.CookiesPolicy.Modal.Accept")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/noindex-->

@@ -1,0 +1,112 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.SendSMS.SendSMS'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group ng-cloak" ng-if="!ctrl.enabled">
+            <div class="row center-xs">
+                <div class="col-xs-12 col-md-9">
+                    {{'Admin.Js.SendSMS.ToSendSMS'|translate}} {{'Admin.Js.SendSMS.InstallTheModuleSMSInforming'|translate}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="ctrl.userNotAgree">
+            <div class="row">
+                <div class="col-xs-12 col-md-9 error-color">{{'Admin.Js.UserNotAgreeForNewsletter'|translate}}</div>
+            </div>
+        </div>
+
+        <div ng-if="ctrl.enabled === true">
+            <div class="form-group" ng-if="!ctrl.isMassAction()">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label">
+                        <span class="text-required">{{'Admin.Js.SendSMS.PhoneNumber'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-10">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.phone"
+                            required
+                            validation-input-text="{{'Admin.Js.SendSMS.PhoneNumber'|translate}}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label">
+                        <span class="text-required"> {{'Admin.Js.SendSMS.SmsTemplate'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-10">
+                        <select
+                            data-e2e="AnswerTemplate"
+                            class="form-control input-alt"
+                            ng-model="ctrl.smsAnswerTemplate"
+                            ng-options="item as item.Name for item in ctrl.templates track by item.TemplateId"
+                            ng-change="ctrl.getSmsFormat()">
+                            <option label="{{'Admin.Js.SendSMS.Empty'|translate}}" value="-1">{{'Admin.Js.SendSMS.Empty'|translate}}</option>
+                        </select>
+
+                        <div ng-if="ctrl.isSmsAndSocialMediaActive" class="m-t-xs">
+                            или
+                            <ui-modal-trigger
+                                data-controller="'ModalSelectSmsTemplateCtrl'"
+                                controller-as="ctrl"
+                                size="middle"
+                                template-url="../areas/admin/content/src/_shared/modal/selectSmsTemplate/selectSmsTemplate.html"
+                                data-on-close="ctrl.selectSmsTemplate(result)">
+                                <a href="" class="">Выбрать шаблон</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group relative">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label">
+                        <span class="text-required">{{'Admin.Js.SendSMS.SMStext'|translate}}</span><br />
+                        <count-sms sms-text="ctrl.text"></count-sms>
+                    </label>
+                    <div class="col-xs-12 col-md-10">
+                        <div ng-if="ctrl.moduleTemplateId != null" class="m-b-xs">Шаблон {{ctrl.moduleTemplateId}}</div>
+                        <div class="m-b-sm" ng-class="{'ui-grid-custom-processing' : ctrl.isProcessingTemplate}">
+                            <textarea
+                                class="form-control input-alt"
+                                ng-model="ctrl.text"
+                                ng-readonly="ctrl.moduleTemplateId != null"
+                                required
+                                validation-input-text="{{'Admin.Js.SendSMS.SMStext'|translate}}"
+                                style="height: 100px"
+                                autofocus>
+                            </textarea>
+                        </div>
+                        <div class="setting--grid-span-grey m-b-xs">(При использовании переменных число смс может значительно увеличиться)</div>
+                        <div class="setting--grid-span-grey m-b-xs">#STORE_NAME#, #MAIN_PHONE#</div>
+                        <div class="setting--grid-span-grey m-b-xs" ng-bind-html="ctrl.customerKeys"></div>
+                        <div class="setting--grid-span-grey m-b-xs" ng-if="ctrl.orderId != null" ng-bind-html="ctrl.orderKeys"></div>
+                        <div class="setting--grid-span-grey m-b-xs" ng-if="ctrl.leadId != null" ng-bind-html="ctrl.leadKeys"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            ng-if="ctrl.enabled === true"
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.send()"
+            data-button-validation
+            ladda="ctrl.btnLoading">
+            {{'Admin.Js.SendSMS.Send'|translate}}
+        </button>
+        <a ng-if="ctrl.enabled != true" class="btn btn-save btn-primary" href="modules/market?name=sms" target="_blank"
+            >{{'Admin.Js.SendSMS.InstallModule'|translate}}</a
+        >
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.SendSMS.Cancel'|translate}}</button>
+    </div>
+</form>

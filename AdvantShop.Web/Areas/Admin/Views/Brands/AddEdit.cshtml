@@ -1,0 +1,394 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Catalog.Brands.AdminBrandModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsCatalog");
+}
+
+<form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.BrandId)
+    @Html.HiddenFor(x => Model.IsEditMode)
+
+    @{
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "SettingsCatalog") + "?catalogTab=brand",
+            NgBackTriggerCallback = "settingsCatalog.backInMobile()"
+        };
+
+        headerModel.Title =  (Model.IsEditMode ? T("Admin.Brands.AddEdit.Brand").ToString() + " " + Html.Raw(Model.BrandName) : 
+            T("Admin.Brands.AddEdit.NewBrand").ToString());
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                        },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\"", "data-button-validation disabled", "data-e2e=\"btnSave\"", "ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if=\""+ Model.IsEditMode.ToLowerString() + "\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+        {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "go",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.View"),
+            Link = Url.AbsoluteRouteUrl("Brand", new { url = Model.UrlPath }),
+            Attributes = new string[] { "target=\"_blank\"" },
+        });
+
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Delete"),
+            Modificators = new List<eButtonModificators>
+        ()
+{
+                    eButtonModificators.HorizontalPaddingZero
+                    },
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Attributes = new[] { "ng-click=\"brand.deleteBrand(" + Model.BrandId + ")\"" },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+
+    <div class="sticky-page-name p-b-n" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner @(isMobile && Model.IsEditMode ||  isMobile && !Model.IsEditMode? "flex middle-xs" : "")">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @if (Model.IsEditMode)
+                        {
+                            <span>@T("Admin.Brands.AddEdit.Brand")</span> <strong>"@Html.Raw(Model.BrandName)"</strong>
+                        }
+                        else
+                        {
+                            <strong>@T("Admin.Brands.AddEdit.NewBrand")</strong>
+                        }
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <a href="" class="link-danger m-r-xs" ng-if="@Model.IsEditMode.ToLowerString()" ng-click="brand.deleteBrand(@Model.BrandId)">@T("Admin.Delete")</a>
+                    @if (Model.IsEditMode)
+                    {
+                        @Html.Button(T("Admin.View"), eButtonType.Simple, eButtonSize.Small, eColorType.Default,
+                                        Url.AbsoluteRouteUrl("Brand", new { url = Model.UrlPath }), name: "ViewBrand", attributes: new[] { "target=\"_blank\"" })
+                    }
+
+                    @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" }, validation: true)
+                </div>
+            }
+            @*else
+            {
+                if (Model.IsEditMode)
+                {
+                
+                    @Html.Button(T("Admin.View"), eButtonType.Simple, eButtonSize.Small, eColorType.Default,
+                                        Url.AbsoluteRouteUrl("Brand", new { url = Model.UrlPath }), name: "ViewBrand", attributes: new[] { "target=\"_blank\"", "class=\"flex-grow\"" })
+                }
+            }*@
+        </div>
+    </div>
+    @if (!isMobile)
+    {
+        <ul class="breadcrumb sticky-page-name-subtext">
+            <li>
+                <a class="link-invert" href="@(AdminAreaTemplate.Current != "adminv3" ? Url.AbsoluteActionUrl("Index", "Brands") : Url.AbsoluteActionUrl("Index", "SettingsCatalog") + "?catalogTab=brand")">@T("Admin.Brands.AddEdit.AllBrands")</a>
+            </li>
+        </ul>
+    }
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="flex-grow-n  @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <h2 class="category-title setting__subtitle setting--m-t-none">@T("Admin.Brands.AddEdit.Main")</h2>
+                    <div class="">
+                    </div>
+                </div>
+                <div class="flex-grow flex-basis-n flex-width-n">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="BrandName" class="form-label-block setting__label"><span class="text-required">@T("Admin.Brands.AddEdit.BrandName")</span></label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextBoxFor(x => x.BrandName, new { @class = "form-control input-alt", url_generator = "", url_path = "brand.UrlPath", url_generator_enabled = Model.UrlPath.IsNotEmpty() ? "false" : "true", required = "required", ng_model = "brand.BrandName", validation_input_text = T("Admin.Brands.AddEdit.BrandName") })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-11 col-md-2">
+                                            <label for="Enabled" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.Enabled")</label>
+                                        </div>
+                                    }
+                                    <div class="col-xs-12 col-md-10">
+                                        <label class="adv-checkbox-label form-label-block">
+                                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "brand.enabled", ng_init = "brand.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                            @if (isMobile)
+                                            {
+                                                <span>@T("Admin.Brands.AddEdit.Enabled")</span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="CountryId" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.Country")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.DropDownListFor(m => m.CountryId, new SelectList(Model.Countries, "CountryId", "Name", Model.CountryId), new { @class = "form-control required input-alt", ng_model = "brand.countryId", ng_init = "brand.countryId = '" + Model.CountryId + "'" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="CountryOfManufactureId" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.CountryOfManufacture")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.DropDownListFor(m => m.CountryOfManufactureId, new SelectList(Model.Countries, "CountryId", "Name", Model.CountryOfManufactureId), new { @class = "form-control required input-alt", ng_model = "brand.countryOfManufactureId", ng_init = "brand.countryOfManufactureId = '" + Model.CountryOfManufactureId + "'" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="SortOrder" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.SortOrder")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextBoxFor(x => x.SortOrder, new { @class = "form-control input-alt", required = "required", ng_model = "brand.sortOrder", validation_input_text = T("Admin.Brands.AddEdit.SortOrder") })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row middle-xs setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="BrandSiteUrl" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.SiteUrl")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextBoxFor(x => x.BrandSiteUrl, new { @class = "form-control input-alt", ng_model = "brand.brandSiteUrl" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="Description" class="form-label-block m-b-wl setting__label">@T("Admin.Brands.AddEdit.Description")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextAreaFor(x => x.Description, new { @class = "wysiwyg", ckeditor = "", ng_model = "brand.Description" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="BriefDescription" class="form-label-block setting__label">@T("Admin.Brands.AddEdit.BriefDescription")</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        @Html.TextAreaFor(x => x.BriefDescription, new { @class = "wysiwyg", ckeditor = "", ng_model = "brand.BriefDescription" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Pictures *@
+            <div class="row @(isMobile ? "form-group" : "")">
+                <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <h2 class="category-title setting__subtitle">@T("Admin.Brands.AddEdit.Pictures")</h2>
+                </div>
+                <div class="flex-grow flex-basis-n flex-width-n">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div class="@(isMobile ? "" : "container-fluid")">
+                                <div class="row category-row">
+                                    @if (!isMobile)
+                                    {
+                                        <div class="col-xs-12 col-md-2">
+                                            @T("Admin.Category.Index.Picture")
+                                            <div>
+                                                @(SettingsPictureSize.BrandLogoWidth)x@(SettingsPictureSize.BrandLogoHeight)px
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-xs-12 col-lg-5 setting__brand-pictureUploader-wrap @(isMobile ? "m-b-sm" : "")">
+                                        @Html.PictureUploader(
+                                           AdvantShop.Catalog.PhotoType.Brand,
+                                           Model.BrandId,
+                                           Model.PhotoSrc,
+                                           "brand.updateImage(result)",
+                                           null,
+                                           Model.PhotoId)
+
+                                        @Html.HiddenFor(x => x.PhotoId, new { ng_value = "brand.PhotoId" })
+                                    </div>
+                                    @if(isMobile)
+                                    {
+                                    <div class="col-xs-12 setting--grid-span-grey">
+                                        <span>@T("Admin.Category.Index.Picture") </span><span>@(SettingsPictureSize.BrandLogoWidth)x@(SettingsPictureSize.BrandLogoHeight)px</span>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* SEO*@
+            <div class="row">
+                <div class="flex-grow-n @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <h2 class="category-title setting__subtitle">SEO</h2>
+                    <div class="setting--m-b-sm">
+                        @T("Admin.Brands.AddEdit.SeoParameters") <br/>
+                        @*При необходимости вы самостоятельно можете указать SEO параметры такие как: title, h1, keywords, description*@
+                    </div>
+                </div>
+                <div class="flex-grow col-xs-12 flex-basis-n flex-width-n">
+                    <div class="ibox brand-block">
+                        <div class="ibox-content brand-content border_none">
+                            <div>
+                                <div class="row category-row setting__form-group">
+                                    <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                        <label for="URL" class="form-label-block setting__label"><span class="text-required">@T("Admin.Category.Index.UrlPath")</span></label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <label class="input-group form-label-block card card--form-control setting--m-b-none">
+                                            <span style="@(isMobile ? "padding-bottom:5px;" : "")" class="input-group-addon fs-xs card__label setting__input-group-addon">@UrlService.GetUrl("manufacturers/")</span>
+                                            @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control card__input", ng_model = "brand.UrlPath", id = "URL", required = "required", validation_input_text = T("Admin.Category.Index.UrlPath") ,placeholder="Введите синоним"})
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row setting__form-group">
+                                <div class="col-xs-12 col-md-offset-2">
+                                    <label class="adv-checkbox-label">
+                                        @Html.CheckBoxFor(x => x.DefaultMeta, new { ng_model = "brand.defaultMeta", ng_init = "brand.defaultMeta=" + Model.DefaultMeta.ToString().ToLower(), @class = "adv-checkbox-input" })
+                                        <span class="adv-checkbox-emul" data-e2e="DefaultMetaCheckbox"></span>
+                                        <span class="@(isMobile ? "m-l-xs" : "") setting__label">@T("Admin.Brands.AddEdit.UseMeta")</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="brand-seo-custom-block ng-cloak m-t-md" ng-if="!brand.defaultMeta">
+                                <div>
+                                    <div class="row category-row middle-xs setting__form-group">
+                                        <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                            <label class="form-label-block text-required setting__label" for="SeoTitle">@T("Admin.Category.Index.SeoTitle")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextBoxFor(x => x.SeoTitle,
+                                                new
+                                                {
+                                                    @class = "form-control input-alt",
+                                                    ng_model = "brand.seoTitle",
+                                                    textcomplete = "",
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Brand }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoTitle").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row middle-xs setting__form-group">
+                                        <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                            <label class="form-label-block text-required setting__label" for="SeoH1">@T("Admin.Category.Index.SeoH1")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextBoxFor(x => x.SeoH1,
+                                                new
+                                                {
+                                                    @class = "form-control input-alt",
+                                                    ng_model = "brand.seoH1",
+                                                    textcomplete = "",
+                                                    textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Brand }),
+                                                    required = "required",
+                                                    validation_input_text = T("Admin.Category.Index.SeoH1").ToString()
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row middle-xs setting__form-group">
+                                        <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                            <label class="form-label-block setting__label" for="SeoKeywords">@T("Admin.Category.Index.SeoKeywords")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextAreaFor(x => x.SeoKeywords, new { @class = "form-control input-alt", ng_model = "brand.seoKeywords", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Brand }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row category-row middle-xs setting__form-group">
+                                        <div class="col-xs-12 col-md-2 setting-label-wrap">
+                                            <label class="form-label-block setting__label" for="SeoDescription">@T("Admin.Category.Index.SeoDescription")</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-10">
+                                            @Html.TextAreaFor(x => x.SeoDescription, new { @class = "form-control input-alt", ng_model = "brand.seoDescription", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = AdvantShop.SEO.MetaType.Brand }) })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row setting__form-group">
+                                    <div class="col-xs-12 col-md-offset-2">
+                                        @Html.Action("MetaVariablesDescription", "Common", new { type = AdvantShop.SEO.MetaType.Brand })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

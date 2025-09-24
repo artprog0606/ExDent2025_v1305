@@ -1,0 +1,117 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.AlfabankPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMeythods.Alfabank.GatewayCountry")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.GatewayUrl, Model.Gateways, new { ng_model = "paymentMethod.Parameters.GatewayUrl", ng_init = "paymentMethod.Parameters.GatewayUrl='" + Model.GatewayUrl + "'", @class = "form-control input-alt", required = "required", validation_input_text = @T("Admin.PaymentMeythods.Alfabank.GatewayCountry").ToString() })
+
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.PaymentMeythods.Alfabank.GatewayCountry")">
+            Тестовый режим - для тестирования оплаты<br/>
+            @T("Admin.PaymentMethods.Alfabank.GatewayCountry.DescriptionRu")<br/>
+            @T("Admin.PaymentMethods.Alfabank.GatewayCountry.DescriptionKz")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Alfabank.Login")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.UserName, new { ng_model = "paymentMethod.Parameters.UserName", @class = "form-control input-alt", required = "required", validation_input_text = @T("Admin.PaymentMethods.Alfabank.Login").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.PaymentMethods.Alfabank.Login")">
+            @T("Admin.PaymentMethods.Alfabank.ShopLogin")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Alfabank.Password")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "paymentMethod.Parameters.Password", @class = "form-control input-alt", required = "required", validation_input_text = @T("Admin.PaymentMethods.Alfabank.Password").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.PaymentMethods.Alfabank.Password")">
+            @T("Admin.PaymentMethods.Alfabank.ShopPassword")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.Alfabank.SubsidiaryMerchantLogin")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.MerchantLogin, new { ng_model = "paymentMethod.Parameters.MerchantLogin", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.PaymentMethods.Alfabank.SubsidiaryMerchantLogin")">
+            @T("Admin.PaymentMethods.Alfabank.RegisterOrderChildMerchant")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            @T("Admin.PaymentMethods.Alfabank.SendDataForPrint")
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="SendReceiptData" class="col-xs setting__label">
+                @T("Admin.PaymentMethods.Alfabank.SendDataForPrint")
+            </label>
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="">
+            @T("Admin.PaymentMethods.Alfabank.SendDataForPrint")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>ФФД подключенной кассы</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeFfd, Model.TypesFfd, new { ng_model = "paymentMethod.Parameters.TypeFfd", ng_init = "paymentMethod.Parameters.TypeFfd='" + Model.TypeFfd + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="@Model.ExistsUnitsWithOutMeasure.ToLowerString() && paymentMethod.Parameters.SendReceiptData && paymentMethod.Parameters.TypeFfd === '1'">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <div>
+                Имеются единицы измерения без указания меры для ФФД. <a target="_blank" href="settingscatalog?catalogTab=units&gridUnits=%7B%22WithOutMeasureType%22:true%7D">Смотреть...</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMeythods.Alfabank.TaxSystem")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.Taxation, Model.Taxations, new { ng_model = "paymentMethod.Parameters.Taxation", ng_init = "paymentMethod.Parameters.Taxation='" + Model.Taxation + "'", @class = "form-control input-alt" })
+
+        <help-trigger class="ng-cloak @(!isMobile ? "help-trigger-icon-abs" : "m-l-sm p-l-xs")" data-title="@T("Admin.PaymentMeythods.Alfabank.TaxSystem")">
+            @T("Admin.PaymentMethods.Alfabank.UsedWhenSendingData")
+        </help-trigger>
+    </div>
+</div>

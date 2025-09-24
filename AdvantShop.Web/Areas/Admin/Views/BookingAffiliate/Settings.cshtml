@@ -1,0 +1,86 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Settings.SettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Booking/_BookingLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Booking/_BookingLayout.cshtml";
+    }
+}
+
+<div class="wrapper" is-mobile>
+    <div class="row" @Html.Raw(isMobile ? "ng-init=\"app.bookingAffiliateSettings = bookingAffiliateSettings\"" : "")>
+        <div class="col-xs-12 animated1 fadeInRight1">
+            <div class="ibox">
+                <div class="ibox-content settings-block" ng-init="bookingAffiliateSettings.initBookingAffiliateSettings(@Model.Affiliate.Id)">
+                @using (Html.BeginAbsoluteUrlForm("Settings", "BookingAffiliate", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate", ng_submit = "bookingAffiliateSettings.save($event)", @class= "bookingAffiliateSettingsForm" }))
+                {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.Affiliate.Id, new { ng_model = "bookingAffiliateSettings.affiliateId" })
+                    if (!isMobile)
+                    {
+                        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+                            <div class="page-name-block sticky-page-name-inner header-hidden">
+                                <div class="page-name-block-item-main">
+                                    <h1 class="page-name-block-text sticky-page-name-text">
+                                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                                    </h1>
+                                </div>
+                                
+                                <div class="page-name-block-item-additional">
+                                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Booking.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <uib-tabset class="{{isMobile.value ? 'nav-tabs-wrap nav-tabs-wrap--chips' : ''}}" active uid="settingsTab" on-select-batch="app.setTitle('@T("Admin.Booking.Settings.AffiliateSettings") / ' + tab.heading); bookingAffiliateSettings.tabActiveIndex = tab.index;">
+                        <uib-tab index="'common'" classes="ng-tab" heading="@T("Admin.Booking.Settings.Common")">
+                            <uib-tab-heading ng-class="{'tab-warning' : commonForm.$invalid}">
+                                @T("Admin.Booking.Settings.Common")
+                                <span ng-if="commonForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                                <span ng-if="!commonForm.$invalid && commonForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+                            </uib-tab-heading>
+                            <ng-form name="commonForm" validation-tab-index="'common'">
+                                @Html.Partial("_SettingsCommon", Model)
+                            </ng-form>
+                        </uib-tab>
+
+                        <uib-tab index="'timeofbooking'" heading="@T("Admin.Booking.Settings.TimeOfBooking")" classes="ng-tab">
+                            @Html.Partial("_SettingsTimeOfBooking", Model)
+                        </uib-tab>
+
+                        <uib-tab index="'timeofbookingadditional'" heading="@T("Admin.Booking.Settings.TimeExceptions")" classes="ng-tab" removable="true">
+                            @Html.Partial("_SettingsAdditionalTime", Model)
+                        </uib-tab>
+
+                        <uib-tab index="'smsnotification'" heading="@T("Admin.Booking.Settings.SmsNotification")" classes="ng-tab" removable="true">
+                            @Html.Partial("_SettingsSmsNotification", Model)
+                        </uib-tab>
+
+                        <uib-tab index="'payment'" heading="@T("Admin.Booking.Settings.Payment")" classes="ng-tab">
+                            @Html.Partial("_SettingsPayment", Model)
+                        </uib-tab>
+
+                        @if (!isMobile)
+                        {
+                            <div class="js-not-tabs">
+                                @if (Model.CanBeDeleting)
+                                {
+                                    <button type="button" class="btn btn-sm btn-red-white btn-default" ng-click="bookingAffiliateSettings.deleteAffiliate()">Удалить</button>
+                                }
+                                <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Booking.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="BtnSaveSettings" />
+                            </div>
+                        }
+                    </uib-tabset>
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

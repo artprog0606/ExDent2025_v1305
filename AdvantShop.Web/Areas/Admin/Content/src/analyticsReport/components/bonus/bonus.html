@@ -1,0 +1,163 @@
+﻿<div is-mobile>
+    <div class="row" style="row-gap: 30px">
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.BonusParticipants.Title'|translate}}</h2>
+            <div class="row" style="margin: 0 0 20px 0">
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.BonusParticipants.ParticipantsCounts.All}}</div>
+                    <div>{{'Admin.Js.BonusReport.BonusParticipants.All'|translate}}</div>
+                </div>
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">
+                        {{$ctrl.BonusParticipants.ParticipantsCounts.New}} <sup>+{{$ctrl.BonusParticipants.ParticipantsCounts.PercentageOfNew}}%</sup>
+                    </div>
+                    <div>{{'Admin.Js.BonusReport.BonusParticipants.New'|translate}}</div>
+                </div>
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">
+                        {{$ctrl.BonusParticipants.ParticipantsCounts.HavingMovement}}
+                        <sup>{{$ctrl.BonusParticipants.ParticipantsCounts.PercentageOfHavingMovement}}%</sup>
+                    </div>
+                    <div>{{'Admin.Js.BonusReport.BonusParticipants.HavingMovement'|translate}}</div>
+                </div>
+            </div>
+            <div class="reports-graphic reports-graphic-card" style="width: 100%; margin: 0">
+                <canvas
+                    class="chart chart-line"
+                    chart-data="$ctrl.BonusParticipants.CountOfParticipantsByDate.Data"
+                    chart-labels="$ctrl.BonusParticipants.CountOfParticipantsByDate.Labels"
+                    chart-series="$ctrl.BonusParticipants.CountOfParticipantsByDate.Series"
+                    chart-colors="$ctrl.BonusParticipants.CountOfParticipantsByDate.Colors"></canvas>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.BonusMovement.Title'|translate}}</h2>
+            <div class="row" style="margin: 0 0 20px 0">
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.BonusMovement.SumAccrued}}</div>
+                    <div>{{'Admin.Js.BonusReport.BonusMovement.SumAccrued'|translate}}</div>
+                </div>
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.BonusMovement.SumUsed}}</div>
+                    <div>{{'Admin.Js.BonusReport.BonusMovement.SumUsed'|translate}}</div>
+                </div>
+                <div class="col-xs-4 col-md-4">
+                    <div style="font-size: 16px; font-weight: 600">
+                        {{$ctrl.BonusMovement.CountOrdersUsedBonus}} <sup>{{$ctrl.BonusMovement.PercentOrdersUsedBonus}}%</sup>
+                    </div>
+                    <div>{{'Admin.Js.BonusReport.BonusMovement.CountOrdersUsedBonus'|translate}}</div>
+                </div>
+            </div>
+            <div class="reports-graphic reports-graphic-card" style="width: 100%; margin: 0">
+                <canvas
+                    class="chart chart-line"
+                    chart-data="$ctrl.BonusMovement.AccruedAndUsedByDate.Data"
+                    chart-labels="$ctrl.BonusMovement.AccruedAndUsedByDate.Labels"
+                    chart-series="$ctrl.BonusMovement.AccruedAndUsedByDate.Series"
+                    chart-colors="$ctrl.BonusMovement.AccruedAndUsedByDate.Colors"></canvas>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.BonusCardGrades.Title'|translate}}</h2>
+            <div class="reports-graphic reports-graphic-card" style="width: 100%; padding: 20px 20%; margin: 0">
+                <canvas
+                    class="chart chart-pie"
+                    chart-data="$ctrl.BonusCardGrades.Data"
+                    chart-labels="$ctrl.BonusCardGrades.Labels"
+                    chart-series="$ctrl.BonusCardGrades.Series"
+                    chart-colors="$ctrl.BonusCardGrades.Colors"></canvas>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.BonusRules.Title'|translate}}</h2>
+            <div class="reports-graphic" style="width: 100%">
+                <ui-grid-custom
+                    grid-unique-id="gridBonusRules"
+                    grid-filter-enabled="false"
+                    grid-pagination-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-options="$ctrl.gridBonusRulesOptions"
+                    grid-params="{ dateFrom: $ctrl.from, dateTo: $ctrl.to }"
+                    grid-url="'analytics/GetBonusRules'"
+                    grid-on-init="$ctrl.gridBonusRulesOnInit(grid)">
+                    <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                        <div class="card card--gap-row-sm grid g-xs reports-customer">
+                            <div class="card__title g-col-12" ng-bind="row.entity.Name"></div>
+                            <div class="card__text g-col-12 m-t-xs">
+                                <span>
+                                    <span>{{'Admin.Js.BonusReport.BonusRules.Accrued'|translate}}:</span>
+                                    <span>{{row.entity.Accrued}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+                <span style="margin-top: 20px">* {{'Admin.Js.BonusReport.BonusRules.Help'|translate}}</span>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.TopUsersAccrued.Title'|translate}}</h2>
+            <div class="reports-graphic" style="width: 100%">
+                <ui-grid-custom
+                    grid-unique-id="gridTopUsersAccrued"
+                    grid-filter-enabled="false"
+                    grid-pagination-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-options="$ctrl.gridTopUsersAccruedOptions"
+                    grid-params="{ dateFrom: $ctrl.from, dateTo: $ctrl.to }"
+                    grid-url="'analytics/GetBonusTopUsersAccrued'"
+                    grid-on-init="$ctrl.gridTopUsersAccruedOnInit(grid)">
+                    <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                        <div class="card card--gap-row-sm grid g-xs reports-customer">
+                            <div class="card__title g-col-12" ng-bind="row.entity.Name"></div>
+                            <div class="card__text g-col-12 m-t-xs">
+                                <span>
+                                    <span>{{'Admin.Js.BonusReport.TopUsers.Accrued'|translate}}:</span>
+                                    <span>{{row.entity.Accrued}}</span>
+                                </span>
+                            </div>
+                            <div class="card__text g-col-12 m-t-xs">
+                                <span>
+                                    <span>{{'Admin.Js.BonusReport.TopUsers.OrdersCount'|translate}}:</span>
+                                    <span>{{row.entity.OrdersCount}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h2 class="inline reports-title col-xs-12 col-md-slim">{{'Admin.Js.BonusReport.TopUsersUsed.Title'|translate}}</h2>
+            <div class="reports-graphic" style="width: 100%">
+                <ui-grid-custom
+                    grid-unique-id="gridTopUsersUsed"
+                    grid-filter-enabled="false"
+                    grid-pagination-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-options="$ctrl.gridTopUsersUsedOptions"
+                    grid-params="{ dateFrom: $ctrl.from, dateTo: $ctrl.to }"
+                    grid-url="'analytics/GetBonusTopUsersUsed'"
+                    grid-on-init="$ctrl.gridTopUsersUsedOnInit(grid)">
+                    <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                        <div class="card card--gap-row-sm grid g-xs reports-customer">
+                            <div class="card__title g-col-12" ng-bind="row.entity.Name"></div>
+                            <div class="card__text g-col-12 m-t-xs">
+                                <span>
+                                    <span>{{'Admin.Js.BonusReport.TopUsers.Used'|translate}}:</span>
+                                    <span>{{row.entity.Used}}</span>
+                                </span>
+                            </div>
+                            <div class="card__text g-col-12 m-t-xs">
+                                <span>
+                                    <span>{{'Admin.Js.BonusReport.TopUsers.OrdersCount'|translate}}:</span>
+                                    <span>{{row.entity.OrdersCount}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+</div>

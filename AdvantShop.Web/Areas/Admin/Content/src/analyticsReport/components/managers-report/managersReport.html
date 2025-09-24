@@ -1,0 +1,40 @@
+﻿<div is-mobile class="ng-cloak">
+    <table class="table table-striped" ng-if="!isMobile.value">
+        <tr>
+            <th>{{'Admin.Js.ManagersReport.Manager'|translate}}</th>
+            <th style="min-width: 60px">{{'Admin.Js.ManagersReport.E-mail'|translate}}</th>
+            <th>{{'Admin.Js.ManagersReport.NumberOfOrders'|translate}}</th>
+            <th>{{'Admin.Js.ManagersReport.AmountOfOrders'|translate}}</th>
+            <th>{{'Admin.Js.ManagersReport.NumberOfPaidOrders'|translate}}</th>
+            <th>{{'Admin.Js.ManagersReport.AmountOfPaidOrders'|translate}}</th>
+        </tr>
+        <tr ng-repeat="item in $ctrl.Managers track by $index">
+            <td>
+                <sidebar-user-trigger customer-id="item.CustomerId" class="ui-grid-cell-contents">
+                    <a href="" class="text-decoration-invert">{{item.Name}}</a>
+                </sidebar-user-trigger>
+            </td>
+            <td>{{item.Email}}</td>
+            <td>{{item.OrdersCount}}</td>
+            <td>{{item.OrdersSum}}</td>
+            <td>{{item.PaidOrdersCount}}</td>
+            <td>{{item.PaidOrdersSum}}</td>
+        </tr>
+        <tr ng-if="$ctrl.Managers == null || $ctrl.Managers.length == 0">
+            <td colspan="5">{{'Admin.Js.AnalyticsReport.NoData'|translate}}</td>
+        </tr>
+    </table>
+
+    <div ng-if="isMobile.value">
+        <div class="ui-grid-custom-override-header">
+            <span class="ui-grid-custom-override-header__cell">{{'Admin.Js.ManagersReport.Manager'|translate}}</span>
+            <span class="ui-grid-custom-override-header__cell">{{'Admin.Js.ManagersReport.AmountOfPaidOrders'|translate}}</span>
+        </div>
+        <div class="card m-b-md" ng-repeat="item in $ctrl.Managers track by $index">
+            <div class="card__row">
+                <div class="card__text card__col" ng-bind="item.Name"></div>
+                <div class="card__text card__col card__col--end" ng-bind="item.PaidOrdersSum"></div>
+            </div>
+        </div>
+    </div>
+</div>

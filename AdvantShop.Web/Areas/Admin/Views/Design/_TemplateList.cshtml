@@ -1,0 +1,43 @@
+﻿@using AdvantShop.Trial
+@model System.Collections.Generic.List<AdvantShop.DownloadableContent.DownloadableContentObject>
+@{
+    //var shopUrl = UrlService.GetUrl();
+}
+@if (!Model.Any())
+{
+    <div class="h4">@T("Admin.Design.Index.NoTemplatesAvailable")</div>
+}
+<div class="last-item-row">
+    @foreach (var tpl in Model)
+    {
+        <div class="last-item @(tpl.Price == 0 ? "design__item--free" : "design__item--paid")" ng-class="{'progress-overlay': design.templatesProgress['@(tpl.StringId)']}">
+            <div class="last-item-ava">
+                <img src="@tpl.Icon" />
+            </div>
+            <div class="last-item-con">
+                <div class="last-item-title"><a href="@tpl.DetailsLink" target="_blank">@tpl.Name</a></div>
+
+                <div class="last-item-content">
+                    @T("Admin.Design.Index.Price")<span> @Html.Raw(tpl.Price > 0 ? tpl.Price + " " + tpl.Currency : @T("Admin.Design.Index.Free").ToString())</span>
+                </div>
+
+
+                @if (tpl.Price == 0 || tpl.Active || TrialService.IsTrialEnabled)
+                {
+                    <form novalidate class="inline" ng-submit="design.installTemplate('@tpl.StringId',@tpl.Id,'@tpl.Version','@Url.AbsoluteActionUrl("Index", "Design")')">
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Design.Index.Install")" />
+                    </form>
+                }
+                else if (!TrialService.IsTrialEnabled)
+                {
+                    <a href="@Url.AbsoluteActionUrl("BuyTemplate", "Service", new { id = @tpl.StringId })" class="btn btn-sm btn-success">@T("Admin.Design.Index.Buy")</a>
+                }
+                @if (tpl.DetailsLink.IsNotEmpty())
+                {
+                    <a href="@tpl.DetailsLink" class="m-l-xs" target="_blank">Online demo</a>
+                }
+                @*<a href="" class="m-l-xs" ng-click="design.preview(@tpl.Id, '@(tpl.StringId)', '@shopUrl')">@T("Admin.Design.Index.Preview")</a>*@
+            </div>
+        </div>
+    }
+</div>

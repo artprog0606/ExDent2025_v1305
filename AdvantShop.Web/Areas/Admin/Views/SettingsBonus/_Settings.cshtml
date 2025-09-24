@@ -1,0 +1,261 @@
+﻿@using System.Web.Mvc.Html
+@model AdvantShop.Web.Admin.Models.Settings.BonusSettingsModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            @T("Admin.SettingsBonus.Index.Enable")
+        </div>
+    }
+    <div class="col-xs-12 col-md-9">
+        <div class="@( isMobile ? "" : "label-wrap")">
+            <label class="adv-checkbox-label category-label  @( isMobile ? "flex middle-xs m-b-sm" : "")">
+                @Html.CheckBoxFor(x => x.IsEnabled, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.IsEnabled" })
+                <span class="adv-checkbox-emul"></span>
+                @if (isMobile)
+                {
+                    <span class="flex-grow setting__label m-l-sm">
+                        @T("Admin.SettingsBonus.Index.Enable")
+                    </span>
+                }
+            </label>
+            @if (Model.IsEnabled)
+            {
+                <a class="block m-t-sm link-decoration-none" href="@(SettingsMain.SiteUrl.TrimEnd('/') + Url.RouteUrl("GetBonusCardRoute"))" target="_blank">@T("Admin.Settings.SettingsBonus.GoToGetBonusCardPage")</a>
+            }
+        </div>
+    </div>
+</div>
+<div ng-show="settingBonus.IsEnabled">
+    <h3 class="@( isMobile ? "setting__subtitle" : "m-b-md")">@T("Admin.Settings.SettingsBonus.Default")</h3>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.Settings.SettingsBonus.BonusGradeId")
+        </div>
+        <div class="col-xs-12 col-md-4">
+            @Html.DropDownListFor(x => x.BonusGradeId, Model.Grades, new { @class = "form-control input-alt", ng_model = "settingBonus.BonusGradeId" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.RangeOfCardsFrom")
+        </div>
+        <div class="col-xs-12 col-md-4">
+            @Html.TextBoxFor(x => x.CardNumFrom, new { @class = "form-control input-alt", ng_model = "settingBonus.CardNumFrom", textcomplete = "", required = "required", validation_input_text = T("Admin.SettingsBonus.Index.RangeOfCardsFrom").ToString() })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.RangeOfCardsTo")
+        </div>
+        <div class="col-xs-12 col-md-4">
+            @Html.TextBoxFor(x => x.CardNumTo, new { @type = "number", @maxlength = "20", @class = "form-control input-alt", ng_model = "settingBonus.CardNumTo", textcomplete = "", required = "required", validation_input_text = T("Admin.SettingsBonus.Index.RangeOfCardsTo").ToString() })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.AccrueAndWriteOff")
+        </div>
+        <div class="col-xs-12 col-md-4">
+            @Html.DropDownListFor(x => x.BonusType, Model.BonusTypes, new { @class = "form-control input-alt", ng_model = "settingBonus.BonusType" })
+        </div>
+    </div>
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.MaximumPercentageOfBonuses")
+        </div>
+        <div class="col-xs-12 col-md-4">
+            @Html.TextBoxFor(x => x.MaxOrderPercent, new { @type = "number", @min = "1", @max = "100", @class = "form-control input-alt", ng_model = "settingBonus.MaxOrderPercent", textcomplete = "", required = "required", validation_input_text = T("Admin.SettingsBonus.Index.MaximumPercentageOfBonuses").ToString() })
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.ProhibitUseOfBonuses")
+            </div>
+        }
+        <div class="col-xs-12 col-md-9">
+            <div class="@( isMobile ? "" : "form-group label-wrap")">
+                <label class="adv-checkbox-label category-label">
+                    @Html.CheckBoxFor(x => x.ForbidOnCoupon, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.ForbidOnCoupon" })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span class="">
+                            @T("Admin.SettingsBonus.Index.ProhibitUseOfBonuses")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.AllowSpecifyBonusAmount")
+            </div>
+        }
+        <div class="col-xs-12 col-md-4">
+            <div class="@( isMobile ? "" : "form-group label-wrap")">
+                <label class="adv-checkbox-label category-label">
+                    @Html.CheckBoxFor(x => x.AllowSpecifyBonusAmount, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.AllowSpecifyBonusAmount" })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span>
+                            @T("Admin.SettingsBonus.Index.AllowSpecifyBonusAmount")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.ProhibitAccrualAndSubstractBonuses")
+            </div>
+        }
+        <div class="col-xs-12 col-md-4">
+            <div class="@( isMobile ? "" : "form-group label-wrap")">
+                <label class="adv-checkbox-label category-label">
+                    @Html.CheckBoxFor(x => x.ProhibitAccrualAndSubstractBonuses, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.ProhibitAccrualAndSubstractBonuses" })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span>
+                            @T("Admin.SettingsBonus.Index.ProhibitAccrualAndSubstractBonuses")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.MainText")
+        </div>
+        <div class="col-xs-12 col-md-9">
+            @Html.TextAreaFor(x => x.BonusTextBlock, new { @class = "wysiwyg input-alt setting__width-100", ckeditor = "", ng_model = "settingBonus.BonusTextBlock" })
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 @( isMobile ? "setting-label-wrap setting__label" : "")">
+            @T("Admin.SettingsBonus.Index.TextInRightBlock")
+        </div>
+        <div class="col-xs-12 col-md-9">
+            @Html.TextAreaFor(x => x.BonusRightTextBlock, new { @class = "wysiwyg input-alt setting__width-100", ckeditor = "", ng_model = "settingBonus.BonusRightTextBlock" })
+        </div>
+    </div>
+
+    <h3 class="@( isMobile ? "setting__subtitle" : "m-b-md")">@T("Admin.SettingsBonus.Index.Notifications")</h3>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.SmsNotificationEnabled")
+            </div>
+        }
+        <div class="col-xs-12 col-md-4">
+            <div class="@( isMobile ? "" : "form-group label-wrap")">
+                <label class="adv-checkbox-label category-label @( isMobile ? "flex middle-xs" : "")">
+                    @Html.CheckBoxFor(x => x.SmsNotificationEnabled, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.SmsNotificationEnabled" })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span class="flex-grow m-l-sm setting__label">
+                            @T("Admin.SettingsBonus.Index.SmsNotificationEnabled")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.EmailNotificationEnabled")
+            </div>
+        }
+        <div class="col-xs-12 col-md-4">
+            <div class="@( isMobile ? "" : "form-group label-wrap")">
+                <label class="adv-checkbox-label category-label @( isMobile ? "flex middle-xs" : "")">
+                    @Html.CheckBoxFor(x => x.EmailNotificationEnabled, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.EmailNotificationEnabled" })
+                    <span class="adv-checkbox-emul"></span>
+                    @if (isMobile)
+                    {
+                        <span class="flex-grow m-l-sm setting__label">
+                            @T("Admin.SettingsBonus.Index.EmailNotificationEnabled")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.PushNotificationEnabled")
+            </div>
+        }
+        <div class="col-xs-12 col-md-1 relative flex middle-xs">
+            <label class="adv-checkbox-label category-label @(isMobile ? "flex-grow" : "")">
+                @Html.CheckBoxFor(x => x.PushNotificationEnabled, new { @class = "form-control adv-checkbox-input", ng_model = "settingBonus.PushNotificationEnabled" })
+                <span class="adv-checkbox-emul"></span>
+                @if (isMobile)
+                {
+                    <span class="flex-grow m-l-sm setting__label">
+                        @T("Admin.SettingsBonus.Index.PushNotificationEnabled")
+                    </span>
+                }
+            </label>
+            <help-trigger class="ng-cloak" use-template="true" data-title="@T("Admin.SettingsBonus.Index.SmsNotificationEnabled")">
+                <span class="help-content">
+                    @T("Admin.SettingsBonus.Index.PushNotificationEnabled.Help")
+                </span>
+            </help-trigger>
+        </div>
+    </div>
+    
+    <div class="form-group row setting__form-group" ng-show="settingBonus.PushNotificationEnabled && !settingBonus.EmailNotificationEnabled && !settingBonus.SmsNotificationEnabled">
+        @if (!isMobile)
+        {
+            <div class="col-xs-3">
+                @T("Admin.SettingsBonus.Index.SendIfPushNotWork")
+            </div>
+        }
+        <div class="col-xs-12 col-md-4">
+            <div class="@(isMobile ? "" : "form-group label-wrap")">
+                <label class="@(isMobile ? "flex middle-xs" : "")">
+                    <div class="form-group">
+                        @Html.DropDownListFor( model => model.AdditionalNotification,  Model.AdditionalNotificationList,
+                new { @class = "form-control", ng_model = "settingBonus.AdditionalNotification" })
+                    </div>
+                    @if (isMobile)
+                    {
+                        <span class="flex-grow m-l-sm setting__label">
+                            @T("Admin.SettingsBonus.Index.SendIfPushNotWork")
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,257 @@
+﻿<div class="custom-options">
+    <!--    data-ng-class="{'custom-options&#45;&#45;additional-goods': customOptions.customOptionComboView === true}"-->
+    <form name="customOptionsForm" novalidate="novalidate">
+        <div class="custom-options-list" data-ng-init="customOptions.customOptionsForm = customOptionsForm">
+            <div class="custom-options-row" data-ng-repeat="item in ::customOptions.items track by $index">
+                <div class="custom-options-name">
+                    <div class="flex middle-xs">
+                        <label data-ng-attr-for="{{ 'customOption' + item.CustomOptionsId }}" data-ng-bind-html="item.Title"> </label>
+                        <help-trigger
+                            data-ng-if="item.Description != null && item.Description.length"
+                            data-placement="top auto"
+                            class="ng-cloak"
+                            data-use-template="true">
+                            <span data-ng-bind="item.Description"></span>
+                        </help-trigger>
+                    </div>
+                </div>
+                <div class="custom-options-value" data-ng-switch="item.InputType" data-ng-init="customOptions.initSelect(item)">
+                    <div
+                        data-ng-switch-when="0"
+                        data-ng-init="item.SelectedOptions = item.SelectedOptions.length > 0 ? item.SelectedOptions[0] : null">
+                        <span class="select-custom custom-options-select-wrap cs-t-8 icon-down-open-after-abs">
+                            <select
+                                data-ng-attr-id="{{ 'customOptionDropdown' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                class="cs-bg-2"
+                                data-ng-model="item.SelectedOptions"
+                                data-ng-required="item.IsRequired"
+                                data-ng-options="option.OptionText for option in ::item.Options"
+                                data-ng-change="customOptions.change(item)">
+                                <option value="" data-ng-if="!item.IsRequired">{{ ::'Js.CustomOptions.NotSelected' | translate }}</option>
+                            </select>
+                        </span>
+                        <div data-ng-if="item.SelectedOptions != null && item.SelectedOptions.MaxQuantity > 1" class="m-t-xs">
+                            <span>Количество: </span>
+                            <span
+                                data-spinbox
+                                data-debounce="false"
+                                data-value="item.SelectedOptions.DefaultQuantity"
+                                data-step="1"
+                                data-proxy="item.SelectedOptions"
+                                data-before-update="customOptions.beforeChangeFn(item, option)"
+                                data-update-fn="customOptions.change(value, item, option, customOptions.customOptionComboView)"
+                                data-validation-before-update-fn="customOptions.isValidQuantity(value, item, option)"
+                                data-max="item.SelectedOptions.MaxQuantity"
+                                data-min="item.SelectedOptions.MinQuantity === 0 ? 1 : item.SelectedOptions.MinQuantity"
+                                class="custom-options-item-counter">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div
+                        data-ng-switch-when="1"
+                        data-ng-init="item.SelectedOptions = item.SelectedOptions.length > 0 ? item.SelectedOptions[0] : null">
+                        <div class="custom-options-radio-wrap">
+                            <label class="adv-radio-label" data-ng-if="::!item.IsRequired">
+                                <input
+                                    class="adv-radio-input custom-input-native"
+                                    data-ng-attr-id="{{ 'customOptionRadioEmpty' + item.CustomOptionsId }}"
+                                    data-ng-model="item.SelectedOptions"
+                                    type="radio"
+                                    data-ng-value="null"
+                                    data-ng-change="customOptions.change(item)" />
+                                <span class="custom-input-radio adv-radio-emul"></span>
+                                <span class="custom-input-text">{{ ::'Js.CustomOptions.NotSelected' | translate }}</span>
+                            </label>
+                        </div>
+                        <div data-ng-repeat="option in ::item.Options track by $index" class="custom-options-radio-wrap">
+                            <label class="adv-radio-label">
+                                <input
+                                    class="custom-input-native adv-radio-input"
+                                    data-ng-attr-id="{{ 'customOptionRadio-' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                    data-ng-value="option"
+                                    data-ng-model="item.SelectedOptions"
+                                    type="radio"
+                                    data-ng-change="customOptions.change(item)" />
+                                <span class="custom-input-radio adv-radio-emul"></span>
+                                <span class="custom-input-text" data-ng-bind="::option.OptionText"></span>
+                            </label>
+
+                            <help-trigger
+                                data-ng-if="option.Description != null && option.Description.length"
+                                data-placement="top auto"
+                                class="ng-cloak"
+                                data-use-template="true">
+                                <span data-ng-bind="option.Description"></span>
+                            </help-trigger>
+                            <div data-ng-if="option.MaxQuantity > 1">
+                                <span>Количество: </span>
+                                <span
+                                    data-ng-click="item.SelectedOptions = option;"
+                                    data-spinbox
+                                    data-debounce="false"
+                                    data-value="option.DefaultQuantity"
+                                    data-step="1"
+                                    data-before-update="customOptions.beforeChangeFn(item, option)"
+                                    data-validation-before-update-fn="customOptions.isValidQuantity(value, item, option)"
+                                    data-update-fn="customOptions.change(value, item)"
+                                    data-max="option.MaxQuantity"
+                                    data-min="1"
+                                    class="custom-options-item-counter">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-ng-switch-when="2">
+                        <div data-ng-init="option = item.Options[0]" class="custom-options-checkbox-wrap">
+                            <div data-ng-click="customOptions.selectOption(item, option)" class="adv-checkbox-label">
+                                <input
+                                    class="custom-input-native adv-checkbox-input"
+                                    type="checkbox"
+                                    data-ng-attr-id="{{ 'customOptionCheckbox' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                    data-ng-value="option"
+                                    data-ng-init="item.Selected = option.DefaultQuantity > 0 || item.IsRequired"
+                                    data-ng-model="item.Selected"
+                                    data-ng-hide="item.MaxQuantity > 1"
+                                    data-ng-required="item.IsRequired"
+                                    data-ng-change="customOptions.change(item)" />
+                                <span class="custom-input-checkbox adv-checkbox-emul" data-ng-hide="item.MaxQuantity > 1"></span>
+                                <span class="custom-input-text" data-ng-bind="::option.OptionText"></span>
+                            </div>
+                            <div data-ng-if="item.MaxQuantity > 1" data-ng-init="option.DefaultQuantity = item.MinQuantity">
+                                <span>Количество: </span>
+                                <span
+                                    data-spinbox
+                                    data-debounce="false"
+                                    data-value="option.DefaultQuantity"
+                                    data-step="1"
+                                    data-proxy="item"
+                                    data-before-update="customOptions.beforeChangeFn(item, option)"
+                                    data-validation-before-update-fn="customOptions.isValidQuantity(value, item, option)"
+                                    data-update-fn="item.Selected = true;customOptions.change(value, item, option)"
+                                    data-max="item.MaxQuantity"
+                                    data-min="item.IsRequired && item.MinQuantity === 0 ? 1 : item.MinQuantity"
+                                    class="custom-options-item-counter">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-switch-when="3">
+                        <input
+                            data-ng-attr-id="{{ 'customOptionInput' + item.CustomOptionsId + '-' + item.SelectedOptions.OptionId }}"
+                            type="text"
+                            class="input-small"
+                            maxlength="2000"
+                            data-ng-init="item.SelectedOptions = item.SelectedOptions.length > 0 ? item.SelectedOptions[0] : item.Options[0]"
+                            data-ng-model="item.SelectedOptions.OptionText"
+                            data-ng-required="item.IsRequired"
+                            data-ng-change="customOptions.change(item)" />
+                    </div>
+                    <div data-ng-switch-when="4">
+                        <textarea
+                            data-ng-attr-id="{{ 'customOptionMultiInput' + item.CustomOptionsId + '-' + item.SelectedOptions.OptionId }}"
+                            class="textarea-small"
+                            maxlength="2000"
+                            data-ng-init="item.SelectedOptions = item.SelectedOptions.length > 0 ? item.SelectedOptions[0] : item.Options[0]"
+                            data-ng-model="item.SelectedOptions.OptionText"
+                            data-ng-required="item.IsRequired"
+                            data-ng-change="customOptions.change(item)"></textarea>
+                    </div>
+
+                    <!--Выбор товара (комбо)-->
+                    <div data-ng-switch-when="5">
+                        <div data-ng-if="item.MaxQuantity === 1">
+                            <div class="custom-options-radio-wrap" data-ng-if="::!item.IsRequired">
+                                <label class="adv-radio-label">
+                                    <input
+                                        class="adv-radio-input custom-input-native"
+                                        data-ng-attr-id="{{ 'customOptionComboEmpty' + item.CustomOptionsId }}"
+                                        data-ng-model="item.SelectedOptions"
+                                        type="radio"
+                                        data-ng-value="null"
+                                        data-ng-change="customOptions.change(item)" />
+                                    <span class="custom-input-radio adv-radio-emul"></span>
+                                    <span class="custom-input-text">{{ ::'Js.CustomOptions.NotSelected' | translate }}</span>
+                                </label>
+                            </div>
+                            <div data-ng-repeat="option in ::item.Options track by $index" class="custom-options-radio-wrap">
+                                <label class="adv-radio-label">
+                                    <input
+                                        class="custom-input-native adv-radio-input"
+                                        data-ng-attr-id="{{ 'customOptionComboRadio' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                        data-ng-value="option"
+                                        data-ng-model="item.SelectedOptions"
+                                        type="radio"
+                                        data-ng-change="item.SelectedOptions.DefaultQuantity = 1; customOptions.change(item)" />
+                                    <span class="custom-input-radio adv-radio-emul"></span>
+                                    <span class="custom-input-text" data-ng-bind="::option.OptionText"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div data-ng-if="item.MaxQuantity > 1">
+                            <div class="row form-group middle-xs" data-ng-repeat="option in item.Options track by $index">
+                                <div class="col-xs-6">
+                                    <label data-ng-bind="option.Title"></label>
+                                </div>
+                                <div class="col-xs-6 relative">
+                                    <input
+                                        data-ng-attr-id="{{ 'customOptionCombo' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                        type="number"
+                                        data-ng-min="{{option.MinQuantity}}"
+                                        data-ng-max="{{option.MaxQuantity}}"
+                                        class="input-small"
+                                        data-ng-model="option.DefaultQuantity"
+                                        data-ng-change="customOptions.change(item)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Галочка (мультивыбор)-->
+                    <div data-ng-switch-when="6">
+                        <div class="form-group m-b-xs" data-ng-repeat="option in item.Options track by $index">
+                            <div class="flex bottom-xs">
+                                <label class="adv-checkbox-label">
+                                    <input
+                                        data-ng-init="option.Selected = (option.ID === item.SelectedOptions[0].ID) || option.DefaultQuantity > 0"
+                                        class="adv-checkbox-input custom-input-native"
+                                        type="checkbox"
+                                        data-ng-attr-id="{{ 'cust' + item.CustomOptionsId + '-' + option.OptionId }}"
+                                        data-ng-value="option"
+                                        data-ng-model="option.Selected"
+                                        data-ng-change="customOptions.change(option.Selected, item, option)" />
+                                    <span data-ng-hide="option.MaxQuantity > 1" class="adv-checkbox-emul custom-input-checkbox"></span>
+                                    <span class="custom-input-text" data-ng-bind="::option.OptionText"></span>
+                                </label>
+                                <help-trigger
+                                    data-ng-if="option.Description != null && option.Description.length"
+                                    data-placement="top auto"
+                                    class="ng-cloak"
+                                    data-use-template="true">
+                                    <span data-ng-bind="option.Description"></span>
+                                </help-trigger>
+                            </div>
+                            <div data-ng-if="option.MaxQuantity > 1" class="m-t-xs">
+                                <span>Количество: </span>
+                                <span
+                                    data-spinbox
+                                    data-value="option.DefaultQuantity"
+                                    data-step="1"
+                                    data-debounce="false"
+                                    data-proxy="item"
+                                    data-before-update="customOptions.beforeChangeFn(item, option)"
+                                    data-update-fn="option.Selected = true;customOptions.change(option.DefaultQuantity, item, option, customOptions.customOptionComboView)"
+                                    data-validation-before-update-fn="customOptions.isValidQuantity(value, item, option)"
+                                    data-max="option.MaxQuantity"
+                                    data-min="option.MinQuantity"
+                                    class="custom-options-item-counter">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

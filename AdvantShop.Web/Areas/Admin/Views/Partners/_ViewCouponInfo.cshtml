@@ -1,0 +1,96 @@
+﻿@model AdvantShop.Web.Admin.Models.Partners.PartnerViewModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="ibox">
+    <div class="ibox-content">
+        <h3 class="category-title setting__subtitle">
+            Реферальная ссылка
+        </h3>
+        <div class="form-group" ng-if="!partnerView.instance.CouponTemplateExists">
+            <div class="row">
+                <div class="col-xs-12">
+                    <span class="text-danger">Шаблон купона не настроен</span>
+                    <a href="settingspartners">Настроить</a>
+                </div>
+            </div>
+        </div>
+        <div ng-if="partnerView.instance.Partner.CouponId == null">
+            @if (isMobile)
+            {
+            <div class="row">
+                <div class="col-xs-12 ng-cloak m-b-md flex middle-xs">
+                    <div class="m-r-md">
+                        <ui-modal-trigger data-controller="'ModalAddPartnerCouponFromTplCtrl'" controller-as="ctrl"
+                                          data-resolve="{params: {partnerId: partnerView.partnerId}}"
+                                          template-url="@Html.GetAssetPath("addPartnerCouponFromTpl.html")"
+                                          data-on-close="partnerView.getPartnerView()">
+                            <a href="" class="">Из шаблона</a>
+                        </ui-modal-trigger>
+                    </div>
+                    <div>
+                        <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                                          template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                                          data-on-close="partnerView.addPartnerCoupon(result)">
+                            <a href="" class="">Новый</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-xs-12 ng-cloak">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Создать купон
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right">
+                                <li class="dropdown-submenu">
+                                    <ui-modal-trigger ng-if="partnerView.instance.CouponTemplateExists"
+                                                      data-controller="'ModalAddPartnerCouponFromTplCtrl'" controller-as="ctrl"
+                                                      data-resolve="{params: {partnerId: partnerView.partnerId}}"
+                                                      template-url="@Html.GetAssetPath("addPartnerCouponFromTpl.html")"
+                                                      data-on-close="partnerView.getPartnerView()">
+                                        <a href="" class="">Из шаблона</a>
+                                    </ui-modal-trigger>
+                                    <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                                                      template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                                                      data-on-close="partnerView.addPartnerCoupon(result)">
+                                        <a href="" class="">Новый</a>
+                                    </ui-modal-trigger>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div ng-if="partnerView.instance.Partner.CouponId != null">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12 ng-cloak">@(SettingsMain.SiteUrl)?r_rid={{partnerView.instance.CouponCode}}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-4 setting__lite-gray-label">Купон</div>
+                    <div class="col-xs-8 ng-cloak">
+                        <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                                          data-resolve="{'CouponId': partnerView.instance.Partner.CouponId}"
+                                          template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                                          data-on-close="partnerView.getPartnerView()">
+                            <a href="" class="">
+                                {{partnerView.instance.CouponCode}}
+                            </a>
+                        </ui-modal-trigger>
+                        <a href="" class="fa fa-times link-invert link-decoration-none m-l-sm" ng-click="partnerView.deletePartnerCoupon(partnerView.instance.Partner.CouponId)"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

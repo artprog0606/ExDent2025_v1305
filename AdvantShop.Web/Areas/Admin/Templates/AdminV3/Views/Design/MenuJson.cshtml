@@ -1,0 +1,124 @@
+﻿@using AdvantShop.Saas;
+@model AdvantShop.Web.Admin.ViewModels.Design.MenuJsonModel
+
+@helper GetClassForSubmenu(string action, string controller)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = "";
+
+    if (currentAction == action && currentController == controller)
+    {
+        cssClass = "sidebar__item--selected";
+        Model.IsOpen = true;
+    }
+
+    @cssClass
+}
+@helper GetClassForSubmenus(Tuple<string, string>[] items)
+{
+    var currentAction = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var currentController = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var cssClass = "";
+    if (items.Any(x => x.Item1 == currentAction && x.Item2 == currentController))
+    {
+        cssClass = "sidebar__item--selected";
+        Model.IsOpen = true;
+    }
+
+    @cssClass
+}
+
+<ul class="sidebar__list sidebar__list--subitems sidebar--compact-hidden" data-submenu data-ng-init="submenu.isSubmenuVisible = @Model.IsOpen.ToLowerString()">
+    <li class="sidebar__item ">
+        <a href="@Url.AbsoluteActionUrl("Index")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems @GetClassForSubmenu("index", "design")">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Дизайн1</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "settingstemplate")">
+        <a href="@Url.AbsoluteActionUrl("Index", "SettingsTemplate")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Параметры магазина</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("mobileversion", "settings")">
+        <a href="@Url.AbsoluteActionUrl("MobileVersion", "Settings")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Мобильная версия</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "mainpageproductsstore")">
+        <a href="@Url.AbsoluteActionUrl("Index", "MainPageProductsStore")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">@T("Admin.Home.Menu.MainPageProducts")</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "menus")">
+        <a href="@Url.AbsoluteActionUrl("Index", "Menus")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Меню</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "carousel")">
+        <a href="@Url.AbsoluteActionUrl("Index", "Carousel")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Карусель</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "staticpages")">
+        <a href="@Url.AbsoluteActionUrl("Index", "StaticPages")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Страницы</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "staticblock")">
+        <a href="@Url.AbsoluteActionUrl("Index", "StaticBlock")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Статические блоки</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenus(new []{new Tuple<string, string>("index", "news")})">
+        <a href="@Url.AbsoluteActionUrl("Index", "News")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Новости</span>
+            </span>
+        </a>
+    </li>
+    <li class="sidebar__item @GetClassForSubmenu("index", "files")">
+        <a href="@Url.AbsoluteActionUrl("Index", "Files")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+            <span class="sidebar__link sidebar__link--subitem">
+                <span class="sidebar__icon sidebar__icon--left"></span>
+                <span class="sidebar__name sidebar--compact-hidden">Файлы</span>
+            </span>
+        </a>
+    </li>
+    @if (SaasDataService.IsEnabledFeature(ESaasProperty.HaveMobileApp))
+    {
+        <li class="sidebar__item @GetClassForSubmenu("mobileapp", "settings")">
+            <a href="@Url.AbsoluteActionUrl("MobileApp", "Settings")" onclick="event.stopPropagation()" class="sidebar__trigger sidebar__trigger--subitems">
+                <span class="sidebar__link sidebar__link--subitem">
+                    <span class="sidebar__icon sidebar__icon--left"></span>
+                    <span class="sidebar__name sidebar--compact-hidden">Мобильное приложение</span>
+                </span>
+            </a>
+        </li>
+    }
+</ul>

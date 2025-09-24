@@ -1,0 +1,122 @@
+﻿<div class="balance__padding-page balance__padding-page--bg-white" is-mobile>
+    <div class="main-panel-page">
+        <div class="sticky-page-name p-b-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner" style="min-width: 300px" ng-class="{'m-b-sm' : isMobile.value}">
+                <div class="page-name-block-item-main" ng-class="{'flex' : !isMobile.value}">
+                    <h1 ng-if="!isMobile.value" class="page-name-block-text page-name-block-text--bigger sticky-page-name-text m-b-xs">
+                        {{'Admin.Js.OkChannel.Title'|translate}}
+                    </h1>
+                    <a
+                        href="https://www.advantshop.net/help/pages/market-odnoklassniki"
+                        target="_blank"
+                        class="link-academy link-invert inline-flex middle-xs"
+                        ng-class="{'p-l-sm' : !isMobile.value}">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            version="1.1"
+                            id="Layer_1"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 512 512"
+                            style="enable-background: new 0 0 512 512"
+                            xml:space="preserve"
+                            width="18"
+                            height="18"
+                            fill="#989a9b"
+                            class="m-r-xs">
+                            <path
+                                d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                        </svg>
+                        <span>Инструкция. Экспорт товаров Одноклассники</span>
+                    </a>
+
+                    <div class="row" ng-if="$ctrl.groupId != null && !isMobile.value">
+                        <a class="col-xs" href="https://ok.ru/group/{{$ctrl.groupId}}" target="_blank">
+                            {{'Admin.Js.OkChannel.OpenGroup'|translate}}
+                        </a>
+                        <a class="col-xs" href="" ng-click="$ctrl.removeBinding()">{{'Admin.Js.OkChannel.RemoveBinding'|translate}}</a>
+                    </div>
+                </div>
+                <div ng-if="!isMobile.value" class="page-name-block-item-additional">
+                    <a href="" class="link-danger" ng-click="$ctrl.removeChannel()">{{'Admin.Js.OkChannel.RemoveChannel'|translate}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="balance__padding-page balance__padding-page--m-t-n" is-mobile>
+    <div class="balance-block balance-block--content balance-block--content-right">
+        <div class="ibox" ng-if="$ctrl.isLoadded" ng-switch="$ctrl.groupId == null || $ctrl.groupName == null">
+            <div ng-switch-when="true">
+                <div class="row">
+                    <div
+                        class="col-xs-12 col-md-slim setting__label"
+                        style="{{ isMobile.value ? 'margin-top:10px;' : 'width: 200px; padding-top:23px;'}}">
+                        {{'Admin.Js.OkChannel.Auth'|translate}}
+                    </div>
+                    <div class="col-xs-12 col-md">
+                        <div class="ibox-content" style="{{isMobile.value ? '' : 'max-width: 1000px;'}}">
+                            <ok-auth></ok-auth>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-switch-when="false">
+                <uib-tabset
+                    class="{{isMobile.value ? 'tabs-navigation' : ''}}"
+                    active
+                    uid="tabs"
+                    on-select-batch="$ctrl.onSelectTab(tab.index, tab.heading);"
+                    ng-attr-tabs-mode="$ctrl.navMobileAttr">
+                    <uib-tab index="'export'" heading="{{'Admin.Js.OkChannel.Export'|translate}}" classes="ng-tab" removable="true">
+                        <ok-market-export on-init="$ctrl.initChild('okMarketExport', okMarketExport)"></ok-market-export>
+                    </uib-tab>
+
+                    <uib-tab index="'import'" heading="{{'Admin.Js.OkChannel.Import'|translate}}" classes="ng-tab" removable="true">
+                        <ok-market-import></ok-market-import>
+                    </uib-tab>
+
+                    <uib-tab index="'crm'" heading="{{'Admin.Js.OkChannel.Crm'|translate}}" classes="ng-tab" removable="true">
+                        <div>
+                            <div class="setting-title">
+                                <h3 class="setting__subtitle">{{'Admin.Js.OkChannel.CrmSettings'|translate}}</h3>
+                            </div>
+
+                            <div class="form-group row middle-xs setting__form-group">
+                                <div ng-if="!isMobile.value" class="col-md-4">Создавать лид из сообщений</div>
+                                <div class="col-xs-12 col-md-3" ng-class="{'flex middle-xs' : isMobile.value}">
+                                    <label class="adv-checkbox-label">
+                                        <input
+                                            class="adv-checkbox-input"
+                                            type="checkbox"
+                                            ng-model="$ctrl.subscribeToMessages"
+                                            ng-change="$ctrl.toggleSubscriptionToMessages()" />
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span ng-if="isMobile.value" class="setting__label" ng-class="{'m-l-xs' : isMobile.value}"
+                                            >Создавать лид из сообщений</span
+                                        >
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group row middle-xs setting__form-group">
+                                <div class="col-xs-12 col-md-4 setting__label" ng-class="{'m-b-sm' : isMobile.value}">
+                                    {{'Admin.Js.OkChannel.SalesFunnel'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-3">
+                                    <select
+                                        class="form-control input-alt"
+                                        ng-model="$ctrl.salesFunnelId"
+                                        ng-options="item.Id as item.Name for item in $ctrl.salesFunnels"
+                                        ng-change="$ctrl.changeSaleFunnel()"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

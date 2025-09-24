@@ -1,0 +1,54 @@
+﻿@model AdvantShop.ViewModel.Wishlist.WishListBlockViewModel
+@if (Model.Mode == "product")
+{
+    @:<div class="block-exuding-row details-wishlist">
+    bool isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+@if (SettingsDesign.IsMobileTemplate)
+{
+    <label class="wishlist-control ng-cloak"
+           data-wishlist-control="@Model.NgOfferId"
+           data-ng-class="{'wishlist-state-add': wishlistControl.isAdded, 'wishlist-state-not-add': !wishlistControl.isAdded}">
+        <input type="checkbox"
+               class="custom-input-native wishlist-checkbox"
+               aria-label="@(Model.Checked ? T("Wishlist.WishListBlock.InWishList") : T("Wishlist.WishListBlock.AddToWishList"))"
+               data-ng-attr-aria-label="{{wishlistControl.isAdded ? '@T("Wishlist.WishListBlock.InWishList")' : '@T("Wishlist.WishListBlock.AddToWishList")'}}"
+               data-ng-init="wishlistControl.isAdded = @Model.Checked.ToString().ToLower(); @(Model.NgNameCallbackInit + "(wishlistControl)")"
+               data-ng-model="wishlistControl.isAdded"
+               data-ng-change="wishlistControl.change(@Model.NgOfferId, wishlistControl.isAdded)"/>
+        <i class="svg inline svg-inline-wish ncolor colored" aria-hidden="true" data-ng-class="{'color-red': wishlistControl.isAdded, '': !wishlistControl.isAdded}">
+            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.2132 9.05322L10.2426 14.0238C9.55635 14.7101 8.44365 14.7101 7.75736 14.0238L2.7868 9.05322C1.07107 7.33749 1.07107 4.55575 2.7868 2.84002C4.50253 1.12429 7.28427 1.12429 9 2.84002C10.7157 1.12429 13.4975 1.12429 15.2132 2.84002C16.9289 4.55575 16.9289 7.33749 15.2132 9.05322Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </i>
+    </label>
+}
+else
+{
+    <label class="wishlist-control cs-l-2 ng-cloak"
+           data-wishlist-control="@Model.NgOfferId"
+           data-ng-class="{'wishlist-state-add': wishlistControl.isAdded, 'wishlist-state-not-add': !wishlistControl.isAdded}">
+        <input type="checkbox"
+               class="custom-input-native wishlist-checkbox"
+               aria-label="@(Model.Checked ? T("Wishlist.WishListBlock.InWishList") : T("Wishlist.WishListBlock.AddToWishList"))"
+               data-ng-attr-aria-label="{{wishlistControl.isAdded ? '@T("Wishlist.WishListBlock.InWishList")' : '@T("Wishlist.WishListBlock.AddToWishList")'}}"
+               data-ng-init="wishlistControl.isAdded = @Model.Checked.ToString().ToLower(); @(Model.NgNameCallbackInit + "(wishlistControl)")"
+               data-ng-model="wishlistControl.isAdded"
+               data-ng-change="wishlistControl.change(@Model.NgOfferId, wishlistControl.isAdded)"/>
+        <span class="icon-heart-after"></span>
+        @if (Model.OnlyIcon == false)
+        {
+            <span class="custom-input-text">
+                <span class="wishlist-text-not-added">@T("Wishlist.WishListBlock.AddToWishList")</span>
+                <span class="wishlist-text-added">@T("Wishlist.WishListBlock.InWishList") (<a href="@Url.AbsoluteRouteUrl("wishlist")">@T("Wishlist.WishListBlock.GoToWishList")</a>)</span>
+            </span>
+        }
+    </label>
+}
+
+@if (Model.Mode == "product")
+{
+    @:</div>
+}

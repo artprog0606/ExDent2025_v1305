@@ -1,0 +1,54 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.CatalogSettings.CatalogSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div ng-controller="PhotoCategoryCtrl as photoCategory" @Html.Raw(isMobile ? "ng-init=\"settingsCatalog.photoCategory = photoCategory\"" : "")>
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @T("Admin.Settings.Catalog.PhotoCategory")
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalAddEditPhotoCategoryCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addEditPhotoCategory.html")"
+                                      data-on-close="photoCategory.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> @T("Admin.Settings.Catalog.PhotoCategory.Add")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+    }
+    <ui-grid-custom grid-unique-id="gridPhotoCategory"
+                    grid-on-init="photoCategory.gridOnInit(grid)"
+                    grid-options="photoCategory.gridOptions"
+                    grid-url="'photoCategory/getList'"
+                    grid-inplace-url="'photoCategory/inplace'"
+                    grid-extend-ctrl="photoCategory"
+                    grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <ui-modal-trigger data-controller="'ModalAddEditPhotoCategoryCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("addEditPhotoCategory.html")"
+                              data-on-close="grid.appScope.$ctrl.fetchData()"
+                              data-resolve="{'Id': row.entity.Id}">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div>
+                        <div class="m-b-xs">{{row.entity.Name}}</div>
+                        <div class="fs-xs" style="opacity:0.6;">{{row.entity.TypeStr}}</div>
+                    </div>
+                </div>
+            </ui-modal-trigger>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="photoCategory.grid.gridOptions.TotalString">
+        </ui-grid-custom-footer>
+    </ui-grid-custom>
+
+</div>

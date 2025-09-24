@@ -1,0 +1,243 @@
+﻿@using AdvantShop.Core.Services.ChangeHistories
+@using AdvantShop.Saas
+@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    if (Request.RawUrl.Contains("customerscrm"))
+    {
+        Layout = "~/Areas/Admin/Views/Leads/_CrmLayout.cshtml";
+        ViewBag.NavMenu = "customers";
+    }
+    var isRegistered = Model.Customer.RegistredUser;
+}
+
+<div ng-init="customerView.init('@Model.Customer.Id', '@Model.Customer.Code')" class="customer-data">
+
+    <div class="row middle-xs between-xs">
+        <div class="col-xs">
+            @Html.Partial("~/Areas/Admin/Views/Customers/_ViewCustomerHeader.cshtml", Model)
+        </div>
+        <div class="col-xs-slim">
+            @if (isRegistered)
+            {
+                if (CustomerService.CanDelete(Model.Customer.Id))
+                {
+                    <a data-e2e="DelClient" href="" class="link-danger m-r-sm" ng-click="customerView.delete()">@T("Admin.Delete")</a>
+                }
+                <customer-info-trigger customer-id="customerView.customerId" on-close="customerView.editCustomerClose()">
+                    <a data-e2e="EditClientRight" class="inline" href="">@T("Admin.Customers.View.Edit")</a>
+                </customer-info-trigger>
+            }
+        </div>
+    </div>
+
+    <div class="row customer-data__content">
+        <div class="col-xs-12 col-md-9 col-wl-9 customer-data__actions-wrap">
+            @if (isRegistered)
+            {
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="row customer-data__row">
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AmountOfPurchases")</div>
+                                <div data-e2e="orderSum" class="customer-data__count" ng-bind="customerView.instance.OrdersSum">@Model.OrdersSum</div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AverageCheck")</div>
+                                <div data-e2e="averageCheck" class="customer-data__count" ng-bind="customerView.instance.AverageCheck">@Model.AverageCheck</div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.AmountOrders")</div>
+                                <div data-e2e="OrdersCount" class="customer-data__count" ng-bind="customerView.instance.OrdersCount">@Model.OrdersCount</div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.DurationDate")</div>
+                                <div data-e2e="durationTime" class="customer-data__count" ng-bind="customerView.instance.DurationDate">@Model.DurationDate</div>
+                            </div>
+                        </div>
+                        <div class="row customer-data__row" ng-if="customerView.leadEvents != null">
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.IncomingCalls")</div>
+                                <div data-e2e="InCallsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.InCallsCount"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.OutgoingCalls")</div>
+                                <div data-e2e="OutCallsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.OutCallsCount"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.EmailsSended")</div>
+                                <div data-e2e="SendedEmailsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.SendedEmailsCount"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.EmailsReceived")</div>
+                                <div data-e2e="ReceivedEmailsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.ReceivedEmailsCount"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-slim customer-data__item">
+                                <div class="customer-data__text">@T("Admin.Customers.ViewCustomerHeader.SmsSended")</div>
+                                <div data-e2e="SmsCount" class="customer-data__count" ng-bind="customerView.leadEvents.data.SmsCount"></div>
+                            </div>
+                        </div>
+                        @*<div>
+                                <span data-e2e="durationTime" title="@Model.Customer.RegistrationDateTime.ToString("U")" class="ng-cloak">
+                                    @T("Admin.Customers.ViewCustomerHeader.YourCustomer") {{customerView.instance.DurationDate}}
+                                </span>
+                            </div>*@
+
+                        @Html.Partial("~/Areas/Admin/Views/Customers/_ViewComment.cshtml", Model)
+                    </div>
+                </div>
+            }
+            <div class="ibox customer-view">
+                <uib-tabset data-e2e="TabClient" uid="customerOrdersTab" class="nav-tabs-wrap nav-tabs-wrap--chips">
+                    @if (isRegistered)
+                    {
+                        @Html.Partial("_ViewOrders", Model)
+
+                        if (Model.ShowCrm)
+                        {
+                            @Html.Partial("_ViewLeads", Model)
+                        }
+
+                        if (Model.ShowTasks)
+                        {
+                            <uib-tab data-e2e="TabTasks" index="'tasksCustomer'" classes="ng-tab" select="tabTasksShown = !tabTasksShown" deselect="tabTasksShown = !tabTasksShown">
+                                <uib-tab-heading>
+                                    @T("Admin.Customers.View.Tasks") <span class="leads-count-label">{{customerView.taskGrid.gridTasks.gridOptions.totalItems}}</span>
+                                </uib-tab-heading>
+                                <div class="customer-tabs--bg-grey" ng-show="tabTasksShown">
+                                    <div class="ibox-content">
+                                        <tasks-grid obj-id="customerView.customerId" type="customer"
+                                                    on-init="customerView.taskGridOnInit(taskGrid)"
+                                                    is-admin="@CustomerContext.CurrentCustomer.IsAdmin.ToLowerString()">
+                                        </tasks-grid>
+                                    </div>
+                                </div>
+                            </uib-tab>
+                        }
+
+                        if (Model.ShowBooking)
+                        {
+                            <uib-tab data-e2e="TabBookings" index="'bookingsCustomer'" classes="ng-tab" select="tabBookingsShown = !tabBookingsShown" deselect="tabBookingsShown = !tabBookingsShown">
+                                <uib-tab-heading>
+                                    Брони <span class="leads-count-label">{{customerView.instance.BookingsCount}}</span>
+                                </uib-tab-heading>
+                                <div class="customer-tabs--bg-grey" ng-if="tabBookingsShown">
+                                    <div class="ibox-content">
+                                        <customer-bookings customer-id="customerView.customerId"
+                                                           on-update="customerView.editCustomerClose()">
+                                        </customer-bookings>
+                                    </div>
+                                </div>
+                            </uib-tab>
+                        }
+                    }
+
+                    @if (Model.ShoppingCart.Count > 0)
+                    {
+                        <uib-tab data-e2e="TabCart" index="'cartCustomer'" classes="ng-tab">
+                            <uib-tab-heading>
+                                @T("Admin.Customers.View.ShoppingCart") <span class="leads-count-label">@Model.ShoppingCart.Count</span>
+                            </uib-tab-heading>
+                            <div class="customer-tabs--bg-grey">
+                                <div class="ibox-content">
+                                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewShoppingCart.cshtml", Model)
+                                </div>
+                            </div>
+                        </uib-tab>
+                    }
+
+                    @if (Model.ShowActivity)
+                    {
+                        <uib-tab data-e2e="TabActions" index="'actionsCustomer'" classes="ng-tab"
+                                 ng-if="customerView.activityActions.items != null && customerView.activityActions.items.length > 0">
+                            <uib-tab-heading>
+                                @T("Admin.Customers.ShoppingCart.ActionLog") <span class="leads-count-label">{{customerView.activityActions.items.length}}</span>
+                            </uib-tab-heading>
+                            <div class="customer-tabs--bg-grey">
+                                <div class="ibox-content">
+                                    <activity-actions data-customer-id="customerView.customerId" on-init="customerView.activityOnInit(activityActions)"></activity-actions>
+                                </div>
+                            </div>
+                        </uib-tab>
+                    }
+                </uib-tabset>
+            </div>
+
+            <div class="ibox customer-view">
+                <uib-tabset data-e2e="TabClient" uid="customerCommunicationsTab" class="nav-tabs-wrap nav-tabs-wrap--chips">
+                    <uib-tab index="'commonInfo'" classes="ng-tab" active="true">
+                        <uib-tab-heading>
+                            @T("Admin.Orders.AddEdit.Сommunications")
+                        </uib-tab-heading>
+                        <div class="customer-tabs--bg-grey">
+                            <lead-events customer-id="customerView.customerId" code="customerView.customerCode" page-type="customer" on-init="customerView.leadEventsOnInit(leadEvents)">
+                                @if (Model.ShowTasks)
+                                {
+                                    <task-create class="ng-cloak link m-b-sm m-r-sm inline h4" on-after="customerView.fetchGrid()"
+                                                 data-resolve="{bindTo:{objId: '@Model.Customer.Id', type: 'customer'}}">
+                                        @T("Admin.Leads.Popup.Task")
+                                    </task-create>
+                                }
+                            </lead-events>
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab index="2" heading="@T("Admin.Orders.AddEdit.ChangesHistory")" classes="ng-tab" removable="true">
+                        <div class="customer-tabs--bg-grey">
+                            <div class="ibox-content">
+                                <change-history data-obj-id="@Model.Customer.InnerId" data-obj-type="@((int)ChangeHistoryObjType.Customer)"></change-history>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-3 col-wl-3 customer-data__info-wrap">
+            @Html.Partial("~/Areas/Admin/Views/Customers/_ViewInfo.cshtml", Model)
+            @if (isRegistered)
+            {
+                @Html.Partial("~/Areas/Admin/Views/Customers/_ViewSocial.cshtml", Model)
+                if (Model.CustomerSegments != null && Model.CustomerSegments.Count > 0)
+                {
+                    <div>
+                        @Html.Partial("~/Areas/Admin/Views/Customers/_ViewSegments.cshtml", Model)
+                    </div>
+                }
+                if (Model.ShowBonuses && SaasDataService.IsEnabledFeature(ESaasProperty.BonusSystem))
+                {
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewBonusCard.cshtml", Model)
+                }
+                if (Model.ShowPartners)
+                {
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewPartner.cshtml", Model)
+                }
+
+                <div class="customer-data__view-interests" ng-if="customerView.instance.CustomerInterestingCategories != null && customerView.instance.CustomerInterestingCategories.length > 0">
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewInterests.cshtml", Model)
+                </div>
+
+                <div class="customer-data__view-tags" ng-if="customerView.instance.Customer.Tags != null && customerView.instance.Customer.Tags.length > 0">
+                    @Html.Partial("~/Areas/Admin/Views/Customers/_ViewTags.cshtml", Model)
+                </div>
+
+                <div class="ibox ng-cloak" ng-if="customerView.instance.CustomerFcmToken != null && customerView.instance.CustomerFcmToken.length > 0">
+                    <div class="ibox-content">
+                        <h3 class="category-title view-tags__title">Firebase Cloud Messaging Token</h3>
+                        <div class="form-group row">
+                            <div class="col-xs-12" data-ng-bind="customerView.instance.CustomerFcmToken">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <ui-modal-trigger data-controller="'ModalSendMobileAppNotificationCtrl'" controller-as="ctrl"
+                                                  data-resolve="{params: { customerId: customerView.customerId }}"
+                                                  template-url="../areas/admin/content/src/customer/modals/sendMobileAppNotification/sendMobileAppNotification.html">
+                                    <a href="" class="btn btn-sm btn-success" ng-class="{'m-t-sm inline-block' : isMobile.value}">@T("Admin.Customers.View.MobileAppNotification.SendNotification")</a>
+                                </ui-modal-trigger>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

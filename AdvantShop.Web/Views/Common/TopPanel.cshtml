@@ -1,0 +1,107 @@
+﻿@model AdvantShop.ViewModel.Home.TopPanelViewModel
+
+@if (Model.IsShowNotificationStoreClosed)
+{
+    <div class="storeclosed-top cs-bg-1 cs-t-4">
+        <div class="storeclosed-text-align">@T("Common.TopPanel.StoreClosed")</div>
+    </div>
+}
+
+@if (Model.IsShowNotificationTechDomain)
+{
+    <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("techDomain", "")]}]">
+        <div data-ng-controller="TechDomainCtrl as ctrl">
+            <div ng-if="ctrl.isShowMessage" class="storeclosed-top cs-bg-1 cs-t-4 relative ng-cloak">
+                <div class="storeclosed-text-align">
+                    <div>Внимание: сейчас вы используете технический домен.</div>
+                    <div>Чтобы сайт открывался по вашему собственному домену, его нужно привязать в @Html.ActionLink("настройках", "DomainsManage", "Service", new { area = "AdminV3", modal = "open" }, new { @class = "cs-t-4 storeclosed-link", target = "_blank" }).</div>
+                </div>
+                <a class="icon-cancel-before link-text-decoration-none tech-domain-info-close cs-t-4" ng-click="ctrl.closeDomainInfo()"></a>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.NotAllowCheckoutText.IsNotEmpty())
+{
+    <div class="storeclosed-top cs-bg-1 cs-t-4">
+        <div class="storeclosed-text-align">@Model.NotAllowCheckoutText</div>
+    </div>
+}
+
+@if (Model.IsTemplatePreview)
+{
+    <div class="storeclosed-top cs-bg-1 cs-t-8">
+        <div class="container">
+            <div class="storeclosed-inner">
+                <div class="storeclosed-col">
+                    Предпросмотр шаблона "@Model.TemplatePreviewName"
+                </div>
+                <div class="storeclosed-col">
+                    @if (Model.HasTemplate)
+                    {
+                        @Html.ActionLink("Применить шаблон", "ApplyTemplate", "Common", new { @class = "btn btn-small btn-confirm" })
+                    }
+                    else
+                    {
+                        <a href="@Model.BuyTemplateLink" target="_blank" class="btn btn-small btn-buy icon-bag-before">Купить шаблон</a>
+                    }
+                    @Html.ActionLink("Отменить предпросмотр", "CancelTemplatePreview", "Common", new { @class = "btn btn-small btn-action" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="toolbar-top">
+    <div class="container container-fluid">
+        <aside class="row between-xs">
+            @if (Model.CurrentCity != null)
+            {
+                <div class="toolbar-top-item" data-popover-control data-popover-id="zonePopover" data-popover-trigger="null" data-popover-trigger-hide="null">
+                    <span class="cs-t-3 zone-name">@T("Common.TopPanel.LocationYourCity"):</span>
+                    <a class="link-dotted-invert zone-dialog-trigger-link" href="javascript:void(0)" role="link" data-zone-dialog-trigger>
+                        <span data-zone-current data-ng-bind="zone.City" data-start-val="{City: '@Model.CurrentCity'}"></span>
+                    </a>
+                </div>
+            }
+            @if (Model.IsShowCurrency)
+            {
+                <div class="toolbar-top-item curency-item" data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("currency")]}]">
+                    <span data-ng-controller="currencyController as curCtrl" class="top-panel-select text-static select-custom select-custom--slim icon-down-open-after-abs">
+                        @Html.DropDownList("ddlCurrency", Model.Currencies, new { data_ng_change = "curCtrl.changeCurrency(curCtrl.currency)", data_ng_model = "curCtrl.currency", data_ng_init = "curCtrl.currency = '" + Model.CurrentCurrency.Iso3 + "'", @class = "cs-bg-9" })
+                    </span>
+                </div>
+            }
+            <div class="toolbar-top-item">
+                @if (AdvantShop.Core.Services.Partners.PartnerContext.CurrentPartner != null)
+                {
+                    <a class="cs-l-3 toolbar-top-link-alt" href="@Url.AbsoluteRouteUrl("Partners_Home")">Личный кабинет партнера</a>
+                }
+                @if (!Model.IsRegistered)
+                {
+                    <a class="cs-l-3 toolbar-top-link-alt" href="@Url.AbsoluteRouteUrl("Login")">@T("Common.TopPanel.Login")</a>
+                    if (!Model.RegistrationIsProhibited)
+                    {
+                        <a class="cs-l-3 toolbar-top-link-alt" href="@Url.AbsoluteRouteUrl("Registration")">@T("Common.TopPanel.Registration")</a>
+                    }
+                }
+                else
+                {
+                    <a class="cs-l-3 toolbar-top-link-alt" href="@Url.AbsoluteRouteUrl("MyAccount")">@T("Common.TopPanel.MyAccount")</a>
+                    <a class="cs-l-3 toolbar-top-link-alt" href="@Url.AbsoluteRouteUrl("Logout")">@T("Common.TopPanel.LogOut")</a>
+                }
+                @if (Model.IsShowAdminLink)
+                {
+                    @Html.Partial("_AdminAreaLink")
+                }
+            </div>
+            @if (Model.IsShowWishList)
+            {
+                <div class="toolbar-top-item">
+                    @T("Common.TopPanel.WishList"): <a href="@Url.AbsoluteRouteUrl("WishList")" class="wishlist-head-link">@Model.WishCount</a>
+                </div>
+            }
+        </aside>
+    </div>
+</div>

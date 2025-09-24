@@ -1,0 +1,29 @@
+﻿<div data-ng-switch="shippingPointsList.isLoadedShippingPoints">
+    <div data-ng-switch-when="false" class="shipping-points-list-plug"><span class="icon-spinner-before icon-animate-spin-before"></span></div>
+    <div class="shipping-points-list" data-ng-switch-when="true" data-ng-switch="shippingPointsList.items.length > 0">
+        <div
+            data-ng-switch-when="true"
+            class="shipping-points-list__item"
+            data-ng-class="{'shipping-points-list': shippingPoint.ShippingPoints != null && shippingPoint.ShippingPoints.length > 0}"
+            data-ng-repeat="shippingPoint in shippingPointsList.items track by shippingPoint.Id"
+            data-ng-switch="shippingPoint.ShippingPoints != null && shippingPoint.ShippingPoints.length > 0">
+            <button
+                data-ng-switch-default=""
+                data-ng-if="shippingPoint.ShippingPoints == null"
+                class="shipping-point btn btn-middle btn-action"
+                data-ng-class="{'shipping-point--selected btn-confirm': shippingPointsList.selectedShippingPoint.Id === shippingPoint.Id, 'btn--inactive': shippingPointsList.selectedShippingPoint.Id !== shippingPoint.Id}"
+                type="button"
+                data-ng-click="shippingPointsList.selectShippingPoint(shippingPoint)"
+                data-ng-bind="shippingPoint.Name"></button>
+            <button
+                data-ng-switch-when="true"
+                data-ng-repeat="point in shippingPoint.ShippingPoints track by point.Id"
+                class="shipping-point shipping-points-list__item btn btn-middle btn-action"
+                data-ng-class="{'shipping-point--selected btn-confirm': shippingPointsList.selectedShippingPoint.Id === shippingPoint.Id && point.Id === shippingPoint.SelectedPoint.Id, 'btn--inactive': shippingPointsList.selectedShippingPoint.Id !== shippingPoint.Id || point.Id !== shippingPoint.SelectedPoint.Id}"
+                type="button"
+                data-ng-click="shippingPointsList.selectShippingPoint(shippingPoint, point)"
+                data-ng-bind="point.Address"></button>
+        </div>
+        <div data-ng-switch-when="false" class="shipping-points-list__empty">{{'Js.Shipping.NotAvailableDeliveryPoints'|translate}}</div>
+    </div>
+</div>

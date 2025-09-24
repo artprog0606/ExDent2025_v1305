@@ -1,0 +1,93 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var slides = Model.Block.TryGetSettingAsListValueble<GalleryItemModel, string>("items");
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? Convert.ToInt32(Model.Block.TryGetSetting("items_in_row")) : 6;
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        @if (slides.Any())
+        {
+            if (itemsCountInRow != 0)
+            {
+                float width = 100F / itemsCountInRow;
+                var widthString = width.ToInvariantString() + "%";
+                var minWidth = LpService.SiteWidthContent / itemsCountInRow;
+                <style>
+                    #block_@Model.Block.Id .lp-partner-logo-block__item-wrap {
+                        -webkit-flex-basis: @(widthString);
+                        -ms-flex-preferred-size: @(widthString);
+                        flex-basis: @(widthString);
+                        max-width: @(widthString);
+                        min-width: @(minWidth)px;
+                    }
+                </style>
+            }
+
+            <div class="container-fluid">
+                <div class="slick-slider">
+                    <div class="lp-partner-logo-block__item-container flex flex-wrap @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") : "center-xs") middle-xs" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                        @for (var i = 0; i < slides.Count; i++)
+                        {
+                            <div class="lp-partner-logo-block__item-wrap">
+                                <div class="lp-partner-logo-block__item m-b-md">
+                                    @if (slides[i].Link != string.Empty && slides[i].Link != null)
+                                    {
+                                        <a href="@slides[i].Link" target="_blank">
+                                            @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                       {
+                                           LandingPageId = Model.Block.LandingId,
+                                           BlockId = Model.Block.Id,
+                                           OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                           OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                           OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                           OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                           Parameters = "[{maxHeight: 80,postfix: 'preview'}]",
+                                           Current = slides[i].Picture.Src,
+                                           MaxHeight = 80,
+                                           GalleryIconsEnabled = false,
+                                           LazyLoadEnabled = slides[i].Picture.LazyLoadEnabled,
+                                           LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                           MaxWidthPicture = 180,
+                                           MaxHeightPicture = 180,
+                                           WidthPicture = slides[i].Picture.Width,
+                                           HeightPicture = slides[i].Picture.Height
+                                       })
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                  {
+                                      LandingPageId = Model.Block.LandingId,
+                                      BlockId = Model.Block.Id,
+                                      OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result," + i + ")",
+                                      OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                      OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                      OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                      Parameters = "[{maxHeight: 80,postfix: 'preview'}]",
+                                      Current = slides[i].Picture.Src,
+                                      MaxHeight = 80,
+                                      GalleryIconsEnabled = false,
+                                      LazyLoadEnabled = slides[i].Picture.LazyLoadEnabled,
+                                      LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                      MaxWidthPicture = 180,
+                                      MaxHeightPicture = 180,
+                                      WidthPicture = slides[i].Picture.Width,
+                                      HeightPicture = slides[i].Picture.Height
+                                  })
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

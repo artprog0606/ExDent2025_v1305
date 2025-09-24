@@ -1,0 +1,186 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Settings.SettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@if (!isMobile)
+{
+    <div class="setting-title-top">
+        <h3>@T("Admin.Booking.SettingsCommon.Common")</h3>
+    </div>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label">
+            @Html.LabelFor(x => x.Affiliate.Name, T("Admin.Booking.SettingsCommon.Name"), new { @class = "required" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        @Html.TextBoxFor(x => x.Affiliate.Name, new { @class = "form-control input-alt", required = "required", ng_model = "bookingAffiliateSettings.affiliateName", validation_input_text = T("Admin.Booking.SettingsCommon.Name") })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label">
+            @Html.LabelFor(x => x.Affiliate.Address, T("Admin.Booking.SettingsCommon.Address"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        @Html.TextBoxFor(x => x.Affiliate.Address, new { @class = "form-control input-alt", ng_model = "bookingAffiliateSettings.affiliateAddress" })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label">
+            @Html.LabelFor(x => x.Affiliate.StandardPhone, T("Admin.Booking.SettingsCommon.Phones"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        @Html.TextBoxFor(x => x.Affiliate.StandardPhone, new { @class = "form-control input-alt", ng_model = "bookingAffiliateSettings.affiliatePhone", mask_control_preset = "phone", mask_control = "" })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label @(isMobile ? "flex middle-xs" : "")">
+            <label class="@(isMobile ? "flex-grow setting__label" : "")">Администраторы филиала</label>
+            <help-trigger class="ng-cloak m-l-xs">
+                <div class="help-content">
+                    Менеджеры, которые будут допущены к управлению филиалом
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.Affiliate.AccessForAll, new { ng_model = "bookingAffiliateSettings.accessForAll", @class = "adv-checkbox-input", ng_disabled = (!Model.CanBeEditAccess).ToLowerString() })
+            <span class="adv-checkbox-emul"></span>
+            <span>Доступен всем</span>
+        </label>
+        <ui-select multiple class="@(isMobile ? "m-t-sm input-alt" : "m-t-xs")"
+                   ng-disabled="@((!Model.CanBeEditAccess).ToLowerString())"
+                   ng-if="!bookingAffiliateSettings.accessForAll"
+                   ng-model="bookingAffiliateSettings.managerIds"
+                   ng-init="bookingAffiliateSettings.managerIds = [@(string.Join(",", Model.Affiliate.ManagerIds))]"
+                   convert-to-number
+                   on-select="bookingAffiliateSettings.changeAssignedManager($model)"
+                   on-remove="bookingAffiliateSettings.changeAssignedManager($model)">
+            <ui-select-match placeholder="Не назначено">{{$item.label}}</ui-select-match>
+            <ui-select-choices repeat="s.value as s in bookingAffiliateSettings.managers | greedysearch: $select.search">
+                <div>{{s.label}} </div>
+            </ui-select-choices>
+        </ui-select>
+        <select name="Affiliate.ManagerIds" id="ManagerIds" multiple hidden>
+            <option selected value="{{id}}" ng-repeat="id in bookingAffiliateSettings.managerIds"></option>
+        </select>
+
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label @(isMobile ? "flex middle-xs" : "")">
+            <label class="@(isMobile ? "flex-grow setting__label" : "")">Аналитика филиала</label>
+            <help-trigger class="ng-cloak m-l-xs">
+                <div class="help-content">
+                    Администраторы заведения, которые будут допущены к просмотру отчетов
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.Affiliate.AnalyticsAccessForAll, new { ng_model = "bookingAffiliateSettings.analyticsAccessForAll", @class = "adv-checkbox-input", ng_disabled = (!Model.CanBeEditAccess).ToLowerString() })
+            <span class="adv-checkbox-emul"></span>
+            <span>Все администраторы заведения</span>
+        </label>
+        <ui-select multiple class="@(isMobile ? "m-t-sm input-alt" : "m-t-xs")"
+                   ng-disabled="@((!Model.CanBeEditAccess).ToLowerString())"
+                   ng-if="!bookingAffiliateSettings.analyticsAccessForAll"
+                   ng-model="bookingAffiliateSettings.analyticManagerIds"
+                   ng-init="bookingAffiliateSettings.analyticManagerIds = [@(string.Join(",", Model.Affiliate.AnalyticManagerIds))]"
+                   convert-to-number
+                   on-select="bookingAffiliateSettings.changeAssignedAnalyticManager($model)"
+                   on-remove="bookingAffiliateSettings.changeAssignedAnalyticManager($model)">
+            <ui-select-match placeholder="Не назначено">{{$item.label}}</ui-select-match>
+            <ui-select-choices repeat="s.value as s in bookingAffiliateSettings.managersForAnalytic | greedysearch: $select.search">
+                <div>{{s.label}} </div>
+            </ui-select-choices>
+        </ui-select>
+        <select name="Affiliate.AnalyticManagerIds" id="AnalyticManagerIds" multiple hidden>
+            <option selected value="{{id}}" ng-repeat="id in bookingAffiliateSettings.analyticManagerIds"></option>
+        </select>
+
+    </div>
+</div>
+
+<div class="form-group row">
+    @if (!isMobile)
+    {
+    <div class="col-xs-2">
+        <div class="setting-label-wrap control-label">
+            <label>Разрешить просмотр данных брони менджером ресурса</label>
+            <help-trigger class="ng-cloak m-l-xs">
+                <div class="help-content">
+                    Разрешает менеджеру ресурса, не имеющего прав в филиале, просматривать (открывать) брони.<br />
+                    Не подразумевает ограничение на отображение в списках броней, для этих менеджеров.<br />
+                    И не подразумевает ограничение доступа к этому филиалу.
+                </div>
+            </help-trigger>
+        </div>
+    </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.Affiliate.AccessToViewBookingForResourceManagers, new { ng_model = "bookingAffiliateSettings.accessToViewBookingForResourceManagers", @class = "adv-checkbox-input", ng_disabled = (!Model.CanBeEditAccess).ToLowerString() })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Разрешить просмотр данных брони менджером ресурса</span>
+            }
+        </label>
+         @if (isMobile)
+        {
+            <help-trigger class="ng-cloak m-l-xs">
+                <div class="help-content">
+                    Разрешает менеджеру ресурса, не имеющего прав в филиале, просматривать (открывать) брони.<br />
+                    Не подразумевает ограничение на отображение в списках броней, для этих менеджеров.<br />
+                    И не подразумевает ограничение доступа к этому филиалу.
+                </div>
+            </help-trigger>
+        }
+    </div>
+</div>
+
+<div class="form-group row">
+    @if (!isMobile)
+    {
+        <div class="col-xs-2">
+            @Html.LabelFor(x => x.Affiliate.Enabled, T("Admin.Booking.SettingsCommon.Activity"))
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.Affiliate.Enabled, new { ng_model = "bookingAffiliateSettings.affiliateEnabled", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.Booking.SettingsCommon.Activity")</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap control-label">
+            @Html.LabelFor(x => x.Affiliate.SortOrder, T("Admin.Booking.SettingsCommon.Sorting"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        @Html.TextBoxFor(x => x.Affiliate.SortOrder, new { @class = "form-control input-alt", required = "required", ng_model = "bookingAffiliateSettings.affiliateSortOrder", @type = "number", validation_input_text = T("Admin.Booking.SettingsCommon.Sorting") })
+    </div>
+</div>

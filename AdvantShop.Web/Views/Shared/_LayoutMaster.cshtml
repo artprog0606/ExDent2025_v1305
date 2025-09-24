@@ -1,0 +1,62 @@
+﻿@{
+    var hash = SettingsGeneral.SiteVersion.GetHashCode();
+}
+<!DOCTYPE html>
+<html data-ng-strict-di data-ng-app="app" lang="ru" @Html.GetNgController() @Html.Raw(SettingsMain.EnableInplace && InplaceEditorService.DisplayInplace() ? "class=\"inplace-enabled\"" : "")>
+<head>
+    @* <meta charset="utf-8"> *@
+    @* для иконочных шрифтов, иногда отображаются некорректно *@
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="AdVantShop.NET">
+    <meta name="advid" content="@Html.GetAdvId()">
+    <meta name="advtpl" content="@Html.GetAdvTemplate()">
+    <meta name="format-detection" content="telePhone=no">
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl()" />
+    @Html.GetPageDescription(asMetaLink: true)
+    @Html.GetPageKeywords(asMetaLink: true)
+    @Html.GetNoFollowTag()
+    @Html.GetCanonicalTag()
+    @Html.Partial("_Head")
+    @Html.Action("Favicon", "Common")
+	<meta name="viewport" content="width=device-width, initial-scale=0, user-scalable=yes" />
+    <script>
+        window.v = '@(hash > 0 ? hash : -hash)';
+    </script>
+</head>
+<body class="cs-t-1 text-floating @Html.GetToolbarClass()">
+    @* Конфигурация для маски телефона  *@
+    <div data-mask-config="{enablePhoneMask: @SettingsMain.EnablePhoneMask.ToLowerString()}"></div>
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    @Html.GoggleTagManagerCounter()
+    <div hidden>@Html.StaticBlock("LiveCounter")</div>
+    @Html.Action("GoogleAnalytics", "Common")
+    @Html.RenderModules("body_start")
+
+    @RenderBody()
+
+    @Html.Action("ZonePopover", "Common")
+    @Html.Action("DiscountByTime", "Common")
+    @Html.GetNotifyMessages()
+    <div class="design-background-bottom"></div>
+    <div class="design-background-top"></div>
+    <div id="theme-container">
+        <div class="theme-left">
+        </div>
+        <div class="theme-right">
+        </div>
+    </div>
+    @Html.Action("Telephony", "Common")
+    <div class="color-scheme--light">
+        @Html.Action("CookiesPolicy", "Common")
+    </div>
+    @Html.Action("NewBuilderButton", "Common")
+    @Html.Partial("_BottomContainer")
+    @Html.Partial("_FooterScripts")
+    @Html.RenderModules("body_end")
+    @Html.StaticBlock("body_end")
+    @Html.Action("Script", "SocialWidget", new { area = "" })
+    @Html.Action("Counter", "Common")
+</body>
+</html>

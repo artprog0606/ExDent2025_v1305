@@ -1,0 +1,43 @@
+﻿@using AdvantShop.Core.Services.Admin
+
+@{
+    Html.AddAsset("import");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Catalog/_TopContentCatalogLayout.cshtml";
+    }
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Catalog.Import").ToString();
+    headerModel.ShowOnlySticky = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Catalog"),
+        NgBackTriggerCallback = "import.backInMobile()"
+    };
+
+    @Html.Header(headerModel)
+}
+
+<div class="ibox">
+    <div class="@(isMobile ? "" : "ibox-content settings-block funnel-site__settings m-t-n-sm b-n ")">
+        <uib-tabset active uid="importTab" on-select-batch="import.onSelectTab(tab.index);"
+                    @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "class=\"tabset-no-background funnel-site__settings m-t-n\"")>
+            @if (!isMobile)
+            {
+                <li class="flex-shrink-n"><h2 class="m-r-md m-t-none">@T("Admin.Catalog.Import")</h2></li>
+            }
+            <uib-tab index="'importProducts'" classes="ng-tab" classes-content="tab-pane-p-t-n" heading="@T("Admin.Catalog.Import.Products")" removable="false">
+                @Html.Action("ImportProducts")
+            </uib-tab>
+            <uib-tab index="'importCategories'" classes="ng-tab" classes-content="tab-pane-p-t-n" heading="@T("Admin.Catalog.Import.Categories")" removable="false">
+                <div>
+                    @Html.Action("ImportCategories")
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+</div>

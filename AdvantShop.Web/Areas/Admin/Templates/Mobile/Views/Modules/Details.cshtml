@@ -1,0 +1,97 @@
+﻿@using AdvantShop.Web.Admin.ViewModels.Shared.Common
+@model  AdvantShop.Web.Admin.Models.Modules.DetailsModel
+@{
+    Html.AddAsset("module");
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = T("Admin.Modules.ModulesLayout.Module").ToString();
+    headerModel.Back = new BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Modules")
+    };
+    headerModel.CSSClass = "m-b-none";
+}
+
+@Html.Header(headerModel)
+
+<div class="module-details" ng-init="module.stringId='@Model.Module.StringId';">
+    <div>
+        <div class="adv-panel-info m-t-sm m-b-none @(Model.Module.Enabled ? "" : "adv-panel-info--show")" ng-class="{'adv-panel-info--show':!module.enabled}">
+            Чтобы модуль заработал, его необходимо активировать.
+        </div>
+        <div class="module-card module-details__header">
+            <div class="module-details__header-img-wrap">
+                <img src="@Model.Module.Icon"/>
+            </div>
+            <div class="module-details__header-content">
+                <div class="module-details__name">@(Model.Module.Name)</div>
+                <div class="module-details__activity" ng-init="module.enabled=@Model.Module.Enabled.ToLowerString()">
+                    <switch-on-off data-id="{{module.stringId}}"
+                                   checked="module.enabled"
+                                   theme="blue"
+                                   label=""
+                                   on-click="module.enabled = state; module.changeEnabled(state, name)">
+                    </switch-on-off>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.InstructionTitle) && !string.IsNullOrEmpty(Model.InstructionUrl))
+                {
+                    <a class="link-academy link-invert" href="@Model.InstructionUrl" target="_blank">
+                        @Model.InstructionTitle
+                    </a>
+                }
+            </div>
+        </div>
+        @if (Model.Settings != null)
+        {
+            if (Model.Settings.Count > 1)
+            {
+                <ul class="chips-list module-details__chips-list">
+                    <li class="chips-list__item">
+                        @for (var i = 0; i < Model.Settings.Count; i++)
+                        {
+                            <a class="chip" scroll-into-view="module.isSet(@i)" href="" ng-class="{'chip--active': module.isSet(@i)}" ng-click="module.setTab(@i)">
+                                @Model.Settings[i].Title
+                            </a>
+                        }
+                    </li>
+                </ul>
+
+                <div @Html.Raw(Model.Settings.All(x =>
+                         x.IsAdaptive) ? "" : "class=\"module-details__content-wrap\"")>
+                    @*  если модуль не адптирован под мобилку *@
+                    @for (var i = 0; i < Model.Settings.Count; i++)
+                    {
+                    @* module-details__content--desktop если модуль не адптирован под мобилку *@
+                        <div ng-if="module.isSet(@i)" class="module-details__content  @(!Model.Settings.All(x => x.IsAdaptive) ? " module-details__content--desktop" : "")">
+                            @Html.Action(Model.Settings[i].Action, Model.Settings[i].Controller, Model.Settings[i].RouteValues)
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="p-t-sm p-b-sm">
+                    @Html.Action(Model.Settings[0].Action, Model.Settings[0].Controller, Model.Settings[0].RouteValues)
+                </div>
+            }
+        }
+        else
+        {
+            <div class="adv-panel-info adv-panel-info--show module-details__nosettings-block">
+                @T("Admin.Modules.NoSettings")
+            </div>
+        }
+    </div>
+    <div class="version" style="overflow: hidden;white-space: nowrap;">
+        @if (Model.Module.IsCustomVersion)
+        {
+            <span>кастомный модуль</span>
+        }
+        else
+        {
+            <span>модуль @Model.Module.CurrentVersion.ToLower()</span>
+        }
+    </div>
+</div>

@@ -1,0 +1,205 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Settings.SettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (!isMobile)
+{
+    <div class="setting-title-top">
+        <h3>@T("Admin.Booking.SettingsTimeOfBooking.Time")</h3>
+    </div>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap @(isMobile ? "control-label" : "")">
+            @Html.LabelFor(x => x.Affiliate.BookingIntervalMinutes, T("Admin.Booking.SettingsTimeOfBooking.BookingInterval"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative">
+        @Html.DropDownListFor(x => x.Affiliate.BookingIntervalMinutes, Model.BookingIntervals, new { @class = "form-control input-alt", ng_model = "bookingAffiliateSettings.affiliateBookingIntervalMinutes", ng_change = "bookingAffiliateSettings.OnChangeBookingInterval()" })
+        <input type="hidden" ng-model="bookingAffiliateSettings.oldAffiliateBookingIntervalMinutes" value="@Model.Affiliate.BookingIntervalMinutes" />
+    </div>
+</div>
+
+@if (isMobile)
+{
+    
+    <div class="form-group row">
+        <div class="col-xs-12 col-md-3">
+            <div class="control-label">
+                День недели
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <select class="form-control input-alt" ng-model="bookingAffiliateSettings.dayOfTheWeek" ng-options="item for item in bookingAffiliateSettings.daysOfTheWeek"></select>
+        </div>
+    </div>
+}
+
+<div oc-lazy-load="[@Html.RenderAssetFilesList("jqueryUiSelectable")]">
+    <div class="form-group row" ng-init="bookingAffiliateSettings.getTimes()" is-mobile>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'понедельник' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Monday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.mondayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.mondayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="MondayTimes" value="{{bookingAffiliateSettings.mondayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'вторник' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Tuesday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.tuesdayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.tuesdayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="TuesdayTimes" value="{{bookingAffiliateSettings.tuesdayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'среда' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Wednesday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.wednesdayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.wednesdayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="WednesdayTimes" value="{{bookingAffiliateSettings.wednesdayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'четверг' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Thursday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.thursdayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.thursdayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="ThursdayTimes" value="{{bookingAffiliateSettings.thursdayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'пятница' || !isMobile.value">
+            <div class="setting-label-wrap">
+                @T("Admin.Booking.SettingsTimeOfBooking.Friday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.fridayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.fridayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="FridayTimes" value="{{bookingAffiliateSettings.fridayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'суббота' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Saturday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.saturdayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.saturdayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="SaturdayTimes" value="{{bookingAffiliateSettings.saturdayTimes}}" />
+        </div>
+        <div class="col-xs" ng-show="bookingAffiliateSettings.dayOfTheWeek === 'воскресенье' || !isMobile.value">
+            <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value }">
+                @T("Admin.Booking.SettingsTimeOfBooking.Sunday")
+                <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                    <div class="help-content">
+                        <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                    </div>
+                </help-trigger>
+            </div>
+            <div selectable
+                 selectable-list="bookingAffiliateSettings.times"
+                 selectable-options="{filter:'div'}"
+                 selectable-events="{stop:'bookingAffiliateSettings.selectionStop($selected, bookingAffiliateSettings.sundayTimes)'}">
+                <div ng-repeat="item in bookingAffiliateSettings.times track by $index" ng-class="{'m-t-xs' : isMobile.value}">
+                    <label class="adv-checkbox-label form-label-block">
+                        <input type="checkbox" checklist-model="bookingAffiliateSettings.sundayTimes" checklist-value="item" class="adv-checkbox-input" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>{{item}}</span>
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="SundayTimes" value="{{bookingAffiliateSettings.sundayTimes}}" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,134 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.CatalogSettings.CatalogSettingsModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div ng-controller="PriceRulesCtrl as priceRules" @Html.Raw(isMobile ? "ng-init=\"settingsCatalog.priceRules = priceRules\"" : "")>
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @T("Admin.Settings.Catalog.PriceTypes")
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalAddEditPriceRuleCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addEditPriceRule.html")"
+                                      data-on-close="priceRules.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> @T("Admin.Settings.Catalog.PriceTypes.Add")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+    }
+    
+
+        <div class="form-group row setting__form-group">
+            @if(!isMobile)
+            {
+                 <div class="col-xs-3 col-wl-2">
+                <div class="setting-label-wrap">
+                    @T("Admin.Settings.Catalog.ShowAmountsTableInProduct")
+                </div>
+            </div>
+            }
+            <div class="col-xs-12 col-md-4 @(isMobile ? "flex middle-xs" : "")">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ShowAmountsTableInProduct, new { @class = "adv-checkbox-input", ng_model = "settingsCatalog.ShowAmountsTableInProduct" })
+                    <span class="adv-checkbox-emul" data-e2e="ShowAmountsTableInProduct"></span>
+                </label>
+                   @if (isMobile)
+                    {
+                        <label class="flex-grow m-l-sm" for="ShowAmountsTableInProduct">
+                            @T("Admin.Settings.Catalog.ShowAmountsTableInProduct")
+                        </label>
+                    }
+                <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" classes="'setting__catalog-popover-custom'">
+                    @T("Admin.Settings.Catalog.ShowAmountsTableInProductHint")
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            @if (!isMobile)
+            {
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Settings.Catalog.ShowAmountsTableInCatalog")
+                    </div>
+                </div>
+            }
+            <div class="col-xs-12 col-md-4 @(isMobile ? "flex middle-xs" : "")">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ShowAmountsTableInCatalog, new { @class = "adv-checkbox-input", ng_model = "settingsCatalog.ShowAmountsTableInCatalog" })
+                    <span class="adv-checkbox-emul" data-e2e="ShowAmountsTableInCatalog"></span>
+                </label>
+                @if (isMobile)
+                {
+                    <label class="flex-grow m-l-sm" for="ShowAmountsTableInCatalog">
+                        @T("Admin.Settings.Catalog.ShowAmountsTableInCatalog")
+                    </label>
+                }
+                <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm" : "")" classes="'setting__catalog-popover-custom'">
+                    @T("Admin.Settings.Catalog.ShowAmountsTableInCatalogHint")
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            @if (!isMobile)
+            {
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Settings.Catalog.ShowPriceAmountNextDiscountsInCart")
+                    </div>
+                </div>
+            }
+            <div class="col-xs-12 col-md-4 @(isMobile ? "flex middle-xs" : "")">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.ShowPriceAmountNextDiscountsInCart, new { @class = "adv-checkbox-input", ng_model = "settingsCatalog.ShowPriceAmountNextDiscountsInCart" })
+                    <span class="adv-checkbox-emul" data-e2e="ShowPriceAmountNextDiscountsInCart"></span>
+                </label>
+                @if (isMobile)
+                {
+                    <label class="flex-grow m-l-sm" for="ShowPriceAmountNextDiscountsInCart">
+                        @T("Admin.Settings.Catalog.ShowPriceAmountNextDiscountsInCart")
+                    </label>
+                }
+                <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm" : "")" classes="'setting__catalog-popover-custom'">
+                    @T("Admin.Settings.Catalog.ShowPriceAmountNextDiscountsInCartHint")
+                </help-trigger>
+            </div>
+        </div>
+
+        <ui-grid-custom grid-unique-id="gridPriceRules"
+                        grid-on-init="priceRules.gridOnInit(grid)"
+                        grid-options="priceRules.gridOptions"
+                        grid-url="'priceRules/getList'"
+                        grid-inplace-url="'priceRules/inplace'"
+                        grid-extend-ctrl="priceRules"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <ui-modal-trigger data-controller="'ModalAddEditPriceRuleCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("addEditPriceRule.html")"
+                                  data-on-close="grid.appScope.$ctrl.fetchData()"
+                                  data-resolve="{'Id': row.entity.Id}">
+                    <div class="card card--gap-row-sm card--p-18">
+                        <div>
+                            <div class="m-b-xs">{{row.entity.Name}}</div>
+                            <div class="fs-xs" style="opacity:0.6;">{{row.entity.TypeStr}}</div>
+                        </div>
+                    </div>
+                </ui-modal-trigger>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="priceRules.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    
+</div>

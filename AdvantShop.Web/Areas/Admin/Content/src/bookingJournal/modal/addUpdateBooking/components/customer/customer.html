@@ -1,0 +1,406 @@
+﻿<!--booing customer-->
+<div class="ibox" is-mobile>
+    <div class="ibox-content block-additional-parameters-content">
+        <div class="relative">
+            <h3 class="m-b-md inline booking-customer-title" ng-class="{'funnel__subtitle' : isMobile.value}">
+                {{'Admin.Js.AddUpdateBooking.Buyer'|translate}}
+            </h3>
+            <div ng-if="$ctrl.customer.customerId" class="m-l-sm inline pull-right" ng-class="{'flex' : isMobile.value}">
+                <a ng-href="{{'customers/view/' + $ctrl.customer.customerId}}" target="_blank" class="edit link-decoration-none">Карточка клиента</a>
+                <a
+                    class="link-invert link-decoration-none fas fa-times"
+                    href=""
+                    ng-click="$ctrl.clearCustomer()"
+                    ng-if="$ctrl.canBeEditing"
+                    data-e2e="BookingCustomerDelete"></a>
+            </div>
+            <div ng-if="$ctrl.canBeEditing && ($ctrl.mode === 'add' || !$ctrl.customer.customerId)" class="m-l-sm inline pull-right">
+                <ui-modal-trigger
+                    data-controller="'ModalSelectCustomerCtrl'"
+                    data-controller-as="ctrl"
+                    size="middle"
+                    template-url="../areas/admin/content/src/_shared/modal/selectCustomer/selectCustomer.html"
+                    data-on-close="$ctrl.selectCustomer(result)">
+                    <a href="" class="edit link-decoration-none">{{'Admin.Js.AddUpdateBooking.Select'|translate}}</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+
+        <div class="form-horizontal" ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-group" ng-class="{'relative' : isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.Surname'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="$ctrl.customer.lastName"
+                            autocomplete="false"
+                            uib-typeahead="item for items in $ctrl.findCustomer($viewValue)"
+                            typeahead-on-select="$ctrl.selectCustomer($item)"
+                            typeahead-template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/components/customer/find-customer.html"
+                            typeahead-focus-first="false"
+                            ng-disabled="!$ctrl.canBeEditing" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'relative' : isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.Name'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="$ctrl.customer.firstName"
+                            autocomplete="false"
+                            uib-typeahead="item for items in $ctrl.findCustomer($viewValue)"
+                            typeahead-on-select="$ctrl.selectCustomer($item)"
+                            typeahead-template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/components/customer/find-customer.html"
+                            typeahead-focus-first="false"
+                            ng-disabled="!$ctrl.canBeEditing" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'relative' : isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.MiddleName'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="$ctrl.customer.patronymic"
+                            autocomplete="false"
+                            uib-typeahead="item for items in $ctrl.findCustomer($viewValue)"
+                            typeahead-on-select="$ctrl.selectCustomer($item)"
+                            typeahead-template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/components/customer/find-customer.html"
+                            typeahead-focus-first="false"
+                            ng-disabled="!$ctrl.canBeEditing" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="$ctrl.customer.organization">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">Организация</div>
+                    <div class="col-xs-12 col-md-8">
+                        <label class="form-control input-alt" ng-bind="$ctrl.customer.organization"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'relative' : isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.Email'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            name="bookingCustomer.email"
+                            ng-model="$ctrl.customer.email"
+                            ng-pattern="/^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$/i"
+                            validation-input-text="{{'Admin.Js.AddUpdateBooking.Email'|translate}}"
+                            autocomplete="false"
+                            uib-typeahead="item for items in $ctrl.findCustomer($viewValue)"
+                            typeahead-on-select="$ctrl.selectCustomer($item)"
+                            typeahead-template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/components/customer/find-customer.html"
+                            typeahead-focus-first="false"
+                            ng-disabled="!$ctrl.canBeEditing" />
+
+                        <div
+                            ng-if="$ctrl.canBeEditing && $ctrl.customer.email && $ctrl.customer.email.length > 0 && bookingAddUpdateForm['bookingCustomer.email'].$error.pattern == null">
+                            <ui-modal-trigger
+                                data-controller="'ModalSendLetterToCustomerCtrl'"
+                                controller-as="ctrl"
+                                size="lg"
+                                template-url="../areas/admin/content/src/_shared/modal/sendLetterToCustomer/sendLetterToCustomer.html"
+                                data-resolve="{params: {customerId: $ctrl.customer.customerId, email: $ctrl.customer.email, firstName: $ctrl.customer.firstName, lastName: $ctrl.customer.lastName, patronymic: $ctrl.customer.patronymic}}">
+                                <a href="" class="edit link-decoration-none" ng-class="{'m-t-sm inline-block' : isMobile.value}"
+                                    >{{'Admin.Js.AddUpdateBooking.Send'|translate}}</a
+                                >
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'relative' : isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.PhoneNumberFormat'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="$ctrl.customer.phone"
+                            validation-input-text="{{'Admin.Js.AddUpdateBooking.Phone'|translate}}"
+                            autocomplete="false"
+                            uib-typeahead="item for items in $ctrl.findCustomer($viewValue)"
+                            typeahead-on-select="$ctrl.selectCustomer($item)"
+                            typeahead-template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/components/customer/find-customer.html"
+                            typeahead-focus-first="false"
+                            data-mask-control
+                            data-mask-control-preset="phone"
+                            ng-disabled="!$ctrl.canBeEditing" />
+
+                        <div ng-if="$ctrl.canBeEditing && $ctrl.customer.phone">
+                            <a
+                                ng-href="tel://{{$ctrl.customer.phone}}"
+                                class="edit link-decoration-none"
+                                ng-class="{'m-t-sm inline-block' : isMobile.value}"
+                                >{{'Admin.Js.AddUpdateBooking.Call'|translate}}</a
+                            >
+                            <ui-modal-trigger
+                                data-controller="'ModalSendSmsAdvCtrl'"
+                                controller-as="ctrl"
+                                data-resolve="{params: { customerId: $ctrl.customer.customerId, phone: $ctrl.customer.phone}}"
+                                template-url="../areas/admin/content/src/_shared/modal/sendSms/sendSms.html">
+                                <a href="" class="edit link-decoration-none m-l-xs" ng-class="{'m-t-sm inline-block' : isMobile.value}"
+                                    >Отправить СМС</a
+                                >
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">День рождения</div>
+                    <div class="col-xs-12 col-md-8">
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                <input
+                                    data-e2e="bookingBirthDay"
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-flatpickr-input
+                                    ng-model="$ctrl.customer.birthday"
+                                    validation-input-text="День рождения"
+                                    ng-disabled="!$ctrl.canBeEditing" />
+                                <span class="flatpickr-custom-clear" data-close data-clear ng-if="$ctrl.canBeEditing"
+                                    ><i class="fas fa-times"></i
+                                ></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="$ctrl.showCustomerType" class="form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 control-label">{{'Admin.Js.AddUpdateBooking.CustomerType'|translate}}</div>
+                    <div class="col-xs-12 col-md-8">
+                        <select
+                            ng-model="$ctrl.customer.customerType"
+                            ng-options="s.label for s in $ctrl.customerTypes track by s.value"
+                            class="form-control input-alt"
+                            data-e2e="customerTypes"
+                            required></select>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-class="{'m-b-n' : !isMobile.value}">
+                <customer-fields
+                    orientation="'vertical'"
+                    customerfields-js="$ctrl.customer.customerFields"
+                    customer-id="$ctrl.customer.customerId"
+                    customer-type="$ctrl.customer.customerType.value"
+                    class="custom-fields-two-columns"
+                    on-init="$ctrl.onCustomerFieldsInit(reloadFn)"></customer-fields>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--customer social-->
+<div
+    class="ibox"
+    ng-show="$ctrl.customer.social && ($ctrl.customer.social.VkUser || $ctrl.customer.social.FacebookUser || $ctrl.customer.social.InstagramUser || $ctrl.customer.social.ShowVk || $ctrl.customer.social.ShowFacebook ||$ctrl.customer.social.ShowInstagram)"
+    is-mobile>
+    <div class="ibox-content">
+        <h3 class="category-title" ng-class="{'funnel__subtitle' : isMobile.value}">Социальные сети</h3>
+
+        <div class="form-group" ng-show="$ctrl.customer.social.VkUser">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div ng-class="{'control-label' : isMobile.value}">ВКонтакте</div>
+                    <div ng-show="$ctrl.canBeEditing && $ctrl.customer.social.ShowVk">
+                        <ui-modal-trigger
+                            data-controller="'ModalSendSocialMessageCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/sendSocialMessage/sendSocialMessage.html"
+                            data-resolve="{params: {customerId: $ctrl.customer.customerId, type: 'vk'}}"
+                            data-on-close="$ctrl.updateBookingEventsWithDelay()">
+                            <a ng-class="{'inline-block m-t-sm' : isMobile.value}" href="" style="font-size: 12px">Отправить сообщение</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <a
+                        ng-class="{'inline-block m-t-sm' : isMobile.value}"
+                        ng-href="{{'https://vk.com/' + (!$ctrl.customer.social.VkUser.ScreenName ? $ctrl.customer.social.VkUser.ScreenName : ('id' + $ctrl.customer.social.VkUser.Id))}}"
+                        target="_blank">
+                        {{'https://vk.com/' + (!$ctrl.customer.social.VkUser.ScreenName ? $ctrl.customer.social.VkUser.ScreenName : ('id' +
+                        $ctrl.customer.social.VkUser.Id))}}
+                    </a>
+                    <div ng-class="{'m-t-sm' : isMobile.value}" ng-if="$ctrl.bookingEvents && $ctrl.bookingEvents.data != null">
+                        сообщений:
+                        <a href="" ng-click="$ctrl.filterEvents('Vk')">{{$ctrl.bookingEvents.data.VkMessagesInCount}}</a>
+                        получено /
+                        <a href="" ng-click="$ctrl.filterEvents('Vk')">{{$ctrl.bookingEvents.data.VkMessagesOutCount}}</a>
+                        отправлено
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.customer.social.FacebookUser">
+            <div class="row">
+                <div class="col-xs-12 col-md-4"><div ng-class="{'control-label' : isMobile.value}">Facebook</div></div>
+                <div class="col-xs-12 col-md-8">
+                    <a
+                        ng-class="{'inline-block m-t-sm' : isMobile.value}"
+                        ng-href="{{'https://facebook.com/' + $ctrl.customer.social.FacebookUser.Id + '/'}}"
+                        target="_blank"
+                        >{{$ctrl.customer.social.FacebookUser.FirstName}} {{$ctrl.customer.social.FacebookUser.LastName}}</a
+                    >
+                    <div ng-class="{'inline-block m-t-sm' : isMobile.value}" ng-if="$ctrl.bookingEvents != null && $ctrl.bookingEvents.data != null">
+                        сообщений:
+                        <a href="" ng-click="$ctrl.filterEvents('Facebook')">{{$ctrl.bookingEvents.data.FacebookReceivedMessagesCount}}</a>
+                        получено /
+                        <a href="" ng-click="$ctrl.filterEvents('Facebook')">{{$ctrl.bookingEvents.data.FacebookSendedMessagesCount}}</a>
+                        отправлено
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.customer.social.InstagramUser">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div ng-class="{'control-label' : isMobile.value}">Instagram</div>
+                    <div ng-show="$ctrl.canBeEditing && $ctrl.customer.social.ShowInstagram">
+                        <ui-modal-trigger
+                            data-controller="'ModalSendSocialMessageCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/sendSocialMessage/sendSocialMessage.html"
+                            data-resolve="{params: {customerId: $ctrl.customer.customerId, type: 'instagram'}}"
+                            data-on-close="$ctrl.updateBookingEventsWithDelay()">
+                            <a ng-class="{'inline-block m-t-sm' : isMobile.value}" href="" style="font-size: 12px">Отправить в директ</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <a
+                        ng-class="{'inline-block m-t-sm' : isMobile.value}"
+                        ng-href="{{'https://instagram.com/' + $ctrl.customer.social.InstagramUser.UserName + '/'}}"
+                        class="instagram-user-name"
+                        target="_blank"
+                        >{{$ctrl.customer.social.InstagramUser.UserName}}</a
+                    >
+                    <div ng-class="{'inline-block m-t-sm' : isMobile.value}" ng-if="$ctrl.bookingEvents != null && $ctrl.bookingEvents.data != null">
+                        сообщений:
+                        <a href="" ng-click="$ctrl.filterEvents('Instagram')">{{$ctrl.bookingEvents.data.InstagramReceivedMessagesCount}}</a>
+                        получено /
+                        <a href="" ng-click="$ctrl.filterEvents('Instagram')">{{$ctrl.bookingEvents.data.InstagramSendedMessagesCount}}</a>
+                        отправлено
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.customer.social.TelegramUser">
+            <div class="row">
+                <div data-e2e="TelegramBlock" class="col-xs-12 col-md-4">
+                    <div ng-class="{'control-label' : isMobile.value}">Telegram</div>
+                    <div ng-show="$ctrl.canBeEditing && $ctrl.customer.social.ShowTelegram">
+                        <ui-modal-trigger
+                            data-controller="'ModalSendSocialMessageCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/sendSocialMessage/sendSocialMessage.html"
+                            data-resolve="{params: {customerId: $ctrl.customer.customerId, type: 'telegram'}}"
+                            data-on-close="$ctrl.updateBookingEventsWithDelay()">
+                            <a data-e2e="SendMessageTelegram" href="" style="font-size: 12px">Отправить сообщение</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <span ng-class="{'inline-block m-t-sm' : isMobile.value}" class="telegram-user-name"
+                        >{{$ctrl.customer.social.TelegramUser.LastName + ' ' + $ctrl.customer.social.TelegramUser.FirstName}}
+                        {{$ctrl.customer.social.TelegramUser.Username}}</span
+                    >
+                    <div
+                        ng-class="{'inline-block m-t-sm' : isMobile.value}"
+                        data-e2e="AllTelegramMessage"
+                        ng-if="$ctrl.bookingEvents != null && $ctrl.bookingEvents.data != null">
+                        сообщений:
+                        <a href="" ng-click="$ctrl.filterEvents('Telegram')">{{$ctrl.bookingEvents.data.TelegramReceivedMessagesCount}}</a>
+                        получено /
+                        <a href="" ng-click="$ctrl.filterEvents('Telegram')">{{$ctrl.bookingEvents.data.TelegramSendedMessagesCount}}</a>
+                        отправлено
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.canBeEditing && $ctrl.customer.social.VkUser == null && $ctrl.customer.social.ShowVk">
+            <div class="row middle-xs">
+                <div class="col-xs-12 col-md-4" ng-class="{'control-label' : isMobile.value}">ВКонтакте</div>
+                <div class="col-xs-12 col-md-6">
+                    <input type="text" class="form-control input-alt" ng-model="$ctrl.vkLink" />
+                </div>
+                <div class="col-xs-12 col-md-2">
+                    <a
+                        ng-class="{'inline-block m-t-sm link-decoration-none' : isMobile.value}"
+                        href=""
+                        ng-click="$ctrl.addSocialUser('vk', $ctrl.vkLink)"
+                        ng-if="!$ctrl.btnSocialAdding"
+                        >Добавить</a
+                    >
+                    <span ng-class="{'inline-block m-t-xs' : isMobile.value}" ng-if="$ctrl.btnSocialAdding == 'vk'">Загрузка..</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.canBeEditing && $ctrl.customer.social.FacebookUser == null && $ctrl.customer.social.ShowFacebook">
+            <div class="row middle-xs">
+                <div class="col-xs-12 col-md-4" ng-class="{'control-label' : isMobile.value}">Facebook</div>
+                <div class="col-xs-12 col-md-6">
+                    <input type="text" class="form-control input-alt" ng-model="$ctrl.fbLink" />
+                </div>
+                <div class="col-xs-12 col-md-2">
+                    <a
+                        ng-class="{'inline-block m-t-sm link-decoration-none' : isMobile.value}"
+                        href=""
+                        ng-click="$ctrl.addSocialUser('facebook', $ctrl.fbLink)"
+                        ng-if="!$ctrl.btnSocialAdding"
+                        >Добавить</a
+                    >
+                    <span ng-class="{'inline-block m-t-xs' : isMobile.value}" ng-if="$ctrl.btnSocialAdding == 'facebook'">Загрузка..</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="$ctrl.canBeEditing && $ctrl.customer.social.InstagramUser == null && $ctrl.customer.social.ShowInstagram">
+            <div class="row middle-xs">
+                <div class="col-xs-12 col-md-4" ng-class="{'control-label' : isMobile.value}">Instagram</div>
+                <div class="col-xs-12 col-md-6">
+                    <input type="text" class="form-control input-alt" ng-model="$ctrl.instagramLink" />
+                </div>
+                <div class="col-xs-12 col-md-2">
+                    <a
+                        ng-class="{'inline-block m-t-sm link-decoration-none' : isMobile.value}"
+                        href=""
+                        ng-click="$ctrl.addSocialUser('instagram', $ctrl.instagramLink)"
+                        ng-if="!$ctrl.btnSocialAdding"
+                        >Добавить</a
+                    >
+                    <span ng-class="{'inline-block m-t-xs' : isMobile.value}" ng-if="$ctrl.btnSocialAdding == 'instagram'">Загрузка..</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

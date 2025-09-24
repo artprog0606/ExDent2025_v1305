@@ -1,0 +1,382 @@
+﻿<form novalidate name="formAddLead" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddLead.NewLead' | translate}}</h2>
+    </div>
+    <div class="modal-body task-modal-content-new-item" ng-init="ctrl.form = formAddLead">
+        <div ng-class="{'form-horizontal m-r m-l': !isMobile.value}">
+            <div class="form-group">
+                <h2 class="page-name-block-text setting__subtitle" ng-class="{'m-n bold m-r-sm m-b-sm inline': !isMobile.value}">
+                    {{'Admin.Js.AddLead.Customer' | translate}}
+                </h2>
+            </div>
+
+            <div class="form-group" ng-if="ctrl.customerId != null">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{'Admin.Js.AddLead.CustomerSelected' | translate}}
+                        <a
+                            href="customers/view/{{ctrl.customerId}}{{ctrl.clientCode ? ('?code=' + ctrl.clientCode) : ''}}"
+                            target="_blank"
+                            data-e2e="LeadCustomer"
+                            >{{ctrl.firstName}} {{ctrl.lastName}} {{ctrl.phone}} {{ctrl.email}} {{ctrl.clientCode}}</a
+                        >
+                        <a
+                            class="link-invert link-decoration-none fas fa-times"
+                            href=""
+                            ng-click="ctrl.clearCustomer()"
+                            data-e2e="LeadCustomerDelete"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-class="{'form-group': !isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4">
+                        <div class="row" ng-class="{'form-group': isMobile.value}">
+                            <label class="col-xs-12 control-label form-control-title"> {{::'Admin.Js.AddLead.Lastname' | translate}} </label>
+                            <div class="col-xs-12">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.lastName"
+                                    data-autofocus="!isMobile.value"
+                                    autocomplete="false"
+                                    uib-typeahead="item for items in ctrl.findCustomer($viewValue)"
+                                    typeahead-on-select="ctrl.selectCustomer($item)"
+                                    typeahead-template-url="../areas/admin/content/src/_shared/modal/addLead/find-customer-lead.html"
+                                    typeahead-focus-first="false"
+                                    data-e2e="LeadLastName" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <div class="row" ng-class="{'form-group': isMobile.value}">
+                            <label class="col-xs-12 control-label form-control-title">
+                                <span class="text-required">{{::'Admin.Js.AddLead.FirstName' | translate}}</span>
+                            </label>
+                            <div class="col-xs-12">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.firstName"
+                                    required
+                                    validation-input-text="{{'Admin.Js.AddLead.FirstName'|translate}}"
+                                    uib-typeahead="item for items in ctrl.findCustomer($viewValue)"
+                                    autocomplete="false"
+                                    typeahead-on-select="ctrl.selectCustomer($item)"
+                                    typeahead-template-url="../areas/admin/content/src/_shared/modal/addLead/find-customer-lead.html"
+                                    typeahead-focus-first="false"
+                                    data-e2e="LeadFirstName" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <div class="row" ng-class="{'form-group': isMobile.value}">
+                            <label class="col-xs-12 control-label form-control-title"> {{::'Admin.Js.AddLead.Patronymic' | translate}} </label>
+                            <div class="col-xs-12">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.patronymic"
+                                    uib-typeahead="item for items in ctrl.findCustomer($viewValue)"
+                                    autocomplete="false"
+                                    typeahead-on-select="ctrl.selectCustomer($item)"
+                                    typeahead-template-url="../areas/admin/content/src/_shared/modal/addLead/find-customer-lead.html"
+                                    typeahead-focus-first="false"
+                                    data-e2e="LeadPatronymic" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="ctrl.showCustomerType" class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <label class="col-xs-12 control-label form-control-title"> {{::'Admin.Js.AddLead.CustomerType' | translate}} </label>
+                            <div class="col-xs-12">
+                                <select
+                                    ng-model="ctrl.customerType"
+                                    ng-options="s.label for s in ctrl.customerTypes track by s.value"
+                                    class="form-control input-alt"
+                                    data-e2e="customerTypes"
+                                    required></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-class="{'form-group': !isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        <div class="row" ng-class="{'form-group': isMobile.value}">
+                            <label class="col-xs-12 control-label form-control-title">
+                                <span class="text-required">{{::'Admin.Js.AddLead.Phone' | translate}}</span>
+                            </label>
+                            <div class="col-xs-12 relative">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.phone"
+                                    required
+                                    validation-input-text="{{'Admin.Js.AddLead.Phone'|translate}}"
+                                    data-mask-control
+                                    data-mask-control-preset="phone"
+                                    uib-typeahead="item for items in ctrl.findCustomer($viewValue)"
+                                    autocomplete="false"
+                                    typeahead-on-select="ctrl.selectCustomer($item)"
+                                    typeahead-template-url="../areas/admin/content/src/_shared/modal/addLead/find-customer-lead.html"
+                                    typeahead-focus-first="false"
+                                    data-e2e="LeadPhoneNum" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="row" ng-class="{'form-group': isMobile.value}">
+                            <label class="col-xs-12 control-label form-control-title"> Email </label>
+                            <div class="col-xs-12">
+                                <input
+                                    type="email"
+                                    class="form-control input-alt"
+                                    ng-model="ctrl.email"
+                                    pattern="^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)|(admin)$"
+                                    uib-typeahead="item for items in ctrl.findCustomer($viewValue)"
+                                    autocomplete="false"
+                                    typeahead-on-select="ctrl.selectCustomer($item)"
+                                    typeahead-template-url="../areas/admin/content/src/_shared/modal/addLead/find-customer-lead.html"
+                                    validation-input-text="Email"
+                                    typeahead-focus-first="false"
+                                    data-e2e="LeadEmail" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-class="{'form-group': !isMobile.value}">
+                <customer-fields
+                    customerfields-js="ctrl.customerFields"
+                    customer-id="ctrl.customerId"
+                    class="custom-fields-2-cols"
+                    customer-type="ctrl.customerType.value"
+                    on-init="ctrl.onCustomerFieldsInit(reloadFn)"></customer-fields>
+            </div>
+
+            <div class="form-group" ng-if="!isMobile.value">
+                <div class="divider-form"></div>
+            </div>
+
+            <div class="" ng-class="{'form-group': !isMobile.value}">
+                <h2 class="page-name-block-text setting__subtitle" ng-class="{'m-n bold m-r-sm m-b-sm inline': !isMobile.value}">
+                    {{::'Admin.Js.AddLead.Lead' | translate}}
+                </h2>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.Products' | translate}} </label>
+                    <div class="col-xs-12 col-md-10">
+                        <div class="m-b" ng-if="ctrl.products == null || ctrl.products.length == 0" data-e2e="LeadNoProducts">
+                            {{'Admin.Js.AddLead.NoProducts' | translate}}
+                        </div>
+                        <div class="m-b" ng-if="ctrl.products != null && ctrl.products.length > 0" ng-switch="isMobile.value">
+                            <div ng-switch-when="true">
+                                <div class="swipe-line m-b" ng-repeat="item in ctrl.products track by item.OfferId">
+                                    <div class="swipe-line__inner" data-swipe-line>
+                                        <div class="swipe-line__content">
+                                            <div class="card card--image-horizontal product-item">
+                                                <div class="card__image-wrap">
+                                                    <img class="product-item__img" ng-src="{{item.PhotoSrc}}" />
+                                                </div>
+                                                <div class="card__content">
+                                                    <header class="product-item__header">
+                                                        <div class="product-item__title" ng-bind="item.Name"></div>
+                                                    </header>
+
+                                                    <div class="product-item__art" ng-if="item.ArtNo">
+                                                        Артикул: <span ng-bind="item.ArtNo"></span>
+                                                    </div>
+
+                                                    <footer class="product-item__footer card__row card__row--flow-column card__row--middle">
+                                                        <span class="product-item--with-control-horizontal">
+                                                            <span class="card__text product-item__amount-text">Кол-во:</span>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control input-alt"
+                                                                ng-model="item.Amount"
+                                                                validation-input-float
+                                                                ng-change="ctrl.changeProductAmount()"
+                                                                data-e2e="LeadItemAmount" />
+                                                        </span>
+
+                                                        <div class="product-item__cost" ng-bind-html="item.PreparedPrice | sanitize"></div>
+                                                    </footer>
+                                                </div>
+                                            </div>
+
+                                            <!--                                            <div class="card">-->
+                                            <!--                                                <span class="product-item__title" ng-bind="item.Name"></span>-->
+                                            <!--                                                <span class="product-item__art card__row card__row&#45;&#45;full-width">-->
+                                            <!--                                                    <span>Артикул: <span ng-bind="item.ArtNo"></span></span>-->
+                                            <!--                                                </span>-->
+                                            <!--                                                <span class="product-item__col&#45;&#45;leftcontrol-righttext">-->
+                                            <!--                                                    <span class="product-item&#45;&#45;with-control-horizontal">-->
+                                            <!--                                                        <span class="card__text product-item__amount-text">Кол-во:</span>-->
+                                            <!--                                                        <input type="text" class="form-control input-alt" ng-model="item.Amount" validation-input-float-->
+                                            <!--                                                               ng-change="ctrl.changeProductAmount()"-->
+                                            <!--                                                               data-e2e="LeadItemAmount">-->
+                                            <!--                                                    </span>-->
+                                            <!--                                                    <span class="product-item__cost" data-e2e="LeadItemPrice"-->
+                                            <!--                                                          ng-bind-html="item.PreparedPrice | sanitize"></span>-->
+                                            <!--                                                </span>-->
+                                            <!--                                            </div>-->
+                                        </div>
+                                        <div class="swipe-line__right" data-swipe-line-right>
+                                            <button
+                                                class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                                data-e2e="LeadItemRemove"
+                                                type="button"
+                                                ng-click="ctrl.removeTempProduct($index)">
+                                                Удалить
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table table-striped table-striped-custom" data-e2e="LeadAddItemsTable" ng-switch-default>
+                                <thead>
+                                    <tr>
+                                        <th>{{'Admin.Js.AddLead.Name' | translate}}</th>
+                                        <th style="width: 90px">{{'Admin.Js.AddLead.Quantity' | translate}}</th>
+                                        <th style="width: 120px">{{'Admin.Js.AddLead.Price' | translate}}</th>
+                                        <th style="width: 30px"></th>
+                                    </tr>
+                                </thead>
+                                <tr ng-repeat="item in ctrl.products track by $index">
+                                    <td data-e2e="LeadItemArtNoName">{{item.ArtNo}} - {{item.Name}}</td>
+                                    <td style="width: 90px">
+                                        <input
+                                            type="number"
+                                            class="form-control input-alt"
+                                            ng-model="item.Amount"
+                                            ng-change="ctrl.changeProductAmount()"
+                                            data-e2e="LeadItemAmount" />
+                                    </td>
+                                    <td>
+                                        <span data-e2e="LeadItemPrice" ng-bind-html="item.PreparedPrice | sanitize"></span>
+                                    </td>
+                                    <td>
+                                        <a
+                                            data-e2e="LeadItemRemove"
+                                            href=""
+                                            ng-click="ctrl.removeTempProduct($index)"
+                                            class="link-invert link-decoration-none fas fa-times"></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <ui-modal-trigger
+                            size="xs-11"
+                            data-controller="'ModalOffersSelectvizrCtrl'"
+                            data-controller-as="ctrl"
+                            data-on-close="ctrl.addItems(result)"
+                            template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+                            <a class="btn btn-sm btn-success" ng-class="{'btn--full-width': isMobile.value}" href="" data-e2e="LeadItemAdd">
+                                {{'Admin.Js.AddLead.Add' | translate}}
+                            </a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.Description' | translate}} </label>
+                    <div class="col-xs-12 col-md-10">
+                        <input type="text" class="form-control input-alt" ng-model="ctrl.description" data-e2e="LeadDescription" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row middle-xs">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.Budget' | translate}} </label>
+                    <div class="col-xs">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.sum"
+                            ng-readonly="ctrl.products != null && ctrl.products.length > 0"
+                            data-e2e="LeadSum"
+                            validation-input-float
+                            validation-input-text="{{'Admin.Js.AddLead.Budget'|translate}}" />
+                    </div>
+                    <div class="col-xs-slim" data-e2e="LeadCurrency" ng-class="{'control-label': !isMobile.value}">{{ctrl.currencySymbol}}</div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.SalesFunnel' | translate}} </label>
+                    <div class="col-xs-12 col-md-4">
+                        <select
+                            ng-model="ctrl.salesFunnelIdObj"
+                            ng-options="s as s.label for s in ctrl.salesFunnels"
+                            ng-change="ctrl.changeSalesFunnel()"
+                            class="form-control input-alt"
+                            data-e2e="LeadSalesFunnel"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.DealStage' | translate}} </label>
+                    <div class="col-xs-12 col-md-4">
+                        <select
+                            ng-model="ctrl.dealStatus"
+                            ng-options="s as s.label for s in ctrl.statuses"
+                            class="form-control input-alt"
+                            data-e2e="LeadDealStatus"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-2 control-label form-control-title"> {{'Admin.Js.AddLead.Manager' | translate}} </label>
+                    <div class="col-xs-12 col-md-4">
+                        <select
+                            ng-model="ctrl.manager"
+                            ng-options="s as s.label for s in ctrl.managers"
+                            class="form-control input-alt"
+                            data-e2e="LeadManager">
+                            <option value="">{{'Admin.Js.AddLead.SelectAManager' | translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="ctrl.salesFunnelId" ng-class="{'form-group': !isMobile.value}">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        <lead-fields
+                            leadfields-js="ctrl.leadFields"
+                            sales-funnel-id="ctrl.salesFunnelId"
+                            class="block m-n custom-fields-two-columns"
+                            on-init="ctrl.leadFieldsReloadFn = reloadFn"></lead-fields>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.addLead(); ctrl.btnLoading = true"
+            ladda="ctrl.btnLoading"
+            data-e2e="LeadAdd">
+            {{'Admin.Js.AddLead.Add' | translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddLead.Cancel' | translate}}</button>
+    </div>
+</form>

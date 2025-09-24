@@ -1,0 +1,189 @@
+﻿@model AdvantShop.Web.Admin.Models.Modules.ModulesModel
+
+@using AdvantShop.Trial
+@using AdvantShop.Saas
+@{
+    Layout = "_ModulesLayout.cshtml";
+}
+<div class="ibox-content" ng-init="modules.pageType = true; modules.filterStart = '@(Request["name"] ?? string.Empty)'; modules.onInit()">
+    @if (TrialService.IsTrialEnabled)
+    {
+        <div class="h4 ng-cloak" ng-show="modules.modulesMaster.length > 0">
+            @T("Admin.Modules.Index.AttentionSomeModules")<br/>
+            @T("Admin.Modules.Index.MoreInfo")<a href="https://www.advantshop.net/modules" target="_blank">https://www.advantshop.net/modules</a>
+        </div>
+    }
+    <div class="ng-cloak" ng-if="modules.dataLoaded == true">
+        <div ng-switch="modules.modulesMaster == null || modules.modulesMaster.length === 0">
+
+            <div class="text-center" ng-switch-when="true">
+                <div class="m-b-xl m-t-xxl">@T("Admin.Modules.Index.HaveNotInstalledModules")</div>
+                @Html.AbsoluteActionLink(T("Admin.Modules.Index.ModulesShop").ToString(), "Market", "Modules", null, new
+                {
+                    @class = "btn btn-lg btn-success text-left m-b-xxl"
+                })
+            </div>
+
+            <div ng-switch-when="false">
+                <div>
+                    <ui-grid-custom-filter grid-column-defs="modules.filterColumnDefs"
+                        grid-params="modules.gridParams"
+                        grid-search-placeholder="modules.gridSearchPlaceholder"
+                        grid-search-text="'@(Request["name"] ?? string.Empty)'"
+                        on-change="modules.filterApply(params, item)"
+                        on-remove="modules.filterRemove(name, item)">
+                    </ui-grid-custom-filter>
+                </div>
+                <div class="form-group middle-xs row" ng-if="modules.haveEnabledModules">
+                    <div class="col-xs-slim relative">
+                        <h3 class="m-b-xs">@T("Admin.Modules.Index.EnabledModules")</h3>
+                    </div>
+                </div>
+                <div class="flex flex-wrap modules-container">
+                    <div class="flex-basis-fix-xs item-module-wrap"
+                        data-module-string-id="{{module.StringId | lowercase}}"
+                        ng-repeat="module in modules.modulesData | filter: {Enabled : true} track by module.StringId">
+                        <div class="item-module">
+                            <a class="center-xs flex item-module-img m-b-sm middle-xs" ng-href="modules/details/{{module.StringId}}" title="Версия модуля: {{module.CurrentVersion}}">
+                                <img ng-src="{{module.Icon}}"/>
+                            </a>
+                            <div class="m-b-sm m-t-sm">
+                                <div class="base-color center-xs flex item-module-name middle-xs text-center" ng-bind="module.Name"></div>
+
+                                <div class="base-color bold item-module-price text-center"
+                                    ng-bind="module.PriceString"
+                                    ng-if="@((SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled).ToLowerString()) || module.Price != 0 || (module.Price == 0 && module.IsFree)">
+                                </div>
+
+                                <div class="item-module-activity">
+                                    <label class="adv-checkbox-label form-label-block">
+                                        <input class="adv-checkbox-input" ng-change="modules.changeEnabled(module.Enabled, module.StringId)" ng-model="module.Enabled" type="checkbox"/>
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span ng-bind="module.Enabled ? @T("Admin.Modules.Index.Active") : @T("Admin.Modules.Index.NotActive")"
+                                            ng-class="{'green': module.Enabled}">
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="marker-list marker-list__container">
+                                <div class="marker-list__row" ng-if="module.IsCustomVersion">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.CustomModule")
+                                    </div>
+                                </div>
+                                <div class="marker-list__row" ng-if="module.IsLocalVersion && !module.IsPersonalModule">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.LocalModule")
+                                    </div>
+                                </div>
+                                <div class="marker-list__row" ng-if="module.IsPersonalModule">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.PersonalModule")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <sweetalert class="fa-times fas item-module-remove link link-decoration-none link-invert" ng-show="@(Model.AllowDeleteAllModules ? "true" : "!module.IsCustomVersion && !module.IsPersonalModule")"
+                                sweet-on-confirm="modules.uninstallModule(module)"
+                                sweet-options="{title : '@T("Admin.Modules.Index.DeleteTitle")', text: '@T("Admin.Modules.Index.DeleteText")', type: 'warning', showCancelButton: true}"
+                                title="@T("Admin.Modules.Index.Delete")">
+                            </sweetalert>
+                            @if (Model.ShowDevelopingButtons)
+                            {
+                                <a class="fa-upload fas item-module-install link link-decoration-none link-invert" ng-click="modules.installModule(module)"
+                                    title="@T("Admin.Modules.Market.Install")">
+                                </a>
+                                <a class="fa-sync fas item-module-update link link-decoration-none link-invert" ng-click="modules.updateModule(module)"
+                                    title="@T("Admin.Modules.Index.Update")">
+                                </a>
+                            }
+                            <div ng-if="module.IsInstall && module.Active && module.Version != module.CurrentVersion && !module.IsLocalVersion && !module.IsCustomVersion">
+                                <div>
+                                    <button class="btn btn-block btn-sm btn-success" ng-click="modules.updateModule(module)" type="button">@T("Admin.Modules.Index.Update")</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group middle-xs row" ng-if="modules.haveDisabledModules">
+                    <div class="col-xs-slim relative">
+                        <h3 class="m-b-xs">@T("Admin.Modules.Index.DisabledModules")</h3>
+                        <help-trigger class="help-trigger-icon-abs m-l-xs ng-cloak">
+                            <div class="help-content">
+                                @T("Admin.Modules.Index.DisabledModulesHelp")
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+                <div class="flex flex-wrap modules-container">
+                    <div class="flex-basis-fix-xs item-module-wrap"
+                        data-module-string-id="{{module.StringId | lowercase}}"
+                        ng-repeat="module in modules.modulesData | filter: {Enabled : false} track by module.StringId">
+                        <div class="item-module">
+                            <a class="center-xs flex item-module-img m-b-sm middle-xs" ng-href="modules/details/{{module.StringId}}" title="Версия модуля: {{module.CurrentVersion}}">
+                                <img ng-src="{{module.Icon}}"/>
+                            </a>
+                            <div class="m-b-sm m-t-sm">
+                                <div class="base-color center-xs flex item-module-name middle-xs text-center" ng-bind="module.Name"></div>
+
+                                <div class="base-color bold item-module-price text-center"
+                                    ng-bind="module.PriceString"
+                                    ng-if="@((SaasDataService.IsSaasEnabled || TrialService.IsTrialEnabled).ToLowerString()) || module.Price != 0 || (module.Price == 0 && module.IsFree)">
+                                </div>
+
+                                <div class="item-module-activity">
+                                    <label class="adv-checkbox-label form-label-block">
+                                        <input class="adv-checkbox-input" ng-change="modules.changeEnabled(module.Enabled, module.StringId)" ng-model="module.Enabled" type="checkbox"/>
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span ng-bind="module.Enabled ? @T("Admin.Modules.Index.Active") : @T("Admin.Modules.Index.NotActive")"
+                                            ng-class="{'green': module.Enabled}">
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="marker-list marker-list__container">
+                                <div class="marker-list__row" ng-if="module.IsCustomVersion">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.CustomModule")
+                                    </div>
+                                </div>
+                                <div class="marker-list__row" ng-if="module.IsLocalVersion && !module.IsPersonalModule">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.LocalModule")
+                                    </div>
+                                </div>
+                                <div class="marker-list__row" ng-if="module.IsPersonalModule">
+                                    <div class="marker">
+                                        @T("Admin.Modules.Index.Marker.PersonalModule")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <sweetalert class="fa-times fas item-module-remove link link-decoration-none link-invert" ng-show="@(Model.AllowDeleteAllModules ? "true" : "!module.IsCustomVersion && !module.IsPersonalModule")"
+                                sweet-on-confirm="modules.uninstallModule(module)"
+                                sweet-options="{title : '@T("Admin.Modules.Index.DeleteTitle")', text: '@T("Admin.Modules.Index.DeleteText")', type: 'warning', showCancelButton: true}"
+                                title="@T("Admin.Modules.Index.Delete")">
+                            </sweetalert>
+                            @if (Model.ShowDevelopingButtons)
+                            {
+                                <a class="fa-upload fas item-module-install link link-decoration-none link-invert" ng-click="modules.installModule(module)"
+                                    title="@T("Admin.Modules.Market.Install")">
+                                </a>
+                                <a class="fa-sync fas item-module-update link link-decoration-none link-invert" ng-click="modules.updateModule(module)"
+                                    title="@T("Admin.Modules.Index.Update")">
+                                </a>
+                            }
+                            <div ng-if="module.IsInstall && module.Active && module.Version != module.CurrentVersion && !module.IsLocalVersion && !module.IsCustomVersion">
+                                <div>
+                                    <button class="btn btn-block btn-sm btn-success" ng-click="modules.updateModule(module)" type="button">@T("Admin.Modules.Index.Update")</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

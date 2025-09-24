@@ -1,0 +1,253 @@
+﻿<div class="categories-block" is-mobile>
+    <div class="categories-block-mass" data-e2e-select="CategoryTop" ng-switch="isMobile.value === true">
+        <div class="container-fluid" ng-switch-when="false">
+            <div class="row between-xs middle-xs">
+                <div data-e2e-select="CategoryTopLeftAll">
+                    <div class="btn-group" data-e2e-select="CategoryTopAllSelect">
+                        <label class="btn btn-sm btn-default">
+                            <div class="adv-checkbox-label" data-e2e-select="CategorySelect">
+                                <input
+                                    class="adv-checkbox-input"
+                                    data-e2e-select="CategorySelectedAll"
+                                    type="checkbox"
+                                    ng-model="$ctrl.categoriesSelectedAll"
+                                    ng-change="$ctrl.toggleSelectedAll($ctrl.categoriesSelectedAll)" />
+                                <span class="adv-checkbox-emul" data-e2e-select="CategorySelectedAllCheck"></span>
+                            </div>
+                            <!--<span ng-bind="$ctrl.categoriesSelected.length" data-e2e-select="CategorySelectedCount"></span>-->
+                            <ng-pluralize
+                                class="categories-block-checkbox-text"
+                                count="$ctrl.categoriesSelected.length"
+                                when="{'0': 'Выбрать все категории',
+                                             'one': '{} категория выбрана',
+                                             'few': '{} категории выбрано',
+                                             'many': '{} категории выбрано',
+                                             'other': '{} категории выбрано'}">
+                            </ng-pluralize>
+                        </label>
+                        <input
+                            type="button"
+                            class="btn btn-sm btn-default"
+                            value="{{'Admin.Js.Partials.CategoriesBlock.Delete'|translate}}"
+                            data-e2e-select="CategorySelectedDelete"
+                            ng-if="$ctrl.categoriesSelected.length > 0"
+                            ng-click="$ctrl.deleteCategories($ctrl.categoriesSelected)" />
+                    </div>
+                </div>
+                <div class="categories-block-mass-search-col">
+                    <input
+                        type="text"
+                        class="form-control input-sm"
+                        ng-model="$ctrl.categorysearch"
+                        ng-keyup="$ctrl.fetch()"
+                        placeholder="{{'Admin.Js.Partials.CategoriesBlock.SearchByCategory'|translate}}" />
+                </div>
+                <div data-e2e-select="CategoryTopRightAll" class="fs-xs">
+                    {{'Admin.Js.Partials.CategoriesBlock.Categories'|translate}}
+                    <span ng-bind="$ctrl.categories.length" data-e2e-quantity="CategoryAllQuantity"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-grid-custom-selection-action" ng-if="$ctrl.categories != null && $ctrl.categories.length > 0" ng-switch-when="true">
+            <div class="btn-group">
+                <button
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    data-e2e="gridSelectionDropdownButton"
+                    data-bs-toggle="dropdown"
+                    class="btn btn-success btn-sm dropdown-toggle"
+                    aria-expanded="false">
+                    Действие<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="" class="ui-grid-custom-selection-action-link" ng-click="$ctrl.toggleSelectedAll(true)"> Выбрать все категории </a>
+                    </li>
+                    <li>
+                        <a
+                            href=""
+                            class="ui-grid-custom-selection-action-link"
+                            ng-click="$ctrl.toggleSelectedAll(false)"
+                            ng-bind="::'Admin.Js.GridCustomSelectionAction.RemoveSelection'|translate">
+                        </a>
+                    </li>
+                    <li ng-if="$ctrl.categoriesSelected != null && $ctrl.categoriesSelected.length > 0">
+                        <a
+                            href=""
+                            class="ui-grid-custom-selection-action-link"
+                            ng-click="$ctrl.deleteCategories($ctrl.categoriesSelected)"
+                            ng-bind="::'Admin.Js.Catalog.DeleteSelected'|translate">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group-vertical ui-grid-custom-selection-info">
+                <span
+                    data-ng-bind="isMobile.value ? ('Admin.Js.Mobile.GridCustomSelectionAction.SelectedRows'|translate) : ('Admin.Js.GridCustomSelectionAction.SelectedRows'|translate)"
+                    >Выбрано:</span
+                >
+                <span class="btn-group-vertical">
+                    <span class="ui-grid-custom-selection-count" ng-bind="$ctrl.categoriesSelected.length"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div data-e2e-block="Category" class="categories-block-items" ng-switch="$ctrl.categories != null && $ctrl.categories.length > 0">
+        <div
+            class="sortable-row categories-block-row categories-block__list clearfix"
+            as-sortable="$ctrl.sortableOptions"
+            ng-switch="isMobile.value === true"
+            ng-model="$ctrl.categories"
+            ng-switch-when="true">
+            <div
+                ng-repeat="category in $ctrl.categories track by category.CategoryId"
+                data-as-sortable-item
+                class="swipe-line"
+                ng-class="{'progress-overlay': $ctrl.categoriesIdForDeleting.includes(category.CategoryId)}"
+                ng-switch-when="true">
+                <div class="swipe-line__inner" data-swipe-line>
+                    <div
+                        data-swipe-line-left
+                        on-stick-left="$ctrl.toggleCategory(category.CategoryId, true)"
+                        on-unstick-left="$ctrl.toggleCategory(category.CategoryId, false)"
+                        is-sticked="$ctrl.check(category.CategoryId)"
+                        class="swipe-line__left">
+                        <label class="adv-checkbox-label">
+                            <input
+                                class="adv-checkbox-input"
+                                type="checkbox"
+                                checklist-value="category.CategoryId"
+                                checklist-model="$ctrl.categoriesSelected" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                    <a
+                        ng-href="catalog?categoryId={{category.CategoryId}}"
+                        class="navigation-item navigation-item--horizontal card card--middle swipe-line__content">
+                        <div class="as-sortable-item-handle navigation-item__icon" as-sortable-item-handle>
+                            <icon-move>
+                                <svg
+                                    class="icon-move"
+                                    version="1.0"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="10.000000pt"
+                                    height="20.000000pt"
+                                    viewBox="0 0 10.000000 20.000000"
+                                    preserveAspectRatio="xMidYMid meet">
+                                    <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                        <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                        <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    </g>
+                                </svg>
+                            </icon-move>
+                        </div>
+                        <div class="navigation-item__text">
+                            <span ng-bind="category.Name" class="category-block__name" data-e2e="categoriesBlockItem"></span>
+                        </div>
+                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.589996 10.59L5.17 6L0.589996 1.41L2 0L8 6L2 12L0.589996 10.59Z" fill="black"></path>
+                        </svg>
+                    </a>
+                    <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                        <a class="btn btn-sm btn-success flex center-xs middle-xs" ng-href="{{category.Url}}"
+                            >{{'Admin.Js.Mobile.Partials.CategoryBlock.Edit'|translate}}</a
+                        >
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                            ng-click="$ctrl.deleteCategory(category.CategoryId)">
+                            {{'Admin.Js.Mobile.Partials.CategoryBlock.Delete'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="categories-block-wrap"
+                ng-switch-when="false"
+                ng-repeat="category in $ctrl.categories"
+                data-as-sortable-item
+                data-e2e="categoriesBlockItemIndex"
+                data-e2e-categories-block-item-index-id="{{category.CategoryId}}">
+                <div
+                    class="categories-block category-block navigation-item navigation-item--horizontal"
+                    ng-class="{'progress-overlay': $ctrl.categoriesIdForDeleting.includes(category.CategoryId)}"
+                    data-e2e-block="CategoryDrag"
+                    data-e2e-block-category-drag-id="{{category.CategoryId}}">
+                    <div class="categories-block__border category-block__border">
+                        <div class="clearfix">
+                            <div
+                                class="pull-left"
+                                as-sortable-item-handle
+                                data-e2e="CategoryDragDrop"
+                                ng-if="$ctrl.categorysearch == null || $ctrl.categorysearch.length === 0">
+                                <icon-move />
+                            </div>
+                            <div class="pull-right">
+                                <a
+                                    class="link-invert link-decoration-none fas fa-pencil-alt categories-block-icon"
+                                    data-e2e="categoriesBlockItemEdit"
+                                    aria-label="Редактировать"
+                                    data-e2e-categories-block-item-edit-id="{{category.CategoryId}}"
+                                    ng-href="{{category.Url}}"></a>
+                                <button
+                                    type="button"
+                                    class="btn-icon link-invert link-decoration-none fas fa-times categories-block-icon"
+                                    data-e2e="categoriesBlockItemDelete"
+                                    data-e2e-categories-block-item-delete-id="{{category.CategoryId}}"
+                                    aria-label="Удалить"
+                                    ng-click="$ctrl.deleteCategory(category.CategoryId)"></button>
+                            </div>
+                        </div>
+                        <div class="categories-block-content category-block__content">
+                            <figure class="categories-block-figure category-block__figure">
+                                <a
+                                    class="categories-block-figure-link category-block__figure-link"
+                                    ng-href="catalog?categoryId={{category.CategoryId}}">
+                                    <img
+                                        class="categories-block-figure-img category-block__img"
+                                        ng-src="{{category.MiniPictureSrc}}"
+                                        alt="{{category.Name}}"
+                                        title="{{category.Name}}" />
+                                </a>
+                            </figure>
+                        </div>
+                    </div>
+                    <div class="categories-block-name category-block__footer">
+                        <label
+                            class="adv-checkbox-label"
+                            data-e2e="categoriesBlockItemSelect"
+                            data-e2e-categories-block-item-select-id="{{category.CategoryId}}">
+                            <input
+                                class="adv-checkbox-input"
+                                data-e2e-select="CategorySelectTrue"
+                                type="checkbox"
+                                checklist-value="category.CategoryId"
+                                checklist-model="$ctrl.categoriesSelected" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                        <a ng-href="catalog?categoryId={{category.CategoryId}}" class="category-block__link link-invert link-decoration-none">
+                            <span
+                                ng-bind="category.Name"
+                                class="category-block__name"
+                                data-e2e="categoriesBlockItem"
+                                data-e2e-categories-block-item-id="{{category.CategoryId}}"></span>
+                            <span class="categories-block-count category-block__count"
+                                ><span class="bracket bracket--left">(</span><span ng-bind="category.ProductsCount"></span
+                                ><span class="bracket bracket--right">)</span></span
+                            >
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-switch-when="false" class="categories-block-empty">{{'Admin.Js.Partials.CategoryBlock.NoCategoryFound'|translate}}</div>
+    </div>
+</div>

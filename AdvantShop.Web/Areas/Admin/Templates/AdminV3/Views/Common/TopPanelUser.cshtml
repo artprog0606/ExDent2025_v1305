@@ -1,0 +1,49 @@
+﻿@using AdvantShop.FilePath;
+
+@{
+    var customer = CustomerContext.CurrentCustomer;
+    var avatarName = CustomerContext.CurrentCustomer.Avatar;
+    var avatarSrc = !string.IsNullOrEmpty(avatarName)
+                    ? FoldersHelper.GetPath(FolderType.Avatar, avatarName, true)
+                    : UrlService.GetAdminStaticUrl() + "images/no-photo_v2.png";
+}
+
+<div class="header-top-right-menu">
+    <div class="flex end-xs middle-xs">
+        <ul class="nav navbar-nav header-top-right-menu-list">
+            <li class="header-top-right-menu-item arrow-custom-popover" data-ng-controller="topPanelUserCtrl as TopPanel">
+                <div class="log-block-link text-nowrap flex middle-xs"
+                     data-submenu-container="{'type': 'modern', 'blockOrientation': '.header-top-right-menu-item', 'delayHover': 350, checkOrientation:true}">
+                    <div class="dropdown m-r-xs header-top-right__submenu-parent" data-submenu-parent>
+                        <div ng-init="TopPanel.userName = '@(customer.FirstName + (customer.LastName.IsNotEmpty() ? " " + customer.LastName : ""))'">
+                            <span class="log-block-ava top-pane__visibility-change"><img class="log-block-image" ng-init="TopPanel.avatarSrc='@avatarSrc'" ng-src="{{TopPanel.avatarSrc}}" src="@avatarSrc" alt="" /></span>
+                            <span class="log-block-inner" ng-click="TopPanel.loadCurrentUser()" ng-bind="TopPanel.userName">@(customer.FirstName + (customer.LastName.IsNotEmpty() ? " " + customer.LastName : ""))</span>
+                        </div>
+                        <span class="fa fa-angle-down font-bold log-block-arrow"></span>
+                        <div class="popover bottom" data-submenu>
+                            <div class="arrow"></div>
+                            <div class="popover-content">
+                                <ul role="menu" class="list-group popover-menu-list">
+                                    @if (customer.IsAdmin || customer.HasRoleAction(RoleAction.Customers))
+                                    {
+                                        <li class="list-group-item">
+                                            <a class="dropdown-menu-link header-top-right-submenu-link" href="" ng-click="TopPanel.loadCurrentUser()">
+                                                <span class="dropdown-menu-content-header">@T("Admin.Common.TopPanelUser.MyAccount")</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="divider"></li>
+                                    <li class="list-group-item">
+                                        <a class="dropdown-menu-link header-top-right-submenu-link" href="@Url.AbsoluteActionUrl("Logout", "Account")">
+                                            <span class="dropdown-menu-content-header">@T("Admin.Common.TopPanelUser.Exit")</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

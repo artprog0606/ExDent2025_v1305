@@ -1,0 +1,80 @@
+﻿@model AdvantShop.Areas.Partners.ViewModels.Accruals.AccrualsViewModel
+
+@Html.PartnerStaticBlock("Partners_Accruals_TopBlock", cssClass: "ibox ibox-content")
+<div class="ibox">
+    <div class="ibox-title">
+        <h5>Начисления</h5>
+    </div>
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-xs-12">
+                @if (Model.Accruals.Any())
+                {
+                    <div class="table-info">
+                        <div class="row table-info-head table-info-row">
+                            <div class="col-xs">Email</div>
+                            <div class="col-xs">Телефон</div>
+                            <div class="col-xs-2 col-text-right">Начислено</div>
+                            <div class="col-xs-2 col-text-right">Дата</div>
+                            <div class="col-xs-slim">
+                                <a href="javascript:void(0)" class="icon-right-open-before link-text-decoration-none invisible"></a>
+                            </div>
+                        </div>
+                        @for (int i = 0; i < Model.Accruals.Count; i++)
+                        {
+                            var accrual = Model.Accruals[i];
+                            <div class="row table-info-row">
+                                <div class="col-xs col-non-expandable">
+                                    @(accrual.Email.IsNotEmpty() ? accrual.EmailAnonimized : "[Нет данных]")
+                                </div>
+                                <div class="col-xs col-non-expandable">
+                                    @(accrual.Phone.IsNotEmpty() ? accrual.PhoneAnonimized : "[Нет данных]")
+                                </div>
+                                <div class="col-xs-2 col-text-right">@accrual.AmountFormatted</div>
+                                <div class="col-xs-2 col-text-right">@accrual.DateCreated.ToString("dd.MM.yyyy HH:mm")</div>
+                                <div class="col-xs-slim">
+                                    <a href="javascript:void(0)" class="icon-right-open-before link-text-decoration-none" title="Подробнее"
+                                       data-ng-class="{'icon-right-open-before': !details[@i].show, 'icon-down-open-before': details[@i].show}"
+                                       data-ng-click="details[@i].show = !details[@i].show"></a>
+                                </div>
+                            </div>
+                            <div class="table-info-details ng-hide" data-ng-show="details[@i].show">
+                                @for (int j = 0; j < accrual.Details.OrderItemsDetails.Count; j++)
+                                {
+                                    var oiDetails = accrual.Details.OrderItemsDetails[j];
+                                    <div class="table-info-details-row">
+                                        <label class="details-label cs-t-3">@(j == 0 ? "Начисления по товарам:" : string.Empty)</label>
+                                        <div class="details-value">
+                                            <div><b>@(j + 1). [@oiDetails.ArtNo] @oiDetails.Name</b></div>
+                                            <div>Сумма с учетом скидок: @oiDetails.PriceFormatted x @oiDetails.Amount = <b>@oiDetails.SumFormatted</b></div>
+                                            <div>
+                                                Начислено: <b>@oiDetails.RewardFormatted</b>
+                                                @if (oiDetails.CategoryRewardPercent.HasValue)
+                                                {
+                                                    <span>(@oiDetails.CategoryRewardPercent% - вознаграждение для категории: @oiDetails.CategoryPath)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>(@oiDetails.RewardPercent%)</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="table-info-details-row">
+                                    <label class="details-label cs-t-3">Начислено всего:</label>
+                                    <div class="details-value"><b>@accrual.AmountFormatted</b></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @Html.Paging(Model.Pager)
+                }
+                else
+                {
+                    <div>Нет начислений</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

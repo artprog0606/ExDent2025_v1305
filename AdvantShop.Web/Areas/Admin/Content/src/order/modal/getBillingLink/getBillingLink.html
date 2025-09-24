@@ -1,0 +1,81 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.GetBillingLink.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="ng-cloak text-danger m-b-sm" ng-if="ctrl.error != null || ctrl.error.length == 0">{{ctrl.error}}</div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                ng-model="ctrl.link"
+                                class="form-control js-copy input-alt-mobile"
+                                readonly="readonly"
+                                ng-click="ctrl.select()" />
+                            <span class="input-group-btn">
+                                <a
+                                    class="btn btn-default"
+                                    href=""
+                                    ng-click="ctrl.copyToClipboard()"
+                                    title="{{'Admin.Js.GetBillingLink.Copy'|translate}}"
+                                    ><i class="fa fa-clone"></i
+                                ></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="ctrl.showSendToCustomerLink">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ui-modal-trigger
+                            size="lg"
+                            data-controller="'ModalSendBillingLinkCtrl'"
+                            data-controller-as="ctrl"
+                            data-resolve="{params: { orderId: ctrl.orderId }}"
+                            template-url="../areas/admin/content/src/order/modal/sendBillingLink/sendBillingLink.html">
+                            <a href=""> {{'Admin.Js.GetBillingLink.Send'|translate}} </a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            </div>
+            <div class="m-b-none" ng-class="{'form-group': !isMobile.value}">
+                <div class="row middle-xs">
+                    <div class="col-xs-12 col-md-4" ng-class="{'control-label': isMobile.value}">
+                        {{'Admin.Js.GetBillingLink.ShortLink'|translate}}
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        <a href="" ng-if="!ctrl.shortLink" ng-click="ctrl.generateShortBillingLink()">
+                            {{'Admin.Js.GetBillingLink.GenerateShortLink'|translate}}
+                        </a>
+                        <div class="input-group" ng-if="ctrl.shortLink">
+                            <input
+                                type="text"
+                                ng-model="ctrl.shortLink"
+                                class="form-control js-copy-short input-alt-mobile"
+                                readonly="readonly"
+                                ng-click="ctrl.select('.js-copy-short')" />
+                            <span class="input-group-btn">
+                                <a
+                                    class="btn btn-default"
+                                    href=""
+                                    ng-click="ctrl.copyToClipboard('.js-copy-short')"
+                                    title="{{'Admin.Js.GetBillingLink.Copy'|translate}}"
+                                    ><i class="fa fa-clone"></i
+                                ></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Close'|translate}}</button>
+    </div>
+</form>

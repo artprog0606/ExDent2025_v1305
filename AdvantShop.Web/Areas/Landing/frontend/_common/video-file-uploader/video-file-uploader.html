@@ -1,0 +1,75 @@
+﻿<div class="video-file-uploader">
+    <div class="flex middle-xs m-b-md">
+        <div>
+            <button
+                class="blocks-constructor-btn-confirm video-file-uploader__add-btn"
+                ngf-select
+                ngf-pattern="videoFileUploader.pattern"
+                ngf-accept="videoFileUploader.accept"
+                ngf-change="videoFileUploader.load($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                Выберите файл
+            </button>
+        </div>
+        <div>
+            <span class="p-l-md p-r-md" ng-bind="videoFileUploader.fileName"></span>
+        </div>
+    </div>
+    <div class="video-file-uploader__progress" ng-if="videoFileUploader.progressPercentage >= 0">
+        <div
+            style="width:{{videoFileUploader.progressPercentage}}%"
+            class="video-file-uploader__progress-loading"
+            ng-bind="videoFileUploader.progressPercentage + '%'"></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-5 video-file-uploader__drop-box-wrap">
+            <div
+                ngf-select
+                ngf-drop
+                ngf-pattern="videoFileUploader.pattern"
+                ngf-change="videoFileUploader.load($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                ngf-accept="videoFileUploader.accept"
+                class="video-file-uploader__drop-box flex center-xs middle-xs">
+                <span>или перетащите</span>
+            </div>
+        </div>
+        <div class="col-xs-5 video-file-uploader__preview-wrap">
+            <video controls ngf-src="videoFileUploader.settings.urlVideo"></video>
+        </div>
+    </div>
+
+    <button
+        class="blocks-constructor-btn-confirm m-b-md"
+        ng-disabled="videoFileUploader.disabledLoadBtn === true"
+        ng-click="videoFileUploader.submit(videoFileUploader.file)">
+        Загрузить
+    </button>
+
+    <div>
+        <div class="m-b-md">Список загруженных видеофайлов:</div>
+        <div ng-if="videoFileUploader.videoList != null && videoFileUploader.videoList.length === 0">Нет загруженных видеофайлов</div>
+        <div ng-repeat="video in videoFileUploader.videoList track by $index">
+            <label class="blocks-constructor-label">
+                <input
+                    class="blocks-constructor-checkbox-native"
+                    name="videoName"
+                    type="radio"
+                    ng-model="videoFileUploader.settings.urlVideo"
+                    value="{{'userfiles/lp-video/' + video}}" />
+                <span class="blocks-constructor-checkbox"></span>
+                <span class="blocks-constructor-label-text" ng-bind="video"></span>
+            </label>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="p-l-xs pointer"
+                width="17"
+                height="25"
+                viewBox="0 0 24 24"
+                ng-click="videoFileUploader.onDeleteVideo(videoFileUploader.deleteUrl, video)">
+                <path
+                    fill="red"
+                    fill-rule="evenodd"
+                    d="M13.132 12.425l6.717 6.717-.707.707-6.717-6.717-6.718 6.717L5 19.142l6.718-6.717L5 5.707 5.707 5l6.718 6.718L19.142 5l.707.707-6.717 6.718z" />
+            </svg>
+        </div>
+    </div>
+</div>

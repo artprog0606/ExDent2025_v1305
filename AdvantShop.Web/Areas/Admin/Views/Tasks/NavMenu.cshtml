@@ -1,0 +1,91 @@
+﻿@model List<AdvantShop.Core.Services.Crm.TaskGroup>
+@{
+    var selected = "";
+    var controller = Request.RequestContext.RouteData.Values["controller"].ToString().ToLower();
+    var action = Request.RequestContext.RouteData.Values["action"].ToString().ToLower();
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    switch (controller)
+    {
+        case "tasks":
+            selected = action == "project" ? "taskgroups" : "tasks";
+            break;
+        case "taskgroups":
+            selected = "taskgroups";
+            break;
+        case "settingstasks":
+            selected = "settingstasks";
+            break;
+        default:
+            break;
+    }
+}
+
+<div class="js-header-bottom-wrap">
+    <nav id="header-bottom" class="row navbar-static-top middle-xs navbar white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="col-xs">
+            <div class="row">
+                <ul class="nav navbar-nav" data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': 'body'}">
+                    <li class="dropdown dropdown_custom@(selected == "tasks" ? " dropdown_active" : "")" data-submenu-parent>
+                        <a href="@Url.AbsoluteActionUrl("Index", "Tasks")" class="dropdown-toggle header-bottom-menu-link">
+                            @T("Admin.Tasks.Index.Title")
+                            <span data-statistics-count data-type="tasks" data-ng-bind-html="statisticsCount.getValue()"></span>
+                        </a>
+                    </li>
+                    <li class="dropdown dropdown_custom@(selected == "taskgroups" ? " dropdown_active" : "")" data-submenu-parent>
+                        <a href="@Url.AbsoluteActionUrl("Index", "TaskGroups")" class="dropdown-toggle header-bottom-menu-link">
+                            @T("Admin.TaskGroups.Index.Title")
+                            <span class="fa fa-angle-down font-bold"></span>
+                        </a>
+                        <ul role="menu" class="dropdown-menu submenu" data-submenu>
+                            @if (Model.Any())
+                            {
+                                <li class="dropdown-submenu">
+                                    <a href="" class="dropdown-menu-link link-disabled">
+                                        <strong>@T("Admin.Tasks.NavMenu.RecentProjects")</strong>
+                                    </a>
+                                </li>
+                            }
+                            @foreach (var taskGroup in Model)
+                            {
+                                <li class="dropdown-submenu" data-submenu-parent>
+                                    <a class="dropdown-menu-link" href="@Url.AbsoluteRouteUrl("Admin_project", new { taskGroupId = taskGroup.Id })">
+                                        @taskGroup.Name
+                                    </a>
+                                </li>
+                            }
+                            @if (Model.Any())
+                            {
+                                <li class="divider divider-small">
+                                </li>
+                            }
+                            <li class="dropdown-submenu" data-submenu-parent>
+                                <a class="dropdown-menu-link" href="@Url.AbsoluteActionUrl("Index", "SettingsTasks")?tasksTab=taskGroups">
+                                    @T("Admin.Tasks.NavMenu.ControlProjects")
+                                </a>
+                            </li>
+                            @if (CustomerContext.CurrentCustomer.IsAdmin)
+                            {
+                                <li class="divider divider-small">
+                                </li>
+                                <li class="dropdown-submenu" data-submenu-parent>
+                                    <ui-modal-trigger data-controller="'ModalAddEditTaskGroupCtrl'" template-url="@Html.GetAssetPath("addEditTaskGroup.html")" resolve="{'goToProjectPage': true}">
+                                        <a href="" class="dropdown-menu-link js-menu-link">
+                                            @T("Admin.Tasks.NavMenu.AddProject")
+                                        </a>
+                                    </ui-modal-trigger>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                    <li class="dropdown dropdown_custom@(selected == "settingstasks" ? " dropdown_active" : "")" data-submenu-parent>
+                        <a href="@Url.AbsoluteActionUrl("Index", "SettingsTasks")" class="dropdown-toggle header-bottom-menu-link">
+                            @T("Admin.Tasks.NavMenu.Settings")
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @Html.Action("SearchBlock", "Search")
+    </nav>
+</div>
+

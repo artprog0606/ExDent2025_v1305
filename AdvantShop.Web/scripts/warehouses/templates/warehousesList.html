@@ -1,0 +1,47 @@
+﻿<div
+    data-ng-switch="$ctrl.activeWarehouse != null && $ctrl.showDetailsWarehouse"
+    class="warehouses-list"
+    data-ng-class="{'warehouses-list--only-active': $ctrl.onlyActiveWarehouse}">
+    <ul class="warehouses-list__items" data-ng-switch-default>
+        <li
+            class="warehouses-list__item cs-br-1"
+            data-ng-repeat="warehouse in $ctrl.warehouses track by $index"
+            data-ng-class="{'ng-hide': $ctrl.onlyActiveWarehouse && $ctrl.activeWarehouse !== warehouse, 'warehouses-list__item--active': $ctrl.activeWarehouse === warehouse}"
+            data-ng-click="$ctrl.handleClickWarehouse(warehouse, $index)">
+            <address class="warehouses-list__shop-address" data-ng-if="warehouse.store.address" data-ng-bind="warehouse.store.address"></address>
+            <div
+                class="warehouses-list__shop-address-comment"
+                data-ng-if="warehouse.store.addressComment"
+                data-ng-bind="warehouse.store.addressComment"></div>
+            <strong class="warehouses-list__shop-name" data-ng-if="warehouse.store.name" data-ng-bind="warehouse.store.name"></strong>
+            <div class="warehouses-list__work-time" data-ng-if="warehouse.store.workTime.length">
+                <div data-ng-repeat="time in warehouse.store.workTime track by $index" data-ng-bind="time"></div>
+            </div>
+            <div
+                class="warehouses-list__product-availability-count"
+                data-ng-style="{'color': '#' + warehouse.store.stockColor}"
+                data-ng-if="warehouse.store.stock != null">
+                Доступно: <span data-ng-bind="warehouse.store.stock"></span>
+            </div>
+        </li>
+    </ul>
+    <div class="warehouses-list__details-shop warehouse-details" data-ng-switch-when="true">
+        <div class="warehouse-details__inner cs-br-1 m-b-md">
+            <header class="warehouse-details__header">
+                <address
+                    class="warehouse-details__shop-address"
+                    data-ng-if="$ctrl.activeWarehouse.store.address"
+                    data-ng-bind="$ctrl.activeWarehouse.store.address"></address>
+                <strong
+                    class="warehouse-details__shop-name"
+                    data-ng-if="$ctrl.activeWarehouse.store.name"
+                    data-ng-bind="$ctrl.activeWarehouse.store.name"></strong>
+            </header>
+            <p class="warehouse-details__description" data-ng-bind="$ctrl.activeWarehouse.store.description"></p>
+        </div>
+
+        <button type="button" data-ng-click="$ctrl.backToList()" class="btn btn-small btn-action warehouse-details__back-to-list">
+            {{'Js.WarehousesList.Back' | translate}}
+        </button>
+    </div>
+</div>

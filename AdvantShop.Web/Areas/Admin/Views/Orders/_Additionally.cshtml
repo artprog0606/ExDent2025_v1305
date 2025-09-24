@@ -1,0 +1,121 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+@{
+    var source = Model.OrderTrafficSource;
+    var orderSourceId = "null";
+
+    if (Model.IsEditMode && Model.Order != null)
+    {
+        orderSourceId = Model.Order.OrderSourceId.ToString();
+    }
+    else
+    {
+        var orderSource = Model.OrderSources.FirstOrDefault();
+        orderSourceId = orderSource != null ? orderSource.Value : null;
+    }
+}
+
+<div class="ibox category-block block-additional-parameters">
+    <div class="ibox-content category-content block-additional-parameters-content border_none">
+        <ng-form novalidate="" name="orderInfoForm">
+            <div class="clear">
+                <div class="order__subblock-title pull-left">@T("Admin.Orders.OrderInfo.Additionally")</div>
+            </div>
+            @if (Model.EnableMangers)
+            {
+                <div class="block-additional-parameters-row">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Orders.Orderinfo.Manager")
+                    </div>
+                    <div class="block-additional-parameters-value">
+                        @Html.DropDownListFor(x => x.Order.ManagerId, Model.Managers, new { @class = "form-control", ng_model = "order.managerId", ng_init = "order.managerId=" + (Model.Order != null ? "'" + Model.Order.ManagerId.ToString() + "'" : "null") + ";order.defaultManagerId=" + (Model.Order != null ? "'" + Model.Order.ManagerId.ToString() + "'" : "null") + "", ng_change = "order.saveChanges()", bs_modifiable = "false" })
+                    </div>
+                </div>
+            }
+            <div class="block-additional-parameters-row">
+                <div class="block-additional-parameters-name">
+                    @T("Admin.Orders.Orderinfo.OrderSource")
+                </div>
+                <div class="block-additional-parameters-value">
+                    @Html.DropDownListFor(x => x.Order.OrderSourceId, Model.OrderSources, new { @class = "form-control", ng_model = "order.orderSourceId", ng_init = "order.orderSourceId='" + orderSourceId + "'", ng_change = "order.saveChanges()", bs_modifiable = "false" })
+                    @if (!string.IsNullOrEmpty(Model.LpLink))
+                    {
+                        <div class="m-t-sm" data-e2e="LpLink">
+                            <a href="@Model.LpLink" target="_blank">@Model.LpLink</a>
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (Model.IsEditMode)
+            {
+                <div class="block-additional-parameters-row">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Orders.Orderinfo.TrackingNumber")
+                    </div>
+                    <div class="block-additional-parameters-value">
+                        @Html.TextBoxFor(x => x.Order.TrackNumber, new
+                        {
+                            @class = "form-control",
+                            ng_model = "order.trackNumber",
+                            ng_init = "order.trackNumber=" + (Model.Order != null ? "'" + Model.Order.TrackNumber + "'" : "null"),
+                            ng_blur = "orderInfoForm['Order.TrackNumber'].$dirty === true && order.saveChanges(orderInfoForm)",
+                            bs_modifiable = "false"
+                        })
+                    </div>
+                </div>
+            }
+            @if (Model.IsEditMode && source != null)
+            {
+                <div class="block-additional-parameters-row">
+                    <div class="block-additional-parameters-name">
+                        @T("Admin.Orders.Orderinfo.UTM")
+                    </div>
+                    <div class="block-additional-parameters-value text-floating">
+                        @if (!string.IsNullOrEmpty(source.Referrer))
+                        {
+                            <div class="m-b-sm">@T("Admin.Orders.Orderinfo.Referral"): @source.Referrer</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.Url))
+                        {
+                            <div class="m-b-sm word-break">@T("Admin.Orders.Orderinfo.LoginPage"): @source.Url</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.Ip))
+                        {
+                            <div class="m-b-sm word-break">@T("Admin.Orders.Orderinfo.IP"): @source.Ip</div>
+                        }
+                        <div class="m-b-sm">@T("Admin.Orders.OrderInfo.Date"): @source.CreateOn.ToString("dd.MM.yyyy HH:mm")</div>
+                        @if (!string.IsNullOrEmpty(source.utm_source))
+                        {
+                            <div class="m-b-sm">UTM Source: @source.utm_source</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.utm_medium))
+                        {
+                            <div class="m-b-sm">UTM Medium: @source.utm_medium</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.utm_campaign))
+                        {
+                            <div class="m-b-sm">UTM Campaign: @source.utm_campaign</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.utm_content))
+                        {
+                            <div class="m-b-sm">UTM Content: @source.utm_content</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.utm_term))
+                        {
+                            <div class="m-b-sm">UTM Term: @source.utm_term</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.GoogleClientId))
+                        {
+                            <div class="m-b-sm">Google client id: @source.GoogleClientId</div>
+                        }
+                        @if (!string.IsNullOrEmpty(source.YandexClientId))
+                        {
+                            <div class="m-b-sm">Yandex client id: @source.YandexClientId</div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @Html.RenderModules("admin_order_orderinfo", new { orderId = Model.OrderId })
+        </ng-form>
+    </div>
+</div>

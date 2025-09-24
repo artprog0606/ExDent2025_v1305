@@ -1,0 +1,331 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Analytics.AnalyticsReportModel
+@{
+    var currentCustomer = CustomerContext.CurrentCustomer;
+    var tabDefault = string.Empty;
+    var productId = Request["productId"];
+    if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders) && productId.IsNotEmpty())
+    {
+        tabDefault = "product";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Orders))
+    {
+        tabDefault = "orders";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Customers))
+    {
+        tabDefault = "rfm";
+    }
+    else if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+    {
+        tabDefault = "abcxyz";
+    }
+}
+@{
+    Html.AddAsset("analytics");
+}
+
+@{
+    var Items = new List<MoreButtonPopoverItem>() { };
+
+    if (currentCustomer.HasRoleAction(RoleAction.Orders))
+    {
+        Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Home.Menu.StatisticExportProducts"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            WrapStart = "<ui-modal-trigger data-on-before-open=\"analyticsReport.onInitExportExcel()\" data-controller=\"'ModalExportProductsCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("exportProductsModal.html") + "\">",
+            WrapEnd = "<ui-modal-trigger/>"
+        });
+
+        Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Home.Menu.StatisticExportOrders"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            WrapStart = "<ui-modal-trigger data-on-before-open=\"analyticsReport.onInitExportExcel()\" data-controller=\"'ModalExportOrdersCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("exportOrdersModal.html") + "\">",
+            WrapEnd = "<ui-modal-trigger/>"
+        });
+    }
+
+    if (currentCustomer.HasRoleAction(RoleAction.Customers))
+    {
+        Items.Insert(1, new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.Home.Menu.StatisticExportCustomers"),
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            WrapStart = "<ui-modal-trigger data-on-before-open=\"analyticsReport.onInitExportExcel()\" data-controller=\"'ModalExportCustomersCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("exportCustomersModal.html") + "\">",
+            WrapEnd = "<ui-modal-trigger/>"
+        });
+    }
+}
+@Html.Header(new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel() { Title = T("Admin.Analytics.Analytics").ToString(), Controls = new List<IButton>() { new MoreButtonModel() { Items = Items, NgTemplateId = "moreButtonRightHeaderAnalyticTemplate", Icon = new ButtonIcon() { SvgName = "xls", Attributes = new { width = 25, height = 25 }, } } } })
+
+
+<div class="analytics-page" is-mobile ng-init="analyticsReport.init('@tabDefault')">
+    <ul class="chips-list">
+        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'orders'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='orders'}" href="" ng-click="analyticsReport.showTab('orders')">
+                    @T("Admin.Analytics.Orders")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'rfm'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='rfm'}" href="" ng-click="analyticsReport.showTab('rfm')">
+                    @T("Admin.Analytics.Customers")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'abcxyz'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='abcxyz'}" href="" ng-click="analyticsReport.showTab('abcxyz')">
+                    @T("Admin.Analytics.Goods")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.BonusSystem) && Model.BonusSystemActive)
+        {
+            <li li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'bonus'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='bonus'}" href="" ng-click="analyticsReport.showTab('bonus')">
+                    @T("Admin.Analytics.Bonus")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'product'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='product'}" href="" ng-click="analyticsReport.showTab('product')">
+                    @T("Admin.Analytics.Product")
+                </a>
+            </li>
+        }
+
+        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'telephony'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='telephony'}" href="" ng-click="analyticsReport.showTab('telephony')">
+                    @T("Admin.Analytics.Telephony")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'managers'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='managers'}" href="" ng-click="analyticsReport.showTab('managers')">
+                    @T("Admin.Analytics.Managers")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+        {
+            <li class="chips-list__item" data-scroll-into-view="analyticsReport.selectedTab === 'searchRequests'">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='searchRequests'}" href="" ng-click="analyticsReport.showTab('searchRequests')">
+                    @T("Admin.Analytics.SearchRequests")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <li class="chips-list__item" ng-class="{'selected':analyticsReport.selectedTab=='exportProducts'}" ng-click="analyticsReport.showTab('exportProducts')">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='exportProducts'}" href="" ng-click="analyticsReport.showTab('exportProducts')">
+                    @T("Admin.Home.Menu.StatisticExportProducts")
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+        {
+            <li class="chips-list__item" ng-class="{'selected':analyticsReport.selectedTab=='exportCustomers'}" ng-click="analyticsReport.showTab('exportCustomers')">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='exportCustomers'}" href="" ng-click="analyticsReport.showTab('exportCustomers')">
+                    <div class="aside-menu-name">@T("Admin.Home.Menu.StatisticExportCustomers")</div>
+                </a>
+            </li>
+        }
+        @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+        {
+            <li class="chips-list__item"  ng-class="{'selected':analyticsReport.selectedTab=='exportOrders'}" ng-click="analyticsReport.showTab('exportOrders')">
+                <a class="chip" ng-class="{'chip--active':analyticsReport.selectedTab=='exportOrders'}" href="" ng-click="analyticsReport.showTab('exportOrders')">
+                    <div class="aside-menu-name">@T("Admin.Home.Menu.StatisticExportOrders")</div>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="card card__row row-gap-lg analytics-page__filters"
+         ng-if="analyticsReport.showDateFrom || analyticsReport.showDateTo || analyticsReport.showPaid || analyticsReport.showOrderStatus">
+        <div ng-if="analyticsReport.showDateFrom">
+            <div class="m-b-xs control-label">
+                @T("Admin.Account.DateFrom")
+            </div>
+
+            <div>
+                <div class="flex" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="analyticsReport.updateData()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control"
+                               ng-flatpickr-input
+                               ng-model="analyticsReport.dateFrom"
+                               ng-init="analyticsReport.dateFrom='@Model.DateFrom.ToString("yyyy-MM-dd")'">
+                    </span>
+                    <span class="input-group-addon" data-toggle>
+                        <i class="fas fa-calendar-alt"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="analyticsReport.showDateTo">
+            <div class="m-b-xs control-label">
+                @T("Admin.Account.DateTo")
+            </div>
+            <div>
+                <div class="flex" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}" fp-on-change="analyticsReport.updateData()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control"
+                               ng-flatpickr-input
+                               ng-model="analyticsReport.dateTo"
+                               ng-init="analyticsReport.dateTo='@Model.DateTo.ToString("yyyy-MM-dd")'">
+                    </span>
+                    <span class="input-group-addon" data-toggle>
+                        <i class="fas fa-calendar-alt"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ng-cloak" ng-if="analyticsReport.showPaid">
+            <div class="m-b-xs control-label">
+                @T("Admin.Analytics.Paid")
+            </div>
+            <div>
+                @Html.DropDownListFor(x => x.Paid, Model.PaidItems, new { @class = "form-control", ng_model = "analyticsReport.paid", ng_init = "analyticsReport.paid='" + Model.Paid + "'", ng_change = "analyticsReport.updateData()" })
+            </div>
+        </div>
+
+        <div class="ng-cloak" ng-if="analyticsReport.showOrderStatus">
+            <div class="m-b-xs control-label">
+                @T("Admin.Analytics.Status")
+            </div>
+            @Html.DropDownListFor(x => x.OrderStatus, Model.OrderStatuses, new { @class = "form-control", ng_model = "analyticsReport.orderStatus", ng_init = "analyticsReport.orderStatus='" + Model.OrderStatus + "'", ng_change = "analyticsReport.updateData()" })
+        </div>
+    </div>
+
+    <div data-oc-lazy-load="[{files: [@Html.RenderAssetFilesList("chart")], serie: true}]">
+        @{
+            var paramDateFrom = "analyticsReport.dateFrom || " + "'" + Model.DateFrom.ToString("yyyy-MM-dd") + "'";
+            var paramDateTo = "analyticsReport.dateTo || " + "'" + Model.DateTo.ToString("yyyy-MM-dd") + "'";
+            var paramPaid = "analyticsReport.paid ||" + Model.Paid;
+            var paramOrderStatus = "analyticsReport.orderStatus || " + Model.OrderStatus;
+        }
+
+        <div ng-switch="analyticsReport.selectedTab">
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <div ng-switch-when="orders">
+                    <div in-view="analyticsReport.inViewOrders = $inview">
+                        <orders-analysis class="analytics-page__orders-analysis" 
+                                         data-is-visible="true" 
+                                         on-init="analyticsReport.onInitOrders(orders, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                         on-destroy="analyticsReport.onDestroyOrders()"></orders-analysis>
+                    </div>
+                    <div in-view="analyticsReport.inViewProfit = $inview">
+                        <profit class="analytics-page__profit" 
+                                data-is-visible="true" 
+                                on-init="analyticsReport.onInitProfit(profit, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                on-destroy="analyticsReport.onDestroyProfit()"></profit>
+                    </div>
+                    <div in-view="analyticsReport.inViewAvgcheck = $inview">
+                        <avgcheck class="analytics-page__avgcheck" 
+                                  data-is-visible="true" 
+                                  on-init="analyticsReport.onInitAvgcheck(avgcheck, @paramDateFrom, @paramDateTo, @paramPaid, @paramOrderStatus)" 
+                                  on-destroy="analyticsReport.onDestroyAvgcheck()"></avgcheck>
+                    </div>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.BonusSystem) && Model.BonusSystemActive)
+            {
+                <div ng-switch-when="bonus">
+                    <bonus on-init="analyticsReport.onInitBonus(bonus, @paramDateFrom, @paramDateTo)"></bonus>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <div ng-switch-when="rfm">
+                    <rfm class="analytics-page__rfm" on-init="analyticsReport.onInitRfm(rfm, @paramDateFrom, @paramDateTo)"></rfm>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Catalog))
+            {
+                <div ng-switch-when="abcxyz">
+                    <abcxyz-analysis on-init="analyticsReport.onInitAbcxyz(abcxyz, @paramDateFrom, @paramDateTo)"></abcxyz-analysis>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Catalog) && currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <div ng-switch-when="product">
+                    <product-report class="analytics-page__product-report" on-init="analyticsReport.onInitProductReport(productreport, @paramDateFrom, @paramDateTo, @paramPaid, @(productId.IsNotEmpty() ? productId : "null"))"
+                                    on-change="analyticsReport.onChangeProductReport(offerId)">
+                    </product-report>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <div ng-switch-when="telephony">
+                    <uib-tabset active uid="telephonyTab" on-select-batch="settingsCatalog.floatHeader = tab.heading;" class="nav-tabs-wrap nav-tabs-wrap--chips">
+                        <uib-tab index="'callAnalytics'" heading="@T("Admin.Telephony.CallAnalytics")" classes="ng-tab" removable="true">
+                            <telephony class="analytics-page__telephony" on-init="analyticsReport.onInitTelephony(telephony, @paramDateFrom, @paramDateTo)"></telephony>
+                        </uib-tab>
+                        <uib-tab index="'callLog'" heading="@T("Admin.Telephony.CallLog")" classes="ng-tab" removable="true">
+                            <telephony-call-log on-init="analyticsReport.onInitTelephonyCallLog(telephony, @paramDateFrom, @paramDateTo)"></telephony-call-log>
+                        </uib-tab>
+                    </uib-tabset>
+
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <div ng-switch-when="managers">
+                    <managers-report on-init="analyticsReport.onInitManagers(managers, @paramDateFrom, @paramDateTo)"></managers-report>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <div ng-switch-when="searchRequests">
+                    <search-requests on-init="analyticsReport.onInitSearchRequests(searchRequests)"></search-requests>
+                </div>
+            }
+
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <div ng-switch-when="exportProducts">
+                    <export-products on-init="analyticsReport.onInitExportExcel()"></export-products>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Customers))
+            {
+                <div ng-switch-when="exportCustomers">
+                    <export-customers on-init="analyticsReport.onInitExportExcel()"></export-customers>
+                </div>
+            }
+            @if (currentCustomer.HasRoleAction(RoleAction.Orders))
+            {
+                <div ng-switch-when="exportOrders">
+                    <export-orders on-init="analyticsReport.onInitExportExcel()"></export-orders>
+                </div>
+            }
+        </div>
+    </div>
+</div>

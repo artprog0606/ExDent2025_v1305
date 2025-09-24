@@ -1,0 +1,47 @@
+﻿@using AdvantShop.Core.Services.Diagnostics;
+@using AdvantShop.Customers
+@using AdvantShop.Design
+
+@Html.Partial("_AdditionalHeadScripts")
+@Html.Action("MetaData", "Common")
+@Html.Raw(SettingsSEO.CustomMetaString)
+@Html.Partial("_Preload")
+@Html.Partial("_FontsWrap")
+
+@{
+    var isShowDesignConstructor = CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator || AdvantShop.Demo.IsDemoEnabled;
+    var inlineStyles = "inlineStyles.css";
+
+    if (!isShowDesignConstructor)
+    {
+        Html.AddBundles(new List<string>()
+{
+            "~/" + DesignService.GetDesignUrlFile(eDesign.Color, useClassicMode: true),
+            "~/" + DesignService.GetDesignUrlFile(eDesign.Theme),
+            "~/" + DesignService.GetDesignUrlFile(eDesign.Background)
+        }, inlineStyles);
+    }
+    else
+    {
+        if (!DebugMode.IsDebugMode(eDebugMode.CriticalCss))
+        {
+            <link rel="stylesheet" href="@(UrlService.GetUrl() + DesignService.GetDesignUrlFile(eDesign.Color, useClassicMode: true))" data-builder-stylesheet data-builder-type="colorScheme" />
+            <link rel="stylesheet" href="@(UrlService.GetUrl() + DesignService.GetDesignUrlFile(eDesign.Theme))" data-builder-stylesheet data-builder-type="theme" />
+            <link rel="stylesheet" href="@(UrlService.GetUrl() + DesignService.GetDesignUrlFile(eDesign.Background))" data-builder-stylesheet data-builder-type="background" />
+        }
+    }
+}
+
+<style>
+    /*critical css*/
+    @Html.RenderAssetsCriticalCss()
+
+    /*color scheme*/
+    @Html.RenderCssBundle(inlineStyles, inline: true)
+</style>
+@Html.RenderAssetFilesAsHtml("head", "")
+@Html.Partial("_HeadStylesTemplate")
+@Html.RenderModules("headStyles")
+@Html.RenderModules("head")
+@Html.StaticBlock("head", onlyContent: true)
+@Html.Partial("_ExtraStyles", "all.css")

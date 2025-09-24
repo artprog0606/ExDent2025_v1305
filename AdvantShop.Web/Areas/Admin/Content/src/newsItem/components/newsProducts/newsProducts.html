@@ -1,0 +1,80 @@
+﻿<div class="items-list sortable-row clearfix" as-sortable="$ctrl.sortableOptions" ng-model="$ctrl.products" data-is-mobile>
+    <div
+        ng-if="isMobile.value"
+        ng-cloak
+        class="swipe-line product-item product-item--m-b-md"
+        data-as-sortable-item
+        data-ng-repeat="item in $ctrl.products track by item.ProductId">
+        <div class="swipe-line__inner" data-swipe-line>
+            <div class="card card--image-horizontal swipe-line__content">
+                <div class="card__row card__row--three">
+                    <div class="p-l-sm p-t-sm" as-sortable-item-handle data-e2e="NewsProductDragDrop">
+                        <icon-move></icon-move>
+                    </div>
+                    <a class="product-item__link card__image-wrap" ng-href="{{item.Url}}">
+                        <img class="product-item__img" ng-src="{{item.ImageSrc}}" />
+                    </a>
+                </div>
+
+                <div class="card__content">
+                    <div class="product-item__header">
+                        <div class="product-item__title" ng-bind="item.Name"></div>
+                    </div>
+                    <div class="product-item__art" ng-if="item.ArtNo">Артикул: <span ng-bind="item.ArtNo"></span></div>
+                    <div class="card__row card__row--middle product-item__row" ng-if="item.Color || item.Size">
+                        <div class="product-item__color product-item__col" ng-if="item.Color" ng-bind="item.Color"></div>
+                        <div class="product-item__size product-item__col product-item__col--text-right" ng-if="item.Size" ng-bind="item.Size"></div>
+                    </div>
+                </div>
+            </div>
+            <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                    ng-click="$ctrl.deleteNewsProduct(item.ProductId)">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="item rel-product-item" ng-if="!isMobile.value" data-ng-repeat="item in $ctrl.products track by item.ProductId" data-as-sortable-item>
+        <div class="item-block">
+            <div class="item-block__inner">
+                <div class="clearfix">
+                    <div class="pull-left" as-sortable-item-handle data-e2e="NewsProductDragDrop">
+                        <icon-move></icon-move>
+                    </div>
+
+                    <div class="pull-right">
+                        <a
+                            href=""
+                            ng-click="$ctrl.deleteNewsProduct(item.ProductId)"
+                            class="link-invert link-decoration-none link-grey fas fa-times categories-block-icon"></a>
+                    </div>
+                </div>
+                <div class="item-block__content">
+                    <figure class="item-block__figure">
+                        <a href="{{item.Url}}" class="item-block__figure-link">
+                            <img ng-src="{{item.ImageSrc}}" alt="" style="max-width: 130px; max-height: 130px" />
+                        </a>
+                    </figure>
+                </div>
+            </div>
+            <div class="item-block__name">
+                <a href="{{item.Url}}" class="item-block__name-link">{{item.ArtNo}} - {{item.Name}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ui-modal-trigger
+    class="header-subtext"
+    size="xs-11"
+    data-controller="'ModalProductsSelectvizrCtrl'"
+    data-controller-as="ctrl"
+    data-on-close="$ctrl.addProductsModal(result)"
+    data-resolve="{'value': { 'itemsSelected' : $ctrl.productIds}}"
+    template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html">
+    <a class="btn btn-sm btn-action" href=""> {{'Admin.Js.NewsProducts.AddProduct'|translate}} </a>
+</ui-modal-trigger>

@@ -1,0 +1,164 @@
+﻿<div
+    ng-repeat="col in $ctrl.parentCtrl.columns"
+    class="{{$ctrl.parentCtrl.isMobile ? 'm-b-md mobile-grid-cols' : 'lp-table__cell lp-table__cell--data'}}"
+    data-e2e-grid-cell="{{'grid'+'['+ $ctrl.rowIndex + '][\'' + col.field + '\']'}}"
+    ng-class="col.classes"
+    ng-click="$ctrl.parentCtrl.clickCol($ctrl.row, col)"
+    lp-grid-row>
+    <div ng-if="$ctrl.parentCtrl.isMobile" ng-class="{'m-b-md': $ctrl.parentCtrl.isMobile}">{{col.title}}</div>
+    <div ng-switch="col.type">
+        <input
+            class="blocks-constructor-input lp-grid__cell-control"
+            ng-switch-when="text"
+            type="text"
+            ng-required="col.validRequired"
+            ng-disabled="col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true"
+            ng-class="{'lp-grid__readonly': col.editable === false &&  $ctrl.parentCtrl.newElementStorage[$index] !== true}"
+            ng-model="lpGridModel.getSetModel"
+            ng-model-options="{getterSetter: true }"
+            lp-grid-model
+            lp-grid-model-row="$ctrl.row.entity"
+            lp-grid-model-col="col"
+            ng-keyup="$event.keyCode === 13 && $ctrl.parentCtrl.change($ctrl.row, col, $index)"
+            ng-blur="$ctrl.parentCtrl.change($ctrl.row, col, $index)"
+            placeholder="{{col.placeholder||'Введите текст'}}" />
+        <!---->
+        <textarea
+            class="blocks-constructor-textarea lp-grid__cell-control"
+            ng-switch-when="textarea"
+            rows="5"
+            cols="40"
+            ng-required="col.validRequired"
+            ng-disabled="col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true"
+            ng-class="{'lp-grid__readonly': col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true}"
+            ng-model="lpGridModel.getSetModel"
+            ng-model-options="{getterSetter: true }"
+            lp-grid-model
+            lp-grid-model-row="$ctrl.row.entity"
+            lp-grid-model-col="col"
+            ng-keyup="$event.keyCode === 13 && $ctrl.parentCtrl.change($ctrl.row, col, $index)"
+            ng-blur="$ctrl.parentCtrl.change($ctrl.row, col, $index)"
+            placeholder="{{ col.placeholder ||'Введите текст'}}"></textarea>
+        <!---->
+        <label ng-switch-when="checkbox" class="blocks-constructor-label">
+            <input
+                class="blocks-constructor-checkbox-native"
+                type="checkbox"
+                ng-model="lpGridModel.getSetModel"
+                ng-model-options="{getterSetter: true }"
+                lp-grid-model
+                lp-grid-model-row="$ctrl.row.entity"
+                lp-grid-model-col="col"
+                ng-disabled="col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true" />
+            <span class="blocks-constructor-checkbox"></span>
+        </label>
+        <!---->
+        <div
+            class="blocks-constructor-select lp-grid__cell-control"
+            ng-switch-when="select"
+            ng-required="col.validRequired"
+            ng-model="lpGridModel.getSetModel"
+            ng-model-options="{getterSetter: true }"
+            lp-grid-model
+            lp-grid-model-row="$ctrl.row.entity"
+            lp-grid-model-col="col"
+            ng-class="{'lp-grid__readonly': col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true}">
+            <select
+                disabled-autobind
+                ng-required="col.validRequired"
+                ng-disabled="col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true"
+                ng-model="lpGridModel.getSetModel"
+                ng-model-options="{getterSetter: true }"
+                lp-grid-model
+                lp-grid-model-row="$ctrl.row.entity"
+                lp-grid-model-col="col"
+                ng-options="item[col.selectValue] as item[col.selectLabel] for item in col.selectData"
+                ng-change="$ctrl.parentCtrl.change($ctrl.row, col, $index)">
+                <option value="">Выберите пункт</option>
+            </select>
+        </div>
+        <!---->
+        <picture-loader-trigger
+            ng-switch-when="picture"
+            lp-id="{{$ctrl.parentCtrl.lpId}}"
+            block-id="{{$ctrl.parentCtrl.blockId}}"
+            on-apply="$ctrl.parentCtrl.uploadPicture(result, $ctrl.row, col, $index)"
+            on-resize="$ctrl.parentCtrl.resizePicture(result, $ctrl.row, col, $index)"
+            parameters="$ctrl.parentCtrl.getPictureLoaderParameters(col)"
+            current="lpGridModel.getSetModel().src"
+            ng-model="lpGridModel.getSetModel"
+            ng-model-options="{getterSetter: true }"
+            lp-grid-model
+            lp-grid-model-row="$ctrl.row.entity"
+            lp-grid-model-col="col"
+            type="{{$ctrl.row.entity[col.previewField].type || $ctrl.row.entity[col.field].type}}"
+            cropper-params="col.settingsPicture.cropper_params"
+            gallery-icons-enabled="col.settingsPicture.galleryIconsEnabled"
+            max-width-picture="col.settingsPicture.maxWidthPicture"
+            max-height-picture="col.settingsPicture.maxHeightPicture"
+            width-picture="$ctrl.row.entity[col.previewField].width || $ctrl.row.entity[col.field].width"
+            height-picture="$ctrl.row.entity[col.previewField].height || $ctrl.row.entity[col.field].height"
+            delete-picture="{{col.settingsPicture.deletePicture != null ? col.settingsPicture.deletePicture : true}}"
+            on-delete="$ctrl.deletePicture(result, $ctrl.row, col, $indexm, lpGridModel.getSetModel())"
+            no-photo="{{$ctrl.parentCtrl.NO_PHOTO_PATH}}"
+            on-lazy-load-change="$ctrl.onLazyLoadChange(result, $ctrl.row, col, $index)"
+            lazy-load-enabled="$ctrl.row.entity[col.field].lazyLoadEnabled"
+            picture-show-type="$ctrl.parentCtrl.getPictureLoaderParameters(col) != null ? $ctrl.parentCtrl.getPictureLoaderParameters(col)[0].postfix : null">
+            <div class="picture-loader-trigger-image-wrap picture-loader-image-wrap">
+                <div picture-loader-replacement replacement-mode="compile">
+                    <div ng-switch="pictureLoaderTrigger.imgSrc === $ctrl.NO_PHOTO_PATH">
+                        <div ng-switch-default class="lp-grid__image-wrap lp-grid__no-photo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+                                <rect width="28" height="28" fill="#3797EB" rx="14" />
+                                <path fill="#FFF" d="M14.5 13.5H19v1h-4.5V19h-1v-4.5H9v-1h4.5V9h1v4.5z" />
+                            </svg>
+                        </div>
+                        <div ng-switch-when="false">
+                            <div ng-switch="pictureLoaderTrigger.type === 'svg'">
+                                <div ng-switch-when="true" ng-bind-html="pictureLoaderTrigger.imgSrc | sanitize"></div>
+                                <div ng-switch-default class="lp-grid__image-wrap">
+                                    <img ng-src="{{pictureLoaderTrigger.imgSrc}}" alt="" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <i picture-loader-element-trigger class="subblock-inplace-image-trigger"></i>
+            </div>
+        </picture-loader-trigger>
+        <!---->
+        <div ng-switch-when="datetime">
+            <div
+                ng-flatpickr
+                fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat:'Y-m-d H:i', wrap: true, enableTime: true}"
+                fp-on-change="$ctrl.change($ctrl.row, col, $index)">
+                <input
+                    type="text"
+                    class="blocks-constructor-input lp-grid__cell-control input-alt"
+                    ng-flatpickr-input
+                    ng-model="lpGridModel.getSetModel"
+                    ng-model-options="{getterSetter: true }"
+                    lp-grid-model
+                    lp-grid-model-row="$ctrl.row.entity"
+                    lp-grid-model-col="col"
+                    ng-required="col.validRequired" />
+            </div>
+        </div>
+        <!---->
+        <lp-grid-ckeditor-modal
+            class="link-service"
+            ng-switch-when="ckeditorModal"
+            header="col.title"
+            value="$ctrl.row.entity[col.field]"
+            on-apply="$ctrl.parentCtrl.ckeditorModalOnApply(value, $ctrl.row, col)"
+            >Редактировать</lp-grid-ckeditor-modal
+        >
+        <!---->
+        <lp-grid-column-template
+            ng-switch-when="template"
+            col="col"
+            row="$ctrl.row"
+            row-index="$ctrl.rowIndex"
+            ng-class="{'lp-grid__readonly': col.editable === false && $ctrl.parentCtrl.newElementStorage[$index] !== true}"></lp-grid-column-template>
+    </div>
+</div>

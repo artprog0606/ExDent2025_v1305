@@ -1,0 +1,99 @@
+﻿@using AdvantShop;
+@using AdvantShop.Helpers;
+@using AdvantShop.Design;
+@model bool?
+@{
+    Html.AddAsset("error");
+
+    var isEmptyLayout = false;
+    if (Model != null && !Model.Value)
+    {
+        Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+        isEmptyLayout = true;
+    }
+
+    var isDemoEnabled = Demo.IsDemoEnabled;
+    var currentColorScheme =
+                isDemoEnabled && CommonHelper.GetCookieString("colorscheme").IsNotEmpty()
+                        ? CommonHelper.GetCookieString("colorscheme")
+                        : SettingsDesign.ColorScheme;
+
+    var colors = DesignService.GetDesigns(eDesign.Color);
+
+    var colorSelected = colors.FirstOrDefault(x => x.Name == currentColorScheme);
+    var colorCode = colorSelected != null ? colorSelected.Color.Contains("#") ? colorSelected.Color  : "#" + colorSelected.Color : "#2D9CEE";
+}
+
+<div class="col-p-v err-container">
+    <div class="row center-xs err-svg">
+        <div class="col-xs-7">
+            <svg viewBox="0 0 416 120" fill="none">
+                <g clip-path="url(#clip0)">
+                    <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="-18" y="-5" width="221" height="132">
+                        <path d="M161.366 7.65051L160.944 6.7442L-17.5988 90L-0.694024 126.252L188.724 37.9251L187.034 34.2999L174.468 35.746L193.622 22.4006L165.771 26.5608L190.486 6.2092L170.185 12.3653C165.684 13.3607 162.634 10.3694 161.366 7.65051Z" fill="#C4C4C4" />
+                    </mask>
+                    <g mask="url(#mask0)">
+                        <rect x="28.5008" y="72.9169" width="316" height="32" transform="rotate(-25 28.5008 72.9169)" fill="@colorCode" filter="url(#contrast)" />
+                        <rect x="31.8817" y="80.1674" width="316" height="16" transform="rotate(-25 31.8817 80.1674)" fill="@colorCode" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.50648 104.183C0.60518 104.233 0.103768 103.158 0.7217 102.5L28.5008 72.9169C29.9909 72.9576 33.4784 74.1266 35.507 78.4769C37.5355 82.8272 36.1893 86.2502 35.2627 87.4179C36.7528 87.4586 40.2403 88.6276 42.2689 92.9778C44.2974 97.3281 42.9512 100.751 42.0246 101.919L1.50648 104.183Z" fill="#F5D7BF" />
+                        <mask id="mask1" mask-type="alpha" maskUnits="userSpaceOnUse" x="-7" y="84" width="30" height="32">
+                            <path d="M-6.06104 93.4469L10.2525 85.8398C10.2525 85.8398 15.1492 91.6083 17.1365 95.8702C19.1239 100.132 20.3953 107.591 20.3953 107.591L4.0818 115.198L-6.06104 93.4469Z" fill="#4C4C4C" />
+                        </mask>
+                        <g mask="url(#mask1)">
+                            <path d="M1.50649 104.183C0.605188 104.233 0.103777 103.158 0.721708 102.5L28.5008 72.9169L42.0246 101.919L1.50649 104.183Z" fill="#4C4C4C" />
+                        </g>
+                    </g>
+                    <mask id="mask2" mask-type="alpha" maskUnits="userSpaceOnUse" x="205" y="-5" width="221" height="132">
+                        <path d="M408.551 126.076L425.456 89.8239L226.068 -3.15215L225.646 -2.24584C223.279 2.82948 226.031 6.39299 227.702 7.54033L245.467 19.1342L213.991 13.2835L235.08 31.9447L212.544 25.8497L221.73 34.5463L220.039 38.1716L408.551 126.076Z" fill="#C4C4C4" />
+                    </mask>
+                    <g mask="url(#mask2)">
+                        <rect x="90.2441" y="-62.0744" width="316" height="32" transform="rotate(25 90.2441 -62.0744)" fill="@colorCode" filter="url(#contrast)" />
+                        <path d="M414.824 93.6934C415.758 91.6912 414.892 89.3113 412.89 88.3777L387.513 76.5444L373.989 105.546L399.366 117.38C401.368 118.313 403.748 117.447 404.682 115.445L414.824 93.6934Z" fill="#FF9F89" />
+                        <rect width="32" height="16" transform="matrix(-0.906308 -0.422618 -0.422618 0.906308 413.134 97.3186)" fill="#FFB59E" />
+                        <rect width="12" height="32" transform="matrix(-0.906308 -0.422618 -0.422618 0.906308 387.513 76.5444)" fill="#D3D4D6" />
+                        <rect x="86.8632" y="-54.824" width="316" height="16" transform="rotate(25 86.8632 -54.824)" fill="@colorCode" />
+                        <rect width="12" height="16" transform="matrix(-0.906308 -0.422618 -0.422618 0.906308 384.132 83.7948)" fill="#E7E9E8" />
+                    </g>
+                </g>
+                <defs>
+                    <clipPath id="clip0">
+                        <rect width="416" height="120" fill="white" />
+                    </clipPath>
+                </defs>
+                <filter id="contrast">
+                    <feComponentTransfer>
+                        <feFuncR type="linear" slope="0.8" exponent="0.1" amplitude="0.1"/>
+                        <feFuncG type="linear" slope="0.8" exponent="0.1" amplitude="0.1"/>
+                        <feFuncB type="linear" slope="0.8" exponent="0.1" amplitude="0.1"/>
+                    </feComponentTransfer>
+                </filter>
+            </svg>
+        </div>
+    </div>
+    <div class="row center-xs">
+        <div class="col-xs-12">
+            <div class="site-body-cell-no-left leftmost">
+                <div class="err-code" data-text="404">
+                    @T("Error.NotFound.404")
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="site-body-cell-no-right">
+                <div class="err-reasons">
+                    <ul class="err-reasons-list">
+                        <li>@T("Error.NotFound.PageWasDeleted")</li>
+                    </ul>
+                    <div class="m-b-md">
+                        @if (!isEmptyLayout)
+                        {
+                            <a class="btn btn-submit btn-big m-xs" href="@Url.RouteUrl("Home")">@T("Error.NotFound.BackToMainPage")</a>
+                            <a class="btn btn-submit btn-big m-xs" href="@Url.RouteUrl("CatalogRoot")">@T("Error.NotFound.BackCatalog")</a>
+                        }
+                    </div>
+                </div>
+                @Html.StaticBlock("Error404")
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.NetPayPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Аpi-ключ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ApiKey, new { ng_model = "paymentMethod.Parameters.ApiKey", @class = "form-control input-alt", required = "required", validation_input_text = "Аpi-ключ" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Аpi-ключы">
+            Аpi-ключ
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API Сигнатура (secret_key)</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.AuthSign, new { ng_model = "paymentMethod.Parameters.AuthSign", @class = "form-control input-alt", required = "required", validation_input_text = "API Сигнатура (secret_key)" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="API Сигнатура">
+            API Сигнатура (secret_key)
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="TestMode">Тестовый режим</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.TestMode, new { ng_model = "paymentMethod.Parameters.TestMode", ng_init = "paymentMethod.Parameters.TestMode=" + Model.TestMode.ToLowerString(), @class = "adv-checkbox-input", validation_input_text = "Тестовый режим" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="SendReceiptData">Передавать данные для печати чека</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">ИНН</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.INN, new { ng_model = "paymentMethod.Parameters.INN", @class = "form-control input-alt", required = "required", validation_input_text = "ИНН" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="Аpi-ключы">
+            ИНН Юр. лица
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData && paymentMethod.Parameters.TestMode">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>Домен сайта для тестового платежа</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.PaymentAddress, new { ng_model = "paymentMethod.Parameters.PaymentAddress", @class = "form-control input-alt", validation_input_text = "Домен сайта" })
+    </div>
+</div>

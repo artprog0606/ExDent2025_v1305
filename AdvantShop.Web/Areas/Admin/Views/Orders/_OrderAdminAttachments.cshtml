@@ -1,0 +1,38 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.OrdersEdit.OrderModel
+
+<div class="ibox category-block block-additional-parameters">
+    <div class="ibox-content category-content block-additional-parameters-content p-r-lg border_none">
+        <div class="clear">
+            <div class="order__subblock-title pull-left">@T("Admin.Orders.OrderAttachments.AttachedFiles")</div>
+        </div>
+        <ol class="p-l-sm" ng-if="order.adminOrderAttachments.length > 0">
+            <li ng-repeat="attachment in order.adminOrderAttachments track by $index">
+                <a href="" target="_blank" ng-href="{{attachment.FilePathAdmin}}" ng-bind="attachment.OriginFileName ? attachment.OriginFileName : attachment.FileName"></a>
+                - <span ng-bind="attachment.FileSize"></span>
+                <a href=""
+                   ng-click="order.deleteAdminOrderAttachment(attachment.Id, $index)"
+                   class="link-decoration-none fa fa-times link-invert btn-icon"
+                   aria-label="@T("Admin.Orders.OrderItems.Delete")"></a>
+            </li>
+        </ol>
+
+        <figure>
+            <button class="btn btn-action btn-sm"
+                    ngf-change="order.updateAdminOrderAttachments($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                    type="button"
+                    ngf-drop
+                    ngf-max-size="15MB"
+                    ngf-select=""
+                    ngf-keep="true"
+                    ngf-pattern="'@Model.AllowedFileExtensions'"
+                    ngf-accept="'@Model.AllowedFileExtensions'"
+                    ngf-multiple="true"
+                    ladda="order.loadingFiles">
+                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">@T("Admin.Orders.OrderItems.SelectFile")</span>
+            </button>
+            <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                <div class="help-content">@Html.Raw(Model.FilesHelpText)</div>
+            </help-trigger>
+        </figure>
+    </div>
+</div>

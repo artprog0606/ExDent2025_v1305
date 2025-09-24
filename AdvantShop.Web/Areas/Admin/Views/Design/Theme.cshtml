@@ -1,0 +1,133 @@
+﻿@model AdvantShop.Web.Admin.Models.Designs.ThemeModel
+
+@{
+    Html.AddAsset("design");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Controls = new List<IButton>();
+        headerModel.Title = "<span>" + T("Admin.Design.Theme.DesignThemeEdit") + Model.ThemeTitle + "</span>";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "settingstemplate"),
+        };
+
+        headerModel.Controls.Add(
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+                 {
+                        eButtonModificators.OnlyIcon
+                 },
+            ColorType = eColorType.Link,
+            Type = eButtonType.Save,
+            Attributes = new[] { Model.Custom ? "ng-click=\"design.saveTheme()\"" : "ng-click=\"design.showDefaultThemeSweetAlert()\"" },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "done",
+                Attributes = new { width = 25, height = 25 }
+            }
+        }
+   );
+
+        @Html.Header(headerModel)
+    }
+}
+@if (!isMobile)
+{
+    @Html.Back("Параметры", Url.AbsoluteActionUrl("Index", "settingstemplate"))
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text inline m-r-xs middle-cell">
+                    @T("Admin.Design.Theme.DesignThemeEdit")"@Model.ThemeTitle"
+                </h1>
+            </div>
+            <div class="page-name-block-item-additional">
+                @Html.Button(T("Admin.Save"), eButtonType.Simple, eButtonSize.Small, eColorType.Success,
+                    attributes: new[] { Model.Custom ? "ng-click=\"design.saveTheme()\"" : "ng-click=\"design.showDefaultThemeSweetAlert()\"" })
+            </div>
+        </div>
+    </div>
+}
+
+<div class="ibox">
+    <div class="ibox-content" ng-init="design.initTheme('styles', '@Model.ThemeName', '@Model.Design', '@Model.ThemeTitle', @Model.Custom.ToLowerString())">
+
+        <div class="row">
+            <div class="col-xs-12 col-md-2 setting__form-group">
+                <div class="design-theme-treeview">
+                    <h3 class="@(isMobile ? "setting__subtitle" : "bold")">Файлы</h3>
+
+                    <div class="design-theme-treeview-item">
+                        <a href="" ng-click="design.show='styles'" class="link-decoration-none">
+                            <span class="fa fa-folder-open"></span> css
+                        </a>
+                        <div class="design-theme-treeview-sub-item">
+                            <a href="" ng-click="design.show='styles'" class="design-theme-treeview-sub-item-styles">
+                                <span class="fa fa-file-o"></span> styles.css
+                            </a>
+                        </div>
+                    </div>
+                    <div class="design-theme-treeview-item">
+                        <a href="" ng-click="design.show='images'">
+                            <span class="fa fa-folder-open"></span> images
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div style="@(isMobile ? "" : "border-left:1px solid #c3c3c3;")" class="col-xs-12 col-md-9">
+                <div ng-switch="design.show">
+
+                    <div ng-switch-when="styles" class="ng-cloack ">
+                        <h3 class="@(isMobile ? "setting__subtitle" : "bold p-l-md")">Редактор CSS</h3>
+                        <div class="@(isMobile ? "" : "p-l-md")">
+                            <div class="inline-flex @(isMobile ? "m-b-md" : "")">
+                                <div class="adv-panel-info">
+                                    <div>@T("Admin.Design.CssEditor.Attention")<br>@T("Admin.Design.CssEditor.UseFile")</div>
+                                </div>
+                            </div>
+                            <div class="css-editor-block">
+                                <ui-ace-textarea ui-ace-options="{mode: 'css'}" ng-model="design.themeCss">
+                                    @Html.TextArea("themeCss", Model.CssContent, new { ng_model = "design.themeCss" })
+                                </ui-ace-textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-switch-when="images" class="ng-cloack @(isMobile ? "" : "p-l-md")">
+                        <h3 class="@(isMobile ? "setting__subtitle" : "bold")">Загруженные файлы</h3>
+                        <div class="m-b-sm">
+                            @if (!Model.Custom)
+                            {
+                                <a href="" ng-click="design.showDefaultThemeSweetAlert()">@T("Admin.Design.Theme.AddPicture")</a>
+                            }
+                            else
+                            {
+                                <a href=""
+                                   ngf-drop
+                                   ngf-max-size="5MB"
+                                   ngf-select=""
+                                   ngf-accept="'image/*'"
+                                   ngf-change="design.addThemeFile($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">@T("Admin.Design.Theme.AddPicture")</a>
+                            }
+                        </div>
+                        <div class="design-theme-files-block">
+                            <div class="design-theme-files-item" ng-repeat="item in design.themeFiles">
+                                <div class="design-theme-files-item-preview">
+                                    <img ng-src="{{item.Preview}}" ng-if="item.Preview != null" class="design-theme-files-item-preview-img" />
+                                </div>
+                                <div>
+                                    <spam class="design-theme-files-item-name">{{item.Name}}</spam>
+                                    <a href="" class="fas fa-times design-theme-files-remove" ng-click="@(Model.Custom ? "design.removeFile(item)" : "design.showDefaultThemeSweetAlert()")"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

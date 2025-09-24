@@ -1,0 +1,65 @@
+﻿@using AdvantShop.Repository.Currencies
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.ShippingByOrderPriceShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.ShipByPrice.OrderPrice")</span>
+    </div>
+    <div class="col-xs-12 col-md-8 relative setting--m-t-sm">
+        <shipping-by-order-price-method method-id="@Model.ShippingMethodId"
+                                        price-ranges="@Model.PriceRanges"
+                                        required="true"
+                                        currency-label="@Model.CurrencySymbol">
+        </shipping-by-order-price-method>
+    </div>
+</div>
+
+
+
+<div class="form-group row setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.ShipByPrice.CalculateBaseOn")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <div class="inline valign-middle @(!isMobile ? "" : "flex-grow")">
+            <div class="m-b-sm">
+                <label class="adv-radio-label">
+                    <span class="adv-radio-label-text"> @T("Admin.ShippingMethods.ShipByPrice.Baskets")</span>
+                    @Html.RadioButton("DependsOnCartPrice", "true", Model.DependsOnCartPrice == true, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.DependsOnCartPrice", required = "required", validation_input_text = T("Admin.ShippingMethods.ShipByPrice.CalculateBaseOn") })
+                    <span class="adv-radio-emul"></span>
+                </label>
+            </div>
+            <div>
+                <label class="adv-radio-label">
+                   <span class="adv-radio-label-text"> @T("Admin.ShippingMethods.ShipByPrice.FinalCostOfOrder")</span>
+                    @Html.RadioButton("DependsOnCartPrice", "false", Model.DependsOnCartPrice == false, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.DependsOnCartPrice", required = "required", validation_input_text = T("Admin.ShippingMethods.ShipByPrice.CalculateBaseOn") })
+                    <span class="adv-radio-emul"></span>
+                </label>
+            </div>
+        </div>
+
+        <help-trigger class="ng-cloak @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.ShipByPrice.CalculatingCostOfDelivery")">
+            @T("Admin.ShippingMethods.ShipByPrice.CalculateCostOfDeliveryBasedOnBasketCost")
+            @T("Admin.ShippingMethods.ShipByPrice.OtherwiseFullAmount")
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>@T("Admin.ShippingMethods.ShipByPrice.DeliveryTime")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.DeliveryTime, new { ng_model = "shippingMethod.Params.DeliveryTime", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.ShipByPrice.DeliveryTime")">
+            @T("Admin.ShippingMethods.ShipByPrice.DeliveryTimeAsPeriodOfTime")<br><br>
+            @T("Admin.ShippingMethods.ShipByPrice.ForExample2Days")
+        </help-trigger>
+    </div>
+</div>

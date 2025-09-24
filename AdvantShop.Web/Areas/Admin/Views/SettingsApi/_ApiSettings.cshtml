@@ -1,0 +1,167 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@if (!isMobile)
+{
+    <div class="setting-title m-t-none">
+        <h2 class="page-name-block-text sticky-page-name-text">@T("Admin.Settings.API.Key")</h2>
+    </div>
+}
+
+<div class="row ">
+    <div class="col-xs-12 col-md-2 @(isMobile ? "setting-label-wrap setting__label" : "")">
+        @T("Admin.Settings.API.Key")
+    </div>
+    <div class="col-xs-12 col-md-7 relative  @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.Key, new { @class = "form-control input-alt", ng_model = "settings.Key" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.API.Key")">
+            <div class="help-content">
+                @T("Admin.SettingsApi.Index.ApiKey")<br>
+                <br>
+                @T("Admin.SettingsApi.Index.NoteIfYouRegenerate")
+                <br><br />
+                @T("Admin.SettingsApi.Index.ApiKeyParam")
+                <br><br />
+                @T("Admin.SettingsApi.Index.ApiKeyHTTPParam")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+<div class="row setting__form-group @(isMobile ? "m-t-sm" : "m-t-xs")">
+    @if (!isMobile)
+    {
+        <div class="col-xs-2"></div>
+    }
+    <div class="col-xs-12 col-md-7">
+        <a class="link-decoration-none" href="" ng-click="settings.generateApiKey()">@T("Admin.SettingsApi.Index.GenerateApiKey")</a>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Lead")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Leads")
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Order")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Orders")
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Customers")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Customers")
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Manager")</h3>
+</div>
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/managers</span>
+        <span class="description">@T("Admin.SettingsApi.Index.Managers")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiUrl("/api/managers")
+        </div>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.BuyerGroup")</h3>
+</div>
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/customergroups</span>
+        <span class="description">@T("Admin.SettingsApi.Index.CustomerGroups")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiUrl("/api/customergroups")
+        </div>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.BonusSystem")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Bonuses")
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.BonusSystemGrades")</h3>
+</div>
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/bonus-grades</span>
+        <span class="description">@T("Admin.SettingsApi.Index.GetGrades")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiUrl("/api/bonus-grades")
+        </div>
+        <h3 class="m-t-sm">@T("Admin.SettingsApi.Index.SampleAnswer")</h3>
+        <pre class="m-t-sm">[
+    {
+        "id": 1,              // @T("Admin.SettingsApi.Index.SampleAnswer.Id")
+        "name": "@T("Admin.SettingsApi.Index.SampleAnswer.Name.Guest")",   // @T("Admin.SettingsApi.Index.SampleAnswer.Name")
+        "bonusPercent": 3,    // @T("Admin.SettingsApi.Index.SampleAnswer.BonusAccrualPercentage")
+        "sortOrder": 0,       // @T("Admin.SettingsApi.Index.SampleAnswer.Sort")
+        "purchaseBarrier": 0  // @T("Admin.SettingsApi.Index.SampleAnswer.PurchaseBarrier")
+    },
+    {
+        "id": 2,
+        "name": "@T("Admin.SettingsApi.Index.SampleAnswer.Name.Bronze")",
+        "bonusPercent": 5,
+        "sortOrder": 1,
+        "purchaseBarrier": 5000
+    }
+]
+</pre>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Category")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Categories")
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Settings")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Settings")
+</div>
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Carousel")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Carousels")
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.SettingsApi.Index.Notifications")</h3>
+</div>
+<div>
+    @Html.Partial("Api/_Notifications")
+</div>

@@ -1,0 +1,99 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings
+@model AdvantShop.ViewModel.Checkout.ThankYouPageViewModel
+
+    <div>
+        @if (Model.OrderDetails != null)
+        {
+            <div class="text-align-left checkout-thank-you-page-order-details">
+                <div class="h2 text-align-center">Содержание заказа</div>
+                <div>
+                    @Html.Partial("_CheckoutOrderDetails", Model.OrderDetails)
+                </div>
+            </div>
+        }
+        <div class="checkout-thank-you-page-action">
+            @if (Model.ActionType == EThankYouPageActionType.JoinGroup)
+            {
+                if (Model.SocialNetworks.Any())
+                {
+                    <div class="text-align-center">
+                        <div class="h2">@T("Checkout.ThankYouPage.WeInSocialNetworks"):</div>
+                        <div>
+                            @foreach (var group in Model.SocialNetworks)
+                            {
+                                <a href="@group.Link" target="_blank" title="@group.Type.Localize()" class="checkout-thank-you-page__social-link">
+                                    @if (group.Type == ESocialNetworkType.Vk)
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#vk"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Facebook)
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#fb"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Youtube)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#yt"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Twitter)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#tw"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Instagram)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#inst"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Telegram)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#tg"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Odnoklassniki)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#ok"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.YandexZen)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#yz"></use>
+                                        </svg>
+                                    }
+                                    else if (group.Type == ESocialNetworkType.Rutube)
+                                    {
+                                        <svg width="50px" height="50px" viewBox="0 0 40 40">
+                                            <use xlink:href="./images/socials/socials.svg#rt"></use>
+                                        </svg>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else if (Model.ActionType == EThankYouPageActionType.ShowProducts)
+            {
+                <div data-products-carousel
+                     data-carousel-class="product-view-carousel"
+                     data-title="@Model.NameOfBlockProducts"
+                     data-ids="@string.Join(", ", Model.ProductIds)"
+                     data-visible-items="4"
+                     class="checkout-thank-you-page-order-details-carousel"
+                     @* data-carousel-responsive="{0: {slidesToShow : 1}, 768: {slidesToShow : 3} (убрал так как на мобилке но декстоп версии выглядело плохо), 1024: {slidesToShow : 4}}" *@
+                     data-carousel-responsive="{0: {slidesToShow : 1}, 768: {slidesToShow : 4}, 1024: {slidesToShow : 4}}"
+                     >
+                </div>
+            }
+        </div>
+    </div>

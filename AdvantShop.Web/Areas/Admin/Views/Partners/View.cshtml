@@ -1,0 +1,247 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Partners.PartnerViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Partners/_PartnersLayout.cshtml";
+    }
+
+    var isAdminv3 = AdminAreaTemplate.IsAdminv3();
+
+    Html.AddAsset("partners");
+}
+
+@if (isAdminv3 && !isMobile)
+{
+    <div class="sticky-page-name">
+        @Html.Back("Партнеры", Url.AbsoluteActionUrl("Index", "Partners"))
+    </div>
+}
+
+@if(isMobile)
+{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = Model.Partner.Name;
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Partners"),
+        NgBackTriggerCallback = "partnerView.onSelectTab(null);"
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Attributes = new string[] { "ng-if=\"partnerView.tabActiveIndex == 'commonInfo' || partnerView.tabActiveIndex == 'customers' || partnerView.tabActiveIndex == 'act-reports'\"" };
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'commonInfo'" },
+        WrapStart = "<partner-info-trigger partner-id=\"partnerView.partnerId\" on-close=\"partnerView.getPartnerView()\">",
+        WrapEnd = "</partner-info-trigger>",
+        Text = T("Admin.Edit")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'commonInfo'" },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddPartnerMoneyCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addPartnerMoney.html") + "\" data-resolve=\"{params: {partnerId:partnerView.partnerId}}\" data-on-close=\"partnerView.onMoneyProcessed()\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Пополнить баланс"),
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'commonInfo'" },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalSubtractPartnerMoneyCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("subtractPartnerMoney.html") + "\" data-resolve=\"{params: {partnerId:partnerView.partnerId}}\" data-on-close=\"partnerView.onMoneyProcessed()\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Списать с баланса"),
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'commonInfo'" },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalPartnerRewardPayoutCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("partnerRewardPayout.html") + "\" data-resolve=\"{params: {partnerId:partnerView.partnerId}}\" data-on-close=\"partnerView.onMoneyProcessed()\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Выплатить вознаграждение"),
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Danger,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'commonInfo'" },
+        Attributes = new[] { "ng-click=\"partnerView.delete()\"" },
+        Text = T("Admin.Delete")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'customers'" },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalSelectCustomerCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("selectCustomer.html") + "\" data-on-close=\"partnerView.partnerCustomersCtrl.bindCustomer(result)\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Привязать покупателя")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'customers'" },
+        WrapStart = "<ui-modal-trigger data-controller=\"'CustomersCtrl'\" controller-as=\"customer\" template-url=\"/customers/popupAdd\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Создать покупателя")
+    });
+
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'act-reports'" },
+        Attributes = new[] { "ng-click=\"partnerView.partnerActReportsCtrl.generateActReport()\"" },
+        Text = T("Сформировать")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+        RowAttributes = new { ng_if = "partnerView.tabActiveIndex == 'act-reports'" },
+        Attributes = new[] { "ng-click=\"partnerView.partnerActReportsCtrl.generateActReport(true)\"" },
+        Text = T("Сформировать и отправить партнёру")
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+     @Html.Header(headerModel);
+}
+
+<div ng-init="partnerView.init(@Model.Partner.Id)">
+    @if (!isMobile)
+    {
+        <div class="row m-b-lg ng-cloak">
+            <div class="col-xs">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="m-b-sm">
+                            <h2 data-e2e="partnerName" class="m-t-none">
+                                {{partnerView.instance.Partner.Name}}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <div>@T("Admin.Partners.View.Balance") </div>
+                                <div data-e2e="balance" class="font-size-md">{{partnerView.instance.BalanceFormatted}}</div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div>@T("Admin.Partners.View.CustomersCount")</div>
+                                <div data-e2e="customersCount" class="font-size-md">{{partnerView.instance.CustomersCount}}</div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div>@T("Admin.Partners.View.TimeFromCreated")</div>
+                                <div data-e2e="timeFromCreated" title="@Model.Partner.DateCreated.ToString()" class="font-size-md">
+                                    {{partnerView.instance.TimeFromCreated}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <a data-e2e="DelPartner" href="" class="link-danger m-r-sm" ng-click="partnerView.delete()">@T("Admin.Delete")</a>
+                <partner-info-trigger partner-id="partnerView.partnerId" on-close="partnerView.getPartnerView()">
+                    <a data-e2e="EditPartnerRight" class="inline" href="">@T("Admin.Edit")</a>
+                </partner-info-trigger>
+            </div>
+        </div>
+    }
+
+    <div class="ibox partner-view">
+        <uib-tabset data-e2e="TabPartner" uid="partnerTab"
+                    @Html.Raw(isMobile ? "on-select-batch=\"partnerView.onSelectTab(tab.index)\"" : "active")
+                    @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+            <uib-tab index="'commonInfo'" classes="ng-tab" heading="@T("Admin.Partners.View.GeneralInformation")">
+                <div class="customer-tabs--bg-grey @(isMobile ? "" : "p-t-sm")">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            @Html.Partial("_ViewPartnerInfo", Model)
+                            @Html.Partial("_ViewAdminComment", Model)
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            @Html.Partial("_ViewCouponInfo", Model)
+                            @Html.Partial("_ViewPaymentInfo", Model)
+                            @Html.Partial("_ViewContractInfo", Model)
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+            <uib-tab index="'customers'" classes="ng-tab" heading="@T("Admin.Partners.View.Customers")">
+                <partner-customers on-init="partnerView.getPartnerCustomersCtrl(partnerCustomersCtrl)" partner-id="partnerView.partnerId" on-bind-customer="partnerView.getPartnerView()"></partner-customers>
+            </uib-tab>
+            <uib-tab index="'transactions'" classes="ng-tab" heading="Начисления/списания">
+                <partner-transactions partner-id="partnerView.partnerId" on-grid-init="partnerView.gridTransactions = grid"></partner-transactions>
+            </uib-tab>
+            <uib-tab index="'act-reports'" classes="ng-tab" heading="Акт-отчеты">
+                <partner-act-reports on-init="partnerView.getPartnerActReportsCtrl(partnerActReportsCtrl)" partner-id="partnerView.partnerId"></partner-act-reports>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+</div>

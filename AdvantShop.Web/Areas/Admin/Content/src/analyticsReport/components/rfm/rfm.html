@@ -1,0 +1,116 @@
+﻿<div class="reports-graphics-wrap" data-is-mobile>
+    <section>
+        <h2 class="reports-title m-b">{{'Admin.Js.RFM.Customers'|translate}}</h2>
+        <div class="reports-graphic reports-graphic-custom">
+            <div class="reports-graphic-section">
+                <div class="reports-graphic-block">
+                    <div>Регистраций всего</div>
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.CommonData.allCount}}</div>
+                </div>
+                <div class="reports-graphic-block">
+                    <div>VIP клиентов</div>
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.CommonData.vipCount}}</div>
+                </div>
+                <div class="reports-graphic-block">
+                    <div>Черный список</div>
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.CommonData.blackListCount}}</div>
+                </div>
+                <div class="reports-graphic-block">
+                    <div>Больше одного заказа</div>
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.CommonData.moreOneOrderCount}} %</div>
+                </div>
+                <div class="reports-graphic-block">
+                    <div>LTV (Lifetime value)</div>
+                    <div style="font-size: 16px; font-weight: 600">{{$ctrl.CommonData.lifetimeValue}}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="reports-title m-b">{{'Admin.Js.RFM.TopCustomers'|translate}}</h2>
+        <div class="reports-graphic" is-mobile>
+            <ui-grid-custom
+                grid-unique-id="gridTopCustomers"
+                grid-filter-enabled="false"
+                grid-pagination-enabled="false"
+                grid-selection-enabled="false"
+                grid-options="$ctrl.gridOptions"
+                grid-params="{ from: $ctrl.dateFrom, to: $ctrl.dateTo }"
+                grid-url="'analytics/GetTopCustomers'"
+                grid-on-init="$ctrl.gridOnInit(grid)">
+                <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                    <div class="card card--gap-row-sm grid g-xs reports-customer">
+                        <div class="card__title g-col-12" ng-bind="row.entity.Fio"></div>
+                        <div class="card__text g-col-12 m-t-xs" ng-bind="row.entity.PaidOrdersSum"></div>
+                    </div>
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </section>
+
+    <section class="reports-graphic-card">
+        <h2 class="reports-title m-b">{{'Admin.Js.RFM.CustomerGroups'|translate}}</h2>
+        <div class="reports-graphic">
+            <canvas
+                id="customerGroups"
+                class="chart chart-horizontal-bar"
+                chart-data="$ctrl.CustomerGroups.Data"
+                chart-labels="$ctrl.CustomerGroups.Labels"
+                chart-series="$ctrl.CustomerGroups.Series"
+                chart-colors="$ctrl.CustomerGroups.Colors"></canvas>
+        </div>
+    </section>
+
+    <section ng-if="!isMobile.value">
+        <h2 class="reports-title m-b">{{'Admin.Js.RFM.RMAnalysis'|translate}}</h2>
+        <div class="clear"></div>
+        <div class="rfm-tb">
+            <div class="rfm-row" ng-if="$ctrl.Rm != null">
+                <div class="rfm-row" ng-repeat="i in $ctrl.range(0, 4)">
+                    <div class="rfm-cell" ng-repeat="j in $ctrl.range(0, 4)" ng-click="$ctrl.showRm(i, j)">
+                        <div>{{$ctrl.Rm[i][j].Percent}} %</div>
+                        <a href="">{{$ctrl.Rm[i][j].Count}}</a>
+                    </div>
+                </div>
+
+                <div class="hor-line"></div>
+                <div class="vert-line"></div>
+                <div class="hor-line-gr row">
+                    <span class="col-xs-4">{{'Admin.Js.RFM.LowImportance'|translate}}</span
+                    ><span class="col-xs-offset-4 col-lg-offset-2 col-xs-4 col-xs-5">{{'Admin.Js.RFM.HighImportance'|translate}}</span>
+                </div>
+                <div class="vert-line-gr"><span>{{'Admin.Js.RFM.Recently'|translate}}</span><span>{{'Admin.Js.RFM.Long'|translate}}</span></div>
+                <div class="vert-line-title">{{'Admin.Js.RFM.PurchaseOldTime'|translate}}</div>
+                <div class="hor-line-title">{{'Admin.Js.RFM.ImportanceInTurnover'|translate}}</div>
+            </div>
+            <div ng-if="$ctrl.Rm == null">{{'Admin.Js.AnalyticsReport.NoData'|translate}}</div>
+        </div>
+    </section>
+
+    <section ng-if="!isMobile.value">
+        <h2 class="reports-title m-b">{{'Admin.Js.RFM.RFAnalysis'|translate}}</h2>
+        <div class="clear"></div>
+        <div class="rfm-tb">
+            <div class="rfm-row" ng-if="$ctrl.Rf != null">
+                <div class="rfm-row" ng-repeat="i in $ctrl.range(0, 4)">
+                    <div class="rfm-cell" ng-repeat="j in $ctrl.range(0, 4)" ng-click="$ctrl.showRf(i, j)">
+                        <div>{{$ctrl.Rf[i][j].Percent}} %</div>
+                        <a href="" target="_blank">{{$ctrl.Rf[i][j].Count}}</a>
+                    </div>
+                </div>
+
+                <div class="hor-line"></div>
+                <div class="vert-line"></div>
+                <div class="hor-line-gr row">
+                    <span class="col-xs-2">{{'Admin.Js.RFM.Few'|translate}}</span
+                    ><span class="col-xs-5 col-xs-offset-5">{{'Admin.Js.RFM.Many'|translate}}</span>
+                </div>
+                <div class="vert-line-gr"><span>{{'Admin.Js.RFM.Recently'|translate}}</span><span>{{'Admin.Js.RFM.Long'|translate}}</span></div>
+                <div class="vert-line-title">{{'Admin.Js.RFM.PurchaseOldTime'|translate}}</div>
+                <div class="hor-line-title">{{'Admin.Js.RFM.RegularityOfSales'|translate}}</div>
+            </div>
+            <div ng-if="$ctrl.Rf == null">{{'Admin.Js.AnalyticsReport.NoData'|translate}}</div>
+        </div>
+    </section>
+</div>

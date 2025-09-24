@@ -1,0 +1,221 @@
+﻿@using AdvantShop.Saas
+@using System.Web.Mvc.Html
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.CrmSettingsModel
+@{
+    /**/
+
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsCrm");
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Leads").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settingsCrm.onSelectTab(null)"
+    };
+
+    headerModel.Controls = new List<IButton>()
+{
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.OnlyIcon
+                        },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Simple,
+                Attributes = new[] { "ng-if=\"settingsCrm.tabActiveIndex === 'salesfunnels'\"" },
+                WrapStart = " <ui-modal-trigger data-controller=\"'ModalAddEditSalesFunnelCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settingsCrm/components/salesFunnels/modals/addEditSalesFunnel/addEditSalesFunnel.html\" data-on-close=\"settingsCrm.salesFunnels.onAddEdit()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+             new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.OnlyIcon
+                        },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "ng-if=\"settingsCrm.tabActiveIndex === 'common'\"", "ng-disabled=\"!form.modified\"", "disabled" , "ng-click=\"settingsCrm.pushForm()\""},
+                Validation = true,
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+        };
+}
+
+
+
+
+<form name="form" novalidate>
+    @Html.Header(headerModel)
+    @*<div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner header-hidden">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text">
+                    <span class="float-header-page" ng-bind="settingsCrm.floatHeader"></span>
+                </h1>
+            </div>
+        </div>
+    </div>*@
+
+    @if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name m-t-xs  flex middle-xs" style="margin-bottom:4px;">
+            <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.Leads")</h1>
+            @if (!isMobile)
+            {
+                <a href="https://www.advantshop.net/help/pages/spiski-lidov" target="_blank" class="p-l-sm link-academy link-invert inline-flex middle-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                    </svg>
+                    <span>@T("Admin.Settings.Commonpage.Leads.LeadsList")</span>
+                </a>
+            }
+        </div>
+    }
+
+    <uib-tabset uid="crmTab" on-select-batch="settingsCrm.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+
+        <uib-tab index="'common'" heading="@T("Admin.SettingsCrm.Index.Common")" classes="ng-tab">
+            <div class="sticky-page-name @(isMobile ? "" : "m-t-n-xs")" sticky sticky-top="0">
+                @*<div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main flex middle-xs">
+                    <h2 class="sticky-page-name-text m-t-none">@T("Admin.SettingsCrm.Index.Leads")</h2>
+                    <a href="https://www.advantshop.net/help/pages/spiski-lidov" target="_blank" class="p-l-sm link-academy link-invert inline-flex middle-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                        <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                </svg>
+                        <span>Инструкция. Списки лидов</span>
+                    </a>
+                </div>
+            </div>*@
+            </div>
+            @if (!isMobile)
+            {
+                <div class="m-b-md setting--m-none">
+                    <h3 class="inline middle-cell m-r-xs m-b-xs bold setting__subtitle">@T("Admin.SettingsCrm.Index.Common")</h3>
+                </div>
+            }
+            <div class="form-group row setting__form-group">
+                <div class="col-xs col-sm-3">
+                    <div class="setting-label-wrap setting__label setting--m-none">
+                        @Html.LabelFor(x => x.CrmActive, T("Admin.SettingsCrm.Index.CrmActive"))
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <label class="adv-checkbox-label adv-checkbox-label--switch-on-off-wrapper">
+                        <switch-on-off checked="settingsCrm.crmActive" on-change="settingsCrm.setCrmActive(checked)" data-id="CrmActive" ng-init="@("settingsCrm.crmActive=" + Model.CrmActive.ToLowerString())"></switch-on-off>
+                    </label>
+                </div>
+            </div>
+            <div ng-if="settingsCrm.crmActive">
+                <div class="m-b-md m-t-md setting--m-none">
+                    <h3 class="inline middle-cell m-r-xs m-b-xs bold setting__subtitle setting--m-t-none">@T("Admin.Settings.SettingsCrm.CommunicationWithActions")</h3>
+                </div>
+                <div class="form-group row setting__form-group">
+                    <div class="col-xs-12 col-md-3 setting-label-wrap  setting__label">
+                        @T("Admin.SettingsCrm.Index.OrderStatusIfFromLead")
+                    </div>
+                    <div class="col-xs-12 col-md-4 relative setting--flex-align-center" ng-init="settingsCrm.OrderStatusIdFromLead = @Model.OrderStatusIdFromLead">
+                        <select name="OrderStatusIdFromLead" class="form-control input-alt" convert-to-number
+                                ng-model="settingsCrm.OrderStatusIdFromLead"
+                                ng-options="s.value as s.label for s in settingsCrm.statuses"
+                                ng-change="settingsCrm.saveOrderStatusIdFromLead()"></select>
+                        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" style="@(isMobile ? "padding-left: 0.625rem;" : "")" data-title="@T("Admin.SettingsCrm.Index.OrderStatusIfFromLead")">
+                            <div class="help-content">
+                                @T("Admin.SettingsCrm.Index.OrderStatusIfFromLeadHint")
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+
+                <div class="form-group row setting__form-group">
+                    <div class="col-xs-12 col-md-3 setting-label-wrap setting__label">
+                        @T("Admin.SettingsCrm.Index.DefaultLeadList")
+                    </div>
+                    <div class="col-xs-12 col-md-4 relative setting--flex-align-center" ng-init="settingsCrm.DefaultSalesFunnelId = @Model.DefaultSalesFunnelId">
+                        <select name="DefaultSalesFunnelId" class="form-control input-alt" convert-to-number
+                                ng-model="settingsCrm.DefaultSalesFunnelId"
+                                ng-options="s.value as s.label for s in settingsCrm.funnels"
+                                ng-change="settingsCrm.saveDefaultSalesFunnelId()"></select>
+                        <help-trigger class="ng-cloak help-trigger-icon-abs m-l-xs @(isMobile ? "m-l-sm p-l-sm" : "")" style="@(isMobile ? "padding-left: 0.625rem;" : "")" data-title="@T("Admin.SettingsCrm.Index.DefaultLeadList")">
+                            <div class="help-content">
+                                @T("Admin.SettingsCrm.Index.DefaultLeadListHint")
+                            </div>
+                        </help-trigger>
+                    </div>
+                </div>
+            </div>
+        </uib-tab>
+
+        <uib-tab index="'salesfunnels'" heading="@T("Admin.Settings.Crm.LeadsListsHeader")" classes="ng-tab" data-e2e="crm_settings" removable="true" ng-show="settingsCrm.crmActive != null ? settingsCrm.crmActive : @Model.CrmActive.ToLowerString()">
+            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveCrm)
+            {
+                <div class="js-sales-funnels-edit">
+                    <div bs-modifiable="false">
+                        <sales-funnels on-init="settingsCrm.salesFunnelsOnInit(salesFunnels)" on-change="settingsCrm.updateFunnels()"></sales-funnels>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.Action("GetFeature", "Service", new { id = ESaasProperty.HaveCrm.ToString(), partial = true })
+            }
+        </uib-tab>
+
+        <uib-tab index="'importLeads'" heading="@T("Admin.SettingsCrm.Index.ImportLeads")" classes="ng-tab" removable="true" ng-show="settingsCrm.crmActive != null ? settingsCrm.crmActive : @Model.CrmActive.ToLowerString()">
+            @Html.Partial("_ImportLeads", Model.ImportLeadsModel)
+        </uib-tab>
+        @*<uib-tab index="'vk'" classes="ng-tab" heading="@T("Admin.SettingsCrm.Index.IntegrationWithVkontakte")" data-e2e="vk">
+                <div class="setting-title">
+                    <h3>@T("Admin.SettingsCrm.Index.IntegrationWithVkontakte")</h3>
+                </div>
+                <vk-auth redirect-url="'@(UrlService.GetUrl())'" saas-data="settingsCrm.saasData" on-add-del-vk="settingsCrm.getSaasData()"></vk-auth>
+            </uib-tab>*@
+        @*<uib-tab index="'instagram'" classes="ng-tab @(isAdminv3 ? "ng-hide" : "" )" heading="@T("Admin.SettingsCrm.Index.IntegrationWithInstagram")" data-e2e="instagram">
+                <div class="@(isAdminv3 ? "ng-hide" : "" )">
+                    <div class="setting-title">
+                        <h3>@T("Admin.SettingsCrm.Index.IntegrationWithInstagram")</h3>
+                    </div>
+                    <instagram-auth saas-data="settingsCrm.saasData" on-add-del-instagram="settingsCrm.getSaasData()"></instagram-auth>
+                </div>
+            </uib-tab>*@
+
+        @*<uib-tab index="'facebook'" classes="ng-tab" heading="@T("Admin.SettingsCrm.Index.IntegrationWithFacebook")" data-e2e="facebook">
+                <div class="setting-title">
+                    <h3>@T("Admin.SettingsCrm.Index.IntegrationWithFacebook")</h3>
+                </div>
+                <facebook-auth redirect-url="'@(UrlService.GetUrl())'" saas-data="settingsCrm.saasData" on-add-del-facebook="settingsCrm.getSaasData()"></facebook-auth>
+            </uib-tab>*@
+
+        @*<uib-tab index="'telegram'" classes="ng-tab @(isAdminv3 ? "ng-hide" : "" )" heading="@T("Admin.SettingsCrm.Index.IntegrationWithTelegram")" data-e2e="telegram">
+                <div class="@(isAdminv3 ? "ng-hide" : "" )">
+                    <div class="setting-title">
+                        <h3>@T("Admin.SettingsCrm.Index.IntegrationWithTelegram")</h3>
+                    </div>
+
+                    <telegram-auth saas-data="settingsCrm.saasData" on-add-del-telegram="settingsCrm.getSaasData()"></telegram-auth>
+                </div>
+            </uib-tab>*@
+    </uib-tabset>
+</form>

@@ -1,0 +1,147 @@
+﻿@using AdvantShop.Core.Services.IPTelephony
+@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    var customer = Model.Customer;
+}
+
+<div class="ibox">
+    <div class="ibox-content">
+        <div class="m-b-sm">
+            <h3 class="category-title inline m-r-sm">
+                @T("Admin.Customers.ViewCustomerInfo.CustomerInformation")
+            </h3>
+            @if (customer.RegistredUser)
+            {
+            <customer-info-trigger customer-id="customerView.customerId" on-close="customerView.editCustomerClose()">
+                <a data-e2e="editClient" class="inline" href="">@T("Admin.Customers.ViewCustomerInfo.Edit")</a>
+            </customer-info-trigger>
+            }
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.Fullname")</div>
+                <div data-e2e="clientFio" class="col-xs-8 ng-cloak">{{customerView.instance.Customer.LastName}} {{customerView.instance.Customer.FirstName}} {{customerView.instance.Customer.Patronymic}}</div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="customerView.instance.Customer.Organization != null && customerView.instance.Customer.Organization.length > 0">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.Organization")</div>
+                <div data-e2e="clientOrganization" class="col-xs-8">{{customerView.instance.Customer.Organization}}</div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="customerView.instance.Customer.EMail != null && customerView.instance.Customer.EMail.length > 0">
+            <div class="row">
+                <div class="col-xs-4">Email</div>
+                <div class="col-xs-8">
+                    <div class="row between-xs middle-xs">
+                        <div data-e2e="clientMail" class="col-xs">
+                            {{customerView.instance.Customer.EMail}}
+                        </div>
+                        <div class="col-xs flex-grow-n text-nowrap">
+                            <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'" controller-as="ctrl" size="lg"
+                                              template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                              data-on-close="customerView.updateLeadEventsWithDelay()"
+                                              data-resolve="{params: {customerId: customerView.instance.Customer.Id, email: customerView.instance.Customer.EMail, firstName: customerView.instance.Customer.FirstName, lastName: customerView.instance.Customer.LastName, patronymic: customerView.instance.Customer.Patronymic, pageType: 'customer'}}">
+                                <a href="" data-e2e="sendMail" class="edit link-decoration-none">@T("Admin.Customers.ViewCustomerInfo.SendEmail")</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="customerView.instance.Customer.Phone != null && customerView.instance.Customer.Phone.length > 0">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.Phone")</div>
+                <div class="col-xs-8">
+                    <div class="row between-xs middle-xs">
+                        <div data-e2e="clientPhone" class="col-xs">
+                            {{customerView.instance.Customer.Phone}}
+                        </div>
+                        <div class="col-xs flex-grow-n text-nowrap" ng-if="customerView.instance.Customer.StandardPhone != null">
+                            <a data-e2e="callClient" href="" ng-href="tel:{{customerView.instance.Customer.StandardPhone}}" class="edit link-decoration-none" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Customers_CallCustomer.ToString()');">
+                                @T("Admin.Customers.ViewCustomerInfo.Call")
+                            </a>
+
+                            <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl" 
+                                              data-resolve="{params: { customerId: customerView.instance.Customer.Id, phone: customerView.instance.Customer.StandardPhone, pageType: 'customer', throwError: true}}" 
+                                              on-close="customerView.updateLeadEventsWithDelay()" 
+                                              template-url="@Html.GetAssetPath("sendSms.html")">
+                                <a href="" class="edit link-decoration-none m-l-xs">@T("Admin.Customers.ViewCustomerInfo.SendSMS")</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="customerView.instance.Customer.BirthDay != null">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.BirthDay")</div>
+                <div class="col-xs-8">
+                    <div class="row between-xs middle-xs">
+                        <div data-e2e="BirthDay" class="col-xs">
+                            {{customerView.instance.Customer.BirthDayFormatted}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group ng-cloak" ng-if="customerView.instance.Customer.Contacts != null && customerView.instance.Customer.Contacts.length > 0">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.Address")</div>
+                <div data-e2e="clientAdress" class="col-xs-8">
+                    <div>{{customerView.getCustomerLocationAddress(customerView.instance.Customer.Contacts[0])}}</div>
+                    <div>{{customerView.getCustomerAddress(customerView.instance.Customer.Contacts[0])}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.GroupOfCustomers")</div>
+                <div data-e2e="clientGroup" class="col-xs-8">{{customerView.instance.Customer.CustomerGroup.GroupName}}</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-4">@T("Admin.Customers.ViewCustomerInfo.Manager")</div>
+                <div data-e2e="clientManager" class="col-xs-8">
+
+                    {{customerView.instance.Manager != null ? customerView.instance.Manager.FullName : '@T("Admin.Customers.ViewCustomerInfo.NotSpecified")'}}
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="m-b-sm" ng-if="customerView.instance.CustomerFields.length > 0">
+            <h3 class="category-title">@T("Admin.Customers.ViewCustomerInfo.AdditionalFields")</h3>
+        </div>
+        <div class="form-group" ng-repeat="field in customerView.instance.CustomerFields">
+            <div class="row">
+                <div class="col-xs-4">{{field.Name}}</div>
+                <div data-e2e="customerField-{{field.Id}}" class="col-xs-8">
+                    {{field.Value != null && field.Value.length > 0 ? (field.ValueDateFormat != null ? field.ValueDateFormat : field.Value) : "-"}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-12">
+                    <label class="adv-checkbox-label pointer-events-none" data-e2e="SubscribedNews">
+                        <input type="checkbox" ng-model="customerView.instance.Customer.SubscribedForNews" ng-disabled="true" class="adv-checkbox-input" />
+                        <span data-e2e="SubscribedSpan" class="adv-checkbox-emul"></span>
+                        @T("Admin.Customers.RightBlock.NewSubscription")
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

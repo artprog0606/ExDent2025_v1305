@@ -1,0 +1,85 @@
+﻿@model AdvantShop.Models.Common.DesignNewBuilderModel
+@{
+    Layout = "";
+    var showOtherSettings = Model.OtherSettingsSections != null && Model.OtherSettingsSections.Any(x => x.IsOther);
+}
+<article class="new-builder"
+         data-ng-controller="NewBuilderCtrl as builder"
+         data-tabs
+         data-type="vertical">
+    <h1 hidden>Настройки</h1>
+
+    @Html.Partial("DesignBuilder/_MenuList")
+    <section data-tab-content="builderDesignSettings"
+             data-ng-class="{'tab-content-active': tabContent.header.selected}"
+             class="new-builder__content">
+        @Html.Partial("DesignBuilder/_SectionDesign")
+    </section>
+
+    @if (!Model.IsDemo)
+    {
+        <section data-tab-content="builderMain"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionMainPage")
+        </section>
+
+        <section data-tab-content="builderCategoryProduct"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionCategory")
+        </section>
+
+        <section data-tab-content="builderProductDetails"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionProduct")
+        </section>
+
+        <section data-tab-content="builderCheckout"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionCheckout")
+        </section>
+
+        <section data-tab-content="builderBrands"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionBrands")
+        </section>
+
+        <section data-tab-content="builderNews"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            @Html.Partial("DesignBuilder/_SectionNews")
+        </section>
+
+        <section data-tab-content="builderCss"
+                 data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                 class="new-builder__content">
+            <ng-form name="builderCss" novalidate>
+                <div class="new-builder__content-field">
+                    <div class="form-field-name">
+                        <div>@T("Admin.Design.CssEditor.Attention")<br>@T("Admin.Design.CssEditor.UseFile")</div>
+                    </div>
+                    <div class="form-field">
+                        <div data-ng-controller="CssEditorCtrl as csseditor">
+                            <ui-ace-textarea ui-ace-options="{mode: 'css'}" ng-model="builder.design.CssEditorText">
+                                @Html.TextAreaFor(x => x.CssEditorText, new {ng_model = "builder.design.CssEditorText"})
+                            </ui-ace-textarea>
+                        </div>
+                    </div>
+                </div>
+            </ng-form>
+        </section>
+
+        if (showOtherSettings)
+        {
+            <section data-tab-content="builderOther"
+                     data-ng-class="{'tab-content-active': tabContent.header.selected}"
+                     class="new-builder__content">
+                @Html.Partial("DesignBuilder/_SectionOther")
+            </section>
+        }
+    }
+</article>

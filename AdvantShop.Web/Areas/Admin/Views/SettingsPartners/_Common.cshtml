@@ -1,0 +1,354 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.Partners.PartnersSettingsModel
+@{
+    var partnersUrl = SettingsMain.SiteUrl.TrimEnd('/') + Url.RouteUrl("Partners_Home");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="setting-title m-t-none">
+    <h3 class="setting__subtitle">Общие</h3>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            Ссылка на личный кабинет партнера
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-2">
+        <a href="@partnersUrl" target="_blank">@partnersUrl</a>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Partners.DefaultRewardPercent")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-2">
+        @Html.TextBoxFor(x => x.DefaultRewardPercent, new { type = "number", @class = "form-control input-alt", ng_model = "settingsPartners.defaultRewardPercent" })
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2 @(isMobile ? "setting-label-wrap setting__label" : "")">
+        Шаблон купона
+    </div>
+    <div class="col-xs-12 col-md-10">
+        <div ng-if="settingsPartners.coupon != null">
+            <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                                template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                                data-resolve="{CouponId: settingsPartners.coupon.CouponID}"
+                                data-on-close="ctrl.getFormData()">
+                <a href="" class="@(isMobile ? "block m-b-xs" : "")">Настроить</a>
+            </ui-modal-trigger>
+        </div>
+        <div ng-if="settingsPartners.coupon == null">
+            <span class="text-danger">Не настроен.</span>
+            <ui-modal-trigger data-controller="'ModalAddEditCouponCtrl'" controller-as="ctrl" size="middle"
+                                template-url="@Html.GetAssetPath("addEditCoupon.html")"
+                                data-resolve="{couponMode: @AdvantShop.Catalog.CouponMode.PartnersTemplate.ConvertIntString()}"
+                                data-on-close="settingsPartners.getFormData()">
+                <a href="">Настроить</a>
+            </ui-modal-trigger>
+        </div>
+        <div>
+            По данному шаблону будут генерироваться купоны при регистрации партнеров
+        </div>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-2">
+            <div class="setting-label-wrap">
+                @T("Admin.Settings.Partners.AutoApplyPartnerCoupon")
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-2 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.AutoApplyPartnerCoupon, new { @class = "adv-checkbox-input", ng_model = "settingsPartners.autoApplyPartnerCoupon" })
+            <span class="adv-checkbox-emul" data-e2e="AutoApplyPartnerCoupon"></span>
+            @if (isMobile)
+            {
+                <span class="setting__label flex-grow m-l-sm"> @T("Admin.Settings.Partners.AutoApplyPartnerCoupon")</span>     
+            }
+        </label>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+      @if (!isMobile)
+      {
+            <div class="col-xs-2">
+                <div class="setting-label-wrap">
+                    @T("Admin.Settings.Partners.ShowCaptchaInRegistrationPartners")
+                </div>
+            </div>
+      }
+    <div class="col-xs-12 col-md-2 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInRegistrationPartners, new { @class = "adv-checkbox-input", ng_model = "settingsPartners.EnableCaptchaInRegistrationPartners" })
+            <span class="adv-checkbox-emul" data-e2e="ShowCapthcaInPartner"></span>
+            @if (isMobile)
+            {
+                <span class="setting__label flex-grow m-l-sm"> @T("Admin.Settings.Partners.ShowCaptchaInRegistrationPartners")</span>
+            }
+        </label>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+    <div class="col-xs-2">
+        <div class="setting-label-wrap">
+            @T("Admin.Settings.Partners.SkipRegPasportStepForIndividualEntity")
+        </div>
+    </div>
+    }
+    <div class="col-xs-12 col-md-2 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.SkipRegPasportStepForIndividualEntity, new { @class = "adv-checkbox-input", ng_model = "settingsPartners.SkipRegPasportStepForIndividualEntity" })
+            <span class="adv-checkbox-emul" data-e2e="SkipRegPasportStepForIndividualEntity"></span>
+            @if (isMobile)
+            {
+            <span class="setting__label flex-grow m-l-sm"> @T("Admin.Settings.Partners.SkipRegPasportStepForIndividualEntity")</span>
+            }
+        </label>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Partners.ActivatePartners")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap">
+            @Html.DropDownListFor(x => x.ActivatePartners, new SelectList(Model.ListTypesOption, "Key", "Value", Model.ActivatePartners), new { @class = "form-control input-alt", required = "required", ng_model = "settingsPartners.ActivatePartners" })
+        </div>
+    </div>
+</div>
+<div class="form-group row setting__form-group" bs-modifiable="false">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label @(isMobile ? "flex middle-xs" : "")">
+            <div class="@(isMobile ? "m-r-sm" : "")">@T("Admin.Settings.Partners.PaymentTypes")</div>
+            <div>(для физ. лиц)</div>
+        </div>
+    </div>
+
+    @if (isMobile)
+    {
+<div class="col-xs-12">
+    <div ng-model="settingsPartners.paymentTypes" as-sortable="settingsPartners.sortableOptions" class="settings-list settings-list--row-gap-3">
+        <div ng-repeat="item in settingsPartners.paymentTypes" as-sortable-item ng-cloak class="swipe-line as-sortable-item">
+            <div class="swipe-line__inner" data-swipe-line>
+                <div class="navigation-item navigation-item--horizontal card card--middle swipe-line__content setting__property-group-item" style="{{item.Id == null ? 'padding: 0 16px;grid-template-columns: 24px 1fr;' : 'padding: 0 16px;'}}">
+                    <div class="as-sortable-item-handle navigation-item__icon" as-sortable-item-handle>
+                        <icon-move>
+                            <svg class="icon-move" version="1.0" xmlns="http://www.w3.org/2000/svg" width="10.000000pt" height="20.000000pt" viewBox="0 0 10.000000 20.000000" preserveAspectRatio="xMidYMid meet">
+                                <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                    <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                </g>
+                            </svg>
+                        </icon-move>
+                    </div>
+                    <div ng-if="item.Id != null" class="navigation-item__text">
+                        <ui-modal-trigger data-controller="'ModalEditPaymentTypeNameCtrl'" controller-as="ctrl" size="xs-11"
+                                          data-resolve="{item : item}"
+                                          template-url="@Html.GetAssetPath("editPaymentTypeName.html")"
+                                          data-on-close="item.Name = result">
+                            <div style="padding:18px 0;" class="category-block__name">{{item.Name}}</div>
+                        </ui-modal-trigger>
+                    </div>
+                    <div ng-if="item.Id == null" style="padding:8px 0;" class="flex middle-xs">
+                        <div class="m-r-sm">
+                            <input type="text" class="form-control" ng-model="item.Name" data-e2e="paymentTypeName"
+                                   ng-keypress="$event.keyCode === 13 && item.Name && settingsPartners.addPaymentType(item, item.Name)"
+                                   autofocus="settingsPartners.focusOnName" />
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="settingsPartners.addPaymentType(item.Name)" data-e2e="addPaymentType">
+                                <span class="fa fa-plus"></span>&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group" ng-if="item.Id != null">
+                    <button type="button" class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" ng-click="settingsPartners.deletePaymentType(item.Id)">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    }
+    else
+    {
+        <div class="col-xs-12 col-md-6">
+            <div class="sortable-row" ng-model="settingsPartners.paymentTypes" as-sortable="settingsPartners.sortableOptions">
+                <div class="row" ng-repeat="item in settingsPartners.paymentTypes" as-sortable-item ng-cloak>
+                    <div class="col-xs-12 card__row card__row--three">
+                        <div class="flex payment-row middle-xs between-xs">
+                            <div class="flex middle-xs col-xs">
+                                <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                    <icon-move />
+                                </div>
+                                <span ng-if="item.Id == null">
+                                    <input type="text" class="form-control" ng-model="item.Name" data-e2e="paymentTypeName"
+                                           ng-keypress="$event.keyCode === 13 && item.Name && settingsPartners.addPaymentType(item, item.Name)"
+                                           autofocus="settingsPartners.focusOnName" />
+                                </span>
+                                <span class="payment-text" ng-if="item.Id != null">
+                                    <simple-edit empty-text="" class="simple-edit" on-change="settingsPartners.setPaymentTypeName(item, value)" timeout="1000">
+                                        <div class="payment-text-grey input-ghost simple-edit__input" simple-edit-content="" contenteditable="true" ng-bind="item.Name"></div>
+                                        <simple-edit-trigger class="fas fa-pencil-alt landing-block__pencil"></simple-edit-trigger>
+                                    </simple-edit>
+                                </span>
+                            </div>
+                            <div class="flex middle-xs col-fixed-size-sm" ng-if="item.Id == null">
+                                <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="settingsPartners.addPaymentType(item.Name)" data-e2e="addPaymentType">
+                                    <span class="fa fa-plus"></span><span>&nbsp;</span>{{'Admin.Js.AddEdit.Add'|translate}}
+                                </button>
+                            </div>
+                            <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                                <a class="fa fa-times link-invert link-decoration-none" ng-click="settingsPartners.deletePaymentType(item.Id)" data-e2e="deletePaymentType"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            <span class="text-required">@T("Admin.Settings.Partners.EmailNotifications")</span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4">
+        <div class="setting-label-wrap">
+            @Html.TextBoxFor(x => x.EmailNotification, new { ng_model = "settingsPartners.emailNotification", @class = "form-control input-alt", required = "required", pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)$", validation_input_text = "Email" })
+        </div>
+    </div>
+</div>
+<div class="setting-title">
+    <h3 class="setting__subtitle">Процент вознаграждения по категориям</h3>
+    <div>Сумма вознаграждения партнера за товары из данных категорий высчитывается с указанным процентом.</div>
+    <div class="@(isMobile ? "m-b-md" : "")">Учитывается <b>основная</b> категория товара или ее ближайшая родительская категория.</div>
+</div>
+<div class="form-group row setting__form-group" bs-modifiable="false">
+    <div class="col-xs-12 col-md-8">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="flex payment-row middle-xs between-xs">
+                    <div class="@(isMobile ? "setting__label" : "flex middle-xs col-xs")">
+                        Категория
+                    </div>
+                    <div class="@(isMobile ? "setting__label" : "flex middle-xs col-fixed-size-sm")">
+                        Процент
+                    </div>
+                    @if (!isMobile)
+                    {
+                        <div class="flex middle-xs" ng-class="{'col-fixed-size-ls' : settingsPartners.categories.length > 1, 'col-fixed-size-sm' : settingsPartners.categories.length <= 1}">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (isMobile)
+        {
+            <div ng-repeat="item in settingsPartners.categories track by $index" ng-cloak>
+                <div class="swipe-line-container" ng-if="item.CategoryId != null">
+                    <div class="swipe-line m-t-sm">
+                        <div data-swipe-line class="swipe-line__inner">
+                            <div class="swipe-line__content">
+                                <ui-modal-trigger data-controller="'ModalEditRewardPercentCtrl'" controller-as="ctrl" size="xs-11"
+                                                  data-resolve="{item : item}"
+                                                  template-url="@Html.GetAssetPath("editRewardPercent.html")"
+                                                  data-on-close="item.RewardPercent = result">
+                                    <div class="card card--gap-row-sm">
+                                        <div class="payment-text flex middle-xs between-xs">
+                                            <span class="m-r-md">{{item.Path}}</span>
+                                            <span>{{item.RewardPercent}} %</span>
+                                        </div>
+                                    </div>
+                                </ui-modal-trigger>
+                            </div>
+                            <div data-swipe-line-right class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                                <button ng-click="settingsPartners.deleteCategoryRewardPercent(item.CategoryId)" 
+                                        class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" 
+                                        data-e2e="RuleFilterDelete"
+                                        type="button">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="item.CategoryId == null">
+                    <div class="card card--gap-row-sm m-t-md">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span ng-if="item.categoryIds.length > 0">Выбрано: {{item.categoryIds.length}}</span>
+                                <ui-modal-trigger data-controller="'ModalSelectCategoriesCtrl'" controller-as="ctrl"
+                                                  template-url="@Html.GetAssetPath("selectCategories.html")"
+                                                  data-resolve="{'params': { 'selectedIds': item.categoryIds}}"
+                                                  data-on-close="item.categoryIds = result.categoryIds">
+                                    <a href="">{{item.categoryIds.length > 0 ? 'Изменить' : 'Выберите категории'}}</a>
+                                </ui-modal-trigger>
+                            </div>
+                            <div class="col-xs-7 flex middle-xs m-t-sm"><input type="number" class="form-control" ng-model="item.RewardPercent">&nbsp;%</div>
+                            <div class="col-xs-5 m-t-sm">
+                                <button class="btn btn-sm btn-success" style="width:100%;" type="button" ng-click="settingsPartners.addCategoryRewardPercent(item)">
+                                    <span class="fa fa-plus"></span>&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+        <div class="row" ng-repeat="item in settingsPartners.categories track by $index" ng-cloak>
+            <div class="col-xs-12">
+                <div class="flex payment-row middle-xs between-xs">
+                    <div class="flex middle-xs col-xs">
+                        <span ng-if="item.CategoryId == null">
+                            <span ng-if="item.categoryIds.length > 0">Выбрано: {{item.categoryIds.length}}</span>
+                            <ui-modal-trigger data-controller="'ModalSelectCategoriesCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("selectCategories.html")"
+                                              data-resolve="{'params': { 'selectedIds': item.categoryIds}}"
+                                              data-on-close="item.categoryIds = result.categoryIds">
+                                <a href="">{{item.categoryIds.length > 0 ? 'Изменить' : 'Выберите категории'}}</a>
+                            </ui-modal-trigger>
+                        </span>
+                        <span class="payment-text" ng-if="item.CategoryId != null">
+                            {{item.Path}}
+                        </span>
+                    </div>
+                    <div class="flex middle-xs col-fixed-size-sm" ng-if="item.CategoryId == null">
+                        <input type="number" class="form-control" ng-model="item.RewardPercent">&nbsp;%
+                    </div>
+                    <div class="flex middle-xs col-fixed-size-sm" ng-if="item.CategoryId != null">
+                        <input type="number" class="form-control" ng-model="item.RewardPercent" ng-blur="settingsPartners.updateCategoryRewardPercent(item)">&nbsp;%
+                    </div>
+                    <div class="flex middle-xs col-fixed-size-sm" ng-if="item.CategoryId == null">
+                        <button class="btn btn-sm btn-success" type="button" ng-click="settingsPartners.addCategoryRewardPercent(item)">
+                            <span class="fa fa-plus"></span>&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                        </button>
+                    </div>
+                    <div class="flex middle-xs col-fixed-size-ls" ng-if="item.CategoryId != null">
+                        <a href="" class="fa fa-times link-invert link-decoration-none" ng-click="settingsPartners.deleteCategoryRewardPercent(item.CategoryId)"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+</div>

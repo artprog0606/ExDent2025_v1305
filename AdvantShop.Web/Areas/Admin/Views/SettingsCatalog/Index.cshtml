@@ -1,0 +1,501 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.CatalogSettings.CatalogSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    bool isAdminv3 = AdminAreaTemplate.IsAdminv3();
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsCatalog");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsCatalog", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Products").ToString();
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "Settings"),
+            NgBackTriggerCallback = "settingsCatalog.onSelectTab(null)"
+        };
+
+        headerModel.Controls = new List<IButton>()
+{
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex == 'search' || settingsCatalog.tabActiveIndex == 'pricerules' || settingsCatalog.tabActiveIndex == 'currency' || settingsCatalog.tabActiveIndex == 'priceregulation' || settingsCatalog.tabActiveIndex == 'additional'\"", "ng-disabled=\"!form.modified\"", "disabled" },
+                Validation = true,
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                // Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex === 'sizes'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCatalog.tabActiveIndex === 'sizes'\" data-controller=\"'ModalAddEditSizeCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" +  Html.GetAssetPath("addEditSize.html") + "\" data-on-close=\"settingsCatalog.sizes.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                // Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex === 'units'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCatalog.tabActiveIndex === 'units'\" data-controller=\"'ModalAddEditUnitCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" +  Html.GetAssetPath("addEditUnit.html") + "\" data-on-close=\"settingsCatalog.units.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCatalog.tabActiveIndex === 'sizecharts'\" data-controller=\"'ModalAddEditSizeChartCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" +  Html.GetAssetPath("addEditSizeChart.html") + "\" data-on-close=\"settingsCatalog.sizeChart.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex === 'tags'\"" },
+                Validation = true,
+                WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddTagCtrl'\" controller-as=\"ctrl\" size=\"lg\" data-template-url=\"" + @Html.GetAssetPath("addTag.html") + "\" data-resolve=\"{data: {tagId: null}}\" data-on-close=\"settingsCatalog.tagsGrid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+
+
+             new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.OnlyIcon
+            },
+                Text = T("Admin.Brands.Index.AddBrand"),
+                Size = eButtonSize.Small,
+                ColorType = isMobile ?  eColorType.Secondary :  eColorType.Success,
+                Type = eButtonType.Add,
+                Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex === 'brand'\"" },
+                Validation = true,
+                Link = Url.AbsoluteActionUrl("Add", "Brands"),
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+              new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                // Attributes = new[] { "ng-if=\"settingsCatalog.tabActiveIndex === 'pricerules'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCatalog.tabActiveIndex === 'pricerules'\" data-controller=\"'ModalAddEditPriceRuleCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" +  Html.GetAssetPath("addEditPriceRule.html") + "\" data-on-close=\"settingsCatalog.priceRules.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+    {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsCatalog.tabActiveIndex === 'photocategory'\" data-controller=\"'ModalAddEditPhotoCategoryCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"" +  Html.GetAssetPath("addEditPhotoCategory.html") + "\" data-on-close=\"settingsCatalog.photoCategory.grid.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            },
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if=\"settingsCatalog.tabActiveIndex == 'properties' || settingsCatalog.tabActiveIndex == 'colors' || settingsCatalog.tabActiveIndex == 'sizes' || settingsCatalog.tabActiveIndex == 'brand' || settingsCatalog.tabActiveIndex == 'currency'\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<div data-e2e=\"CurrenciesSettingUpdate\" ng-click=\"settingsCatalog.updateCb()\">",
+            WrapEnd = "</div>",
+            Text = T("Admin.Settings.Catalog.UpdateCB"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'currency'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditCurrencyCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("AddEditCurrency.html") + "\" data-on-close=\"settingsCatalog.modalProcessResult()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Settings.Catalog.AddCurrency"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'currency'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddGroupCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addGroup.html") + "\" data-on-close=\"settingsCatalog.childsCtrlList.properties.updatePropertyGroups(result)\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Properties.Index.AddGroup"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'properties' && settingsCatalog.childsCtrlList.properties.showMode != 'propertyValues'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditPropertyCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditProperty.html") + "\" data-resolve=\"{ 'groupId': settingsCatalog.childsCtrlList.properties.selectedGroupId }\" data-on-close=\"settingsCatalog.childsCtrlList.properties.grid.fetchData()\" size=\"lg\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Properties.AddProperty"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'properties' && settingsCatalog.childsCtrlList.properties.showMode != 'propertyValues'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddPropertyValueCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addPropertyValue.html") + "\" data-resolve=\"{value: {'propertyId': settingsCatalog.childsCtrlList.properties.selectedPropertyId}}\" data-on-close=\"settingsCatalog.childsCtrlList.properties.propertyvalues.grid.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.PropertyValues.AddPropertyValue"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'properties' && settingsCatalog.childsCtrlList.properties.showMode === 'propertyValues'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "edit2",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditPropertyCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditProperty.html") + "\" data-resolve=\"{ \'propertyId\': settingsCatalog.childsCtrlList.properties }\" data-on-close=\"settingsCatalog.childsCtrlList.properties.grid.fetchData();settingsCatalog.childsCtrlList.properties.propertyvalues.updateSelectedPropertyName(result)\" size=\"lg\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Редактировать свойство"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'properties' && settingsCatalog.childsCtrlList.properties.showMode === 'propertyValues'" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "import",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalImportColorsCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("importColors.html") + "\" data-on-close=\"settingsCatalog.childsCtrlList.colors.grid.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Colors.Index.Import"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'colors'" },
+            Attributes = new string[] { "data-e2e=\"Import\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "document-export",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.Colors.Index.Export"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'colors'" },
+            Attributes = new string[] { "data-e2e=\"Export\"", "ng-click=\"settingsCatalog.childsCtrlList.colors.startExportColors()\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 24, height = 24 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditColorCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditColor.html") + "\" data-on-close=\"settingsCatalog.childsCtrlList.colors.grid.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Colors.Index.AddColor"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'colors'" },
+            Attributes = new string[] { "data-e2e=\"ColorSettingAdd\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "document-export",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.SettingsCatalog.Brands.Export"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex == 'brand'" },
+            Attributes = new string[] { "ng-click=\"settingsCatalog.brandsList.export()\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "import",
+                Attributes = new { width = 22, height = 22 }
+            },
+            Text = T("Admin.Colors.Index.Import"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex == 'brand' && settingsCatalog.brandsList.settingsTab == 'list'" },
+            Attributes = new string[] { "ng-click=\"settingsCatalog.brandsList.changeSettingsTab('import')\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "list",
+                Attributes = new { width = 24, height = 24 }
+            },
+            Text = T("Admin.SettingsCatalog.Brands.BrandsList"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex == 'brand' && settingsCatalog.brandsList.settingsTab == 'import'" },
+            Attributes = new string[] { "ng-click=\"settingsCatalog.brandsList.changeSettingsTab('list'); settingsCatalog.brandsList.reinitSwipeLine()\"" }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Icon = new ButtonIcon()
+            {
+                SvgName = "settings",
+                Attributes = new { width = 22, height = 22 }
+            },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddEditSizeNameForCategoriesCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addEditSizeNameForCategories.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Admin.Sizes.Index.AddSizeNameForCategories"),
+            RowAttributes = new { ng_if = "settingsCatalog.tabActiveIndex === 'sizes'" },
+            Attributes = new string[] { "data-e2e=\"SizeSettingAddNameForCategories\"" }
+        });
+
+
+        headerModel.Controls.Add(moreButton);
+
+
+        @Html.Header(headerModel)
+    }
+
+    if (!isMobile)
+    {
+        @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+
+            <div class="row middle-xs">
+
+                <div class="col-xs-6">
+
+                    <h1 class="page-name-block-text" data-e2e="ProductSettingTitle"> @T("Admin.Settings.Commonpage.Products")</h1>
+
+                </div>
+
+                <div class="col-xs-6">
+
+                    <div class="text-right">
+
+                        <input type="submit" class="btn btn-sm btn-success" data-e2e="SettingsCatalogSave" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset uid="catalogTab"
+                on-select-batch="settingsCatalog.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'properties'" heading="@T("Admin.Properties.Index.Title")" classes="ng-tab" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_Properties", Model)
+            </div>
+        </uib-tab>
+        <uib-tab index="'colors'" heading="@T("Admin.Colors.Index.Title")" classes="ng-tab" removable="true">
+            <div bs-modifiable="false">
+                @Html.Partial("_Colors", Model)
+            </div>
+        </uib-tab>
+        <uib-tab index="'sizes'" heading="@T("Admin.Sizes.Index.Title")" classes="ng-tab" removable="true">
+            @Html.Partial("_Sizes", Model)
+        </uib-tab>
+        <uib-tab index="'brand'" heading="@T("Admin.Settings.Catalog.Brands")" classes="ng-tab" select="settingsCatalog.tabBrandsShow = true" deselect="settingsCatalog.tabBrandsShow = false">
+            @Html.Partial("_Brand", Model)
+        </uib-tab>
+        <uib-tab index="'search'" heading="@T("Admin.Settings.Catalog.Search")" classes="ng-tab">
+            @Html.Partial("_Search", Model)
+        </uib-tab>
+        <uib-tab index="'currency'" heading="@T("Admin.Settings.Catalog.Currencies")" classes="ng-tab" select="settingsCatalog.tabCurrencyShow = true" deselect="settingsCatalog.tabCurrencyShow = false">
+            @Html.Partial("_Currencies", Model)
+        </uib-tab>
+        <uib-tab index="'units'" heading="@T("Admin.Units.Index.Title")" classes="ng-tab" removable="true">
+            @Html.Partial("_Units", Model)
+        </uib-tab>
+        <uib-tab index="'sizecharts'" heading="@T("Admin.Settings.Catalog.SizeCharts")" classes="ng-tab">
+            @Html.Partial("_SizeChart", Model)
+        </uib-tab>
+        <uib-tab index="'tags'" heading="@T("Admin.Tags.Index.Title")" classes="ng-tab" removable="true">
+            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveTags)
+            {
+                @Html.Partial("_Tags", Model, new ViewDataDictionary { { "nameParentAngularCtrl", "settingsCatalog" } })
+            }
+            else
+            {
+                @Html.Action("GetFeature", "Service", new { id = ESaasProperty.HaveTags.ToString(), partial = true })
+            }
+        </uib-tab>
+        <uib-tab index="'priceregulation'" heading="@T("Admin.Settings.Catalog.PriceRegulation")" classes="ng-tab">
+            @Html.Partial("_PriceRegulation")
+        </uib-tab>
+        <uib-tab index="'pricerules'" heading="@T("Admin.Settings.Catalog.PriceTypes")" classes="ng-tab">
+            @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.PriceTypes)
+            {
+                @Html.Partial("_PriceRules", Model)
+            }
+            else
+            {
+                @Html.Action("GetFeature", "Service", new { id = ESaasProperty.PriceTypes.ToString(), partial = true })
+            }
+        </uib-tab>
+        <uib-tab index="'photocategory'" heading="@T("Admin.Settings.Catalog.PhotoCategory")" classes="ng-tab">
+            @Html.Partial("_PhotoCategory", Model)
+        </uib-tab>
+        <uib-tab index="'additional'" heading="@T("Admin.Settings.Catalog.Additional")" classes="ng-tab">
+            @Html.Partial("_Additional", Model)
+        </uib-tab>
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.SettingsCatalog.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+}

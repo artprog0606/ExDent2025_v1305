@@ -1,0 +1,107 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    /**/
+
+    var items = Model.Block.TryGetSettingAsList<TeamModel>("items") ?? new List<TeamModel>();
+    var roundPhoto = (bool?)Model.Block.TryGetSetting("round_photo") ?? false;
+
+}
+
+
+<div class="container-fluid">
+    <div class="lp-container" data-ng-controller="ColumnsCtrl as team">
+        @if (Model.Block.TryGetSetting("show_title") == true)
+        {
+            <div class="lp-h2 lp-h2--color text-center" data-e2e="teamThreeColumnsTitle">
+                @Html.SubBlock(Model, "title")
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+        {
+            <div class="lp-h3 lp-h3--color text-center" data-e2e="teamThreeColumnsSubtitle">
+                @Html.SubBlock(Model, "subtitle")
+            </div>
+        }
+        @if (items.Any())
+        {
+
+            <div class="" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                <slick data-settings='@Model.Block.TryGetSetting("carouselOptions")'>
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        <div class="lp-font-size--middle lp-block-team-three-columns-carousel__row">
+                            <div class="lp-block-team-three-columns-carousel__item">
+                                <div class="@(Model.Block.TryGetSetting("columnBackground") == true ? "color-scheme__bg--alt" : "")">
+                                    <div class="lp-block-team-three-columns-carousel__picture @(roundPhoto ? "round-image" : "")" data-e2e="teamThreeColumnsPic">
+                                        @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                       {
+                                           LandingPageId = Model.Block.LandingId,
+                                           BlockId = Model.Block.Id,
+                                           OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                           OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                           OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                           OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                           Current = items[i].Picture.Src,
+                                           GalleryIconsEnabled = false,
+                                           LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                           LazyLoadEnabled = items[i].Picture.LazyLoadEnabled,
+                                           MaxWidthPicture = PictureLoaderImageSize.SmallWidth,
+                                           MaxHeightPicture = PictureLoaderImageSize.SmallHeight,
+                                           WidthPicture = items[i].Picture.Width,
+                                           HeightPicture = items[i].Picture.Height
+                                       })
+                                    </div>
+                                    <div class="lp-block-team-three-columns-carousel__content">
+                                        <div class="lp-font-size--large lp-block-team-three-columns-carousel__header text-center" data-e2e="teamThreeColumnsHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].name")>
+                                            @Html.Raw(items[i].Name)
+                                        </div>
+                                        <div class="lp-h3--color lp-font-size--middle lp-block-team-three-columns-carousel__text text-center" data-e2e="teamThreeColumnsText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].position")>
+                                            @Html.Raw(items[i].Position)
+                                        </div>
+                                    </div>
+                                    @if (items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                    {
+                                        <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TeamBtnRow">
+                                            <div class="col-xs-12 m-b-sm" data-e2e="teamThreeColumnsBtn">
+                                                    @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                                    {
+                                                        @:<a href="@Html.ButtonHref(items[i].Button)" class="lp-btn lp-btn--primary lp-btn--xs link-text-decoration-none" @Html.Raw(items[i].Button.TargetBlank ? "target=\"_blank\"" : null)>
+                                                    }
+                                                    else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                                    {
+                                                        @:<button class="lp-btn lp-btn--primary lp-btn--xs" type="button" data-scroll-to-block="@items[i].Button.ActionSection">
+                                                    }
+
+                                                    @items[i].Button.Text
+
+                                                    @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                                    {
+                                                            @:</a>
+                                                    }
+                                                    else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                                    {
+                                                        @:</button>
+                                                    }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </slick>
+            </div>
+
+        }
+
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="flex @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="TeamBtnRow">
+                <div class="lp-block-team-three-columns-carousel__btn-wrap m-t-lg" data-e2e="teamThreeColumnsBtn">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

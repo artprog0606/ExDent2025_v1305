@@ -1,0 +1,202 @@
+﻿@using System.Linq;
+@using AdvantShop.App.Landing.Domain.Products
+@using AdvantShop.Configuration
+@using AdvantShop.ViewCommon
+@model BlockModel
+@{
+    var quickviewValue = Convert.ToBoolean(Model.Block.TryGetSetting("quickview"));
+    var showButton = Convert.ToBoolean(Model.Block.TryGetSetting("show_buybutton"));
+    float width = 100 / (float)Model.Block.TryGetSetting("number_products_in_row");
+    var widthString = width.ToInvariantString() + "%";
+    var minWidth = 1159 / Model.Block.TryGetSetting("number_products_in_row");
+    <style>
+        #block_@Model.Block.Id .lp-products-view-item-wrapper {
+                -webkit-flex-basis: @(widthString);
+                -ms-flex-preferred-size: @(widthString);
+                flex-basis: @(widthString);
+                max-width: @(widthString);
+                min-width: @(minWidth)px;
+            }
+    </style>
+    bool moveNotAvaliableToEnd = Convert.ToBoolean(Model.Block.TryGetSetting("move_not_avaliable_to_end"));
+    bool showOnlyAvailable = Convert.ToBoolean(Model.Block.TryGetSetting("show_only_available"));
+    var model = LpProductService.GetProductsByIds(Model.Block.TryGetValuebleSettingAsList<int>("product_ids"), moveNotAvaliableToEnd, showOnlyAvailable);
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs">
+            @if (Model.Block.TryGetSetting("show_title") == true)
+            {
+                <div class="col-xs-12">
+                    <div class="lp-h2 lp-h2--color lp-products-view__title @(Model.Block.TryGetSetting("show_subtitle") == false ? "lp-products-view__title--margin-bottom" : "")">
+                        @Html.SubBlock(Model, "title")
+                    </div>
+                </div>
+            }
+            @if (Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="col-xs-12">
+                    <div class="lp-h3 lp-h3--color lp-products-view__subtitle">
+                        @Html.SubBlock(Model, "subtitle")
+                    </div>
+                </div>
+            }
+        </div>
+        @if (model != null && model.Products != null && model.Products.Count > 0)
+        {
+            var productOverlay = Model.Block.TryGetSetting("background_product_darken");
+            var minHeightProduct = Model.Block.TryGetSetting("min_height_product");
+
+            <div class="flex flex-wrap @Model.Block.TryGetSetting("align_items") lp-products-view lp-products-view-background"  @(!quickviewValue && showButton == false ? "data-adv-baguette-box" : "")>
+                @{
+                    string modalIdPart = "modalProductViewBlock_" + Model.Block.Id.ToString() + "_";
+                }
+
+                @foreach (var product in model.Products)
+                {
+                    string modalId = modalIdPart + product.ProductId.ToString();
+                    bool isNullColors = string.IsNullOrEmpty(product.Colors);
+
+                    Dictionary<string, object> quickviewAttrs = new Dictionary<string, object>()
+                    {
+                        {"data-quickview-trigger", "" },
+                        {"data-quickview-type-view", "landing" },
+                        {"data-spy-address", "true"},
+                        {"data-description-mode",  Model.Block.TryGetSetting("quickview_description")},
+                        {"data-modal-id",  modalId},
+                        {"data-modal-class", "landing-product-view-modal color-scheme--light" },
+                        {"data-landing-id",  LpService.CurrentLanding.Id},
+                        {"data-offer-id",  product.OfferId},
+                        {"data-product-id",  product.ProductId},
+                        {"data-block-id", Model.Block.Id}
+
+                    };
+
+
+                    if (Model.Block.TryGetSetting("hide_shipping") == true)
+                    {
+                        quickviewAttrs.Add("data-hide-shipping", "true");
+                    }
+
+
+                    string quickviewAttrsAsString = quickviewAttrs.Select(x => x.Key + "=" + "\"" + x.Value + "\"").Aggregate((s1, s2) => s1 + " " + s2);
+
+                    if (!quickviewValue && showButton == false)
+                    {
+                        @:<a href="@(product.Photo.ImageSrcBig())" class="link-decoration-none lp-products-view-item-wrapper lp-products-view-background-wrapper js-products-view-block">
+                    }
+                    else { 
+                        @:<div class="lp-products-view-item-wrapper lp-products-view-background-wrapper js-products-view-block" data-landing-id="@LpService.CurrentLanding.Id" data-product-view-item data-offer-id="@product.OfferId" data-product-id="@product.ProductId">
+                    }
+
+                    <div class="lp-products-view-item lp-products-view-item-background"
+                            @Html.Raw(isNullColors ? (quickviewValue ? quickviewAttrsAsString : null) : "")>
+                        <div ng-style="productViewItem.picture.PathMiddle != null ? {'background-image': 'url(' + productViewItem.picture.PathMiddle + ')'} : null"
+                                class="lp-products-view-item-background-image"
+                                style="background-image: url(@product.Photo.ImageSrcMiddle());">
+                            <div class="lp-products-view-item-background-inner text-left @Model.Block.TryGetSetting("align_content_product") @(!showButton && isNullColors ? "pointer" : null)"
+                                    ng-style="blocksConstructorContainer.data.Settings.product_darken_style"
+                                    style="box-shadow:200vh 200vw 0 rgba(0,0,0, @(productOverlay != null ? ((double)productOverlay).ToInvariantString() : "0")) inset;
+                                    min-height: @(minHeightProduct)px;">
+                                <div class="lp-products-view-item-background__col">
+                                    @if (product.Gifts)
+                                    {
+                                        <div class="prod-gift-icon"></div>
+                                    }
+                                    <span class="products-view__labels" @Html.Raw(quickviewValue ? quickviewAttrsAsString : null)> @Html.RenderLabels(product.Recomend, product.Sales, product.Bestseller, product.New, product.TotalDiscount, customLabels: product.Labels)</span>
+
+                                    <div class="lp-products-view-item-link-wrap lp-products-view-item-background-link-wrap lp-h2--color js-products-view-item @(!isNullColors && !showButton ? "pointer" : null)"
+                                            @Html.Raw(quickviewValue ? quickviewAttrsAsString : null)>
+                                        <div class="lp-products-view-item-link__text">@product.Name</div>
+                                    </div>
+                                    @if (Model.Block.TryGetSetting("show_description") == true)
+                                    {
+                                        <div class="lp-products-view-item-brief-description lp-products-view-item-background-brief-description lp-h3--color @(!isNullColors && !showButton ? "pointer" : null)"
+                                                @Html.Raw(quickviewValue ? quickviewAttrsAsString : null)>
+                                            @Html.Raw(product.BriefDescription)
+                                        </div>
+                                    }
+                                    <div class="products-view__colors lp-products-view-item-background__colors flex start-xs">
+                                        @if (!string.IsNullOrEmpty(product.Colors))
+                                        {
+                                            @Html.Partial("_Colors", new ColorsViewModel()
+                                            {
+                                                NgColors = product.Colors,
+                                                ColorWidth = model.ColorImageWidth,
+                                                ColorHeight = model.ColorImageHeight,
+                                                SelectedColors = model.SelectedColors,
+                                                ColorsViewMode = model.ColorsViewMode
+                                            })
+                                        }
+                                        else
+                                        {
+                                            <div class="products-view-colors-empty products-view-list-element-hidden products-view-table-element-hidden" style="height: @(model.ColorImageHeight - 7)px"></div>
+                                        }
+                                    </div>
+
+                                    @if (Model.Block.TryGetSetting("show_price") == true)
+                                    {
+                                        <div class="lp-products-view-item-price-block lp-products-view-item-background-price-block lp-h3--color @(!isNullColors && !showButton ? "pointer" : null)"
+                                                @Html.Raw(quickviewValue ? quickviewAttrsAsString : null)>
+                                            <div class="lp-products-view-item-price lp-products-view-item-background-price">
+                                                <div class="lp-products-view-item-price-inner lp-products-view-item-background-price-inner flex start-xs reverse-xs">@Html.Raw(model.HidePrice && model.TextInsteadOfPrice.IsNotEmpty() ? model.TextInsteadOfPrice : product.PreparedPrice)</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (showButton == true && !model.HidePrice)
+                                    {
+                                        var button = Model.Block.TryGetSetting<LpButton>("button");
+
+                                        if(quickviewValue){
+                                            <button type="button" class="lp-btn lp-btn--sm lp-btn--primary lp-font-size--small lp-products-view-background__button"
+                                                    @Html.Raw(quickviewAttrsAsString)>
+                                                @Html.Raw(button != null && !string.IsNullOrEmpty(button.Text) ? button.Text : "Купить")
+                                            </button>
+                                        }else{
+                                            @Html.Partial("_CartAdd", new CartAddViewModel()
+                                            {
+                                                Classes = "lp-btn lp-btn--sm lp-btn--primary lp-font-size--small lp-products-view-background__button",            
+                                                LpId = LpService.CurrentLanding.Id, 
+                                                Mode = "lp",
+                                                OfferId = product.OfferId,
+                                                ProductId = product.ProductId,
+                                                LpEntityId = LpService.EntityId != 0 ? LpService.EntityId : (int?)null,        
+                                                LpEntityType = LpService.EntityId != 0 ? LpService.EntityType : "",        
+                                                HideShipping  = Model.Block.TryGetSetting("hide_shipping") == true ? "true" : "",                                    
+                                                LpUpId = !string.IsNullOrEmpty(button.ActionUpsellLpId) ? button.ActionUpsellLpId : "",            
+                                                BtnContent = button != null && !string.IsNullOrEmpty(button.Text) ? button.Text : "Купить",
+                                                Size = CardAddSize.None
+                                            })
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    if (!quickviewValue && showButton == false)
+                    {
+                        @:</a>
+                    }
+                    else { 
+                        @:</div>
+                    }
+                }
+            </div>
+        }
+        else if (Model.Inplace && !LpService.PreviewInAdmin)
+        {
+            <div class="ng-cloak lp-block-products-view__empty--admin lp-products-view-background__empty--admin">
+                <blocks-constructor data-landingpage-id="@LpService.CurrentLanding.Id"
+                                    data-block-id="@Model.Block.Id"
+                                    data-name="@Model.Block.Name"
+                                    data-type="@Model.Block.Type"
+                                    data-is-show-options="::true"
+                                    data-template-custom="true">
+                    <button type="button" class="lp-btn lp-btn--primary" ng-click="blocksConstructor.showOptionsBlock('tabProducts')">Добавить товары</button>
+                </blocks-constructor>
+            </div>
+        }
+    </div>
+</div>
+

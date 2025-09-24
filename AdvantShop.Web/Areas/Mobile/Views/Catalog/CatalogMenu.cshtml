@@ -1,0 +1,171 @@
+﻿@model CatalogMenuModel
+
+@helper ArrowLeft()
+{
+    <span class="menu__arrow-left icon-left-open-before"></span>
+}
+@helper ArrowRight()
+{
+    <span class="menu__arrow-right icon-right-open-before"></span>
+}
+
+@helper RenderCatalog(CatalogMenuItem parent)
+{
+    string linkClasses = "menu__link";
+
+    List<CatalogMenuItem> items = parent.SubItems;
+
+    if (items != null && items.Count > 0)
+    {
+        <div class="menu__submenu" data-mobile-menu data-ng-show="mobileMenu.isOpen">
+            <div class="menu__item cs-br-1">
+                @if (parent.HasChild)
+                {
+                    <div class="menu__item-inner menu__item-inner--bg cs-bg-9"
+                         data-mobile-menu-item-trigger="@parent.Id"
+                         data-ng-class="{'menu__item-inner--activated cs-bg-3': mobileMenuItem.menuChild.isOpen}">
+                        @ArrowLeft()
+                        <span class="@linkClasses cs-l-2">
+                            @parent.Name
+                            @if (Model.ShowProductsCount)
+                            {
+                                <span class="menu__link--count cs-t-1">(@parent.ProductsCount)</span>
+                            }
+                        </span>
+                    </div>
+                }
+            </div>
+            @if (Model.ShowMenuLinkAll)
+            {
+                <div class="menu__item cs-br-1" data-ng-hide="mobileMenuItem.isHidden">
+                    <div class="menu__item-inner menu__item-inner--bg  menu__item-inner--in-submenu  cs-bg-9">
+                        <a class="@linkClasses menu__link--thin menu__link--all cs-l-2" href="@parent.Url">Посмотреть все товары</a>
+                    </div>
+                </div>
+            }
+            @foreach (var item in items)
+            {
+                <div class="menu__item cs-br-1" data-mobile-menu-item="@item.Id" data-has-child="@item.HasChild.ToLowerString()" data-ng-hide="mobileMenuItem.isHidden">
+                    @if (item.HasChild)
+                    {
+                        <div data-mobile-menu-item-trigger="@item.Id" class="menu__item-inner menu__item-inner--bg menu__item-inner--in-submenu cs-bg-9">
+                            @if (item.Icon.PhotoName.IsNotEmpty())
+                            {
+                                <span class="menu__category-icon"><img data-ng-src="{{sidebarContainerState.isOpen ? '@item.Icon.IconSrc()': null}}" alt="@item.Name" loading="lazy" width="@Model.PhotoWidth" height="@Model.PhotoHeight"/></span>
+                            }
+                            <span class="@linkClasses  cs-l-2">
+                                @item.Name
+                                @if (Model.ShowProductsCount)
+                                {
+                                    <span class="menu__link--count cs-t-1">(@item.ProductsCount)</span>
+                                }
+                            </span>
+                            <span class="menu__right-block">
+                                @ArrowRight()
+                            </span>
+                        </div>
+                        @RenderCatalog(item)
+                    }
+                    else
+                    {
+                        <div class="menu__item-inner menu__item-inner--bg  menu__item-inner--in-submenu cs-bg-9">
+                            <a class="@linkClasses menu__link--thin  cs-l-2" href="@item.Url">
+                                <span class="menu__link-inside">
+                                    @if (item.Icon.PhotoName.IsNotEmpty())
+                                    {
+                                        <span class="menu__category-icon"><img data-ng-src="{{sidebarContainerState.isOpen ? '@item.Icon.IconSrc()': null}}" alt="@item.Name" loading="lazy" width="@Model.PhotoWidth" height="@Model.PhotoHeight" /></span>
+                                    }
+                                    @item.Name
+                                    @if (Model.ShowProductsCount)
+                                    {
+                                        <span class="menu__link--count cs-t-1">(@item.ProductsCount)</span>
+                                    }
+                                </span>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+            @if (parent.SubItemsLimited)
+            {
+                <div class="menu__item-inner menu__item-inner--bg  menu__item-inner--in-submenu menu__item-inner--in-submenu--give-more-link cs-bg-9">
+                    <a class="@linkClasses menu__link--thin  cs-l-2" href="@parent.Url">
+                        <span class="menu__link-inside">
+                            @T("Catalog.MenuCatalogSubCategory.More")
+                        </span>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+}
+
+@if (Model.Items.Count > 0)
+{
+    if (Model.IsRootItems)
+    {
+        foreach (var rootCat in Model.Items)
+        {
+            <div class="menu__item menu__item--root cs-br-1" data-mobile-menu-item="@rootCat.Id" data-has-child="@rootCat.HasChild.ToLowerString()" data-ng-hide="mobileMenuItem.isHidden">
+                @if (rootCat.HasChild && rootCat.SubItems != null && rootCat.SubItems.Count > 0)
+                {
+                    <div class="menu__item-inner menu__item-inner--root  menu__item-inner--bg @(rootCat.Id != 0 ? "cs-bg-9" : "" )" data-mobile-menu-item-trigger="@rootCat.Id">
+                        @if (rootCat.Icon.PhotoName.IsNotEmpty())
+                        {
+                            <span class="menu__category-icon"><img data-ng-src="{{sidebarContainerState.isOpen ? '@rootCat.Icon.IconSrc()': null}}" alt="@rootCat.Name"  loading="lazy" width="@Model.PhotoWidth" height="@Model.PhotoHeight"/></span>
+                        }
+                        <span class="menu__link  cs-l-2">
+                            @rootCat.Name
+                            @if (Model.ShowProductsCount)
+                            {
+                                <span class="menu__link--count cs-t-1">(@rootCat.ProductsCount)</span>
+                            }
+                        </span>
+                        <span class="menu__right-block">@ArrowRight()</span>
+                    </div>
+                    @RenderCatalog(rootCat)
+                }
+                else
+                {
+                    <div class="menu__item-inner  menu__item-inner--bg @(rootCat.Id != 0 ? "cs-bg-9" : "")">
+                        <a class="menu__link menu__link--thin  cs-l-2" href="@rootCat.Url">
+                            <span class="menu__link-inside">
+                                @if (rootCat.Icon.PhotoName.IsNotEmpty())
+                                {
+                                    <span class="menu__category-icon"><img  data-ng-src="{{sidebarContainerState.isOpen ? '@rootCat.Icon.IconSrc()': null}}" alt="@rootCat.Name" loading="lazy" width="@Model.PhotoWidth" height="@Model.PhotoHeight" /></span>
+                                }
+                                @rootCat.Name
+                                @if (Model.ShowProductsCount)
+                                {
+                                    <span class="menu__link--count cs-t-1">(@rootCat.ProductsCount)</span>
+                                }
+                            </span>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        foreach (var itemMenu in Model.Items)
+        {
+            @RenderCatalog(itemMenu)
+        }
+    }
+    if (Model.ItemsLimited)
+    {
+    <div class="menu__item menu__item--root cs-br-1">
+        <div class="menu__item-inner menu__item-inner--root  menu__item-inner--bg cs-bg-9">
+            <a class="menu__link  cs-l-2" href="@Model.RootUrl">
+                <span class="menu__link-inside">
+                    @T("Catalog.MenuCatalog.ViewAll")...
+                </span>
+            </a>
+        </div>
+    </div>
+        
+    }
+}
+
+

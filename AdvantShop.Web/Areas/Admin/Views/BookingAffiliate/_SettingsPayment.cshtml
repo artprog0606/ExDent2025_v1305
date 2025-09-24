@@ -1,0 +1,43 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Settings.SettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row" ng-init="bookingAffiliateSettings.noCancelUnpaid = @((!Model.Affiliate.CancelUnpaidViaMinutes.HasValue).ToLowerString())">
+    @if (isMobile)
+    {
+        <div class="col-xs-12 control-label">
+            @T("Admin.Booking.Settings.SmsNotification.CancelUnpaidViaMinutes")
+        </div>
+        <div class="col-xs-12 relative">
+            <label class="adv-checkbox-label">
+                <input type="checkbox" class="adv-checkbox-input control-checkbox"
+                       ng-model="bookingAffiliateSettings.noCancelUnpaid"
+                       ng-change="bookingAffiliateSettings.onChangeCancelUnpaidBooiking()" />
+                <span class="adv-checkbox-emul"></span>
+                <span>Не отправлять</span>
+            </label>
+            @Html.TextBoxFor(x => x.Affiliate.CancelUnpaidViaMinutes, new { @class = "form-control input-alt m-t-sm", ng_model = "bookingAffiliateSettings.cancelUnpaidViaMinutes", @type = "number", min = 1, ng_show = "!bookingAffiliateSettings.noCancelUnpaid", validation_input_text = T("Admin.Booking.Settings.SmsNotification.CancelUnpaidViaMinutes") })
+        </div>
+    }
+    else
+    {
+        <div class="col-xs-2">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.Affiliate.CancelUnpaidViaMinutes, T("Admin.Booking.Settings.SmsNotification.CancelUnpaidViaMinutes"))
+            </div>
+        </div>
+        <div class="col-xs-6 relative">
+            @Html.TextBoxFor(x => x.Affiliate.CancelUnpaidViaMinutes, new { @class = "form-control", ng_model = "bookingAffiliateSettings.cancelUnpaidViaMinutes", @type = "number", min = 1, ng_show = "!bookingAffiliateSettings.noCancelUnpaid", validation_input_text = T("Admin.Booking.Settings.SmsNotification.CancelUnpaidViaMinutes") })
+            @*<span ng-show="!bookingAffiliateSettings.noCancelUnpaid">@T("Admin.Booking.Settings.SmsNotification.Minutes")</span>*@
+            <label class="adv-checkbox-label">
+                <input type="checkbox" class="adv-checkbox-input control-checkbox"
+                       ng-model="bookingAffiliateSettings.noCancelUnpaid"
+                       ng-change="bookingAffiliateSettings.onChangeCancelUnpaidBooiking()" />
+                <span class="adv-checkbox-emul" data-e2e="noCancelUnpaid"></span>
+                не отменять
+            </label>
+        </div>
+    }
+</div>

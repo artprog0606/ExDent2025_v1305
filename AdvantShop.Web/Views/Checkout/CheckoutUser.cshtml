@@ -1,0 +1,23 @@
+﻿@model AdvantShop.ViewModel.Checkout.CheckoutUserViewModel
+
+<article class="checkout-block">
+    <div class="checkout-block-title h2">
+        @T("Checkout.CheckoutUser.CustomerTitle")
+    </div>
+    <div class="checkout-block-content">
+        @if (Model.Customer.RegistredUser)
+        {
+            @Html.Partial("CheckoutUserRegistred", Model)
+        }
+        else if (SettingsMain.RegistrationIsProhibited)
+        {
+            <div data-ng-init="checkout.userUnRegType='oldCustomer'">
+                @Html.Action("Authorization", "User", new { redirectTo = Url.RouteUrl("checkout") })
+            </div>
+        }
+        else
+        {
+            @Html.Partial("CheckoutUserUnRegistred", Model)
+        }
+    </div>
+</article>

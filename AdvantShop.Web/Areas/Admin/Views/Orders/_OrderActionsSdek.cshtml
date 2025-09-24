@@ -1,0 +1,35 @@
+﻿@model AdvantShop.Web.Admin.Models.Orders.Sdek.OrderActionsModel
+
+@{
+    var rnd = new Random().NextDouble();
+}
+
+@if (Model.ShowDownloadPrintedFormOrder)
+{
+    @*<a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.sdekOrderReportStatus()">{{'Admin.Js.OrderItemsSummary.DownloadOrderStatus'|translate}}</a>
+    <a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.sdekReportOrderInfo()">{{'Admin.Js.OrderItemsSummary.DownloadOrderInformation'|translate}}</a>*@
+    @*<a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.sdekOrderPrintForm()">{{'Admin.Js.OrderItemsSummary.DownloadPrintedForm'|translate}}</a>*@
+    <a href="@Url.AbsoluteActionUrl("SdekOrderPrintForm", new {orderId = @Model.OrderId})" target="_blank" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}">{{'Admin.Js.OrderItemsSummary.DownloadPrintedForm'|translate}}</a>
+    @*<a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.sdekCallCustomer()">{{'Admin.Js.OrderItemsSummary.RecipientCall'|translate}}</a>*@
+}
+
+@if (Model.ShowDownloadBarCodeOrder)
+{
+    <ui-modal-trigger data-controller="'ModalSdekDownloadBarCodeOrderCtrl'" data-controller-as="ctrl"
+                      data-resolve="{ obj: { orderId: $ctrl.orderId }}"
+                      @*data-on-close="$ctrl.sdekUpdateActions()"*@
+                      template-url="@("orders/getFormSdekBarCodeOrder?orderid=" + Model.OrderId + "&rnd=" + rnd)">
+        <a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}">
+            Получить ШК места к заказу
+        </a>
+    </ui-modal-trigger>
+    @*<a href="@Url.AbsoluteActionUrl("SdekBarCodeOrder", new {orderId = @Model.OrderId})" target="_blank" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}">Получить ШК места к заказу</a>*@
+}
+@if (Model.ShowDeleteOrder)
+{
+    <a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.sdekDeleteOrder()">{{'Admin.Js.OrderItemsSummary.DeleteOrderFromSDEK'|translate}}</a>
+}
+@if (Model.ShowSendOrder)
+{
+    <a href="" ng-class="{'m-t-xs m-b-xs block fs-xs': !isMobile.value, 'btn btn--simple btn-link  btn--with-icon btn--horizontal-padding-zero more-button-popover__btn': isMobile.value}" ng-click="$ctrl.createSdekOrder()">{{'Admin.Js.OrderItemsSummary.SendOrderToSDEK'|translate}}</a>
+}

@@ -1,0 +1,136 @@
+﻿<div ng-init="$ctrl.IsInstallModule('Quizzes')">
+    <div ng-if="!$ctrl.isCheckInstallModule" class="flex center-xs middle-xs">
+        <div class="svg-spinner" style="width: 150px; height: 150px"></div>
+    </div>
+    <div ng-if="$ctrl.modalData.settings.module_installed && $ctrl.isCheckInstallModule">
+        <div>
+            <div data-tabs class="tabs tabs-horizontal tabs-lp--minimalistic">
+                <ul class="tabs-headers row center-xs start-sm">
+                    <li
+                        id="tabQuizFront"
+                        class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                        data-tab-header=""
+                        data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                        <span
+                            class="tabs-header-item-link"
+                            data-ng-click="tabs.change(tabHeader)"
+                            data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                            Внешний вид
+                        </span>
+                    </li>
+                    <li
+                        id="tabQuizOptions"
+                        class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                        data-tab-header=""
+                        data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                        <span
+                            class="tabs-header-item-link"
+                            data-ng-click="tabs.change(tabHeader)"
+                            data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                            Настройки модуля
+                        </span>
+                    </li>
+                </ul>
+                <div class="tabs-content">
+                    <div class="tab-content" data-tab-content="tabQuizFront" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="blocks-constructor-settings-col">
+                                    <div ng-include="$ctrl.modalData.generalOptionsTemplateUrl"></div>
+                                    <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.columnBackground !== undefined">
+                                        <label class="blocks-constructor-label" data-e2e="ColumnBackground">
+                                            <input
+                                                class="blocks-constructor-checkbox-native"
+                                                type="checkbox"
+                                                ng-model="$ctrl.modalData.settings.columnBackground" />
+                                            <span class="blocks-constructor-checkbox"></span>
+                                            <span class="blocks-constructor-label-text"> Включить альтернативный фон для колонок </span>
+                                        </label>
+                                    </div>
+                                    <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.align_block != null">
+                                        <div class="blocks-constructor-row__name">
+                                            <label class="blocks-constructor-label"> Вертикальное выравнивание блока </label>
+                                        </div>
+                                        <div class="blocks-constructor-select">
+                                            <select data-e2e="ImageAligment" ng-model="$ctrl.modalData.settings.align_block" disabled-autobind>
+                                                <option value="top-xs">По верху</option>
+                                                <option value="middle-xs">По середине</option>
+                                                <option value="bottom-xs">По низу</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.background_color_alt != null">
+                                        <div class="blocks-constructor-row__name">Альтернативный фон</div>
+                                        <color-picker
+                                            data-e2e="backgroundColor"
+                                            ng-model="$ctrl.modalData.settings.background_color_alt"
+                                            options="$ctrl.colorPickerOptions"
+                                            event-api="$ctrl.colorPickerEventApi"></color-picker>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="blocks-constructor-settings-col--alt">
+                                    <div ng-include="$ctrl.modalData.generalRightOptionsTemplateUrl"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" data-tab-content="tabQuizOptions" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                        <div class="blocks-constructor-settings-col--alt" ng-init="$ctrl.getQuizzes()">
+                            <div class="blocks-constructor-row__name">Выберите квиз из списка:</div>
+                            <div class="row middle-xs">
+                                <div class="col-xs-3">
+                                    <div class="blocks-constructor-select">
+                                        <select
+                                            data-e2e="QuizId"
+                                            ng-model="$ctrl.modalData.settings.quizId"
+                                            ng-options="item.QuizId as item.Title for item in $ctrl.modalData.settings.quizzes"
+                                            ng-change="$ctrl.updateQuizCode()">
+                                            <option value="" hidden selected>Выберите квиз</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <a href="adminv3/modules/details/quizzes" target="_blank">Настройки модуля</a>
+                            </div>
+                        </div>
+                        <div class="blocks-constructor-settings-col--alt">
+                            <label class="blocks-constructor-label" data-e2e="ShowOnAllPage">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.show_on_all_landing_pages_top" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Показывать на всех страницах сверху </span>
+                            </label>
+                        </div>
+                        <div class="blocks-constructor-settings-col--alt">
+                            <label class="blocks-constructor-label" data-e2e="ShowOnAllPageBottom">
+                                <input
+                                    class="blocks-constructor-checkbox-native"
+                                    type="checkbox"
+                                    ng-model="$ctrl.modalData.settings.show_on_all_landing_pages_bottom" />
+                                <span class="blocks-constructor-checkbox"></span>
+                                <span class="blocks-constructor-label-text"> Показывать на всех страницах снизу </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.modalData.settings.module_installed && $ctrl.isCheckInstallModule">
+        <div class="blocks-constructor-settings-col--alt">
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    <div class="lp-h2 lp-h2--color lp-products-view__title">Модуль Квизы не установлен</div>
+                </div>
+            </div>
+            <div class="ng-cloak lp-block-products-view__empty--admin color-scheme--light">
+                <a href="adminv3/modules/market?name=Квизы" target="_blank" class="lp-btn lp-btn--primary" style="text-decoration: none"
+                    >Перейти к модулю</a
+                >
+            </div>
+        </div>
+    </div>
+</div>

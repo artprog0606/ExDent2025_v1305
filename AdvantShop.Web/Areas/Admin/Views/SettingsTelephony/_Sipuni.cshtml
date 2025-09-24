@@ -1,0 +1,72 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.IPTelephonySettingsModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "max-width:910px;")">
+            <div>
+                Если у вас нет учетной записи в сервисе Sipuni, вы можете зарегистрироваться по <a href="http://sipuni.com/?partner=6106" target="_blank">ссылке</a> с использованием купона <b>advantshop-2016</b>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap">
+            <label for="SipuniApiKey" class="form-label-block setting__label">@T("Admin.Settings.Telephony.Sipuni.ApiKey")</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SipuniApiKey, new { ng_model = "settingsTelephony.sipuniApiKey", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "p-l-xs m-l-sm" : "")" data-title="@T("Admin.Settings.Telephony.Sipuni.ApiKey")">
+            @T("Admin.Settings.Telephony.Sipuni.ApiKeyNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap">
+            <label class="form-label-block setting__label">@T("Admin.Settings.Telephony.Sipuni.ServiceUrl")</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex " : "")" ng-init="settingsTelephony.sipuniServiceUrl = '@(SettingsMain.SiteUrl)/sipuni/pushnotification'">
+        <span style=" @(isMobile ? "word-break:break-all;" : "")" ng-bind="settingsTelephony.sipuniServiceUrl"></span>
+        <i class="fa fa-clipboard pointer m-l-xs  @(isMobile ? "col-xs-1" : "")" ng-click="settingsTelephony.copy(settingsTelephony.sipuniServiceUrl)" title="@T("Admin.SettingsTelephony.CopyALink")" aria-hidden="true"></i>
+        <help-trigger class="ng-cloak word-spacing  @(isMobile ? "p-l-xs m-l-sm" : "")" data-title="@T("Admin.Settings.Telephony.Sipuni.ServiceUrl")">
+            @T("Admin.Settings.Telephony.Sipuni.ServiceUrlNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                <label for="SipuniConsiderInnerCalls" class="form-label-block">@T("Admin.Settings.Telephony.Sipuni.ConsiderInnerCalls")</label>
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-4 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "p-l-xs" : "")">
+            @Html.CheckBoxFor(x => x.SipuniConsiderInnerCalls, new { ng_model = "settingsTelephony.sipuniConsiderInnerCalls", ng_init = "settingsTelephony.sipuniConsiderInnerCalls=" + Model.SipuniConsiderInnerCalls.ToString().ToLower(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+         @if (isMobile)
+        {
+            <div class="col-xs">
+                <label for="SipuniConsiderInnerCalls" class="form-label-block">@T("Admin.Settings.Telephony.Sipuni.ConsiderInnerCalls")</label>
+            </div>
+        }
+        <help-trigger class="ng-cloak word-spacing @(isMobile ? "p-l-xs m-l-sm" : "")" data-title="@T("Admin.Settings.Telephony.Sipuni.ConsiderInnerCalls")">
+            @T("Admin.Settings.Telephony.Sipuni.ConsiderInnerCallsNote")
+        </help-trigger>
+    </div>
+</div>

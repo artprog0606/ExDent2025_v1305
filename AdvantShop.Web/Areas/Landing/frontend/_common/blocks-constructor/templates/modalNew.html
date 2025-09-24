@@ -1,0 +1,61 @@
+﻿<div class="blocks-constructor-modal-new-item-content">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 col-lg-3 blocks-constructor-modal-categories-col">
+            <div class="blocks-constructor-modal-categories-wrap">
+                <ul class="blocks-constructor-modal-categories">
+                    <li class="blocks-constructor-modal-categories-item" data-ng-repeat="category in $ctrl.data track by $index">
+                        <a
+                            data-e2e="category_{{category.CategoryName}}"
+                            href="javascript:void(0)"
+                            class="blocks-constructor-modal-categories-item-link link-decoration-none"
+                            data-ng-class="{'blocks-constructor-modal-category-selected': category === $ctrl.categorySelected }"
+                            data-ng-bind="::category.Category"
+                            data-ng-click="$ctrl.selectCategory(category)"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md col-lg">
+            <div class="js-blocks-constructor-modal-block-wrap blocks-constructor-modal-block-wrap">
+                <div class="row">
+                    <div class="col-xs-12 text-center p-b-sm" ng-if="$ctrl.experemental">
+                        <button
+                            class="blocks-constructor-btn-confirm"
+                            type="button"
+                            sweetalert
+                            sweet-options="{title: 'Вы уверены, что хотите добавить все блоки этой категории?', type: 'warning', showCancelButton: true, }"
+                            sweet-on-confirm="$ctrl.onApplyByCategories({ blocks: $ctrl.categorySelected.Blocks, sortOrder: $ctrl.modalData.sortOrder, top: $ctrl.modalData.top, blockId :  $ctrl.modalData.blockId })">
+                            Добавить блоки
+                        </button>
+                        <button
+                            class="logo-generator-modal-btn-close"
+                            type="button"
+                            sweetalert
+                            sweet-options="{title: 'Вы уверены, что хотите удалить добавленные блоки этой категории?', type: 'warning', showCancelButton: true, }"
+                            sweet-on-confirm="$ctrl.onRemoveByCategories({ categoryName: $ctrl.categorySelected })">
+                            Удалить блоки
+                        </button>
+                    </div>
+                    <div class="col-xs-12" data-ng-repeat="block in $ctrl.categorySelected.Blocks track by $index">
+                        <div
+                            class="blocks-constructor-modal-block"
+                            data-ng-click="!block.isProcessInstall ? $ctrl.onApply({blockName: block.Name, sortOrder: $ctrl.modalData.sortOrder, top: $ctrl.modalData.top, blockId :  $ctrl.modalData.blockId  }) : null ; block.isProcessInstall = true;">
+                            <figure class="blocks-constructor-modal-block-pic flex middle-xs center-xs" ng-if="block.Picture">
+                                <div class="blocks-constructor-modal-block-pic-inner">
+                                    <img class="blocks-constructor-modal-block-image" data-ng-src="{{block.Picture}}" alt="{{block.Name}}" />
+                                </div>
+                            </figure>
+                            <div class="blocks-constructor-modal-block-descr" data-ng-bind="block.Description"></div>
+                            <!--<div class="blocks-constructor-btn-apply-wrap">
+                        <button class="lp-btn lp-lp-btn--xs " type="button">Добавить</button>
+                    </div>-->
+                            <div
+                                class="blocks-constructor-modal-block-loading icon-spinner-before icon-animate-spin-before"
+                                ng-if="block.isProcessInstall"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

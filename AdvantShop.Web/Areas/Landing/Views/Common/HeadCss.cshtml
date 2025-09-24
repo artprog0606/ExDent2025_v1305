@@ -1,0 +1,209 @@
+﻿@{
+    Layout = null;
+    var fontMain = LSiteSettings.FontMain;
+    string lineHeight = LSiteSettings.LineHeight.IsNotEmpty() ? LSiteSettings.LineHeight : "1.2";
+}
+
+
+@if (!string.IsNullOrEmpty(fontMain))
+{
+    var font = LSiteSettings.GetDefaultFonts().Find(x => x.Name == fontMain);
+    if (font != null)
+    {
+        <text>
+            body{ line-height: @lineHeight; }
+            .font-family-main, body,table{font-family:@Html.Raw(font.FontFamily),sans-serif}
+        </text>
+    }
+}
+
+@{
+    var colorSchemes = LSiteSettings.GetSiteColorSchemes();
+}
+
+@foreach (var scheme in colorSchemes)
+{
+    //var className = scheme.LpBlockId != 0 ? "#block_" + scheme.LpBlockId : "." + scheme.Class;
+    var className = "." + scheme.Class;
+
+    <text>
+        @className{
+        color:@scheme.TextColor;
+        background-color:@scheme.BackgroundColor;
+        font-weight: @scheme.TextBold;
+        }
+
+        @className .lp-menu-header__submenu {
+        color:@scheme.TextColor;
+        background-color:@scheme.BackgroundColor;
+        font-weight: @scheme.TextBold;
+        }
+
+        @className .lp-menu-header__submenu + span:before   {
+        background-color:@scheme.BackgroundColor;
+        }
+
+
+        @className .lp-countdown__item-part {
+        color: @scheme.BackgroundColor;
+        }
+
+        @className .color-scheme__bg{
+        background-color:@scheme.BackgroundColor;
+        }
+
+        @className .color-scheme__bg--alt,
+        @className .color-scheme__bg--alt-hover:hover,
+        @className .cs-bg-3 {
+        background-color:@scheme.BackgroundColorAlt;
+        color:@scheme.TextColorAlt;
+        }
+
+        @className .color-scheme__bg-opacity {
+        @{
+            var isRgba = scheme.BackgroundColor.Contains("rgba");
+            var bgOpacity = string.Empty;
+
+            if (isRgba)
+            {
+                var alfaValue = scheme.BackgroundColor.Split(',').Last().Replace(")", "");
+                bgOpacity = scheme.BackgroundColor.Replace(alfaValue, "0.5");
+            }
+            else
+            {
+                bgOpacity = scheme.BackgroundColor.Replace("rgb", "rgba").Replace(")", ",.5)");
+            }
+        }
+        background-color: @bgOpacity;
+        }
+
+        @className .lp-h1--color,
+        @className h1,
+        @className .lp-h2--color,
+        @className h2{
+        color:@scheme.TitleColor;
+        }
+
+        @className .lp-h1,
+        @className h1,
+        @className .lp-h2,
+        @className h2{
+        font-weight:@scheme.TitleBold;
+        }
+        @className .lp-h3{
+        font-weight:@scheme.SubTitleBold;
+        }
+
+        @className .lp-h3--color{
+        color:@scheme.SubTitleColor;
+        }
+
+        @className a{
+        color:@scheme.LinkColor;
+        }
+
+        @className a:hover{
+        color:@scheme.LinkColorHover;
+        }
+
+        @className a:active{
+        color:@scheme.LinkColorActive;
+        }
+
+        @className .lp-link--text, @className .lp-link--text:hover, @className .lp-link--text:active{
+        color:@scheme.TextColor;
+        }
+
+        @className select{
+        font-weight:@scheme.ButtonTextBold;
+        }
+
+        @className .lp-btn--primary,
+        @className .btn-confirm,
+        @className .btn-submit   {
+        color:@scheme.ButtonTextColor;
+        background-color:@scheme.ButtonBackgroundColor;
+        border-color:@scheme.ButtonBorderColor;
+        border-radius:@scheme.ButtonBorderRadius;
+        border-width:@scheme.ButtonBorderWidth;
+        font-weight:@scheme.ButtonTextBold;
+        }
+
+        @className .cs-bg-1, @className .cs-bg-1 .cs-l-4{
+        background-color:@scheme.ButtonBackgroundColor;
+        color:@scheme.ButtonTextColor;
+        }
+
+        @className .lp-btn--primary-border-radius {
+        border-radius:@scheme.ButtonBorderRadius;
+        }
+
+        @className .lp-btn--primary-font-weight {
+        font-weight:@scheme.ButtonTextBold;
+        }
+
+        @className .lp-btn--primary:hover,
+        @className .btn-submit:hover,
+        @className .btn-confirm:hover  {
+        color:@scheme.ButtonTextColorHover;
+        background-color:@scheme.ButtonBackgroundColorHover;
+        }
+        @className .lp-btn--primary:active,
+        @className .lp-btn--primary.lp-btn--primary-active,
+        @className .btn-submit:active,
+        @className .btn-confirm:active{
+        color:@scheme.ButtonTextColorActive;
+        background-color:@scheme.ButtonBackgroundColorActive;
+        }
+
+        @className .lp-btn--secondary,
+        @className .btn-action {
+        color:@scheme.ButtonSecondaryTextColor;
+        background-color:@scheme.ButtonSecondaryBackgroundColor;
+        border-color:@scheme.ButtonSecondaryBorderColor;
+        border-radius:@scheme.ButtonSecondaryBorderRadius;
+        border-width:@scheme.ButtonSecondaryBorderWidth;
+        font-weight:@scheme.ButtonSecondaryTextBold;
+        }
+ 
+        @className .lp-btn--secondary-border-radius {
+        border-radius:@scheme.ButtonSecondaryBorderRadius;
+        }
+
+        @className .lp-btn--secondary-font-weight {
+        font-weight:@scheme.ButtonSecondaryTextBold;
+        }
+
+        @className .lp-btn--secondary:hover,
+        @className .btn-action:hover {
+        color:@scheme.ButtonSecondaryTextColorHover;
+        background-color:@scheme.ButtonSecondaryBackgroundColorHover;
+        }
+        @className .lp-btn--secondary:active,
+        @className .lp-btn--secondary.lp-btn--secondary-active,
+        @className .btn-action:active {
+        color:@scheme.ButtonSecondaryTextColorActive;
+        background-color:@scheme.ButtonSecondaryBackgroundColorActive;
+        }
+
+        @(className).color-scheme__divider,
+        @className .color-scheme__divider {
+        background-color: @scheme.DelimiterColor;
+        }
+
+        @(className).color-scheme__divider--border,
+        @className .color-scheme__divider--border,
+        @className .lp-checkbox-decor::before, 
+        @className .custom-input-checkbox::after {
+        border-color: @scheme.DelimiterColor;
+        }
+
+        @className .color-scheme__bg--alt .lp-h3--color{
+        color:@scheme.TextColorAlt;
+        }
+
+        @className .color-scheme__text-alt{
+        color:@scheme.TextColorAlt;
+        }
+    </text>
+}

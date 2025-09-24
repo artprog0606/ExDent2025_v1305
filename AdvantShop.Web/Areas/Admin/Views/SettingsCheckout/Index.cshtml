@@ -1,0 +1,210 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.CheckoutSettings.CheckoutSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var currentsaasData = SaasDataService.CurrentSaasData;
+    var enabledSaas = SaasDataService.IsSaasEnabled;
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var currentCustomer = CustomerContext.CurrentCustomer;
+    var accessToOrders = currentCustomer.IsAdmin || currentCustomer.IsVirtual || (currentCustomer.IsModerator && currentCustomer.HasRoleAction(RoleAction.Orders));
+    
+    Html.AddAsset("settingsCheckout");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsCheckout", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "Settings"),
+            NgBackTriggerCallback = "settingsCheckout.onSelectTab(null)"
+        };
+
+        headerModel.DefaultTitle = T("Admin.Settings.Commonpage.SettingsCheckout").ToString();
+
+        headerModel.Controls.Add(
+                new ButtonModel()
+                {
+                    Modificators = new List<eButtonModificators>()
+                         {
+                        eButtonModificators.OnlyIcon
+                                        },
+                    ColorType = eColorType.Secondary,
+                    Type = eButtonType.Save,
+                    Attributes = new[] { "ng-if=\"settingsCheckout.tabActiveIndex == 'common' || settingsCheckout.tabActiveIndex == 'checkoutfields' || settingsCheckout.tabActiveIndex == 'scripts' || settingsCheckout.tabActiveIndex == 'thankyoupage' || settingsCheckout.tabActiveIndex == 'exportOrders'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" },
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "done",
+                        Attributes = new { width = 25, height = 25 }
+                    }
+                }
+           );
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+           {
+                        eButtonModificators.OnlyIcon
+                                                           },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Add,
+               // Attributes = new[] { "ng-if=\"settingsCheckout.tabActiveIndex == 'orderStatuses'\"" },
+               WrapStart = " <ui-modal-trigger ng-if=\"settingsCheckout.tabActiveIndex == 'orderStatuses'\" data-controller=\"'ModalAddEditOrderStatusCtrl'\" template-url=\"../areas/admin/content/src/orderstatuses/modal/addEditOrderStatus.html\" data-on-close=\"settingsCheckout.orderstatuses.grid.fetchData()\">",
+               WrapEnd = "</ui-modal-trigger>",
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "plus-alt",
+                   Attributes = new { width = 16, height = 16 },
+               }
+           }
+        );
+
+        headerModel.Controls.Add(
+          new ButtonModel()
+          {
+              Modificators = new List<eButtonModificators>()
+          {
+                        eButtonModificators.OnlyIcon
+                                                          },
+              ColorType = eColorType.Secondary,
+              Type = eButtonType.Add,
+              // Attributes = new[] { "ng-if=\"settingsCheckout.tabActiveIndex == 'orderSources'\"" },
+              WrapStart = " <ui-modal-trigger ng-if=\"settingsCheckout.tabActiveIndex == 'orderSources'\" data-controller=\"'ModalAddEditOrderSourceCtrl'\" template-url=\"../areas/admin/content/src/ordersources/modal/addEditOrderSource.html\" data-on-close=\"settingsCheckout.ordersources.grid.fetchData()\">",
+              WrapEnd = "</ui-modal-trigger>",
+              Icon = new ButtonIcon()
+              {
+                  SvgName = "plus-alt",
+                  Attributes = new { width = 16, height = 16 },
+              }
+          }
+       );
+
+        headerModel.Controls.Add(
+          new ButtonModel()
+          {
+              Modificators = new List<eButtonModificators>()
+          {
+                        eButtonModificators.OnlyIcon
+                                                          },
+              ColorType = eColorType.Secondary,
+              Type = eButtonType.Add,
+              // Attributes = new[] { "ng-if=\"settingsCheckout.tabActiveIndex == 'taxes'\"" },
+              WrapStart = " <ui-modal-trigger ng-if=\"settingsCheckout.tabActiveIndex == 'taxes'\" data-controller=\"'ModalAddEditTaxCtrl'\" template-url=\"../areas/admin/content/src/settingsCheckout/modal/addEditTax/AddEditTax.html\" data-on-close=\"settingsCheckout.gridTaxes.fetchData()\">",
+              WrapEnd = "</ui-modal-trigger>",
+              Icon = new ButtonIcon()
+              {
+                  SvgName = "plus-alt",
+                  Attributes = new { width = 16, height = 16 },
+              }
+          }
+       );
+
+        @Html.Header(headerModel)
+    }
+
+    if (!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.SettingsCheckout.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+    }
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.IndexSettings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.SettingsCheckout")</h1>
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success btn--margin-left" data-e2e="SettingsCheckoutSave" value="@T("Admin.SettingsCheckout.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset uid="checkoutTab" on-select-batch="settingsCheckout.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'common'" classes="ng-tab" heading="@T("Admin.Settings.Checkout.Common")">
+            <uib-tab-heading ng-class="{'tab-warning' : authForm.$invalid}">
+                @T("Admin.Settings.Checkout.Common")
+                <span ng-if="checkoutCommonForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!checkoutCommonForm.$invalid && authForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="checkoutCommonForm" validation-tab-index="'common'">
+                @Html.Partial("_CheckoutCommon", Model)
+            </ng-form>
+        </uib-tab>
+
+        @if (isAdminv3 && accessToOrders)
+        {
+            <uib-tab index="'orderStatuses'" heading="@T("Admin.OrderStatuses.Index.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_OrderStatuses")
+            </uib-tab>
+        }
+
+        @if (!enabledSaas || currentsaasData.OrderAdditionFields)
+        {
+            <uib-tab index="'checkoutfields'" heading="@T("Admin.Settings.Checkout.CheckoutFields")" classes="ng-tab">
+                @Html.Partial("_CheckoutFields", Model)
+            </uib-tab>
+        }
+
+        @if (isAdminv3 && accessToOrders)
+        {
+            <uib-tab index="'orderSources'" heading="@T("Admin.OrderSources.Index.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_OrderSources")
+            </uib-tab>
+        }
+
+        <uib-tab index="'taxes'" heading="@T("Admin.Settings.Checkout.Taxes")" classes="ng-tab" removable="true">
+            @Html.Partial("_Taxes", Model)
+        </uib-tab>
+        <uib-tab index="'scripts'" heading="@T("Admin.Settings.Checkout.Scripts")" classes="ng-tab">
+            @Html.Partial("_CheckoutScripts", Model)
+        </uib-tab>
+        <uib-tab index="'thankyoupage'" heading="@T("Admin.Settings.Checkout.ThankYouPage")" classes="ng-tab">
+            @Html.Partial("_ThankYouPage", Model)
+        </uib-tab>
+
+        @if (isAdminv3 && accessToOrders)
+        {
+            <uib-tab index="'exportOrders'" heading="@T("Admin.Analytics.ExportOrders.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_ExportOrders", Model.ExportOrdersModel)
+            </uib-tab>
+            <uib-tab index="'importOrders'" heading="@T("Admin.SettingsCheckout.ImportOrders.Title")" classes="ng-tab" removable="true">
+                @Html.Partial("_ImportOrders", Model.ImportOrdersModel)
+            </uib-tab>
+        }
+
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" data-e2e="SettingsCheckoutSave" value="@T("Admin.SettingsCheckout.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+}
+
+

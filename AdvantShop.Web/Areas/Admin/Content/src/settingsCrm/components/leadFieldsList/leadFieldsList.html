@@ -1,0 +1,107 @@
+﻿<div class="sortable-row" ng-model="$ctrl.items" as-sortable="$ctrl.sortableOptions" is-mobile>
+    <div ng-if="!isMobile.value" class="form-group flex p-w-xl" ng-show="$ctrl.items.length > 0">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs">{{'Admin.Js.LeadFields.Name'|translate}}</div>
+                <div class="col-xs">{{'Admin.Js.LeadFields.Type'|translate}}</div>
+                <div class="col-fixed-size-xs">{{'Admin.Js.LeadFields.Required'|translate}}</div>
+                <div class="col-fixed-size-xs">{{'Admin.Js.LeadFields.Active'|translate}}</div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="!isMobile.value" class="row" ng-repeat="item in $ctrl.items" as-sortable-item ng-cloak>
+        <div class="col-xs-12">
+            <div class="flex payment-row middle-xs between-xs">
+                <div class="flex middle-xs col-xs">
+                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                        <icon-move />
+                    </div>
+                    <div class="shipping-text col-xs-12 p-r-md">
+                        <div class="row">
+                            <div class="col-xs">
+                                <ui-modal-trigger
+                                    data-controller="'ModalAddEditLeadFieldCtrl'"
+                                    controller-as="ctrl"
+                                    template-url="../areas/admin/content/src/settingsCrm/components/leadFieldsList/modals/addEditLeadField/addEditLeadField.html"
+                                    data-resolve="{field: item}"
+                                    data-on-close="$ctrl.onAddEditLeadField($index, result)">
+                                    <a href="">{{item.Name}}</a>
+                                </ui-modal-trigger>
+                            </div>
+                            <div class="col-xs">{{item.FieldTypeFormatted}}</div>
+                            <div class="col-fixed-size-xs">
+                                <switch-on-off checked="item.Required" on-change="$ctrl.inplace(item, 'Required', checked)"></switch-on-off>
+                            </div>
+                            <div class="col-fixed-size-xs">
+                                <switch-on-off checked="item.Enabled" on-change="$ctrl.inplace(item, 'Enabled', checked)"></switch-on-off>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex middle-xs col-fixed-size-ls">
+                    <a href="" class="fa fa-times link-invert link-decoration-none" ng-click="$ctrl.deleteItem(item)"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="isMobile.value" class="settings-list settings-list--row-gap-3">
+        <div ng-repeat="item in $ctrl.items" ng-cloak class="swipe-line" as-sortable-item>
+            <div class="swipe-line__inner" data-swipe-line>
+                <div class="navigation-item navigation-item--horizontal card card--middle swipe-line__content card--padding-top-bottom-none">
+                    <div as-sortable-item-handle class="as-sortable-item-handle navigation-item__icon">
+                        <icon-move>
+                            <svg
+                                class="icon-move"
+                                version="1.0"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="10.000000pt"
+                                height="20.000000pt"
+                                viewBox="0 0 10.000000 20.000000"
+                                preserveAspectRatio="xMidYMid meet">
+                                <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                    <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                    <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                </g>
+                            </svg>
+                        </icon-move>
+                    </div>
+                    <ui-modal-trigger
+                        data-controller="'ModalAddEditLeadFieldCtrl'"
+                        controller-as="ctrl"
+                        template-url="../areas/admin/content/src/settingsCrm/components/leadFieldsList/modals/addEditLeadField/addEditLeadField.html"
+                        data-resolve="{field: item}"
+                        data-on-close="$ctrl.onAddEditLeadField($index, result)">
+                        <div class="navigation-item__text" style="padding: 20px 0">
+                            <span class="fs-md">{{item.Name}}</span>
+                        </div>
+                    </ui-modal-trigger>
+                </div>
+                <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                    <button type="button" class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs" ng-click="$ctrl.deleteItem(item)">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-t">
+        <ui-modal-trigger
+            data-controller="'ModalAddEditLeadFieldCtrl'"
+            controller-as="ctrl"
+            template-url="../areas/admin/content/src/settingsCrm/components/leadFieldsList/modals/addEditLeadField/addEditLeadField.html"
+            data-resolve="{ salesFunnelId: $ctrl.salesFunnelId }"
+            data-on-close="$ctrl.onAddEditLeadField(null, null, result)">
+            <button class="btn btn-sm btn-success" type="button" data-e2e="leadFieldAdd">
+                <span class="fa fa-plus"></span>
+                {{'Admin.Js.AddEdit.Add'|translate}}
+            </button>
+        </ui-modal-trigger>
+    </div>
+</div>

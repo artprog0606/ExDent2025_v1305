@@ -1,0 +1,74 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.IntellectMoneyMainProtocolPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SellerSiteNumber")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.EshopId, new { ng_model = "paymentMethod.Parameters.EshopId", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SellerSiteNumber").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SellerSiteNumber")">
+            @T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SiteNumberWhichCustomerShouldPay")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.IntellectMoneyMainProtocol.PaymentMethod")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.Preference, Model.Payments, new { ng_model = "paymentMethod.Parameters.Preference", ng_init = "paymentMethod.Parameters.Preference='" + Model.Preference + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.PaymentMethod")">
+            @T("Admin.PaymentMethods.IntellectMoneyMainProtocol.PaymentMethodSelectedWhenPaying")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SecretKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SecretKey").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.SecretKey")">
+            @T("Admin.PaymentMethods.IntellectMoneyMainProtocol.StringOfCharacters")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="SendReceiptData">@T("Admin.PaymentMethods.Platron.SendDataForCheck")</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", ng_init = "paymentMethod.Parameters.SendReceiptData=" + Model.SendReceiptData.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-show="paymentMethod.Parameters.SendReceiptData == true">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.ReceiptDataInn")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ReceiptDataInn, new { ng_model = "paymentMethod.Parameters.ReceiptDataInn", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-show="paymentMethod.Parameters.SendReceiptData == true">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.IntellectMoneyMainProtocol.ReceiptDataGroup")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.ReceiptDataGroup, new { ng_model = "paymentMethod.Parameters.ReceiptDataGroup", @class = "form-control input-alt" })
+    </div>
+</div>
+
+
+

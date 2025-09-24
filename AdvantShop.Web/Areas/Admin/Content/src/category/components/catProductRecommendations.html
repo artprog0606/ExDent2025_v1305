@@ -1,0 +1,73 @@
+﻿<div class="row" is-mobile>
+    <div class="col-xs-12 col-md col-wl-4 m-b-md" data-e2e="RecommendationCategory">
+        <div class="m-b-sm form-label form-label--block">{{'Admin.Js.CatProductRecommendations.Categories'|translate}}</div>
+        <div>
+            <div ng-repeat="item in ctrl.categories track by $index" class="m-b-sm flex middle-xs">
+                <span>{{item.Name}}</span>
+                <a
+                    href=""
+                    ng-click="ctrl.deleteCategory(item.Type, item.CategoryId)"
+                    class="fas fa-times link-invert link-decoration-none m-l-xs"
+                    title="{{'Admin.Js.CatProductRecommendations.Delete'|translate}}"
+                    data-e2e="RecommendationCategoryDelete-id-{{item.CategoryId}}"></a>
+            </div>
+            <div ng-if="ctrl.categories.length == 0" class="m-b-sm">{{'Admin.Js.CatProductRecommendations.NoSelectedCategories'|translate}}</div>
+            <div
+                ng-if="(ctrl.categories == null || ctrl.categories.length == 0) && ((ctrl.properties != null && ctrl.properties.length > 0) || (ctrl.propertiesWithValues != null && ctrl.propertiesWithValues.length > 0))"
+                class="m-b-sm">
+                <span style="color: red">{{'Admin.Js.CatProductRecommendations.SelectCategories'|translate}}</span>
+            </div>
+            <ui-modal-trigger
+                data-on-close="ctrl.addCategories(result)"
+                data-controller="'ModalAddCategoryCtrl'"
+                controller-as="ctrl"
+                template-url="../areas/admin/content/src/_shared/modal/addCategory/AddCategory.html">
+                <a href="" class="btn btn-sm btn-default" ng-class="{'btn-success' : isMobile.value}" data-e2e="RecommendationCategoryAdd"
+                    >{{'Admin.Js.CatProductRecommendations.Add'|translate}}</a
+                >
+            </ui-modal-trigger>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md col-wl-5 m-b-md" data-e2e="RecommendationProperty">
+        <div class="m-b-sm form-label form-label--block">{{'Admin.Js.CatProductRecommendations.Properties'|translate}}</div>
+        <div>
+            <div ng-repeat="item in ctrl.properties track by $index" class="m-b-sm flex middle-xs flex-wrap m-r-xs">
+                <div>{{item.Name}} <span class="p-r-xs">-</span></div>
+                <div class="flex middle-xs">
+                    <span ng-if="item.IsSame">{{'Admin.Js.CatProductRecommendations.Same'|translate}}</span>
+                    <span ng-if="!item.IsSame">{{'Admin.Js.CatProductRecommendations.NotSame'|translate}}</span>
+                    <a
+                        href=""
+                        ng-click="ctrl.deleteProperty(item.Type, item.Id)"
+                        class="fas fa-times link-invert link-decoration-none m-l-xs"
+                        title="{{'Admin.Js.CatProductRecommendations.Delete'|translate}}"
+                        data-e2e="RecommendationPropertyDelete-id-{{item.Id}}"></a>
+                </div>
+            </div>
+            <div ng-repeat="item in ctrl.propertiesWithValues track by $index" class="m-b-sm flex middle-xs flex-wrap">
+                <div>{{item.Name}} <span class="p-r-xs">-</span></div>
+                <div class="flex middle-xs">
+                    <span>{{item.Value}}</span>
+                    <a
+                        href=""
+                        ng-click="ctrl.deletePropertyWithValue(item.Type, item.Id)"
+                        class="fas fa-times link-invert link-decoration-none m-l-xs"
+                        title="{{'Admin.Js.CatProductRecommendations.Delete'|translate}}"
+                        data-e2e="RecommendationPropertyWithValueDelete-value-id-{{item.Id}}"></a>
+                </div>
+            </div>
+            <div ng-if="ctrl.properties.length == 0 && ctrl.propertiesWithValues.length === 0" class="m-b-sm">
+                {{'Admin.Js.CatProductRecommendations.NoPropertiesSelected'|translate}}
+            </div>
+            <ui-modal-trigger
+                data-on-close="ctrl.addPropertyModal(result)"
+                data-controller="'ModalAddRecomPropertyCtrl'"
+                controller-as="ctrl"
+                template-url="../areas/admin/content/src/category/modal/addRecomProperty/AddRecomProperty.html">
+                <a href="" class="btn btn-sm btn-default" ng-class="{'btn-success' : isMobile.value}" data-e2e="RecommendationPropertyAdd"
+                    >{{'Admin.Js.CatProductRecommendations.Add'|translate}}</a
+                >
+            </ui-modal-trigger>
+        </div>
+    </div>
+</div>

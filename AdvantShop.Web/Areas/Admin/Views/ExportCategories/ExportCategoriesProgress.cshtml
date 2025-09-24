@@ -1,0 +1,113 @@
+﻿@*@model AdvantShop.Web.Admin.Models.ExportCategories.ExportCategoriesModel*@
+@using AdvantShop.Core.Services.Admin
+@{
+    Html.AddAsset("exportFeeds");
+
+    var isAdminv3 = AdminAreaTemplate.IsAdminv3();
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isAdminv3 && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Catalog/_TopContentCatalogLayout.cshtml";
+    }
+}
+
+    @if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.ExportCategories.CategoriesExport") + "</span>";
+        headerModel.ShowOnlySticky = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.ExportCategoriesProgress.ReturnToExport").ToString(),
+            Url = isAdminv3 ? "exportfeeds/indexcsv" : "exportCategories"
+        };
+
+        @Html.Header(headerModel)
+    }
+
+<div class="wrapper" ng-init="exportCategories.initProgress()">
+    <div class="row">
+        <div class="col-xs">
+            @if (isAdminv3 && !isMobile)
+            {
+                <div class="m-b-xs">
+                    @Html.Back(T("Admin.ExportCategoriesProgress.ReturnToExport").ToString(), (isAdminv3 ? "exportfeeds/indexcsv" : "exportCategories"), "", "data-e2e=ReturnToExport")
+                </div>
+            }
+
+            @if (!isMobile)
+            {
+                <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block-item-main sticky-page-name-inner">
+                        <div class="page-name-block-item">
+                            <h1 class="page-name-block-text sticky-page-name-text m-b-xs">
+                                @T("Admin.ExportCategories.CategoriesExport")
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="@(isMobile ? "" : "container-fluid")" ng-if="exportCategories.IsRun">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <a class="link-invert" href="" ng-click="exportCategories.interruptProcess()">@T("Admin.ExportCategoriesProgress.AbortDownload")</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "m-b-md" : "container-fluid")">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <uib-progressbar max="exportCategories.progressTotal" value="exportCategories.progressValue">
+                                    <span style="color: white; white-space: nowrap;" data-e2e="exportCategoriesCount">{{exportCategories.progressValue}} / {{exportCategories.progressTotal}}</span>
+                                </uib-progressbar>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "" : "container-fluid")">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                @T("Admin.ExportCategoriesProgress.CurrentProcess")
+                                <a class="link-decoration-none" ng-href="{{exportCategories.progressCurrentProcess}}" ng-bind="exportCategories.progressCurrentProcessName"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "" : "container-fluid")" ng-if="!exportCategories.IsRun">
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <div class="setting-label-wrap">
+                                    @T("Admin.ExportCategoriesProgress.DataExportSuccessful")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@(isMobile ? "" : "container-fluid")" ng-if="!exportCategories.IsRun">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <a data-e2e="DownloadFile" href="{{exportCategories.FileName}}" class="btn btn-sm btn-default" target="_blank">@T("Admin.ExportCategoriesProgress.DownloadFile")</a>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!isAdminv3)
+                    {
+                        <div class="container-fluid">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <a class="link-invert" href="exportCategories">@T("Admin.ExportCategoriesProgress.ReturnToExport")</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

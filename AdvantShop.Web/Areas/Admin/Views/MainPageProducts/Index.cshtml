@@ -1,0 +1,112 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Catalog.MainPageProducts.MainPageProductsViewModel
+@{
+    Html.AddAsset("mainPageProducts");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Layout = "~/Areas/Admin/Views/Catalog/_CatalogLayout.cshtml";
+    ViewBag.CatalogLeftMenuNgCallbackOnInit = "mainpageproducts.initCatalogLeftMenu(catalogLeftMenu)";
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Title = Model.Title;
+        
+        if (Model.Type != AdvantShop.Catalog.EProductOnMain.Sale)
+        {
+            headerModel.Controls.Add(
+                new ButtonModel()
+                {
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+                    ColorType = eColorType.Secondary,
+                    Type = eButtonType.Add,
+                    WrapStart = "<ui-modal-trigger class=\"header-subtext\" data-controller=\"'ModalProductsSelectvizrCtrl'\" controller-as=\"ctrl\" size=\"xs-11\" on-close=\"mainpageproducts.addProductsModal(result)\" template-url=\"" + Html.GetAssetPath("productsSelectvizrModal.html") + "\">",
+                    WrapEnd = "</ui-modal-trigger>",
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "plus-alt",
+                        Attributes = new { width = 16, height = 16 },
+                    }
+                }
+                );
+        }
+        
+        
+        var moreButtonDefaultList = new MoreButtonModel();
+        moreButtonDefaultList.ColorType = eColorType.Secondary;
+        moreButtonDefaultList.NgTemplateId = "mainPageProductsMoreButtonHeaderTemplate";
+        moreButtonDefaultList.Items = new List<MoreButtonPopoverItem>();
+        moreButtonDefaultList.Items.Add(new MoreButtonPopoverItem()
+        {
+            Text = T("Admin.MainPageProducts.Index.Edit"),
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            ColorType = eColorType.Link,
+            WrapStart = " <ui-modal-trigger controller-as=\"ctrl\" size=\"lg\" data-resolve=\"{'type':" + (int)Model.Type + "}\" data-controller=\"'ModalEditMainPageListCtrl'\" template-url=\"" + Html.GetAssetPath("editMainPageList.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+        });
+        
+        headerModel.Controls.Add(moreButtonDefaultList);
+
+        @Html.Header(headerModel)
+    }
+    
+}
+
+@if (!isMobile)
+{
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text inline bottom-cell m-r-xs">
+                    @Html.Raw(Model.Title)
+                </h1>
+            </div>
+            <div class="page-name-block-item-additional">
+                <ui-modal-trigger data-controller="'ModalEditMainPageListCtrl'" controller-as="ctrl" size="lg" 
+                                  template-url="@Html.GetAssetPath("editMainPageList.html")" 
+                                  data-resolve="{'type': @((int)Model.Type)}"> 
+                    <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="editMainPageList">
+                        @T("Admin.MainPageProducts.Index.Edit")
+                    </button>
+                </ui-modal-trigger>
+
+                @if (Model.Type != AdvantShop.Catalog.EProductOnMain.Sale)
+                {
+                    <ui-modal-trigger class="header-subtext" data-controller="'ModalProductsSelectvizrCtrl'" controller-as="ctrl" size="xs-11" on-close="mainpageproducts.addProductsModal(result)" template-url="@Html.GetAssetPath("productsSelectvizrModal.html")">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="mainPageListAddProduct">
+                            <span class="fa fa-plus"></span> @T("Admin.AddProduct")
+                        </button>
+                    </ui-modal-trigger>
+                }
+            </div>
+        </div>
+    </div>
+}
+<div data-is-mobile>
+    <ui-grid-custom grid-unique-id="grid"
+                    grid-extend-ctrl="mainpageproducts"
+                    grid-row-identificator="'ProductId'"
+                    grid-on-init="mainpageproducts.onInitGrid(grid)"
+                    grid-options="mainpageproducts.gridOptions"
+                    grid-params="{type:'@(Model.Type.ToString())'}"
+                    grid-url="'mainpageproducts/getcatalog'"
+                    grid-inplace-url="'mainpageproducts/inplaceproduct'"
+                    grid-on-delete="mainpageproducts.onGridDeleteItem()"
+                    grid-selection-mass-apply="mainpageproducts.onGridDeleteItem()"
+                    grid-swipe-line="isMobile.value">
+        <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+            <div data-product-grid-item
+                 data-row="row"
+                 data-grid-scope="grid.appScope"
+                 data-custom-link="true"
+                 data-renderer-columns="colContainer.renderedColumns">
+            </div>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="mainpageproducts.grid.gridOptions.TotalString">
+        </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>

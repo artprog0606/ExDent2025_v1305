@@ -1,0 +1,110 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Partners/_PartnersLayout.cshtml";
+    }
+
+    Html.AddAsset("partners");
+    var periodTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddDays(-1);
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page ng-cloak\">Отчеты по выплатам партнерам</span>";
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "PartnersProgramm")
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    if(!AdminAreaTemplate.IsAdminv3())
+    {
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+            eButtonModificators.HorizontalPaddingZero
+        },
+            Attributes = new[] { "ng-click=\"partnersPayoutReports.getPayoutsReport()\"" },
+            Text = T("Сформировать отчет за " + periodTo.ToString("MMMM yyyy"))
+        });
+
+        headerModel.Controls.Add(moreButton);
+    }
+
+    @Html.Header(headerModel);
+}
+
+@if (AdminAreaTemplate.IsAdminv3())
+{
+    @*@Html.Back("Партнеры", Url.AbsoluteActionUrl("Index", "Partners"))
+        @section BlockAdditional {
+            <button class="btn btn-sm btn-success" type="button" ng-click="partnersPayoutReports.getPayoutsReport()">
+                <span class="fa fa-plus"></span> Сформировать отчет за @periodTo.ToString("MMMM yyyy")
+            </button>
+        }*@
+}
+
+<div class="sticky-page-name m-t-n-xs m-b-xs" sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        @if (!isMobile)
+        {
+            <div class="page-name-block-item-main p-b-xs">
+                <h2 class="m-t-none m-b-none sticky-page-name-text" style="margin-top:3px;">
+                    Отчеты по выплатам партнерам
+                </h2>
+            </div>
+        }
+
+        @if (!AdminAreaTemplate.IsAdminv3())
+        {
+            <div class="page-name-block-item-additional">
+                <button class="btn btn-sm btn-success" type="button" ng-click="partnersPayoutReports.getPayoutsReport()">
+                    <span class="fa fa-plus"></span> Сформировать отчет за @periodTo.ToString("MMMM yyyy")
+                </button>
+            </div>
+        }
+    </div>
+    <div class="sticky-hidden-content @(isMobile ? "m-b-sm fs-xs" : "m-b-xs")">
+        Отчеты формируются автоматически 1-го числа каждого месяца.
+    </div>
+</div>
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-options="partnersPayoutReports.gridOptions"
+                        grid-on-init="partnersPayoutReports.gridOnInit(grid)"
+                        grid-filter-enabled="false"
+                        grid-selection-enabled="false"
+                        grid-url="'partnersReport/GetPayoutReports'"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <a class="card card--gap-row-sm card--p-18" ng-href="partnersReport/payoutReport/{{row.entity.Id}}">
+                    <div class="flex middle-xs between-xs fs-xs m-b-sm">
+                        <div class="m-r-md">{{row.entity.PeriodToFormatted}}</div>
+                        <div>{{row.entity.DateCreatedFormatted}}</div>
+                    </div>
+                    <div>
+                        {{row.entity.FileName}}
+                    </div>
+                </a>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="partnersPayoutReports.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

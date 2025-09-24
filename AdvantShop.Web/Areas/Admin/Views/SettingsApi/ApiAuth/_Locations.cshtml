@@ -1,0 +1,236 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/locations/maincities</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Locations.MajorCountriesCitiesList")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/locations/maincities")
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "countries": [
+        {
+            "countryId": 171,
+            "name": "Россия",
+            "iso2": "RU",
+            "cities": [
+                {
+                    "cityId": 490,
+                    "name": "Москва",
+                    "regionId": 41,
+                    "regionName": "Москва",
+                    "district": "",
+                    "zip": "101000",
+                    "warehouseIds": [1, 2, 3]
+                },
+                {
+                    "cityId": 781,
+                    "name": "Санкт-Петербург",
+                    "regionId": 58,
+                    "regionName": "Санкт-Петербург",
+                    "district": "",
+                    "zip": "190000",
+                    "warehouseIds": [5]
+                },
+                {
+                    "cityId": 38,
+                    "name": "Астрахань",
+                    "regionId": 6,
+                    "regionName": "Астраханская область",
+                    "district": "",
+                    "zip": "414000",
+                    "warehouseIds": []
+                },
+                ...
+            ]
+        },
+        {
+            "countryId": 217,
+            "name": "Украина",
+            "iso2": "UA",
+            "cities": [
+                {
+                    "cityId": 1118,
+                    "name": "Киев",
+                    "regionId": 85,
+                    "regionName": "Киев",
+                    "district": "",
+                    "zip": "",
+                    "warehouseIds": []
+                },
+                ...
+            ]
+        },
+        {
+            "countryId": 21,
+            "name": "Беларусь",
+            "iso2": "BY",
+            "cities": [
+                {
+                    "cityId": 1273,
+                    "name": "Минск",
+                    "regionId": 164,
+                    "regionName": "Минская область",
+                    "district": "",
+                    "zip": "",
+                    "warehouseIds": []
+                },
+                ...
+            ]
+        },
+        {
+            "countryId": 83,
+            "name": "Казахстан",
+            "iso2": "KZ",
+            "cities": [
+                {
+                    "cityId": 1321,
+                    "name": "Алматы",
+                    "regionId": 170,
+                    "regionName": "Алматинская область",
+                    "district": "",
+                    "zip": "",
+                    "warehouseIds": []
+                },
+                ...
+            ]
+        }
+    ]
+}
+</pre>
+    </div>
+</div>
+
+
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/locations/city</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Locations.GetCityByNameOrZip")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiAuthUrl("/api/locations/city")
+        </div>
+
+        <div class="m-b">
+            Получить город можно по индексу (zipCode) или по названию города (city) и области (region). 
+            Область не обязательный параметр, но лучше указывать потому, что встречаются одинаковые города в разных регионах (Киров).              
+        </div>
+        
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">?city=Самара&amp;region=Самарская область</pre>
+        <pre class="m-t-sm">?zipCode=443000</pre>
+        
+        <div class="m-t m-b-xs">
+            <h3>Ответ</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "id": 769,
+    "name": "Самара",
+    "regionId": 57,
+    "district": "",
+    "zip": "443000",
+    "phone": "",
+    "mobilePhone": "",
+    "shippingZones": null,
+    "shippingZonesIframe": "",
+    "cityAddressPoints": null,
+    "cityAddressPointsIframe": "",
+    "warehouseIds": [1, 2]
+}</pre>
+
+        <div class="m-b">Если город не найден вернется ошибка</div>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Город не найден"
+}</pre>
+
+        <div class="m-t m-b-xs">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswerError")</h3>
+        </div>
+        <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "Укажите почтовый индекс или город и область"
+}</pre>
+
+    </div>
+</div>
+
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/locations/countries</span>
+        <span class="description">@T("Admin.SettingsApiAuth.Index.Locations.CountriesList")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiAuthUrl("/api/locations/countries")
+        </div>
+
+        <div class="m-t m-b">
+            <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleRequest")</h3>
+        </div>
+        <pre class="m-t-sm">
+{
+    "ids": [1, 2, 3],
+    "names": ["Россия"],
+    "displayInPopup": true
+}
+</pre>
+
+    <h3 class="m-t m-b-xs">@T("Admin.SettingsApiAuth.Index.ApiAuth.AllFields")</h3>
+    <div class="row-tb">
+        <div class="row m-b-xs">
+            <div class="col-xs-2">ids</div>
+            <div class="col-xs-1">list of int</div>
+            <div class="col-xs">Список id стран, которые нужно вернуть</div>
+        </div>
+
+        <div class="row m-b-xs">
+            <div class="col-xs-2">names</div>
+            <div class="col-xs-1">list of string</div>
+            <div class="col-xs">Список названий стран, которые нужно вернуть</div>
+        </div>
+
+        <div class="row m-b-xs">
+            <div class="col-xs-2">displayInPopup</div>
+            <div class="col-xs-1">bool</div>
+            <div class="col-xs">Отфильтровать по основной стране</div>
+        </div>
+    </div>
+    
+    <div class="m-t m-b-xs">
+        <h3>@T("Admin.SettingsApiAuth.Index.ApiAuth.ExampleAnswer")</h3>
+    </div>
+    <pre class="m-t-sm">
+{
+    "countries": [
+        {
+            "countryId": 171,
+            "name": "Россия",
+            "iso2": "RU",
+            "iso3": "RUS",
+            "dialCode": 7,
+            "svgIcon": "<svg width='30' height='18' viewBox='0 0 30 18' fill='none' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' clip-rule='evenodd' d='M0 0H30V18H0V0Z' fill='white'/><path fill-rule='evenodd' clip-rule='evenodd' d='M0 6.30005H30V18H0V6.30005Z' fill='#0039A6'/><path fill-rule='evenodd' clip-rule='evenodd' d='M0 11.7H30V18H0V11.7Z' fill='#D52B1E'/></svg>"
+        }
+    ]
+}
+</pre>
+    </div>
+</div>

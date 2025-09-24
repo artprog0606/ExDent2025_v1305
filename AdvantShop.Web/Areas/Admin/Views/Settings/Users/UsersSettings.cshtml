@@ -1,0 +1,176 @@
+﻿@using AdvantShop.Core.Services.Admin
+
+@model AdvantShop.Web.Admin.ViewModels.Settings.UsersSettingsViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settings");
+}
+@using (Html.BeginAbsoluteUrlForm("UsersSettings", "Settings", FormMethod.Post, new { name = "form", novalidate = "novalidate" }))
+{
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Userssettings").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settingsUsers.onSelectTab(null)"
+    };
+
+    headerModel.Controls = new List<IButton>()
+    {
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-if=\"settingsUsers.tabActiveIndex === 'Users'\"" },
+            WrapStart = " <ui-modal-trigger ng-if=\"settingsUsers.tabActiveIndex === 'Users'\" data-controller=\"'ModalAddEditUserCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/addEditUser/AddEditUser.html\" data-on-close=\"settingsUsers.gridUsers.fetchData(); settingsUsers.getSaasDataInformation();\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        },
+        new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-if=\"settingsUsers.tabActiveIndex === 'Departments'\"" },
+            WrapStart = " <ui-modal-trigger ng-if=\"settingsUsers.tabActiveIndex === 'Departments'\" data-controller=\"'ModalAddEditDepartmentCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/addEditDepartment/AddEditDepartment.html\" data-on-close=\"settingsUsers.gridDepartments.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        },
+
+          new ButtonModel()
+        {
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            ColorType = eColorType.Secondary,
+            Type = eButtonType.Add,
+            // Attributes = new[] { "ng-if=\"settingsUsers.tabActiveIndex === 'ManagerRoles'\"" },
+            WrapStart = " <ui-modal-trigger ng-if=\"settingsUsers.tabActiveIndex === 'ManagerRoles'\" data-controller=\"'ModalAddEditManagerRoleCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/addEditManagerRole/AddEditManagerRole.html\" data-on-close=\"settingsUsers.gridManagerRoles.fetchData()\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width = 16, height = 16 },
+            }
+        },
+
+            new ButtonModel()
+                {
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+                    ColorType = eColorType.Secondary,
+                    Type = eButtonType.Save,
+                    Attributes = new[] { "ng-if=\"settingsUsers.tabActiveIndex === 'settings'\"", "type=\"submit\"" ,"data-button-validation disabled" ,"ng-disabled=\"!form.modified\""},
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "done",
+                        Attributes = new { width = 25, height = 25 }
+                    }
+                },
+                
+                new ButtonModel()
+                {
+                    Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+                    ColorType = eColorType.Secondary,
+                    Type = eButtonType.Save,
+                    Attributes = new[] { "ng-if=\"settingsUsers.tabActiveIndex === 'TwoFactorAuth'\"", "type=\"submit\"" ,"data-button-validation disabled" ,"ng-disabled=\"!form.modified\""},
+                    Icon = new ButtonIcon()
+                    {
+                        SvgName = "done",
+                        Attributes = new { width = 25, height = 25 }
+                    }
+                }
+
+    };
+
+    @Html.Header(headerModel)
+
+    @Html.AntiForgeryToken()
+
+    if (!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+    }
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.Commonpage.Userssettings.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="sticky-page-name">
+            <div class="row middle-xs">
+                <div class="col-xs-6">
+                    <h1 class="page-name-block-text">@T("Admin.Settings.Commonpage.Userssettings")</h1>
+                </div>
+                <div class="col-xs-6">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <uib-tabset  uid="tab" on-select-batch="settingsUsers.onSelectTab(tab.index);"
+                ng-init="settingsUsers.form = form"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'Users'" heading="@T("Admin.Settings.Users")" classes="ng-tab" removable="true">
+            @Html.Partial("Users/Users", Model.UsersViewModel)
+        </uib-tab>
+        <uib-tab index="'Departments'" heading="@T("Admin.Settings.Users.Departments")" classes="ng-tab" removable="true">
+            @Html.Partial("Users/Departments", Model)
+        </uib-tab>
+        <uib-tab index="'ManagerRoles'" heading="@T("Admin.Settings.Users.ManagerRoles")" classes="ng-tab" removable="true">
+            @Html.Partial("Users/ManagerRoles", Model)
+        </uib-tab>
+        <uib-tab index="'settings'" heading="@T("Admin.Settings.Users.Settings")" classes="ng-tab">
+            @Html.Partial("Users/Settings", Model)
+        </uib-tab>
+        <uib-tab index="'TwoFactorAuth'" heading="@T("Admin.Settings.Users.TwoFactorAuth")" classes="ng-tab">
+            @Html.Partial("Users/TwoFactorAuth", Model)
+        </uib-tab>
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Common.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+            </div>
+        }
+    </uib-tabset>
+}
+
+

@@ -1,0 +1,535 @@
+<ng-form name="builderMain" novalidate>
+    <!--Структура-->
+    <section
+        class="new-builder__content-section"
+        ng-if="(!builder.design.IsDemo || builder.design.IsAdmin) && (builder.design.MainPageModeImageOptions.length > 1 || builder.design.MainPageModeOptions.length > 1)">
+        <div class="flex middle-xs">
+            <h2 class="new-builder__content-title" data-translate="Js.Builder.PageStructure"></h2>
+
+            <div class="new-builder__content-title">
+                <help-trigger
+                    class="ng-cloak m-l-xs"
+                    use-template="true"
+                    classes="'setting__catalog-popover-custom'"
+                    help-append-to-body="false"
+                    data-title="{{::'Js.Builder.MainPageModeTitle' | translate}}">
+                    <div class="help-content" data-translate="Js.Builder.MainPageModeHint"></div>
+                </help-trigger>
+            </div>
+        </div>
+        <div
+            class="new-builder__content-field"
+            ng-if="(!builder.design.IsDemo || builder.design.IsAdmin) && builder.design.MainPageModeImageOptions.length > 1">
+            <div class="form-field">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label
+                            ng-repeat="mode in builder.design.MainPageModeImageOptions"
+                            class="form-field-label form-field-radio-label form-field-radio-label--block">
+                            <input
+                                type="radio"
+                                name="MainPageMode"
+                                class="form-field-radio"
+                                data-ng-model="builder.design.MainPageMode"
+                                ng-value="mode.Value"
+                                data-ng-click="builder.changeMainPage(mode)" />
+                            <span class="form-field-radio-emul"></span>
+                            <span class="form-field-label-text">{{mode.Title}}</span>
+                        </label>
+                    </div>
+                    <div class="col-xs-6">
+                        <span class="new-builder__field-menu-style-image-wrap">
+                            <span>
+                                <img
+                                    ng-src="{{builder.design.mainPageModeCurrent.ImageSrc}}"
+                                    alt="{{builder.design.mainPageModeCurrent.Title}}"
+                                    title="{{builder.design.mainPageModeCurrent.Title}}" />
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="new-builder__content-field"
+            ng-if="(!builder.design.IsDemo || builder.design.IsAdmin) && builder.design.MainPageModeOptions.length > 1">
+            <div class="form-field">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label
+                            ng-repeat="mode in builder.design.MainPageModeOptions"
+                            class="form-field-label form-field-radio-label form-field-radio-label--block">
+                            <input
+                                type="radio"
+                                name="MainPageModeLegacyOption"
+                                class="form-field-radio"
+                                data-ng-model="builder.design.MainPageMode"
+                                ng-value="mode.Value"
+                                data-ng-click="builder.changeMainPage(mode)" />
+                            <span class="form-field-radio-emul"></span>
+                            <span class="form-field-label-text">{{mode.Text}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--/Структура-->
+    <section class="new-builder__content-section">
+        <h2 class="new-builder__content-title" data-ng-init="builder.builderMain = builderMain" data-translate="Js.Builder.SectionCarousel"></h2>
+
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="CarouselVisibility"
+                    checked="builder.design.CarouselVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.CarouselVisibilityTitle' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CarouselVisibilityTitle' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CarouselVisibilityHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CarouselAnimationSpeed"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CarouselAnimationSpeed' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CarouselAnimationSpeedHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CarouselAnimationSpeed"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CarouselAnimationSpeed"
+                    validation-input-text="{{::'Js.Builder.CarouselAnimationSpeed' | translate}}"
+                    required />
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CarouselAnimationDelay"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CarouselAnimationDelay' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CarouselAnimationDelayHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CarouselAnimationDelay"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CarouselAnimationDelay"
+                    required />
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.SectionMainPageProcuts"></h2>
+
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="MainPageProductsVisibility"
+                    checked="builder.design.MainPageProductsVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.MainPageProductsVisibilityTitle' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.MainPageProductsVisibilityTitle' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.MainPageProductsVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageProductInSection"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageProductInSection' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CountMainPageProductInSectionHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CountMainPageProductInSection"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageProductInSection"
+                    required />
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageProductInLine"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageProductInLine' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CountMainPageProductInLineHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CountMainPageProductInLine"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageProductInLine"
+                    required />
+            </div>
+        </div>
+        <div class="new-builder__content-field">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="MainPageVisibleBriefDescription"
+                    checked="builder.design.MainPageVisibleBriefDescription"
+                    theme="blue"
+                    label="{{::'Js.Builder.MainPageVisibleBriefDescription' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.MainPageVisibleBriefDescription' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.MainPageVisibleBriefDescriptionTitleLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section">
+        <h2
+            class="new-builder__content-title"
+            ng-hide="builder.isHidden('MainPageCategoriesVisibility') && builder.isHidden('CountMainPageCategoriesInSection') && builder.isHidden('CountMainPageCategoriesInLine')"
+            data-translate="Js.Builder.SectionMainPageCategories"></h2>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('MainPageCategoriesVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="MainPageCategoriesVisibility"
+                    checked="builder.design.MainPageCategoriesVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.MainPageCategoriesVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.MainPageCategoriesVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.MainPageCategoriesVisibilityTitleLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('CountMainPageCategoriesInSection')">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageCategoriesInSection"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageCategoriesInSection' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CountMainPageCategoriesInSectionTitleLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CountMainPageCategoriesInSection"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageCategoriesInSection"
+                    required />
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('CountMainPageCategoriesInLine')">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageCategoriesInLine"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageCategoriesInLine' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CountMainPageCategoriesInLineTitleLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="0"
+                    name="CountMainPageCategoriesInLine"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageCategoriesInLine"
+                    required />
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.SectionView"></h2>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('NewsVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="NewsVisibility"
+                    checked="builder.design.NewsVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.NewsVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.NewsVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.NewsVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('NewsSubscriptionVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="NewsSubscriptionVisibility"
+                    checked="builder.design.NewsSubscriptionVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.NewsSubscriptionVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.NewsSubscriptionVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.NewsSubscriptionVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('CheckOrderVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="CheckOrderVisibility"
+                    checked="builder.design.CheckOrderVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.CheckOrderVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CheckOrderVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CheckOrderVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('GiftSertificateVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="GiftSertificateVisibility"
+                    checked="builder.design.GiftSertificateVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.GiftSertificateVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.GiftSertificateVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.GiftSertificateVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('BrandCarouselVisibilityTitle')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="BrandCarouselVisibility"
+                    checked="builder.design.BrandCarouselVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.BrandCarouselVisibilityTitle' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.BrandCarouselVisibilityTitle' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.BrandCarouselVisibilityHelp"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="new-builder__content-section">
+        <h2 class="new-builder__content-title" data-translate="Js.Builder.ProductReviews"></h2>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('MainPageProductReviewsVisibility')">
+            <div class="form-field flex middle-xs">
+                <switch-on-off
+                    data-id="MainPageProductReviewsVisibility"
+                    checked="builder.design.MainPageProductReviewsVisibility"
+                    theme="blue"
+                    label="{{::'Js.Builder.MainPageProductReviewsVisibility' | translate}}"
+                    on-click="builder.changeCheckbox(state, name)">
+                </switch-on-off>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.MainPageProductReviewsVisibility' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.MainPageProductReviewsVisibilityLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('ReviewsSortingOnMainPage')">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.ReviewsSortingOnMainPage"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.ReviewsSortingOnMainPage' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.ReviewsSortingOnMainPageHint"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <span class="select-custom">
+                    <select
+                        name="ReviewsSortingOnMainPage"
+                        data-ng-model="builder.design.ReviewsSortingOnMainPage"
+                        ng-options="s.value as s.label for s in builder.design.ReviewsSortingOnMainPages"></select>
+                </span>
+            </div>
+        </div>
+
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('CountMainPageProductReviewsInSection')">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageProductReviewsInSection"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageProductReviewsInSection' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.MainPageProductReviewsVisibilityLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="1"
+                    name="CountMainPageProductReviewsInSection"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageProductReviewsInSection"
+                    required />
+            </div>
+        </div>
+        <div class="new-builder__content-field" ng-hide="builder.isHidden('CountMainPageProductReviewsInLine')">
+            <div class="form-field-name flex middle-xs">
+                <span data-translate="Js.Builder.CountMainPageProductReviewsInLine"></span>
+                <div class="help-trigger__container">
+                    <help-trigger
+                        class="ng-cloak m-l-xs"
+                        use-template="true"
+                        classes="'setting__catalog-popover-custom'"
+                        help-append-to-body="false"
+                        data-title="{{::'Js.Builder.CountMainPageProductReviewsInSection' | translate}}">
+                        <div class="help-content" data-translate="Js.Builder.CountMainPageProductReviewsInSectionLink"></div>
+                    </help-trigger>
+                </div>
+            </div>
+            <div class="form-field">
+                <input
+                    type="number"
+                    min="1"
+                    name="CountMainPageProductReviewsInLine"
+                    class="form-field-input"
+                    data-ng-model="builder.design.CountMainPageProductReviewsInLine"
+                    required />
+            </div>
+        </div>
+    </section>
+</ng-form>
+
+<div class="new-builder__content-other-fields" ng-if="builder.design.OthersSectionMain.length > 0">
+    <builder-trigger-other-settings settings="builder.design.OthersSectionMain[0].Settings" show-title="true"></builder-trigger-other-settings>
+</div>

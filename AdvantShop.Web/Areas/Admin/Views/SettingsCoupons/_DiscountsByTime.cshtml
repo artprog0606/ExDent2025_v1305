@@ -1,0 +1,54 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="DiscountsByTimeCtrl as discountsByTime" @Html.Raw(isMobile ? "ng-init=\"settingsCoupons.discountsByTime = discountsByTime; settingsCoupons.setTabData('discountsByTime', discountsByTime);\"" : "ng-init=\"settingsCoupons.setTabData('discountsByTime', discountsByTime);\"")>
+    <div class="sticky-page-name @(isMobile ? "" : " m-t-n-xs") p-n" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-main flex middle-xs">
+                    <h2 class="sticky-page-name-text m-t-none setting--align-top" data-e2e="DiscountsTitle">
+                        @T("Admin.DiscountsByTime.Index.Title")
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalDiscountByDatetimeCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("discountByDatetime.html")" size="middle"
+                                      data-on-close="discountsByTime.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="DiscountsAdd">
+                            <span class="fa fa-plus"></span>@T("Admin.Add")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            }
+        </div>
+    </div>
+
+    <ui-grid-custom grid-unique-id="gridDiscountsByTime"
+                    grid-on-init="discountsByTime.gridOnInit(grid)"
+                    grid-options="discountsByTime.gridOptions"
+                    grid-url="'discountsByTime/getItems'"
+                    grid-inplace-url="'discountsByTime/inplace'"
+                    grid-extend-ctrl="discountsByTime"
+                    grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <ui-modal-trigger data-controller="'ModalDiscountByDatetimeCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("discountByDatetime.html")"
+                              data-resolve="{'id': row.entity.Id}"
+                              data-on-close="grid.appScope.$ctrl.fetchData()">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div class="flex between-xs center-xs">
+                        <div class="card__col m-r-xs flex middle-xs">
+                            {{row.entity.Time}}
+                        </div>
+                        <div class="card__col m-r-xs flex middle-xs">
+                            {{row.entity.Discount}}%
+                        </div>
+                    </div>
+                </div>
+            </ui-modal-trigger>
+        </ui-grid-custom-override-control>
+    </ui-grid-custom>
+
+</div>

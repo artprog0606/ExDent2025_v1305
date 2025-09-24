@@ -1,0 +1,50 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.WarehouseSettings.WarehouseSettingsModel
+@{
+var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="DomainGeoLocationListCtrl as domainGeoLocationList" @Html.Raw(isMobile ? "ng-init=\"settingsWarehouses.domainGeoLocationList = domainGeoLocationList\"" : "")>
+    @if (!isMobile)
+    {
+    <div class="sticky-page-name m-t-n-xs" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main flex1 middle-xs setting--flex-column">
+                <h2 class="sticky-page-name-text m-t-none setting--align-top setting__subtitle">
+                    @T("Admin.Settings.WarehousesDomains.Title")
+                </h2>
+                <div>
+                    @T("Admin.Settings.WarehousesDomains.Subtitle")
+                </div>
+            </div>
+            <div class="page-name-block-item-additional">
+                <button class="btn btn-sm btn-success btn--margin-left" type="button" ng-click="domainGeoLocationList.showModal()">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.Settings.WarehousesDomains.Add")
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <div class="">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="domainGeoLocationList.gridOnInit(grid)"
+                        grid-options="domainGeoLocationList.gridOptions"
+                        grid-row-identificator="'Id'"
+                        grid-url="'warehouse/getDomainGeoLocations'"
+                        grid-extend-ctrl="domainGeoLocationList"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm"
+                     ng-click="grid.appScope.$ctrl.gridExtendCtrl.showModal(row.entity.Id); $event.preventDefault();">
+                    <div class="flex between-xs center-xs">
+                        <div class="card__col m-r-xs flex middle-xs">
+                            <span class="m-l-sm">{{row.entity.Url}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>
+

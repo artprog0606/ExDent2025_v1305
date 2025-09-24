@@ -1,0 +1,56 @@
+﻿@model AdvantShop.Core.Services.Partners.NaturalPerson
+
+<h3>При регистрации вы указали следующие данные</h3>
+<div class="row middle-xs">
+    <div class="col-xs-3">
+        <label class="vertical-interval-small">ФИО</label>
+    </div>
+    <div class="col-xs-8">
+        <span class="vertical-interval-small">@Model.FirstName @Model.LastName @Model.Patronymic</span>
+    </div>
+</div>
+<div class="row middle-xs">
+    <div class="col-xs-3">
+        <label class="vertical-interval-small">Паспорт (серия, номер)</label>
+    </div>
+    <div class="col-xs-8">
+        <span class="vertical-interval-small">@Model.PassportSeria.Default("-") @Model.PassportNumber.Default("-")</span>
+    </div>
+</div>
+<div class="row middle-xs">
+    <div class="col-xs-3">
+        <label class="vertical-interval-small">Выдан (кем, когда)</label>
+    </div>
+    <div class="col-xs-8">
+        <span class="vertical-interval-small">@Model.PassportWhoGive.Default("-"), @Model.PassportWhenGiveFormatted</span>
+    </div>
+</div>
+<div class="row middle-xs">
+    <div class="col-xs-3">
+        <label class="vertical-interval-small">Адрес регистрации</label>
+    </div>
+    <div class="col-xs-8">
+        <span class="vertical-interval-small">@Model.RegistrationAddress.Default("-")</span>
+    </div>
+</div>
+<div class="row middle-xs">
+    <div class="col-xs-3">
+        <label class="vertical-interval-small">Индекс</label>
+    </div>
+    <div class="col-xs-8">
+        <span class="vertical-interval-small">@Model.Zip.Default("-")</span>
+    </div>
+</div>
+@{
+    var isEmpty = Model.FirstName.IsEmpty() && Model.LastName.IsEmpty() && Model.Patronymic.IsEmpty() &&
+                  Model.PassportSeria.IsEmpty() && Model.PassportNumber.IsEmpty() && Model.PassportWhoGive.IsEmpty() &&
+                  Model.PassportWhenGiveFormatted.IsEmpty() && Model.RegistrationAddress.IsEmpty();
+}
+@if (isEmpty)
+{
+    <div class="row middle-xs m-t">
+        <div class="col-xs-12">
+            <a href="@Url.Action("FinishRegistration", "Account", new {area = "partners"})" target="_blank">Изменить данные</a>
+        </div>
+    </div>
+}

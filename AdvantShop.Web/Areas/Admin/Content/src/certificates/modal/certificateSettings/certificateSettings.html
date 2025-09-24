@@ -1,0 +1,125 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.CertificateSettings.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group middle-xs row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">{{'Admin.Js.CertificateSettings.Taxes'|translate}}</div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative">
+                <ui-select
+                    required
+                    ng-model="ctrl.settings.Tax"
+                    class="input-alt"
+                    validation-input-text="{{'Admin.Js.CertificateSettings.Taxes'|translate}}">
+                    <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.settings.Taxes | filter: $select.search">
+                        <div>{{s.label}}</div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">{{'Admin.Js.CertificateSettings.SubjectOfCalculation'|translate}}</div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative" ng-class="{'flex middle-xs': isMobile.value}">
+                <ui-select
+                    convert-to-number
+                    required
+                    ng-model="ctrl.settings.PaymentSubjectType"
+                    class="input-alt"
+                    ng-class="{'flex-grow': isMobile.value}"
+                    validation-input-text="{{'Admin.Js.CertificateSettings.SubjectOfCalculation'|translate}}">
+                    <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.settings.PaymentSubjectTypes | filter: $select.search">
+                        <div>{{s.label}}</div>
+                    </ui-select-choices>
+                </ui-select>
+                <help-trigger
+                    data-use-template="true"
+                    class="ng-cloak help-trigger-icon-abs"
+                    ng-class="{'m-l-sm p-l-xs': isMobile.value}"
+                    data-title="{{'Admin.Js.CertificateSettings.SubjectOfCalculation'|translate}}">
+                    <p>{{'Admin.Js.CertificateSettings.CheckExplanation'|translate}}</p>
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">{{'Admin.Js.CertificateSettings.CalculationMethod'|translate}}</div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative" ng-class="{'flex middle-xs': isMobile.value}">
+                <ui-select
+                    convert-to-number
+                    required
+                    ng-model="ctrl.settings.PaymentMethodType"
+                    class="input-alt"
+                    ng-class="{'flex-grow': isMobile.value}"
+                    validation-input-text="{{'Admin.Js.CertificateSettings.CalculationMethod'|translate}}">
+                    <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.settings.PaymentMethodTypes | filter: $select.search">
+                        <div>{{s.label}}</div>
+                    </ui-select-choices>
+                </ui-select>
+                <help-trigger
+                    data-use-template="true"
+                    class="ng-cloak help-trigger-icon-abs"
+                    ng-class="{'m-l-sm p-l-xs': isMobile.value}"
+                    data-title="{{'Admin.Js.CertificateSettings.CalculationMethod'|translate}}">
+                    <p>{{'Admin.Js.CertificateSettings.CheckExplanation'|translate}}</p>
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group middle-xs row setting__form-group" ng-show="false">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap">Оплата "Подарочный сертификат" только при покрытии сертификатом суммы заказа (старый алгоритм)</div>
+            </div>
+            <div class="col-xs-12 col-md-8 relative">
+                <label class="adv-checkbox-label">
+                    <input
+                        id="ShowCertificatePaymentMetodOnlyCoversSum"
+                        type="checkbox"
+                        class="adv-checkbox-input control-checkbox"
+                        ng-model="ctrl.settings.ShowCertificatePaymentMetodOnlyCoversSum" />
+                    <span class="adv-checkbox-emul"></span>
+                    <help-trigger class="ng-cloak help-trigger-icon-abs" data-title="Подарочный сертификат">
+                        <p>Неактивно - при применении сертификата способом оплаты будет только "Подарочный сертификат"</p>
+                        <p>Активно - способ оплаты "Подарочный сертификат" будет только при применении сертификата, который покрывает сумму заказа</p>
+                    </help-trigger>
+                </label>
+                <div class="adv-panel-danger">Внимание!!! Включать данный параметр не рекомендуется.</div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-if="ctrl.settings.PaymentMethods != null">
+            <div class="col-xs-12">
+                <h2 class="setting__subtitle setting--m-t-none">{{'Admin.Js.CertificateSettings.PaymentMethods'|translate}}</h2>
+                <div ng-repeat="item in ctrl.settings.PaymentMethods" ng-class="{'form-group': isMobile.value && $index == 0}">
+                    <label class="adv-checkbox-label">
+                        <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="item.Selected" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span class="setting__label m-l-xs">{{item.Text}}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnSleep"
+            ladda="btnSleep"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation>
+            {{'Admin.Js.CertificateSettings.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.CertificateSettings.Cancel'|translate}}</button>
+    </div>
+</form>

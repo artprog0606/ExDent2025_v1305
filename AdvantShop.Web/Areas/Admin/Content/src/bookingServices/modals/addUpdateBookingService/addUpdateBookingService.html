@@ -1,0 +1,165 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddUpdateBookingService.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required"> {{'Admin.Js.AddUpdateBookingService.ArtNo'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-required="ctrl.mode === 'edit'"
+                            ng-model="ctrl.artNo"
+                            validation-input-text="{{'Admin.Js.AddUpdateBookingService.ArtNo'|translate}}"
+                            data-e2e="BookingServiceArtNo"
+                            ng-disabled="!ctrl.canBeEditing" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required"> {{'Admin.Js.AddUpdateBookingService.Name'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            required
+                            data-autofocus="!isMobile.value"
+                            ng-model="ctrl.name"
+                            validation-input-text="{{'Admin.Js.AddUpdateBookingService.Name'|translate}}"
+                            data-e2e="BookingServiceName"
+                            ng-disabled="!ctrl.canBeEditing" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">{{'Admin.Js.AddUpdateBookingService.Photo'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="hidden" ng-model="ctrl.image" /><!--to enable save button-->
+                        <div ng-if="ctrl.image != null && ctrl.image != ''">
+                            <img ng-src="{{ctrl.photoSrc}}" width="70" height="70" />
+                            <div ng-class="{'m-t-sm m-b-sm' : isMobile.value}">
+                                <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="ctrl.deleteImage()" ng-if="ctrl.canBeEditing"
+                                    >{{'Admin.Js.AddUpdateBookingService.Delete'|translate}}</a
+                                >
+                            </div>
+                        </div>
+                        <ui-modal-trigger
+                            data-controller="'ModalCropImageCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/cropImage/cropImage.html"
+                            on-close="ctrl.updateImage(result)"
+                            ng-if="ctrl.canBeEditing">
+                            <a href="">{{'Admin.Js.AddUpdateBookingService.UploadPhoto'|translate}}</a>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label text-required"> {{'Admin.Js.AddUpdateBookingService.Price'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            required
+                            ng-model="ctrl.price"
+                            validation-input-text="{{'Admin.Js.AddUpdateBookingService.Price'|translate}}"
+                            validation-input-float
+                            data-e2e="BookingServicePrice"
+                            ng-disabled="!ctrl.canBeEditing" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required">{{'Admin.Js.AddUpdateBookingService.Currency'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <ui-select
+                            class="input-alt"
+                            data-e2e="BookingServiceCurrency"
+                            ng-model="ctrl.currencyId"
+                            required
+                            validation-input-text="{{'Admin.Js.AddUpdateBookingService.Currency'|translate}}"
+                            ng-disabled="!ctrl.canBeEditing">
+                            <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.currencies | filter: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label"> Длительность (мин.) </label>
+                    <div class="col-xs-12 col-md-9">
+                        <div
+                            class="input-group"
+                            ng-flatpickr
+                            fp-opts="{ enableTime: true, noCalendar: true, dateFormat: 'H:i', startDateFormat: 'H:i', time_24hr: true, defaultHour: 0, defaultMinute: 15, minuteIncrement: 1, wrap: true}">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                <input
+                                    type="text"
+                                    class="form-control input-alt"
+                                    mask-control
+                                    data-mask-control-preset="time"
+                                    ng-flatpickr-input
+                                    ng-model="ctrl.duration"
+                                    validation-input-text="Длительность"
+                                    ng-disabled="!ctrl.canBeEditing" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label"> {{'Admin.Js.AddUpdateBookingService.Description'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <textarea
+                            class="form-control input-alt"
+                            rows="3"
+                            ng-model="ctrl.description"
+                            validation-input-text="{{'Admin.Js.AddUpdateBookingService.Description'|translate}}"
+                            data-e2e="BookingServiceDescription"
+                            ng-disabled="!ctrl.canBeEditing"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label ng-if="!isMobile.value" class="col-xs-12 col-md-3 control-label"
+                        >{{'Admin.Js.AddUpdateBookingService.Active'|translate}}</label
+                    >
+                    <div class="col-xs-12 col-md-9">
+                        <label class="adv-checkbox-label" data-e2e="BookingServiceEnabled">
+                            <input
+                                type="checkbox"
+                                class="adv-checkbox-input control-checkbox"
+                                ng-model="ctrl.enabled"
+                                ng-disabled="!ctrl.canBeEditing" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span ng-if="isMobile.value">{{'Admin.Js.AddUpdateBookingService.Active'|translate}}</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-xs-12 col-md-3 control-label">{{'Admin.Js.AddUpdateBookingService.SortingOrder'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="number" ng-model="ctrl.sortOrder" class="form-control input-alt" ng-disabled="!ctrl.canBeEditing" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnLoading"
+            type="button"
+            ng-if="ctrl.canBeEditing"
+            data-button-validation-success="ctrl.saveService(); ctrl.btnLoading = true;"
+            data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate) }}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

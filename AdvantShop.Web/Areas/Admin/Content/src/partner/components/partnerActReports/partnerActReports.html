@@ -1,0 +1,46 @@
+﻿<div is-mobile>
+    <h2 class="m-b-md clearfix" ng-if="!isMobile.value">
+        Архив акт-отчетов
+        <button type="button" class="btn btn-sm btn-action pull-right m-l-xs" ng-click="$ctrl.generateActReport(true)">
+            Сформировать и отправить партнеру
+        </button>
+        <button type="button" class="btn btn-sm btn-action pull-right" ng-click="$ctrl.generateActReport()">Сформировать</button>
+    </h2>
+    <div class="m-b-lg">
+        <div class="row">
+            <div class="col-xs-12">
+                <ui-grid-custom
+                    grid-unique-id="gridPartnerActReports"
+                    grid-on-init="$ctrl.gridPartnerActReports = grid"
+                    grid-filter-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{partnerId: $ctrl.partnerId}"
+                    grid-extend-ctrl="$ctrl"
+                    grid-options="$ctrl.gridOptions"
+                    grid-url="'partners/getActReports'"
+                    grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div class="card card--gap-row-sm grid g-xs">
+                            <div class="flex middle-xs">
+                                <div class="setting__label m-r-sm">Файл :</div>
+                                <div><a href="partners/actReport/{{row.entity.Id}}" target="_blank">Скачать</a></div>
+                            </div>
+                        </div>
+                        <div class="flex middle-xs">
+                            <div class="setting__label m-r-xs">Период начислений, от :</div>
+                            <div>{{row.entity.PeriodFromFormatted}}</div>
+                        </div>
+                        <div class="flex middle-xs">
+                            <div class="setting__label m-r-xs">Период начислений, до :</div>
+                            <div>{{row.entity.PeriodToFormatted}}</div>
+                        </div>
+                        <div class="flex middle-xs">
+                            <div class="setting__label m-r-xs">Создан :</div>
+                            <div>{{row.entity.DateCreatedFormatted}}</div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+</div>

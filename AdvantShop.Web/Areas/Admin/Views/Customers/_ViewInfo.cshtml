@@ -1,0 +1,319 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var customerName = string.IsNullOrEmpty(Model.CustomerCompanyName)
+        ? Model.Customer.GetFullName()
+        : Model.CustomerCompanyName;
+}
+
+<div class="ibox category-block block-additional-parameters view-info">
+    <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "p-r-lg" : "m-b-md") border_none">
+        @if (!isMobile)
+        {
+            <div class="clear">
+                <div class="order__subblock-title view-info__title pull-left">@T("Admin.Customers.ViewInfo.Customer")</div>
+            </div>
+        }
+        @if (Model.Customer != null)
+        {
+            if (!isMobile)
+            {
+                <div class="block-additional-parameters-row m-b-md">
+                    <div class="customer-status-wrap inline" ng-init="customerView.clientStatus='@Model.Customer.ClientStatus'">
+                        <div data-e2e="statusVip" class="customer-status-label customer-status-label-left" ng-click="customerView.changeStatusClient('Vip')" ng-class="{'vip': customerView.clientStatus === 'Vip'}">
+                            <span>VIP</span>
+                        </div>
+                        <div data-e2e="statusBad" ng-click="customerView.changeStatusClient('Bad')" class="customer-status-label customer-status-label-bad customer-status-label-right" ng-class="{'bad':customerView.clientStatus === 'Bad'}">
+                            <span>@T("Admin.Customers.ViewCustomerHeader.Bad")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="block-additional-parameters-row">
+                <div class="m-b-xs">
+                    @if (isMobile)
+                    {
+                        <div class="text-decoration-invert view-info__customer-name"
+                             ng-bind="customerView.customerName">
+                            @customerName
+                        </div>
+                    }
+                    else
+                    {
+                        <customer-info-trigger customer-id="'@Model.Customer.Id'" on-close="customerView.getCustomerView()">
+                            <a href="" class="text-decoration-invert" data-e2e="clientFio"
+                               ng-bind="customerView.customerName">
+                                @customerName
+                            </a>
+                        </customer-info-trigger>
+                    }
+
+                </div>
+                <div class="m-b-xs ng-cloak view-info__organization-name" ng-if="customerView.instance.Customer.Organization != null && customerView.instance.Customer.Organization.length > 0">
+                    <span data-e2e="clientOrganization">{{customerView.instance.Customer.Organization}}</span>
+                </div>
+
+                @if (Model.Customer.BirthDayFormatted.IsNotEmpty() && isMobile)
+                {
+                    <div class="m-b-xs">
+                        День рождения: <span class="bold" data-e2e="clientBirthDay" ng-bind="customerView.instance.Customer.BirthDayFormatted">@Model.Customer.BirthDayFormatted</span>
+                    </div>
+                }
+
+                <div data-e2e="CustomerGroup" class="order-note-color m-b-sm view-info__customer-status"
+                     ng-if="customerView.instance.Customer.CustomerGroup != null"
+                     ng-bind="customerView.instance.Customer.CustomerGroup.GroupName + (customerView.instance.Customer.CustomerGroup.GroupDiscount != 0 ? ' (' + customerView.instance.Customer.CustomerGroup.GroupDiscount + '%)' : '')">
+                    @(Model.Customer.CustomerGroup.GroupName + (Model.Customer.CustomerGroup.GroupDiscount != 0 ? " (" + Model.Customer.CustomerGroup.GroupDiscount + "%)" : ""))
+                </div>
+                <div class="view-info__socials-btn"
+                     ng-if="customerView.instance.Customer.EMail != null && customerView.instance.Customer.EMail != '' || @((Model.Customer != null && Model.Customer.StandardPhone != null).ToLowerString())">
+                    <div class="card card--icon m-b-xs" ng-if="customerView.instance.Customer.EMail != null && customerView.instance.Customer.EMail != ''">
+                        <ui-modal-trigger data-controller="'ModalSendLetterToCustomerCtrl'" controller-as="ctrl" size="lg"
+                                          class="card__inner"
+                                          template-url="@Html.GetAssetPath("sendLetterToCustomer.html")"
+                                          data-resolve="{params: {customerId: customerView.instance.Customer.Id, email: customerView.instance.Customer.EMail, firstName: customerView.instance.Customer.FirstName, lastName: customerView.instance.Customer.LastName, patronymic: customerView.instance.Customer.Patronymic, pageType: 'customer'}}">
+                            @if (isMobile)
+                            {
+
+                                @Html.SvgSprite("email", "", new { width = 22, height = 22 })
+                            }
+                            else
+                            {
+                                <a href="" class="far fa-envelope m-r-xs text-decoration-none" title="Отправить email"></a>
+                            }
+                        </ui-modal-trigger>
+                        @if (!isMobile)
+                        {
+                            <span data-e2e="clientMail" ng-bind="customerView.instance.Customer.EMail">@Model.Customer.EMail</span>
+                        }
+                    </div>
+
+                    @if (Model.Customer != null && Model.Customer.StandardPhone != null)
+                    {
+                        <ui-modal-trigger data-controller="'ModalSendSmsAdvCtrl'" controller-as="ctrl" 
+                                          size="middle"
+                                          class="card card--icon inline-block m-b-xs"
+                                          data-resolve="{params: { customerId: '@Model.Customer.Id', phone: customerView.instance.Customer.Phone, pageType: 'customer', throwError: true}}"
+                                          template-url="@Html.GetAssetPath("sendSms.html")">
+                            @if (isMobile)
+                            {
+                                <span class="card__inner">
+                                    @Html.SvgSprite("chat", "", new { width = 22, height = 22 })
+                                </span>
+                            }
+                            else
+                            {
+                                <a href="" class="far fa-comments m-r-xs text-decoration-none" title="Отправить SMS"></a>
+                            }
+                        </ui-modal-trigger>
+                        <a data-e2e="clientPhone" class="link-invert text-decoration-none card card--icon inline-block m-b-xs"
+                           ng-href="tel:+{{customerView.instance.Customer.StandardPhone}}"
+                           onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Orders_CallCustomer.ToString()');">
+                            @if (isMobile)
+                            {
+                                <div class="card__inner">
+                                    @Html.SvgSprite("phone", "", new { width = 22, height = 22 })
+                                </div>
+                            }
+                            else
+                            {
+                                <span ng-bind="customerView.instance.Customer.Phone">@Model.Customer.StandardPhone</span>
+                            }
+                        </a>
+                        <span ng-init="customer.ShowViberDesktopAppNotification = @Model.ShowViberDesktopAppNotification.ToLowerString()">
+                            <ui-modal-trigger ng-show="customer.ShowViberDesktopAppNotification" class="ng-hide card card--icon inline-block m-b-xs"
+                                              data-controller="'CustomerModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                              data-resolve="{ params: { appName: 'Viber', link: 'https://viber.click/@Model.Customer.StandardPhone' }}"
+                                              data-on-close="customer.ShowViberDesktopAppNotification = result"
+                                              template-url="@Html.GetAssetPath("desktopAppNotificationCustomer.html")">
+                                <a href="" class="@(!isMobile ? "m-l-xs " : "card__inner ")fas vertical-middle" data-e2e="ViberLink" title="Viber">
+                                    @if (isMobile)
+                                    {
+                                        @Html.SvgSprite("viber", "", new { width = 22, height = 22 })
+                                    }
+                                    else
+                                    {
+                                        <svg class="link-viber-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                        <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+	                                                    c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+	                                                    c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+	                                                    c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+	                                                    C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+	                                                    c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+	                                                    c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+	                                                    c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+	                                                    c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+	                                                    c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+	                                                     M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+	                                                    C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+	                                                    c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+	                                                    c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" />
+                                            </svg>
+                                    }
+
+                                </a>
+                            </ui-modal-trigger>
+                            <a ng-show="!customer.ShowViberDesktopAppNotification" href="https://viber.click/@Model.Customer.StandardPhone" target="_blank" class="@(!isMobile ? "m-l-xs " : "card card--icon ")link-invert text-decoration-none inline-block m-b-xs" data-e2e="ViberLink" title="Viber">
+                                @if (isMobile)
+                                {
+                                    <div class="card__inner">
+                                        @Html.SvgSprite("viber", "", new { width = 22, height = 22 })
+                                    </div>
+                                }
+                                else
+                                {
+                                    <svg class="link-viber-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                    <path d="M44.6,10.6c-0.8-2.9-2.4-5.2-4.8-6.8c-3-2.1-6.4-2.8-9.4-3.2c-4.1-0.6-7.8-0.7-11.4-0.3c-3.3,0.4-5.8,1.1-8.1,2.1
+                                	                c-4.5,2.1-7.1,5.4-8,9.9c-0.4,2.2-0.7,4.2-0.8,6c-0.4,4.4,0,8.2,1,11.8c1,3.5,2.8,6,5.3,7.6c0.7,0.4,1.5,0.7,2.3,1
+                                	                c0.5,0.2,0.9,0.3,1.3,0.5c0.3,0.2,0.3,0.2,0.3,0.5c0,2.5,0,7.3,0,7.3l0,1h1.9l0.3-0.3c0.2-0.2,4.8-4.6,6.4-6.4l0.2-0.2
+                                	                c0.3-0.3,0.3-0.3,0.6-0.3c2.2,0,4.5-0.1,6.7-0.3c2.7-0.1,5.9-0.4,8.9-1.7c2.7-1.1,4.7-2.9,5.9-5.4c1.2-2.5,2-5.3,2.3-8.4
+                                	                C46.2,19.6,45.8,14.9,44.6,10.6z M34.8,31.8c-0.7,1.1-1.7,1.9-2.9,2.4c-0.9,0.4-1.8,0.3-2.6-0.1c-7.3-3.1-13-7.9-16.7-14.9
+                                	                c-0.8-1.4-1.3-3-1.9-4.5c-0.1-0.3-0.1-0.7-0.2-1c0.1-2.4,1.9-3.8,3.8-4.2c0.7-0.2,1.4,0.1,1.9,0.6c1.5,1.4,2.7,3.1,3.6,4.9
+                                	                c0.4,0.8,0.2,1.5-0.4,2.1c-0.1,0.1-0.3,0.2-0.4,0.4c-1.5,1.1-1.7,2-0.9,3.7c1.4,2.9,3.6,4.9,6.6,6.1c0.8,0.3,1.5,0.2,2.1-0.5
+                                	                c0.1-0.1,0.2-0.2,0.2-0.3c1.2-1.9,2.8-1.7,4.4-0.6c1,0.7,2,1.5,3,2.2C35.8,29.2,35.8,30.3,34.8,31.8z M25.2,12.5c-0.3,0-0.7,0-1,0.1
+                                	                c-0.6,0.1-1.1-0.3-1.2-0.9c-0.1-0.6,0.3-1.1,0.9-1.2c0.4-0.1,0.9-0.1,1.4-0.1c4.5,0,8.2,3.7,8.2,8.2c0,0.5,0,0.9-0.1,1.4
+                                	                c-0.1,0.5-0.5,0.9-1,0.9c-0.1,0-0.1,0-0.2,0c-0.6-0.1-0.9-0.6-0.9-1.2c0.1-0.3,0.1-0.7,0.1-1C31.3,15.3,28.6,12.5,25.2,12.5z
+                                	                 M30.3,18.8c0,0.6-0.5,1-1,1c-0.6,0-1-0.5-1-1c0-1.7-1.4-3.1-3.1-3.1c-0.6,0-1-0.5-1-1c0-0.6,0.5-1,1-1
+                                	                C27.9,13.6,30.3,15.9,30.3,18.8z M36.2,21.1c-0.1,0.5-0.5,0.8-1,0.8c-0.1,0-0.2,0-0.2,0c-0.6-0.1-0.9-0.7-0.8-1.3
+                                	                c0.2-0.7,0.2-1.4,0.2-2c0-5.1-4.1-9.2-9.2-9.2c-0.7,0-1.4,0.1-2,0.2c-0.6,0.1-1.1-0.2-1.2-0.8c-0.1-0.6,0.2-1.1,0.8-1.2
+                                	                c0.8-0.2,1.7-0.3,2.5-0.3c6.2,0,11.3,5.1,11.3,11.3C36.5,19.4,36.4,20.3,36.2,21.1z" />
+                                    </svg>
+                                }
+                            </a>
+                        </span>
+                        <span ng-init="customer.ShowWhatsAppDesktopAppNotification = @Model.ShowWhatsAppDesktopAppNotification.ToLowerString()">
+                            <ui-modal-trigger ng-show="customer.ShowWhatsAppDesktopAppNotification" class="ng-hide card card--icon inline-block m-b-xs"
+                                              data-controller="'CustomerModalDesktopAppNotificationCtrl'" data-controller-as="ctrl"
+                                              data-resolve="{ params: { appName: 'WhatsApp', link: 'https://wa.me/@Model.Customer.StandardPhone' }}"
+                                              data-on-close="customer.ShowWhatsAppDesktopAppNotification = result"
+                                              template-url="@Html.GetAssetPath("desktopAppNotificationCustomer.html")">
+                                <a href="" class="@(!isMobile ? "m-l-xs " : "card__inner ")fas vertical-middle" data-e2e="WhatsAppLink" title="WhatsApp">
+                                    @if (isMobile)
+                                    {
+                                        @Html.SvgSprite("whatsapp", "", new { width = 22, height = 22 })
+                                    }
+                                    else
+                                    {
+                                        <svg class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                        <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+                                            	                    l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+                                            	                    c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+                                            	                    c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+                                            	                    c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+                                            	                    c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" /> 
+                                                </svg>
+                                    }
+
+                                </a>
+                            </ui-modal-trigger>
+                            <a ng-show="customer.ShowWhatsAppDesktopAppNotification === false" href="https://wa.me/@Model.Customer.StandardPhone" target="_blank" class="@(!isMobile ? "m-l-xs " : "card card--icon ")link-invert text-decoration-none inline-block m-b-xs" data-e2e="WhatsAppLink" title="WhatsApp">
+                                @if (isMobile)
+                                {
+                                    <div class="card__inner">
+                                        @Html.SvgSprite("whatsapp", "", new { width = 22, height = 22 })
+                                    </div>
+                                }
+                                else
+                                {
+                                    <svg class="link-whats__app-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 48 48" style="enable-background:new 0 0 48 48;" xml:space="preserve">
+                                    <path d="M24,0C10.8,0,0,10.8,0,24c0,4.1,1.1,8.2,3.1,11.8L0,46.7c-0.1,0.4,0,0.7,0.3,1C0.5,47.9,0.8,48,1,48c0.1,0,0.2,0,0.3,0
+                                            	            l11.4-2.8C16.1,47,20,48,24,48c13.2,0,24-10.8,24-24S37.2,0,24,0z M36.1,32.5c-0.5,1.4-3,2.7-4.2,2.9c-1.1,0.2-2.4,0.2-3.9-0.2
+                                            	            c-0.9-0.3-2-0.7-3.5-1.3c-6.2-2.6-10.2-8.8-10.5-9.2c-0.3-0.4-2.5-3.3-2.5-6.3s1.6-4.5,2.2-5.1s1.2-0.8,1.6-0.8c0.4,0,0.8,0,1.2,0
+                                            	            c0.4,0,0.9-0.1,1.4,1c0.5,1.2,1.7,4.2,1.9,4.5c0.2,0.3,0.3,0.7,0.1,1.1c-0.2,0.4-0.3,0.7-0.6,1c-0.3,0.4-0.6,0.8-0.9,1.1
+                                            	            c-0.3,0.3-0.6,0.6-0.3,1.2c0.4,0.6,1.6,2.6,3.4,4.2c2.4,2.1,4.3,2.7,5,3c0.6,0.3,1,0.3,1.3-0.2c0.4-0.4,1.5-1.8,2-2.4
+                                            	            c0.4-0.6,0.8-0.5,1.4-0.3c0.6,0.2,3.6,1.7,4.2,2c0.6,0.3,1,0.5,1.2,0.7C36.6,29.8,36.6,31,36.1,32.5z" /> 
+                                        </svg>
+                                }
+                            </a>
+                        </span>
+
+                    }
+                </div>
+                
+                <div class="m-b-xs flex middle-xs">
+                    @Html.RenderModules("admin_customer_info", new { customer = Model.Customer })
+                </div>
+
+                @if (SettingsDesign.ShowUserAgreementForPromotionalNewsletter)
+                {
+                    <div class="m-b-xs ng-cloak">
+                        <div class="row">
+                            <div class="col-lg-5 col-xs-6">@T("Admin.Customers.RightBlock.IsAgreeForPromotionalNewsletter")</div>
+                            <div class="col-lg-7 col-xs-6">
+                                {{customerView.instance.Customer.IsAgreeForPromotionalNewsletter ? '@T("Admin.Yes")' : '@T("Admin.No")'}}
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="m-b-xs ng-cloak" ng-repeat="field in customerView.instance.CustomerFields">
+                    <div class="row">
+                        <div class="col-lg-5 col-xs-6">{{field.Name}}</div>
+                        <div data-e2e="customerField-{{field.Id}}" class="col-lg-7 col-xs-6">
+                            {{field.Value != null && field.Value.length > 0 ? (field.ValueDateFormat != null ? field.ValueDateFormat : field.Value) : "-"}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            if (Model.Customer.BirthDayFormatted.IsNotEmpty() && !isMobile)
+            {
+                <div class="m-b-xs">
+                    День рождения: <span class="bold" data-e2e="clientBirthDay" ng-bind="customerView.instance.Customer.BirthDayFormatted">@Model.Customer.BirthDayFormatted</span>
+                </div>
+            }
+
+            if (Model.CustomerInterestingCategories != null && Model.CustomerInterestingCategories.Any())
+            {
+                <div>
+                    <div>Интересы:</div>
+                    <div class="bold" ng-bind="customerView.instance.Customer.CustomerInterestingCategories | list">@Model.CustomerInterestingCategories.AggregateString(", ")</div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="ibox-content category-content block-additional-parameters-content @(!isMobile ? "p-r-lg" : "m-b-md") border_none block-additional-border-top">
+        <div class="clear">
+            <div class="order__subblock-title view-info__title pull-left">@T("Admin.Customers.View.Addresses")</div>
+        </div>
+        <div data-address-list data-type="view"
+             data-init-address-fn="checkout.changeListAddress(address)"
+             data-change-address-fn="checkout.changeListAddress(address)"
+             data-save-address-fn="checkout.changeListAddress(address)"
+             data-customer-id="'@Model.Customer.Id'"
+             data-is-show-name="false"
+             data-is-show-full-address="true"
+             data-compact-mode="true">
+            @if (isMobile)
+            {
+                <a class="card card--icon view-info__address-map-btn" ng-href="//maps.yandex.ru/?text={{customerView.getCustomerFullAddress(address)}}" data-e2e="CustomerAdressMap" target="_blank">
+                    <svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 0C4.32 0 .6 3.72.6 8.4.6 14.64 9 24 9 24s8.4-9.36 8.4-15.6C17.4 3.72 13.68 0 9 0zm0 11.4c-1.68 0-3-1.32-3-3s1.32-3 3-3 3 1.32 3 3-1.32 3-3 3z" fill="#BE52F2" />
+                    </svg>
+                </a>
+            }
+            else
+            {
+                <div>
+                    <a ng-href="//maps.yandex.ru/?text={{customerView.getCustomerFullAddress(address)}}" data-e2e="CustomerAdressMap" target="_blank">@T("Admin.Customers.ViewInfo.ShowOnMap")</a>
+                </div>
+            }
+        </div>
+    </div>
+   
+
+    @if (Model.ShowCrm)
+    {
+        <div class="ibox-content category-content block-additional-parameters-content@(!isMobile ? " p-r-lg" : " m-b-md") border_none block-additional-border-top">
+            <div class="clear">
+                <div class="order__subblock-title view-info__title pull-left">@T("Admin.Orders.Orderinfo.Manager")</div>
+            </div>
+            @Html.DropDownListFor(x => x.ManagerId, Model.ManagerList, new { @class = "form-control input-alt", ng_model = "customerView.managerId", ng_init = "customerView.managerId=" + (Model.Manager != null ? "'" + Model.ManagerId.ToString() + "'" : "null") + "", ng_change = "customerView.saveManager(customerView.instance.Customer.Id, customerView.managerId)", bs_modifiable = "false" })
+        </div>
+    }
+
+</div>

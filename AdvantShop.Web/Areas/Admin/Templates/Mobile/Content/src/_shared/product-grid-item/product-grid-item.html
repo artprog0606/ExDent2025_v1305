@@ -1,0 +1,115 @@
+<div class="card card--image-horizontal product-item" data-ng-class="{'card--inactive': !rowData.enabled}" is-mobile>
+    <a
+        class="product-item__link card__image-wrap"
+        data-ng-class="{'pointer-events-none': rowData.productLink == null}"
+        ng-href="{{rowData.productLink}}">
+        <img class="product-item__img" ng-src="{{rowData.imageSrc}}" />
+    </a>
+    <div data-ng-click-capture="$ctrl.checkIsEditProduct($event, element)">
+        <ui-modal-trigger
+            class="card__content"
+            size="xs-11"
+            data-controller="'ModalEditableGridRowCtrl'"
+            data-controller-as="ctrl"
+            data-resolve="{params: {grid: grid.appScope, row: row, editableColumns: editableColumns,extendCtrl: grid.appScope.$ctrl.gridExtendCtrl}}"
+            data-scope="grid.appScope"
+            template-url="../areas/admin/content/src/_shared/modal/editableGridRow/editableGridRow.html">
+            <header class="product-item__header" data-ng-click="$event.stopPropagation()">
+                <div data-ng-switch="rowData.productLink != null || grid.appScope.$ctrl.gridOptions.uiGridCustom.rowUrl != null">
+                    <a
+                        class="product-item__title product-item__link"
+                        data-ng-switch-when="true"
+                        ng-href="{{rowData.productLink}}"
+                        ng-bind="rowData.name"></a>
+                    <div class="product-item__title" data-ng-switch-default ng-bind="rowData.name"></div>
+                </div>
+
+                <ui-grid-tree-base-row-header-buttons class="card__col--end"></ui-grid-tree-base-row-header-buttons>
+                <div data-ng-if="row.entity.OrderItemId">
+                    <help-trigger use-template="true" help-trigger-icon-bg="false">
+                        <help-trigger-icon>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 1024 1024">
+                                <path
+                                    fill="currentColor"
+                                    d="M512 320c-17.6 0-32-14.4-32-32s14.4-32 32-32 32 14.4 32 32-14.4 32-32 32zm0 448c-17.6 0-32-14.4-32-32V416c0-17.6 14.4-32 32-32s32 14.4 32 32v320c0 17.6-14.4 32-32 32z" />
+                                <path
+                                    fill="currentColor"
+                                    d="M512 128c51.9 0 102.2 10.1 149.5 30.2 45.7 19.3 86.8 47 122.1 82.3s63 76.4 82.3 122.1c20 47.3 30.2 97.6 30.2 149.5S886 614.3 865.9 661.6c-19.3 45.7-47 86.8-82.3 122.1s-76.4 63-122.1 82.3c-47.3 20-97.6 30.2-149.5 30.2S409.8 886.1 362.5 866c-45.7-19.3-86.8-47-122.1-82.3s-63-76.4-82.3-122.1c-20-47.3-30.2-97.6-30.2-149.5s10.1-102.2 30.2-149.5c19.3-45.7 47-86.8 82.3-122.1s76.4-63 122.1-82.3c47.4-20 97.6-30.2 149.5-30.2m0-64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z" />
+                            </svg>
+                        </help-trigger-icon>
+                        <p><span>Ед. измерения:</span> <span ng-bind-html="row.entity.UnitName"></span></p>
+                        <p><span>Мера (ФФД 1.2):</span> <span ng-bind-html="row.entity.MeasureName"></span></p>
+                        <p><span>Предмет расчета:</span> <span ng-bind-html="row.entity.PaymentSubjectName"></span></p>
+                        <p><span>Способ расчета:</span> <span ng-bind-html="row.entity.PaymentMethodName"></span></p>
+                        <p ng-show="row.entity.DownloadLink !== ''">
+                            <span>Ссылка на скачивание:</span>
+                            <a class="product-download-link" ng-href="{{row.entity.DownloadLink}}" target="_blank"
+                                ><span class="product-download-link__text" ng-bind-html="row.entity.DownloadLink"></span
+                            ></a>
+                        </p>
+                    </help-trigger>
+                </div>
+            </header>
+
+            <div class="flex middle-xs between-xs">
+                <div class="product-item__art flex-grow" ng-if="rowData.productArtNo || rowData.artNo">
+                    Артикул: <span ng-bind="rowData.productArtNo || rowData.artNo"></span>
+                </div>
+                <div ng-if="row.entity.MarkingRequiredValidation != null">
+                    <change-marking is-mobile="isMobile.value" is-required-validation="row.entity.MarkingRequiredValidation"></change-marking>
+                </div>
+            </div>
+
+            <div class="card__row card__row--full-width product-item__dimensions" ng-if="rowData.showDimensions">
+                {{'Admin.Js.Order.Dimensions'| translate}}: {{rowData.length}} x {{rowData.width}} x {{rowData.height}} мм
+            </div>
+            <div class="card__row card__row--full-width product-item__weight" ng-if="rowData.showWeight">
+                {{'Admin.Js.Order.Weight'| translate}}: {{rowData.weight}} кг
+            </div>
+
+            <div class="card__row card__row--full-width product-item__customer-options-wrap" ng-if="rowData.showCustomOptions">
+                <div class="product-item__customer-options" ng-bind-html="rowData.customOptions"></div>
+            </div>
+            <div ng-if="rowData.showEditCustomOptions" ng-click="$event.stopPropagation()" class="card__row card__row--full-width">
+                <ui-modal-trigger
+                    data-controller="'ModalEditCustomOptionsCtrl'"
+                    data-controller-as="ctrl"
+                    data-resolve="{params: { orderItemId: rowData.orderItemId, productId: rowData.productId, artno: rowData.artNo}}"
+                    data-on-close="grid.appScope.$ctrl.gridExtendCtrl.gridOrderItemUpdate()"
+                    template-url="../areas/admin/content/src/order/modal/editCustomOptions/editCustomOptions.html">
+                    <a href="" class="product-item__edit-custom-options">изменить доп. опции</a>
+                </ui-modal-trigger>
+            </div>
+
+            <div class="card__row card__row--full-width card__row--middle product-item__row" ng-if="rowData.showColorSize">
+                <div class="product-item__color product-item__col" ng-if="rowData.color">
+                    <span data-ng-if="rowData.colorTextLabel != null" data-ng-bind="rowData.colorTextLabel + ':'"></span>
+                    <span ng-bind="rowData.color"></span>
+                </div>
+                <div class="product-item__size product-item__col" ng-if="rowData.size">
+                    <span data-ng-if="rowData.sizeTextLabel != null" data-ng-bind="rowData.sizeTextLabel + ':'"></span>
+                    <span ng-bind="rowData.size"></span>
+                </div>
+            </div>
+            <div
+                ng-if="rowData.available === false"
+                ng-bind-html="rowData.availableText"
+                class="card__row card__row--full-width product-item__avalablity"></div>
+            <footer class="product-item__footer card__row card__row--full-width card__row--bottom">
+                <div class="card__row">
+                    <div class="product-grid-item__amount-wrap" ng-if="rowData.amount != null">
+                        <span class="card__text product-item__amount-text">Кол-во:</span>
+                        <span class="card__text product-item__amount" ng-bind="rowData.amount"></span>
+                    </div>
+                    <!--                    <div class="product-item__cost" ng-bind="rowData.cost"></div>-->
+                    <div class="product-item__cost" data-ng-if="rowData.priceString" ng-bind="rowData.priceString"></div>
+                </div>
+                <label class="card__row card__row--flow-column js-grid-not-clicked" data-ng-repeat="control in checkboxControls">
+                    <span class="card__label-text" data-ng-bind="control.displayName"></span>
+                    <ui-grid-custom-switch class="card__col card__col--end" row="row" field-name="{{control.name}}"></ui-grid-custom-switch>
+                </label>
+            </footer>
+            <ng-transclude ng-transclude-slot="info"></ng-transclude>
+        </ui-modal-trigger>
+    </div>
+</div>

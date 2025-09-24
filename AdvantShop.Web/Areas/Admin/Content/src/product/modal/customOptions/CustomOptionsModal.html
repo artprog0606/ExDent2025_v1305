@@ -1,0 +1,398 @@
+<form novalidate name="customOptionsForm" is-mobile>
+    <div class="modal-header" ng-init="ctrl.form = customOptionsForm">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.CustomOptions.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body custom-option-list">
+        <div ng-repeat="customOption in ctrl.customOptions track by $index" class="custom-option-list-item">
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-2 text-required" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.Name'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-5 relative">
+                    <input
+                        type="text"
+                        maxlength="255"
+                        class="form-control input-alt"
+                        name="custom-option-name_{{customOption.CustomOptionsId}}"
+                        ng-model="customOption.Title"
+                        validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.Name'|translate}}"
+                        required />
+                </div>
+                <div ng-if="!isMobile.value" class="col-xs-5 col-md-5 text-right">
+                    <a class="link-danger" ng-click="ctrl.deleteCustomOption(customOption.CustomOptionsId)">
+                        {{'Admin.Js.Product.CustomOptionsModal.DeleteOption'|translate}}
+                    </a>
+                </div>
+            </div>
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.InputType'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-5">
+                    <select
+                        class="form-control input-alt"
+                        data-ng-disabled="!customOption.isNew"
+                        ng-model="customOption.InputType"
+                        ng-change="ctrl.inputTypeChange(customOption.CustomOptionsId, customOption.InputType, customOption)"
+                        ng-options="option.Value as option.Text for option in ctrl.inputTypeList"></select>
+                </div>
+            </div>
+
+            <div class="form-group row middle-xs">
+                <div ng-if="!isMobile.value" class="col-xs-2">{{'Admin.Js.Product.CustomOptionsModal.Required'|translate}}</div>
+                <div class="col-xs-12 col-md-2 relative">
+                    <label class="adv-checkbox-label">
+                        <input
+                            type="checkbox"
+                            class="adv-checkbox-input control-checkbox"
+                            ng-model="customOption.IsRequired"
+                            name="custom-option-required_{{customOption.CustomOptionsId}}"
+                            validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.QuanOptZeroMandatory'|translate}}"
+                            ng-required="customOption.MinQuantity != null && customOption.MinQuantity > 0" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value">{{'Admin.Js.Product.CustomOptionsModal.Required'|translate}}</span>
+                    </label>
+                </div>
+            </div>
+
+            <div
+                data-ng-init="ctrl.changeOption(null, customOption)"
+                class="form-group row middle-xs"
+                ng-if="(customOption.InputType !== ctrl.optionInputType.TextBoxSingleLine && customOption.InputType !== ctrl.optionInputType.TextBoxMultiLine) && (ctrl.comboEnabled || (customOption.MaxQuantity != null || customOption.MinQuantity != null))">
+                <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.MinQuantity'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-5 relative flex middle-xs">
+                    <input
+                        type="number"
+                        min="0"
+                        class="form-control input-alt"
+                        ng-model="customOption.MinQuantity"
+                        ng-required="customOption.MaxQuantity != null || customOption._isEmptyOptionsFields === false"
+                        name="custom-option-min_{{customOption.CustomOptionsId}}"
+                        validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.MinQuantity'|translate}}" />
+                    <help-trigger
+                        class="ng-cloak help-trigger-icon-abs"
+                        ng-class="{'m-l-xs p-l-sm': isMobile.value}"
+                        data-title="Минимальное количество">
+                        <p>
+                            {{'Admin.Js.Product.CustomOptionsModal.MinNumOptionsQuantity'|translate}} <br />
+                            {{'Admin.Js.Product.CustomOptionsModal.CorrectWorkExpFunc'|translate}}
+                            <a href="./settingssystem" target="_blank"
+                                >{{'Admin.Js.Product.CustomOptionsModal.AdvancedSettingsAdditionalOptions'|translate}}</a
+                            >
+                        </p>
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div
+                class="form-group row middle-xs"
+                ng-if="(customOption.InputType !== ctrl.optionInputType.TextBoxSingleLine && customOption.InputType !== ctrl.optionInputType.TextBoxMultiLine) && (ctrl.comboEnabled || (customOption.MaxQuantity != null || customOption.MinQuantity != null))">
+                <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.MaxQuantity'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-5 relative flex middle-xs">
+                    <input
+                        type="number"
+                        min="0"
+                        class="form-control input-alt"
+                        ng-model="customOption.MaxQuantity"
+                        ng-required="customOption.MinQuantity != null || customOption._isEmptyOptionsFields === false"
+                        name="custom-option-max_{{customOption.CustomOptionsId}}"
+                        validation-input-text="Максимальное количество" />
+                    <help-trigger
+                        class="ng-cloak help-trigger-icon-abs"
+                        ng-class="{'m-l-xs p-l-sm': isMobile.value}"
+                        data-title="Максимальное количество">
+                        <p>
+                            {{'Admin.Js.Product.CustomOptionsModal.MaxNumOptions'|translate}} <br />
+                            {{'Admin.Js.Product.CustomOptionsModal.WorkCorrect'|translate}}
+                            <a href="./settingssystem" target="_blank"
+                                >{{'Admin.Js.Product.CustomOptionsModal.ComboFunctionalityAdditionalOptions'|translate}}</a
+                            >
+                        </p>
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.SortOrder'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-2 relative">
+                    <input type="number" class="form-control input-alt" ng-model="customOption.SortOrder" />
+                </div>
+            </div>
+
+            <div class="form-group row middle-xs">
+                <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">
+                    {{'Admin.Js.Product.CustomOptionsModal.Description'|translate}}
+                </div>
+                <div class="col-xs-12 col-md-5 relative">
+                    <textarea class="form-control textarea-alt" ng-model="customOption.Description"></textarea>
+                </div>
+            </div>
+
+            <!--"Выпадающий список" или "Радио кнопки" или "Выбор товара" или "Галочка (мультивыбор)"-->
+            <div ng-if="customOption.InputType === 0 || customOption.InputType === 1 || customOption.InputType === 5 || customOption.InputType === 6">
+                <h4 ng-if="!isMobile.value" class="bold">{{'Admin.Js.Product.CustomOptionsModal.TableValues'|translate}}</h4>
+                <div ng-if="isMobile.value" class="form-control-title" style="margin-bottom: -10px">
+                    {{'Admin.Js.Product.CustomOptionsModal.TableValues'|translate}}
+                </div>
+                <div class="row" ng-class="{'m-b-sm': !isMobile.value}">
+                    <div class="col-xs-12 product-mobile__ui-grid-custom-wrap">
+                        <ui-grid-custom
+                            class="ui-grid-custom-inputs-alt"
+                            grid-unique-id="{{'gridOptions-' + $index}}"
+                            grid-row-identificator="'OptionId'"
+                            grid-options="ctrl.getGridOptions(customOption.CustomOptionsId, customOption.InputType)"
+                            grid-on-init="ctrl.gridOptionsOnInit(grid)"
+                            grid-filter-enabled="false"
+                            grid-pagination-enabled="false"
+                            grid-selection-enabled="false"
+                            grid-extend-ctrl="ctrl"
+                            grid-params="{index: $index, customOptionId :customOption.CustomOptionsId}"
+                            grid-key-storage-prefix="'customOptions'">
+                            <ui-grid-custom-override-control class="ng-cloak">
+                                <div class="m-t-md m-b-md">
+                                    <div
+                                        class="card__row"
+                                        style="grid-gap: 10px"
+                                        ng-init="inputType = grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].InputType">
+                                        <div
+                                            ng-if="(inputType === 0 || inputType === 1 || inputType === 6) && grid.appScope.$ctrl.gridExtendCtrl.usePicture">
+                                            <div class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.Image'|translate}}</div>
+                                            <div>
+                                                <img ng-src="{{row.entity.PictureData.PictureUrl}}" />
+                                            </div>
+                                        </div>
+                                        <div
+                                            ng-if="(inputType === 0 || inputType === 1 || inputType === 6) && grid.appScope.$ctrl.gridExtendCtrl.usePicture">
+                                            <div class="m-b-sm">
+                                                <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.addPictureToGrid(row.entity)"
+                                                    >{{'Admin.Js.Product.CustomOptionsModal.SelectImage'|translate}}</a
+                                                >
+                                            </div>
+                                            <div>
+                                                <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.deleteImage(row.entity)" class="link-danger"
+                                                    >{{'Admin.Js.Product.CustomOptionsModal.RemoveImage'|translate}}</a
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div ng-if="inputType === 5">
+                                            <div>
+                                                <div class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.Product'|translate}}</div>
+                                                <div>
+                                                    <img style="max-height: 50px" ng-src="{{row.entity.ProductPhoto.ProductImageSrcBig}}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div ng-if="inputType === 5">
+                                            <div ng-if="row.entity.ProductId == null" class="m-b-sm">
+                                                <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.selectProduct(row.entity)"
+                                                    >{{'Admin.Js.Product.CustomOptionsModal.SelectProduct'|translate}}</a
+                                                >
+                                            </div>
+                                            <div ng-if="row.entity.ProductId != null">
+                                                <a ng-click="grid.appScope.$ctrl.gridExtendCtrl.deleteProductFromGrid(row.entity)" class="link-danger"
+                                                    >{{'Admin.Js.Product.CustomOptionsModal.RemoveProduct'|translate}}</a
+                                                >
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="inline-block m-b-sm text-required"
+                                                >{{'Admin.Js.Product.CustomOptionsModal.Name'|translate}}</label
+                                            >
+                                            <input
+                                                class="form-control input-alt"
+                                                ng-model="row.entity.Title"
+                                                name="custom-option-grid-name_{{row.entity.OptionId}}"
+                                                maxlength="255"
+                                                validation-input-text="Название в таблице значений"
+                                                ng-change="grid.appScope.$ctrl.gridExtendCtrl.changeOption(row.entity, grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index])"
+                                                required />
+                                        </div>
+                                        <div>
+                                            <label class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.Price'|translate}}</label>
+                                            <input
+                                                class="form-control input-alt"
+                                                ng-model="row.entity.BasePrice"
+                                                ng-change="grid.appScope.$ctrl.gridExtendCtrl.changeOption(row.entity, grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index])"
+                                                required />
+                                        </div>
+                                        <div ng-if="inputType !== 5">
+                                            <label class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.PriceType'|translate}}</label>
+                                            <select
+                                                class="form-control input-alt"
+                                                ng-model="row.entity.PriceType"
+                                                ng-options="option.Value as option.Text for option in grid.appScope.$ctrl.gridExtendCtrl.priceTypeList"
+                                                ng-change="grid.appScope.$ctrl.gridExtendCtrl.changeOption(row.entity, grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index])"></select>
+                                        </div>
+                                        <div
+                                            data-ng-if="grid.appScope.$ctrl.gridExtendCtrl.comboEnabled || (row.entity.MaxQuantity != null || row.entity.MinQuantity != null || row.entity.DefaultQuantity)">
+                                            <label class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.MinQuantity'|translate}}</label>
+                                            <input
+                                                class="form-control input-alt text-reqired"
+                                                type="number"
+                                                min="0"
+                                                ng-model="row.entity.MinQuantity"
+                                                name="custom-option-grid-min_{{row.entity.OptionId}}"
+                                                ng-required="grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MinQuantity != null || grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MaxQuantity != null"
+                                                validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.MinQuantity'|translate}}" />
+                                        </div>
+                                        <div
+                                            data-ng-if="grid.appScope.$ctrl.gridExtendCtrl.comboEnabled || (row.entity.MaxQuantity != null || row.entity.MinQuantity != null || row.entity.DefaultQuantity)">
+                                            <label class="inline-block m-b-sm text-reqired"
+                                                >{{'Admin.Js.Product.CustomOptionsModal.MaxQuantity'|translate}}</label
+                                            >
+                                            <input
+                                                class="form-control input-alt"
+                                                type="number"
+                                                min="0"
+                                                ng-model="row.entity.MaxQuantity"
+                                                ng-required="grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MinQuantity != null || grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MaxQuantity != null"
+                                                name="custom-option-grid-max_{{row.entity.OptionId}}"
+                                                validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.MaxQuantity'|translate}}" />
+                                        </div>
+                                        <div
+                                            data-ng-if="grid.appScope.$ctrl.gridExtendCtrl.comboEnabled || (row.entity.MaxQuantity != null || row.entity.MinQuantity != null || row.entity.DefaultQuantity)">
+                                            <label class="inline-block m-b-sm text-reqired"
+                                                >{{'Admin.Js.Product.CustomOptionsModal.ByDefault'|translate}}</label
+                                            >
+                                            <input
+                                                class="form-control input-alt"
+                                                type="number"
+                                                min="0"
+                                                ng-model="row.entity.DefaultQuantity"
+                                                name="custom-option-grid-default_{{row.entity.OptionId}}"
+                                                ng-required="grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MinQuantity != null || grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index].MaxQuantity != null"
+                                                validation-input-text="{{'Admin.Js.Product.CustomOptionsModal.ByDefault'|translate}}" />
+                                        </div>
+
+                                        <div>
+                                            <label class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.Sort'|translate}}</label>
+                                            <input
+                                                class="form-control input-alt"
+                                                ng-model="row.entity.SortOrder"
+                                                ng-change="grid.appScope.$ctrl.gridExtendCtrl.changeOption(row.entity, grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index])" />
+                                        </div>
+
+                                        <div>
+                                            <label class="inline-block m-b-sm">{{'Admin.Js.Product.CustomOptionsModal.Description'|translate}}</label>
+                                            <input
+                                                class="form-control input-alt"
+                                                ng-model="row.entity.Description"
+                                                ng-change="grid.appScope.$ctrl.gridExtendCtrl.changeOption(row.entity, grid.appScope.$ctrl.gridExtendCtrl.customOptions[grid.appScope.$ctrl._params.index])" />
+                                        </div>
+
+                                        <div>
+                                            <a
+                                                href=""
+                                                ng-click="grid.appScope.$ctrl.gridExtendCtrl.deleteOption(row.entity.OptionId, grid.appScope.$ctrl.getParams().customOptionId)"
+                                                class="ui-grid-custom-service-icon fa fa-times link-invert"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui-grid-custom-override-control>
+                        </ui-grid-custom>
+                    </div>
+                </div>
+                <div ng-if="!isMobile.value" class="text-right">
+                    <button class="btn btn-sm btn-success" ng-click="ctrl.addOption(customOption.CustomOptionsId)" type="button">
+                        {{'Admin.Js.Product.CustomOptionsModal.AddNewEntry'|translate}}
+                    </button>
+                </div>
+                <div ng-if="isMobile.value" class="row between-xs middle-xs">
+                    <div class="col-xs-12">
+                        <button class="btn btn-sm btn-save btn-primary" ng-click="ctrl.addOption(customOption.CustomOptionsId)" type="button">
+                            {{'Admin.Js.Product.CustomOptionsModal.AddNewEntry'|translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!--CheckBox-->
+            <div ng-if="customOption.InputType === 2">
+                <div class="form-group row middle-xs">
+                    <div class="col-xs-12 col-md-2 text-reqired" ng-class="{'form-control-title m-b-sm': isMobile.value}">Цена</div>
+                    <div class="col-xs-12 col-md-2 relative">
+                        <input type="number" class="form-control input-alt" ng-model="customOption.Options[0].BasePrice" />
+                    </div>
+                </div>
+
+                <div class="form-group row middle-xs" ng-class="{'form-group': !isMobile.value,'p-b-xs': isMobile.value}">
+                    <div class="col-xs-12 col-md-2" ng-class="{'form-control-title m-b-sm': isMobile.value}">Тип цены</div>
+                    <div class="col-xs-12 col-md-2">
+                        <select
+                            class="form-control input-alt"
+                            ng-model="customOption.Options[0].PriceType"
+                            ng-options="option.Value as option.Text for option in ctrl.priceTypeList"></select>
+                    </div>
+                </div>
+
+                <div class="form-group row" ng-if="ctrl.usePicture">
+                    <label class="col-xs-12 col-md-2 control-label"> Изображение: </label>
+                    <div class="col-xs-12 col-md-8" ng-if="customOption.Options[0].OptionId > 0">
+                        <input type="hidden" ng-model="customOption.Options[0].PictureData.PhotoName" />
+                        <div ng-if="customOption.Options[0].PictureData.PhotoName != null && customOption.Options[0].PictureData.PhotoName != ''">
+                            <img
+                                ng-src="{{customOption.Options[0].PictureData.PictureUrl}}"
+                                style="{{isMobile.value ? '' : 'max-width: 400px; max-height: 400px;'}}" />
+                            <div ng-class="{'m-b-sm m-t-sm': isMobile.value}">
+                                <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="ctrl.deleteImage(customOption.Options[0])"
+                                    >{{'Admin.Js.Product.CustomOptionsModal.Delete'|translate}}</a
+                                >
+                            </div>
+                        </div>
+                        <ui-modal-trigger
+                            data-controller="'ModalCropImageCtrl'"
+                            controller-as="ctrl"
+                            template-url="../areas/admin/content/src/_shared/modal/cropImage/cropImage.html"
+                            on-close="ctrl.updateImage(result, customOption.Options[0])">
+                            <a href="">{{'Admin.Js.Product.CustomOptionsModal.UploadImage'|translate}}</a>
+                        </ui-modal-trigger>
+                    </div>
+                    <div class="col-xs-12 col-md-8" ng-if="customOption.Options[0].OptionId <= 0">
+                        {{'Admin.Js.Product.UploadPhotoAfterSaveOption'|translate}}
+                    </div>
+                </div>
+            </div>
+
+            <button
+                class="btn btn-sm btn-danger m-t-sm"
+                ng-if="isMobile.value"
+                type="button"
+                ng-click="ctrl.deleteCustomOption(customOption.CustomOptionsId)">
+                {{'Admin.Js.Product.CustomOptionsModal.DeleteOption'|translate}}
+            </button>
+        </div>
+    </div>
+    <button
+        ng-if="!isMobile.value"
+        class="modal-header-title btn btn-sm btn-success m-l-md m-b-lg m-t-md"
+        type="button"
+        ng-click="ctrl.addNewCustomOption()"
+        ng-class="{'m-t-lg' : ctrl.customOptions.length === 0}">
+        {{'Admin.Js.Product.CustomOptionsModal.AddNewOption'|translate}}
+    </button>
+    <div class="modal-body" ng-if="isMobile.value" style="{{ctrl.customOptions.length  === 0 ? '' : 'padding-top:0;'}}">
+        <button class="btn btn-sm btn-save btn-primary" type="button" ng-click="ctrl.addNewCustomOption()">
+            {{'Admin.Js.Product.CustomOptionsModal.AddNewOption'|translate}}
+        </button>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation=""
+            data-button-validation-success="ctrl.save();"
+            ladda="ctrl.btnLoading"
+            ng-disabled="customOptionsForm.$pristine">
+            {{'Admin.Js.CustomOptions.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Close'|translate}}</button>
+    </div>
+</form>

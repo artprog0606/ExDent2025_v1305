@@ -1,0 +1,54 @@
+﻿@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<ServicesModel>("items");
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        <div class="row @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") :"center-xs")">
+            <div class="col-sm-10 @Model.Block.GetWidthInColumnsAsClasses()">
+                <div class="text-left" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                    <div class="lp-services-table__item">
+                        <ol class="lp-services-table__content-list lp-font-size--middle">
+                            @for (var i = 0; i < items.Count(); i++)
+                            {
+                                <li class="lp-services-table__content-item">
+                                    <div class="lp-services-table__content-item-inner">
+                                        <div class="lp-services-table__content-item-name lp-services-table__content-item-dots">
+                                            <div class="lp-services-table__content-item-text"
+
+                                                 @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                                @Html.Raw(items[i].Text)
+                                            </div>
+                                        </div>
+                                        @if (items[i].ShowPrice)
+                                        {
+                                            <div class="lp-services-table__content-item-price"
+                                                 data-ng-style="blocksConstructorContainer.data.Settings.style['background-color']"
+                                                 style="@Model.Block.TryGetStyleFromStringStyles("background-color")">
+                                                <span @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].price")>
+                                                    @Html.Raw(items[i].Price)
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ServicesBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

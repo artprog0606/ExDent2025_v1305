@@ -1,0 +1,172 @@
+﻿<div is-mobile ng-class="{'col-xs-12 m-t-md' : !isMobile.value}"></div>
+<div is-mobile ng-class="{'col-xs-12 m-t-md' : !isMobile.value,'form-group': isMobile.value}">
+    <div class="row m-b-md" ng-class="{'order-items-summary__row' : isMobile.value}">
+        <div class="col-xs" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <div class="text-right" ng-class="{'order-items-summary__text order-items-summary__text--alt' : isMobile.value}">
+                {{'Admin.Js.OrderItemsSummary.OrderCost'|translate}}
+            </div>
+        </div>
+        <div class="col-xs flex-grow-n order-items-summary-col-value" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <span ng-bind="$ctrl.summary.ServicesCostStr" ng-class="{'order-items-summary__text' : isMobile.value}"></span>
+        </div>
+    </div>
+    <div class="row m-b-md" ng-class="{'order-items-summary__row' : isMobile.value}">
+        <div class="col-xs" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <div class="text-right text-right col-xs order-items-summary__col order-items-summary__text order-items-summary__text--alt">Скидка:</div>
+        </div>
+        <div class="col-xs flex-grow-n order-items-summary-col-value" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <div class="bold">
+                <span ng-bind="'- ' + $ctrl.summary.DiscountCostStr" ng-class="{'order-items-summary__text' : isMobile.value}"></span>
+                <span ng-if="$ctrl.summary.BookingDiscount > 0" class="order-discount" ng-bind="'(' + $ctrl.summary.BookingDiscount + '%)'"></span>
+            </div>
+            <div ng-switch="$ctrl.canBeEditing === true">
+                <div ng-switch-when="true">
+                    <a
+                        href=""
+                        uib-popover-template="'orderDiscountPopover.html'"
+                        popover-trigger="'none'"
+                        popover-is-open="$ctrl.discountPopoverIsOpen"
+                        popover-class="popover--with-form popover--modalify popover--mobile"
+                        ng-click="$ctrl.discountPopoverToggle()"
+                        ng-bind="$ctrl.summary.BookingDiscount != 0 || $ctrl.summary.BookingDiscountValue != 0 ?  ('Admin.Js.OrderItemsSummary.Discount'|translate) : ('Admin.Js.OrderItemsSummary.AddDiscount'|translate)"></a>
+                    <script type="text/ng-template" id="orderDiscountPopover.html">
+                        <form name="orderFormDiscount">
+                            <div ng-class="{'modal-header':isMobile.value, 'm-b-xs bold' : !isMobile.value}">
+                                <span ng-class="{'modal-header-title block':isMobile.value}">{{'Admin.Js.OrderItemsSummary.SpecifyDiscount'|translate}}</span>
+                            </div>
+                            <div class="input-group" ng-class="{'modal-body':isMobile.value, 'm-b' : !isMobile.value}">
+                                <span class="input-group-btn" ng-class="{'input-group-btn-discount--left':isMobile.value}">
+                                    <button type="button" class="btn btn-default" value="0" ng-click="$ctrl.toggleselectCurrencyLabel('0')" ng-class="{'label-currency-active':!$ctrl.typeDiscountPercent}"><span>{{$ctrl.summary.BookingCurrency.CurrencySymbol}}</span></button>
+                                    <button type="button" class="btn btn-default" value="1" ng-click="$ctrl.toggleselectCurrencyLabel('1')" ng-class="{'label-currency-active':$ctrl.typeDiscountPercent}"><span>%</span></button>
+                                </span>
+                                <input ng-value="$ctrl.BookinDiscountNew"
+                                       ng-max="$ctrl.typeDiscountPercent ? 100 : $ctrl.summary.ServicesCost"
+                                       ng-min="0"
+                                       class="form-control input-alt"
+                                       ng-model="$ctrl.BookinDiscountNew" data-autofocus="!isMobile.value" bs-modifiable="false"
+                                       validation-input-float=""
+                                       validation-input-text="{{:: 'Admin.Js.OrderItemsSummary.SpecifyDiscount'|translate}}" />
+                            </div>
+                            <div class="clearfix" ng-class="{'modal-footer':isMobile.value}">
+                                <input type="submit" button-validation="$ctrl.changeDiscount($ctrl.BookinDiscountNew)" value={{'Admin.Js.OrderItemsSummary.Apply'|translate}} class="btn btn-sm btn-success pull-left" />
+                                <input type="button" value={{'Admin.Js.AddEdit.Cancel'|translate}} class="btn btn-sm btn-action pull-right" ng-click="$ctrl.discountPopoverClose()" />
+                            </div>
+                        </form>
+                    </script>
+                </div>
+                <div ng-switch-when="false">
+                    <a
+                        href=""
+                        ng-click="$ctrl.onStopEdit({})"
+                        ng-bind="$ctrl.summary.BookingDiscount > 0 || $ctrl.summary.BookingDiscountValue != 0 ?  ('Admin.Js.OrderItemsSummary.Discount'|translate) : ('Admin.Js.OrderItemsSummary.AddDiscount'|translate)"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-b-md" ng-class="{'order-items-summary__row' : isMobile.value}">
+        <div class="col-xs" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <div class="text-right" ng-class="{'order-items-summary__text order-items-summary__text--alt' : isMobile.value}">
+                <div ng-switch="$ctrl.canBeEditing === true">
+                    <div ng-switch-when="true">
+                        <ui-modal-trigger
+                            size="lg"
+                            data-controller="'ModalBookingPaymentsCtrl'"
+                            data-controller-as="ctrl"
+                            data-resolve="{ params: { summary: $ctrl.summary, customerType: $ctrl.customerType}}"
+                            data-on-close="$ctrl.changePayment(result)"
+                            template-url="../areas/admin/content/src/bookingJournal/modal/addUpdateBooking/modal/payments/payments.html">
+                            <a href="">{{'Admin.Js.OrderItemsSummary.Payment'|translate}}</a>
+                        </ui-modal-trigger>
+                    </div>
+                    <div ng-switch-when="false">
+                        <a href="" ng-click="$ctrl.onStopEdit({})">{{'Admin.Js.OrderItemsSummary.Payment'|translate}}</a>
+                    </div>
+                </div>
+
+                <div ng-if="$ctrl.summary.ShowSendBillingLink" class="m-b-xs">
+                    <ui-modal-trigger
+                        data-controller="'ModalGetBillingLinkCtrl'"
+                        data-controller-as="ctrl"
+                        data-resolve="{params: { orderId: $ctrl.summary.OrderId }}"
+                        template-url="../areas/admin/content/src/order/modal/getBillingLink/getBillingLink.html">
+                        <a href="">Ссылка на оплату</a>
+                    </ui-modal-trigger>
+                </div>
+
+                <ng-form novalidate="" name="paymentDetailsForm">
+                    <div class="order-modal-descr" ng-class="{'m-t-sm' : isMobile.value}" ng-if="$ctrl.summary.PaymentDetails != null">
+                        <!--  || ctrl.Summary.ShowPrintPaymentDetails -->
+                        <div
+                            class="m-b-xs"
+                            ng-class="{'m-b-md' : isMobile.value}"
+                            ng-if="$ctrl.summary.PaymentKey == 'sberbank' || $ctrl.summary.PaymentKey == 'bill' && $ctrl.summary.ShowInnPaymentDetails || $ctrl.summary.PaymentKey == 'billby' || $ctrl.summary.PaymentKey == 'billkz'">
+                            <span ng-class="{'inline-block m-b-sm' : isMobile.value}">{{'Admin.Js.OrderItemsSummary.INN'|translate}}</span>
+                            <input
+                                type="text"
+                                class="form-control payment-details-item input-alt"
+                                name="paymentDetails.inn"
+                                ng-model="$ctrl.summary.PaymentDetails.INN"
+                                ng-blur="paymentDetailsForm['paymentDetails.inn'].modified === true && $ctrl.savePaymentDetails()" />
+                        </div>
+                        <div
+                            class="m-b-xs"
+                            ng-class="{'m-b-md' : isMobile.value}"
+                            ng-if="$ctrl.summary.PaymentKey == 'bill' && $ctrl.summary.ShowInnPaymentDetails || $ctrl.summary.PaymentKey == 'billby' || $ctrl.summary.PaymentKey == 'billkz'">
+                            <span ng-class="{'inline-block m-b-sm' : isMobile.value}">{{'Admin.Js.OrderItemsSummary.CompanyName'|translate}}</span>
+                            <input
+                                type="text"
+                                class="form-control payment-details-item input-alt"
+                                name="paymentDetails.companyName"
+                                ng-model="$ctrl.summary.PaymentDetails.CompanyName"
+                                ng-blur="paymentDetailsForm['paymentDetails.companyName'].modified === true && $ctrl.savePaymentDetails()" />
+                        </div>
+                        <div class="m-b-xs" ng-class="{'m-b-md' : isMobile.value}" ng-if="$ctrl.summary.PaymentKey == 'billkz'">
+                            <span ng-class="{'inline-block m-b-sm' : isMobile.value}">{{'Admin.Js.OrderItemsSummary.Contract'|translate}}</span>
+                            <input
+                                type="text"
+                                class="form-control payment-details-item input-alt"
+                                name="paymentDetails.contract"
+                                ng-model="$ctrl.summary.PaymentDetails.Contract"
+                                ng-blur="paymentDetailsForm['paymentDetails.contract'].modified === true && $ctrl.savePaymentDetails()" />
+                        </div>
+                        <div class="m-b-xs" ng-class="{'m-b-md' : isMobile.value}" ng-if="$ctrl.summary.PaymentKey == 'qiwi'">
+                            <span ng-class="{'inline-block m-b-sm' : isMobile.value}">{{'Admin.Js.OrderItemsSummary.Phone'|translate}}</span>
+                            <input
+                                type="text"
+                                class="form-control payment-details-item input-alt"
+                                name="cpaymentDetails.phone"
+                                data-mask-control
+                                data-mask-control-preset="phone"
+                                ng-model="$ctrl.summary.PaymentDetails.Phone"
+                                ng-blur="paymentDetailsForm['paymentDetails.phone'].modified === true && $ctrl.savePaymentDetails()" />
+                        </div>
+                        <div ng-if="$ctrl.summary.ShowPrintPaymentDetails">
+                            <a target="_blank" href="{{$ctrl.getPaymentDetailsLink()}}">{{$ctrl.summary.PrintPaymentDetailsText}}</a>
+                        </div>
+                    </div>
+                </ng-form>
+            </div>
+        </div>
+        <div class="col-xs flex-grow-n order-items-summary-col-value" ng-class="{'order-items-summary__col' : isMobile.value}">
+            +
+            <span ng-bind="$ctrl.summary.PaymentCostStr" ng-class="{'order-items-summary__text' : isMobile.value}"></span>
+            ({{'Admin.Js.OrderItemsSummary.ExtraCharge'|translate}})
+
+            <div ng-bind="$ctrl.summary.PaymentName" class="m-b-xs" ng-class="{'bold' : isMobile.value}"></div>
+        </div>
+    </div>
+
+    <div class="row m-b-md bold f-s-18" ng-class="{'order-items-summary__row' : isMobile.value}">
+        <div class="col-xs" ng-class="{'order-items-summary__col' : isMobile.value}">
+            <div class="text-right" ng-class="{'order-items-summary__summary' : isMobile.value}">
+                {{'Admin.Js.OrderItemsSummary.Summary'|translate}}
+            </div>
+        </div>
+        <div
+            class="col-xs flex-grow-n order-items-summary-col-value"
+            ng-class="{'order-items-summary__col order-items-summary__summary' : isMobile.value}">
+            <span ng-bind="$ctrl.summary.SumStr"></span>
+        </div>
+    </div>
+</div>

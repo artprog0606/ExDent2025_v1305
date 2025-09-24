@@ -1,0 +1,206 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Web.Admin.ViewModels.Analytics
+@model AdvantShop.Web.Admin.ViewModels.Analytics.ExportProductsModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    if (AdminAreaTemplate.Current != null)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="wrapper">
+
+    <div class="sticky-page-name" sticky sticky-top="0">
+        <div class="page-name-block m-b-md sticky-page-name-inner top-xs">
+            <div class="page-name-block-item-main">
+                <h1 class="page-name-block-text sticky-page-name-text m-b-xs">
+                    @T("Admin.Analytics.ExportProducts.Title")
+                </h1>
+                @T("Admin.Analytics.ExportProducts.SubTitle")
+            </div>
+            <div class="page-name-block-item-additional">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="ibox" ng-if="!analytics.isStartExport">
+        <div class="ibox-content">
+            <div class="form-group row">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.ExportProducts.DateSpan")
+                    </div>
+                </div>
+                <div class="col-xs-3 col-wl-2">
+                    <div class="form-horizontal">
+                        <div class="m-b-md row">
+                            <label class="control-label col-xs-1 ui-grid-filter-text" for="gridFilterDateFrom">
+                                @T("Admin.Analytics.ExportProducts.DateSpanFrom")
+                            </label>
+
+                            <div class="col-xs-11">
+                                <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap">
+                                        <input data-e2e="datetimeFilterFrom" type="text" class="form-control input-alt" ng-flatpickr-input ng-model="analytics.exportProductsSettings.DateFrom">
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="m-b-md row">
+                            <label class="control-label col-xs-1 ui-grid-filter-text" for="gridFilterDateTo">
+                                @T("Admin.Analytics.ExportProducts.DateSpanTo")
+                            </label>
+                            <div class="col-xs-11">
+                                <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true}">
+                                    <span class="flatpickr-custom-wrap">
+                                        <input data-e2e="gridFilterDateTo" type="text" class="form-control input-alt" ng-flatpickr-input ng-model="analytics.exportProductsSettings.DateTo">
+                                        <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                    </span>
+                                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.ExportProducts.ColumnSeparator")
+                    </div>
+                </div>
+                <div class="col-xs-3 col-wl-2">
+                    @Html.DropDownList("ddlColumnSeparator", new SelectList(Model.Separators, "Key", "Value", Model.ColumnSeparator), new { @class = "form-control", ng_init = "analytics.exportProductsSettings.ColumnSeparator='" + Model.ColumnSeparator + "'", ng_model = "analytics.exportProductsSettings.ColumnSeparator" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.ExportProducts.FileEncoding")
+                    </div>
+                </div>
+                <div class="col-xs-3 col-wl-2">
+                    @Html.DropDownList("ddlEncodings", new SelectList(Model.Encodings, "Key", "Value", Model.Encoding), new { @class = "form-control", ng_init = "analytics.exportProductsSettings.Encoding='" + Model.Encoding + "'", ng_model = "analytics.exportProductsSettings.Encoding" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.ExportProducts.Unload")
+                    </div>
+                </div>
+                <div class="col-xs-3 col-wl-2">
+                    <div class="block-additional-parameters-value" ng-init="analytics.exportProductsSettings.ExportProductsType='@EExportProductsType.AllProducts'">
+                        @foreach (var exportType in Enum.GetValues(typeof(EExportProductsType)).Cast<EExportProductsType>())
+                        {
+                            <label class="adv-radio-label">
+                                @exportType.Localize()
+                                @Html.RadioButtonFor(item => Model.ExportProductsType, true, new
+                                {
+                                    @class = "adv-radio-input",
+                                    ng_click = "analytics.exportProductsSettings.ExportProductsType='" + exportType + "'",
+                                    ng_checked = "analytics.exportProductsSettings.ExportProductsType=='" + exportType + "'"
+                                })
+                                <span class="adv-radio-emul"></span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row" ng-if="analytics.exportProductsSettings.ExportProductsType=='@EExportProductsType.OneProduct'">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+
+                    </div>
+                </div>
+
+                <div class="col-xs-3 col-wl-2">
+                    <ui-modal-trigger size="xs-11"
+                                      data-controller="'ModalOffersSelectvizrCtrl'"
+                                      data-controller-as="ctrl"
+                                      resolve="{ multiSelect: false }"
+                                      on-close="analytics.selectProduct(result)"
+                                      template-url="../areas/admin/content/src/_shared/modal/offers-selectvizr/offersSelectvizrModal.html">
+                        <a ng-bind="'Admin.Js.Analytics.ExportProducts.SelectProduct'|translate"></a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row" ng-if="analytics.exportProductsSettings.ExportProductsType=='@EExportProductsType.Categories'">
+                <div class="col-xs-3 col-wl-2">
+                    <div class="setting-label-wrap">
+
+                    </div>
+                </div>
+
+                <div class="col-xs-4">
+                    <div js-tree tree-ajax="catalog/categoriestree" tree-events="check_node:analytics.treeCallbacks.check_node;select_node:analytics.treeCallbacks.select_node;deselect_node:analytics.treeCallbacks.deselect_node; " tree-plugins="checkbox" tie-selection="false"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-3 col-wl-offset-2">
+                    <button class="btn btn-sm btn-success" data-e2e="Export" type="button" ng-click="analytics.exportProducts()">
+                        @T("Admin.ExportFeeed.ChoiceOfProducts.Export")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ibox" ng-init="analytics.initProgress()" ng-if="analytics.isStartExport">
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-xs-12">
+                <uib-progressbar max="analytics.progressTotal" value="analytics.progressValue"><span style="color:white; white-space:nowrap;"><span ng-bind="analytics.progressValue"></span> / <span ng-bind="analytics.progressTotal"></span></span></uib-progressbar>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="form-group row">
+                <div class="col-xs-2">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.CurrentProcess")
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <label class="adv-checkbox-label">
+                        <a class="link-decoration-none" ng-href="{{analytics.progressCurrentProcess}}" ng-bind="analytics.progressCurrentProcessName"></a>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" ng-if="!analytics.IsRun">
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <div class="setting-label-wrap">
+                        @T("Admin.Analytics.DataExportedSuccessfully")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" ng-if="!analytics.IsRun">
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <a ng-href="{{analytics.FileName}}" class="btn btn-sm btn-default" download>@T("Admin.Analytics.DownloadFile")</a>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <a class="link-decoration-none" href="" ng-click="analytics.isStartExport = false">@T("Admin.Analytics.ReturnToExport")</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

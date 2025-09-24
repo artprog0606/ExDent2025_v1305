@@ -1,0 +1,208 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.MeasoftShippingModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Measoft.Login")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Login, new { ng_model = "shippingMethod.Params.Login", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Measoft.Login") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="@T("Admin.ShippingMethods.Measoft.Login")">
+            @T("Admin.ShippingMethods.Measoft.Login.HelpText")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Measoft.Password")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Password, new { ng_model = "shippingMethod.Params.Password", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Measoft.Password") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="@T("Admin.ShippingMethods.Measoft.Password")">
+            @T("Admin.ShippingMethods.Measoft.Password.HelpText")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Measoft.ExtraCode")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.Extra, new { ng_model = "shippingMethod.Params.Extra", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Measoft.ExtraCode") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="@T("Admin.ShippingMethods.Measoft.ExtraCode")">
+            @T("Admin.ShippingMethods.Measoft.ExtraCode.HelpText")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Наложенный платеж картой</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.PaymentCodCardId, Model.PaymentsCod, new { ng_model = "shippingMethod.Params.PaymentCodCardId", @class = "form-control input-alt", validation_input_text = "Наложенный платеж картой" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Наложенный платеж картой">
+            Наложенный платеж, который будет считаться наложенным платежом с оплатой банковской картой
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="WithInsure">Со страховкой</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Расчитывать методы доставки</span>
+    </div>
+    @{
+        var selectedTariff = Model.ListDeliveryTypes.FindAll(x => Model.DeliveryTypes.Any(y => x.Value == y));
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+         data-ng-init='shippingMethod.tariffsList = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.selectedTariff = @JsonConvert.SerializeObject(selectedTariff)'>
+        <ui-select class="input-alt"
+                   multiple
+                   sortable="true"
+                   ng-model="shippingMethod.selectedTariff"
+                   validation-input-text="Расчитывать методы доставки"
+                   ng-required="true"
+                   data-e2e="SelectTariffs">
+            <ui-select-match placeholder="Выберите методы доставки">{{$item.Text}}</ui-select-match>
+            <ui-select-choices repeat="tariff in shippingMethod.tariffsList | filter:$select.search track by $index"
+                               minimum-input-length="1"
+                               ui-disable-choice="tariff.Disabled === true"
+                               @* refresh="product.getTagsByPaging(250, $select.search)" *@
+                               refresh-delay="0">
+                {{tariff.Text}}
+            </ui-select-choices>
+        </ui-select>
+        @* select для отправки данных через обычный post *@
+        <select name="DeliveryTypes" id="DeliveryTypes" multiple hidden>
+            <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTariff track by $index"></option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+@if (Model.Extra.IsNullOrEmpty())
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-8">
+            <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "" : "display:flex;")">
+                После ввода данных доступа к API, необходимо сохранить настройки после чего появятся дополнительные настройки
+            </div>
+        </div>
+    </div>
+}
+
+else
+{
+    <div class="@(isMobile ? "" : "form-group row")">
+        <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">@T("Admin.ShippingMethods.Measoft.DeliveryServices")</h4>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required">Использовать режимы доставки</span>
+        </div>
+        @{
+            var selectedServices = Model.ListDeliveryServices.FindAll(x => Model.ActiveDeliveryServices.Any(y => x.Value == y));
+        }
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+             data-ng-init='shippingMethod.deliveryServicesList = @JsonConvert.SerializeObject(Model.ListDeliveryServices); shippingMethod.selectedServices = @JsonConvert.SerializeObject(selectedServices)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.selectedServices"
+                       validation-input-text="Использовать режимы доставки"
+                       ng-required="true"
+                       data-e2e="SelectedServices">
+                <ui-select-match placeholder="Выберите режимы доставки">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="service in shippingMethod.deliveryServicesList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   refresh-delay="0">
+                    {{service.Text}}
+                </ui-select-choices>
+            </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="ActiveDeliveryServices" id="ActiveDeliveryServices" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedServices track by $index"></option>
+            </select>
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="Использовать режимы доставки">
+                Выберите режимы доставки которые будут отображаться в клиентской части. По умолчанию используются все режимы доставки.
+            </help-trigger>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span>Использовать филиалы ПВЗ</span>
+        </div>
+        @{
+            var selectedStoreList = Model.ListStoreList.FindAll(x => Model.ActiveStoreList.Any(y => x.Value == y));
+        }
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+             data-ng-init='shippingMethod.storeList = @JsonConvert.SerializeObject(Model.ListStoreList); shippingMethod.selectedStoreList = @JsonConvert.SerializeObject(selectedStoreList)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.selectedStoreList"
+                       data-e2e="SelectedStoreList">
+                <ui-select-match placeholder="Выберите филиалы ПВЗ">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="store in shippingMethod.storeList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   refresh-delay="0">
+                    {{store.Text}}
+                </ui-select-choices>
+            </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="ActiveStoreList" id="ActiveStoreList" multiple hidden ng-if="shippingMethod.selectedStoreList.length > 0">
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedStore" ng-repeat="option in shippingMethod.selectedStoreList track by $index"></option>
+            </select>
+            <input type="hidden" name="ActiveStoreList[]" ng-if="!shippingMethod.selectedStoreList.length" />
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "col-xs-1")" data-title="Использовать филиалы ПВЗ">
+                Выберите филиалы которые будут отображаться в клиентской части при выборе ПВЗ. По умолчанию используются все.
+            </help-trigger>
+        </div>
+    </div>
+}
+
+<div class="@(isMobile ? "" : "form-group row")">
+    <h4 class="setting__subtitle" style="@(isMobile ? "" : "font-weight: bold;")">@T("Admin.ShippingMethods.Measoft.OrderStatuses")</h4>
+</div>
+@Html.Partial("_SyncStatuses", Model)

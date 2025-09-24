@@ -1,0 +1,89 @@
+﻿@using AdvantShop.Core.Services.Partners
+@model AdvantShop.Areas.Partners.ViewModels.Rewards.RewardsViewModel
+
+@if (Model.Partner.Type == EPartnerType.LegalEntity)
+{
+    @Html.PartnerStaticBlock("Partners_Rewards_TopBlock_LegalEntity", cssClass: "ibox ibox-content")
+}
+else if (Model.Partner.Type == EPartnerType.NaturalPerson)
+{
+    @Html.PartnerStaticBlock("Partners_Rewards_TopBlock_NaturalPerson", cssClass: "ibox ibox-content")
+    <div class="ibox">
+        <div class="ibox-title">
+            <h5>Данные для перечисления партнерского вознаграждения</h5>
+        </div>
+        <div class="ibox-content">
+            <form name="paymentDataForm" novalidate>
+                <div class="row middle-xs">
+                    <div class="col-xs-10 col-xs-offset-2">
+                        Уважаемый партнер, при подключении к партнерской программе вы приняли решение, что будете работать с нами как физическое лицо.
+                        Для перечисления партнерского вознаграждения вам необходимо заполнить следующие данные:
+                    </div>
+                </div>
+                <div class="row middle-xs">
+                    <div class="col-xs-2">
+                        <label class="form-field-name vertical-interval-xsmall">Способ выплаты:</label>
+                    </div>
+                    <div class="col-xs-4">
+                        <span class="form-field-input vertical-interval-xsmall">
+                            <span class="select-custom cs-t-4 icon-down-open-after-abs">
+                                @Html.DropDownListFor(model => model.PaymentTypeId, Model.PaymentTypes, new { @class = "cs-bg-2", data_ng_model = "rewards.paymentTypeId" })
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="row middle-xs">
+                    <div class="col-xs-2">
+                        <label class="form-field-name vertical-interval-xsmall">№ счета:</label>
+                    </div>
+                    <div class="col-xs-4">
+                        <span class="form-field-input vertical-interval-xsmall">
+                            @Html.TextBoxFor(model => model.PaymentAccountNumber, new { @class = "input-small", data_ng_model = "rewards.paymentAccountNumber" })
+                        </span>
+                    </div>
+                </div>
+                <div class="row middle-xs">
+                    <div class="col-xs-10 col-xs-offset-2 col-p-v">
+                        <input type="button" class="btn btn-submit btn-middle" value="Сохранить" disabled data-ng-disabled="!paymentDataForm.modified"
+                               data-ng-click="rewards.saveNaturalPersonPaymentData(paymentDataForm)" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div class="ibox">
+    <div class="ibox-title">
+        <h5>Выплаты</h5>
+    </div>
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-xs-12">
+                @if (Model.Rewards.Any())
+                {
+                    <div class="table-info">
+                        <div class="row table-info-head table-info-row">
+                            <div class="col-xs-2">Дата</div>
+                            <div class="col-xs-2 col-text-right">Сумма</div>
+                            <div class="col-xs">Описание</div>
+                        </div>
+                        @foreach (var reward in Model.Rewards)
+                        {
+                            <div class="row table-info-row">
+                                <div class="col-xs-2">@reward.DateCreated.ToString("dd.MM.yyyy HH:mm")</div>
+                                <div class="col-xs-2 col-text-right">@reward.RewardSumFormatted</div>
+                                <div class="col-xs col-non-expandable">@reward.Basis</div>
+                            </div>
+                        }
+                    </div>
+                    @Html.Paging(Model.Pager)
+                }
+                else
+                {
+                    <div>Нет выплат</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

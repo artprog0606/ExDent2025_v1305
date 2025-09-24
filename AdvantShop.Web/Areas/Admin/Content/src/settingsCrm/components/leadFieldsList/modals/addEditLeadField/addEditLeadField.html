@@ -1,0 +1,188 @@
+﻿<form novalidate name="addEditLeadFieldForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{(ctrl.editing ? 'Admin.Js.AddEditLeadField.EditField' : 'Admin.Js.AddEditLeadField.NewField') | translate}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.form = addEditLeadFieldForm">
+        <div class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 setting-label-wrap control-label">
+                <span class="text-required setting__label">{{'Admin.Js.AddEditLeadField.Name'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <input
+                    data-e2e="leadFieldName"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.field.Name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditLeadField.Name'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting__form-group">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{::'Admin.Js.AddEditLeadField.Type'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <select
+                    ng-model="ctrl.field.FieldType"
+                    ng-options="s.value as s.label for s in ctrl.fieldTypes"
+                    class="form-control input-alt"
+                    data-e2e="leadFieldType"
+                    convert-to-number
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditLeadField.Type'|translate}}">
+                    <option value="">{{'Admin.Js.AddEditLeadField.Type.NotSelected'|translate}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting__form-group setting--label-with-checkbox-reverse">
+            <label ng-class="{'col-xs-slim col-md-4' : !isMobile.value}" class="setting__label" for="leadFieldRequired">
+                {{::'Admin.Js.AddEditLeadField.Required'|translate}}
+            </label>
+            <div class="col-xs-slim col-md-8">
+                <label class="adv-checkbox-label" data-e2e="leadFieldRequired">
+                    <input id="leadFieldRequired" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.field.Required" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group middle-xs row setting__form-group setting--label-with-checkbox-reverse">
+            <label ng-class="{'col-xs-slim col-md-4' : !isMobile.value}" class="setting__label" for="leadFieldEnabled">
+                {{::'Admin.Js.AddEditLeadField.Active'|translate}}
+            </label>
+            <div class="col-xs-slim col-md-8">
+                <label class="adv-checkbox-label" data-e2e="leadFieldEnabled">
+                    <input id="leadFieldEnabled" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.field.Enabled" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" ng-if="ctrl.field.FieldType == 0">
+            <label class="col-xs-12 col-md-4 control-label setting-label-wrap setting__label">
+                {{::'Admin.Js.AddEditLeadField.FieldValues'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-8">
+                <div class="sortable-row" ng-model="ctrl.field.FieldValues" as-sortable="ctrl.sortableFieldValues">
+                    <div ng-if="!isMobile.value" class="row" ng-repeat="item in ctrl.field.FieldValues" as-sortable-item ng-cloak>
+                        <div class="col-xs-12">
+                            <div class="flex payment-row middle-xs between-xs">
+                                <div class="flex middle-xs" ng-class="{'col-xs' : !isMobile.value}">
+                                    <div class="as-sortable-item-handle" as-sortable-item-handle>
+                                        <icon-move />
+                                    </div>
+                                    <span ng-if="item.Id == null">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="item.Value"
+                                            data-e2e="leadFieldValue"
+                                            ng-keypress="$event.keyCode === 13 && item.Value && ctrl.addFieldValue(item, item.Value)"
+                                            autofocus="ctrl.focusOnValue" />
+                                    </span>
+                                    <span class="payment-text" ng-if="item.Id != null">
+                                        <span class="payment-text-grey" ng-bind="item.Value"></span>
+                                    </span>
+                                </div>
+                                <div class="flex middle-xs col-fixed-size-sm" ng-if="item.Id == null">
+                                    <button
+                                        class="btn btn-sm btn-success btn--margin-left"
+                                        type="button"
+                                        ng-click="ctrl.addFieldValue(item)"
+                                        data-e2e="leadFieldAddValue">
+                                        <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                                    </button>
+                                </div>
+                                <div class="flex middle-xs col-fixed-size-ls" ng-if="item.Id != null">
+                                    <a
+                                        href=""
+                                        class="fa fa-times link-invert link-decoration-none"
+                                        ng-click="ctrl.deleteFieldValue($index)"
+                                        data-e2e="leadFieldDeleteValue"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="isMobile.value" class="settings-list settings-list--row-gap-3">
+                        <div ng-repeat="item in ctrl.field.FieldValues | filter:{Id: ''} " class="swipe-line ng-cloak" as-sortable-item>
+                            <div class="swipe-line__inner" data-swipe-line>
+                                <div class="navigation-item navigation-item--horizontal card card--middle swipe-line__content">
+                                    <div as-sortable-item-handle class="as-sortable-item-handle navigation-item__icon">
+                                        <icon-move>
+                                            <svg
+                                                class="icon-move"
+                                                version="1.0"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="10.000000pt"
+                                                height="20.000000pt"
+                                                viewBox="0 0 10.000000 20.000000"
+                                                preserveAspectRatio="xMidYMid meet">
+                                                <g transform="translate(0.000000,20.000000) scale(0.100000,-0.100000)" fill="#c4c4c4" stroke="none">
+                                                    <path d="M10 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M60 175 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M10 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M60 125 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M10 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M60 75 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M10 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                    <path d="M60 25 c0 -8 7 -15 15 -15 8 0 15 7 15 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15z"></path>
+                                                </g>
+                                            </svg>
+                                        </icon-move>
+                                    </div>
+                                    <div class="navigation-item__text">
+                                        <span class="fs-md">{{item.Value}}</span>
+                                    </div>
+                                </div>
+                                <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                        ng-click="ctrl.deleteFieldValue($index)">
+                                        Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1].Id == null" class="m-t-md col-xs-12">
+                            <div class="row setting-label-wrap setting__label control-label">Добавить значение поля</div>
+                            <div class="row middle-xs flex-nowrap">
+                                <div class="m-r-xs flex-grow">
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1].Value"
+                                        data-e2e="leadFieldValue"
+                                        ng-keypress="$event.keyCode === 13 && ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1].Value && ctrl.addFieldValue(ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1], ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1].Value)"
+                                        autofocus="ctrl.focusOnValue" />
+                                </div>
+                                <button
+                                    class="btn btn-sm btn-success btn--margin-left"
+                                    type="button"
+                                    ng-click="ctrl.addFieldValue(ctrl.field.FieldValues[ctrl.field.FieldValues.length - 1])"
+                                    data-e2e="leadFieldAddValue">
+                                    <span class="fa fa-plus"></span>&nbsp;&nbsp;{{'Admin.Js.AddEdit.Add'|translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-e2e="btnSave"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            ladda="ctrl.btnSleep"
+            disabled
+            ng-disabled="ctrl.editing && !addEditLeadFieldForm.modified"
+            ng-bind="(ctrl.editing ? 'Admin.Js.AddEdit.Save' : 'Admin.Js.AddEdit.Add') | translate"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

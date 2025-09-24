@@ -1,0 +1,125 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.CatalogSettings.CatalogSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="BrandsListCtrl as brandsList" ng-if="settingsCatalog.tabBrandsShow" @Html.Raw(isMobile ? "ng-init=\"settingsCatalog.brandsList = brandsList\"" : "")>
+
+    @if (!isMobile)
+    {
+        <div class="m-n p-n sticky-page-name" data-ng-init="brandsList.settingsform=form" sticky sticky-top="0">
+            <div class="header-hidden page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h2 class="page-name-block-text sticky-page-name-text" ng-init="brandsList.floatHeaderList = {};">
+                        <span class="float-header-page" ng-bind="brandsList.floatHeaderList[brandsList.settingsTab]"></span>
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="flex m-b setting--flex-column">
+            <h2 data-e2e="BrandSettingTitle" class="m-n setting--align-top setting__subtitle">@T("Admin.Brands.Index.BrandsHeader")</h2>
+            <a class="inline-flex link-academy link-invert middle-xs p-l-sm setting--help-link setting--align-top setting--m-t-sm" href="https://www.advantshop.net/help/pages/brand" target="_blank">
+                <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+            </svg>
+                <span>@T("Admin.Brands.Index.Instruction")</span>
+            </a>
+        </div>
+        <div class="between-xs flex m-b middle-xs m-t-n-xs" style="padding-bottom:2px;">
+            <div class="flex middle-xs flex-grow">
+				<div class="funnel-site__settings">
+				    <ul class="nav nav-tabs" ng-init="brandsList.settingsForm = settingsForm;">
+						<li class="nav-item ng-tab" ng-class="{'active': brandsList.settingsTab == 'list'}"
+							ng-init="brandsList.floatHeaderList['list'] = '@T("Admin.Brands.Index.BrandsHeader") / @T("Admin.SettingsCatalog.Brands.BrandsList")';">
+							<a href="" ng-click="brandsList.changeSettingsTab('list')">
+								@T("Admin.SettingsCatalog.Brands.BrandsList")
+							</a>
+						</li>
+						<li class="nav-item ng-tab" ng-class="{'active': brandsList.settingsTab == 'export'}"
+							ng-init="brandsList.floatHeaderList['export'] = '@T("Admin.Brands.Index.BrandsHeader") / @T("Admin.SettingsCatalog.Brands.Export")';">
+							<a href="" ng-click="brandsList.changeSettingsTab('export')">
+								@T("Admin.SettingsCatalog.Brands.Export")
+							</a>
+						</li>
+						<li class="nav-item ng-tab" ng-class="{'active': brandsList.settingsTab == 'import'}"
+							ng-init="brandsList.floatHeaderList['import'] = '@T("Admin.Brands.Index.BrandsHeader") / @T("Admin.SettingsCatalog.Brands.Import")';">
+							<a href="" ng-click="brandsList.changeSettingsTab('import')">
+								@T("Admin.SettingsCatalog.Brands.Import")
+							</a>
+						</li>
+					</ul>
+				</div>
+            </div>
+        </div>
+        <div style="padding-right:0.625rem;">
+            <div ng-class="{'hide': brandsList.settingsTab != 'list'}">
+                <div class="m-t-n-xs sticky-page-name">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="flex middle-xs page-name-block-item-main">
+                            <h2 class="m-t-none sticky-page-name-text">
+                                @T("Admin.SettingsCatalog.Brands.BrandsList.Title")
+                            </h2>
+                        </div>
+                        <div class="page-name-block-item-additional">
+                            @Html.Button(T("Admin.Brands.Index.AddBrand"), eButtonType.Add, link: Url.AbsoluteActionUrl("Add", "Brands"))
+                        </div>
+                    </div>
+                </div>
+                <ui-grid-custom grid-inplace-url="'brands/InplaceBrand'"
+                                grid-on-init="brandsList.gridOnInit(grid)"
+                                grid-options="brandsList.gridOptions"
+                                grid-row-identificator="'BrandId'"
+                                grid-unique-id="grid"
+                                grid-url="'brands/getbrands'">
+                </ui-grid-custom>
+                <div class="adv-panel-info m-t-md">
+                    <a class="m-t-xs p-l-xs" href="https://www.advantshop.net/help/pages/brand" target="_blank">@T("Admin.Brands.Index.Instruction")</a>
+                </div>
+            </div>
+            <div ng-class="{'hide': brandsList.settingsTab != 'export'}">
+                <a class="btn btn-sm btn-success" href="" ng-click="brandsList.export()">
+                    @T("Admin.SettingsCatalog.Brands.Export")
+                </a>
+            </div>
+            <div ng-class="{'hide': brandsList.settingsTab != 'import'}">
+                @Html.Partial("_BrandsImport", Model.ImportBrandsModel)
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="page-name-block-item-main flex setting--flex-column m-b-md" ng-init="brandsList.settingsForm = settingsForm;">
+             <a class="inline-flex link-academy link-invert middle-xs p-l-sm setting--help-link setting--align-top" href="https://www.advantshop.net/help/pages/brand" target="_blank">
+                <svg class="m-r-xs" fill="#989a9b" height="18" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="18" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                </svg>
+                <span>@T("Admin.Brands.Index.Instruction")</span>
+            </a>
+        </div>
+        <div ng-class="{'setting__hide': brandsList.settingsTab != 'list'}">
+            <ui-grid-custom grid-inplace-url="'brands/InplaceBrand'"
+                            grid-on-init="brandsList.gridOnInit(grid)"
+                            grid-options="brandsList.gridOptions"
+                            grid-row-identificator="'BrandId'"
+                            grid-unique-id="grid"
+                            grid-url="'brands/getbrands'"
+                            grid-swipe-line="true">
+                <ui-grid-custom-override-control class="ng-cloak">
+                    @Html.Partial("../../Templates/Mobile/Views/SettingsCatalog/BrandsGridItemInSettingCatalog")
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+        <div ng-class="{'setting__hide': brandsList.settingsTab != 'export'}" class="setting--m-t-sm">
+            <a class="btn btn-sm btn-success" href="" ng-click="brandsList.export()">
+                @T("Admin.SettingsCatalog.Brands.Export")
+            </a>
+        </div>
+        <div ng-class="{'setting__hide': brandsList.settingsTab != 'import'}">
+            @Html.Partial("_BrandsImport", Model.ImportBrandsModel)
+        </div>
+        <div class="adv-panel-info m-t-md setting__mobile-adv-panel-info setting--m-none">
+            <a class="m-t-xs p-l-xs setting--m-none" href="https://www.advantshop.net/help/pages/brand" target="_blank">@T("Admin.Brands.Index.Instruction")</a>
+        </div>
+    }
+</div>

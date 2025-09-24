@@ -1,0 +1,177 @@
+﻿@using AdvantShop.Saas
+@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Catalog.Products.AdminProductModel
+@{
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    var classList = isMobile ? "chips-list" : "aside-menu";
+    var classItem = isMobile ? "chips-list__item chip" : "aside-menu-row product-aside-link settigs-menu-row link-invert link-decoration-none";
+}
+
+@*@functions{
+        public IHtmlString RenderAttrNgClass(string id)
+        {
+            return @Html.Raw(SettingsDesign.IsMobileTemplate ? "ng-class=\"{'chip--active': product.activeMenuId === '" + id + "' }\"" : "ng-class=\"{'active': product.activeMenu.id === '" + id + "' || product.activeMunuIfNull === '" + id + "' }\"");
+        }
+
+        public IHtmlString RenderAttrScroll(string id, int offset)
+        {
+            return @Html.Raw(SettingsDesign.IsMobileTemplate ? "scroll-into-view=\"{{product.activeMenuId === '" + id + "'}}\"" : "du-smooth-scroll offset=\"" + offset + "\"");
+        }
+    }*@
+
+@functions{
+    public IHtmlString RenderAttrNgClass(string id)
+    {
+        return @Html.Raw(SettingsDesign.IsMobileTemplate ? "ng-class=\"{'chip--active': product.activeMenuId === '" + id + "' }\"" : "");
+    }
+
+    public IHtmlString RenderAttrScroll(string id, int offset)
+    {
+        return @Html.Raw(SettingsDesign.IsMobileTemplate ? "scroll-into-view=\"{{product.activeMenuId === '" + id + "'}}\"" : "du-smooth-scroll du-scrollspy offset=\"" + offset + "\"");
+    }
+}
+
+<div class="@(isMobile ? "container-out--mobile product-menu" : "") @(isAdminv3 ? "" : "aside-menu-wrap--top88")">
+    <div class="@classList" id="product-aside">
+        @if (!isMobile)
+        {
+            <a class="product-aside-menu-image-link" ng-click="product.goToPhotos()" @RenderAttrScroll("", 103)>
+                <div class="aside-image" style="height: @(SettingsPictureSize.SmallProductImageHeight)px;">
+                    <img src="@Model.PhotoSrc()" alt="" ng-src="{{product.mainPhotoSrc}}" ng-init="product.mainPhotoSrc='@Model.PhotoSrc()'" />
+                </div>
+            </a>
+        }
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("main") href="product/edit/@(Model.ProductId)#main" @RenderAttrScroll("main", 230)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Main")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("price") href="product/edit/@(Model.ProductId)#price" @RenderAttrScroll("price", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.PriceAvailability")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("fiscalization") href="product/edit/@(Model.ProductId)#fiscalization" @RenderAttrScroll("fiscalization", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Fiscalization")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("delivery") href="product/edit/@(Model.ProductId)#delivery" @RenderAttrScroll("delivery", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Delivery")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("photos") href="product/edit/@(Model.ProductId)#photos" @RenderAttrScroll("photos", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Photos")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("video") href="product/edit/@(Model.ProductId)#video" @RenderAttrScroll("video", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Video")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("description") href="product/edit/@(Model.ProductId)#description" @RenderAttrScroll("description", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Description")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("properties") href="product/edit/@(Model.ProductId)#properties" @RenderAttrScroll("properties", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.GoodsProperties")
+                </div>
+            </div>
+        </a>
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("reviews") href="product/edit/@(Model.ProductId)#reviews" @RenderAttrScroll("reviews", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Reviews")
+                </div>
+            </div>
+        </a>
+        @*@if (Model.HasCustomOptions)
+            {*@
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("customoptions") href="product/edit/@(Model.ProductId)#customoptions" @RenderAttrScroll("customoptions", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.AdditionalOptions")
+                </div>
+            </div>
+        </a>
+        @*}*@
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("SEO") href="product/edit/@(Model.ProductId)#SEO" @RenderAttrScroll("SEO", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    SEO
+                </div>
+            </div>
+        </a>
+        @if (!SaasDataService.IsSaasEnabled || SaasDataService.CurrentSaasData.HaveLandingFunnel)
+        {
+            <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("additionalSales") href="product/edit/@(Model.ProductId)#additionalSales" @RenderAttrScroll("additionalSales", 103)>
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        @T("Admin.Product.LeftMenu.AdditionalSales")
+                    </div>
+                </div>
+            </a>
+        }
+        <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("lists") href="product/edit/@(Model.ProductId)#lists" @RenderAttrScroll("lists", 103)>
+            <div class="aside-menu-inner">
+                <div class="aside-menu-name">
+                    @T("Admin.Product.LeftMenu.Lists")
+                </div>
+            </div>
+        </a>
+
+        @*@if (Model.IsLandingFunnelsEnabled)
+            {
+                <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" href="product/edit/@(Model.ProductId)#landingfunnels" du-smooth-scroll du-scrollspy offset="103">
+                    <div class="aside-menu-inner">
+                        <div class="aside-menu-name">
+                            @T("Admin.Product.LeftMenu.LandingFunnels")
+                        </div>
+                    </div>
+                </a>
+            }*@
+
+        @if (Model.ShowAvito)
+        {
+            <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("avito") href="product/edit/@(Model.ProductId)#avito" @RenderAttrScroll("avito", 103)>
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        Avito
+                    </div>
+                </div>
+            </a>
+        }
+
+
+        @for (int i = 0; i < Model.TabModules.Count; i++)
+        {
+            <a class="@classItem" ng-click="product.setActiveElement($event, @isMobile.ToLowerString())" @RenderAttrNgClass("tab" + i) href="product/edit/@(Model.ProductId)#tab@(i)" @RenderAttrScroll("tab" + i, 103)>
+                <div class="aside-menu-inner">
+                    <div class="aside-menu-name">
+                        @Html.Raw(Model.TabModules[i].Title)
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>

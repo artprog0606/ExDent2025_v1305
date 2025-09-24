@@ -1,0 +1,38 @@
+﻿@using AdvantShop.Trial
+@{
+    string shopname = SettingsMain.AdminShopName.IsNotEmpty() ? SettingsMain.AdminShopName : (SettingsMain.AdminShopName = TrialService.IsTrialEnabled ? SettingsMain.ShopName : SettingsMain.SiteUrl.Replace("http://", "").Replace("https://", "").Replace("www.", ""));
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = shopname;
+
+    headerModel.Controls = new List<IButton>();
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>()
+    {
+        new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+            Text = T("Настроить индикатор"),
+            Attributes = new string[]{ "data-e2e-indicators=\"IndicatorsShow\"" },
+            WrapStart = "<ui-modal-trigger template-url=\"statisticsModal.html\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Icon = new ButtonIcon(){
+                SvgName = "plus-alt",
+                Attributes = new { width = 24, height = 24 }
+            }
+        },
+    };
+    
+    headerModel.Controls.Add(moreButton);
+}
+
+@Html.Header(headerModel)

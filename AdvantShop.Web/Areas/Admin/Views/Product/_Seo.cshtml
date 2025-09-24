@@ -1,0 +1,114 @@
+﻿@using AdvantShop.SEO
+@model AdvantShop.Web.Admin.Models.Catalog.Products.AdminProductModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+@if (!isMobile)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="inline product-setting-title content-header">SEO</h2>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="@(!isMobile ? "container-fluid" : "")">
+    <div class="form-group row">
+        <div class="col-xs-12 col-md-2 form-control-title">
+            <span class="text-required">@T("Admin.Product.SEO.SynonymURL")</span>
+        </div>
+        <div class="col-xs-12 col-md-10">
+            <div class="card card--form-control">
+
+                @Html.Raw("<label class=\"" + (isMobile ? "card__label" : "input-group m-b") + "\">")
+
+                <span class="@(isMobile ? "m-b-xs block" : "input-group-addon")">@(SettingsMain.SiteUrl)/products/</span>
+                @if (isMobile)
+                {
+                    @Html.Raw("</label>");
+                }
+                @Html.TextBoxFor(x => x.UrlPath, new { @class = "form-control card__input", ng_model = "product.UrlPath", required = "required", validation_input_text = T("Admin.Product.SEO.SynonymURL").ToString() })
+                @if (!isMobile)
+                {
+                    @Html.Raw("</label>");
+                }
+
+            </div>
+        </div>
+        <div class="col-xs-slim col-lg-offset-2">
+            <label class="adv-checkbox-label" data-e2e="productDefaultMeta">
+                @Html.CheckBoxFor(x => x.DefaultMeta, new { ng_model = "product.defaultMeta", ng_init = "product.defaultMeta=" + Model.DefaultMeta.ToString().ToLower(), @class = "adv-checkbox-input" })
+                <span class="adv-checkbox-emul"></span>
+                <span>@T("Admin.Product.SEO.UseDefaultMeta")</span>
+            </label>
+        </div>
+    </div>
+
+</div>
+<div class="category-seo-custom-block ng-cloak @(!isMobile ? "container-fluid" : "")" ng-if="!product.defaultMeta">
+    <div>
+        <div class="row category-row m-b">
+            <div class="col-xs-12 col-lg-2 text-required form-control-title">
+                @T("Admin.Product.SEO.Title")
+            </div>
+            <div class="col-xs-12 col-lg-10">
+                @Html.TextBoxFor(x => x.SeoTitle,
+                    new
+                    {
+                        @class = "form-control input-alt",
+                        ng_model = "product.seoTitle",
+                        textcomplete = "",
+                        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = MetaType.Product }),
+                        required = "required",
+                        validation_input_text = T("Admin.Product.SEO.Title").ToString()
+                    })
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row category-row m-b">
+            <div class="col-xs-12 col-lg-2 text-required form-control-title">
+                @T("Admin.Product.SEO.H1")
+            </div>
+            <div class="col-xs-12 col-lg-10">
+                @Html.TextBoxFor(x => x.SeoH1,
+                    new
+                    {
+                        @class = "form-control input-alt",
+                        ng_model = "product.seoH1",
+                        textcomplete = "",
+                        textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = MetaType.Product }),
+                        required = "required",
+                        validation_input_text = "H1"
+                    })
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row category-row m-b">
+            <div class="col-xs-12 col-lg-2 form-control-title">
+                @T("Admin.Product.Seo.Keywords")
+            </div>
+            <div class="col-xs-12 col-lg-10">
+                @Html.TextAreaFor(x => x.SeoKeywords, new { @class = "form-control input-alt", ng_model = "product.seoKeywords", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = MetaType.Product }) })
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row category-row m-b">
+            <div class="col-xs-12 col-lg-2 form-control-title">
+                @T("Admin.Product.Seo.MetaDescription")
+            </div>
+            <div class="col-xs-12 col-lg-10">
+                @Html.TextAreaFor(x => x.SeoDescription, new { @class = "form-control  input-alt", ng_model = "product.seoDescription", textcomplete = "", textcomplete_data = Html.Action("MetaVariablesComplete", "Common", new { type = MetaType.Product }) })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs col-lg-offset-2">
+            @Html.Action("MetaVariablesDescription", "Common", new { type = MetaType.Product })
+        </div>
+    </div>
+</div>

@@ -1,0 +1,168 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.type == "add" ? ('Admin.Js.AddEditOrderStatus.AddOrderStatus'|translate) :
+            ('Admin.Js.AddEditOrderStatus.EditOrderStatus'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting-label-wrap">
+                <span class="text-required setting__label">{{'Admin.Js.AddEditOrderStatus.Name'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditOrderStatus.Name'|translate}}"
+                    data-e2e="orderStatusName"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="orderStatusIsDefault" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.Default'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusIsDefault">
+                    <input id="orderStatusIsDefault" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.isDefault" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.Default'|translate}}</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="orderStatusIsCanceled" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.CancelOrder'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusIsCanceled">
+                    <input id="orderStatusIsCanceled" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.isCanceled" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.CancelOrder'|translate}}</span>
+                </label>
+                <input
+                    type="text"
+                    class="ng-hide"
+                    ng-model="ctrl.orderStatusIsCanceledAndIsDefault"
+                    required
+                    validation-input-text="Статус по умолчанию не должен быть отмененным"
+                    ng-if="ctrl.isDefault && ctrl.isCanceled" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="orderStatusIsCompleted" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.OrderIsCompleted'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusIsCompleted">
+                    <input id="orderStatusIsCompleted" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.isCompleted" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.OrderIsCompleted'|translate}}</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="orderStatusHidden" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.HiddenForClient'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusHidden">
+                    <input id="orderStatusHidden" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.hidden" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.HiddenForClient'|translate}}</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label setting-label-wrap"
+                >{{'Admin.Js.AddEditOrderStatus.Color'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9 custom-color-picker-wrap--bottom">
+                <color-picker
+                    data-e2e="orderStatusColor"
+                    ng-model="ctrl.color"
+                    options="ctrl.colorPickerOptions"
+                    validation-input-text="{{'Admin.Js.AddEditOrderStatus.Color'|translate}}"
+                    api="ctrl.colorPickerApi"
+                    event-api="ctrl.colorPickerEventApi">
+                </color-picker>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label setting-label-wrap"
+                >{{'Admin.Js.AddEditOrderStatus.Sorting'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <input type="text" class="form-control input-alt" ng-model="ctrl.sortOrder" data-e2e="orderStatusSortOrder" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label setting-label-wrap"
+                >{{'Admin.Js.AddEditOrderStatus.StatusCommand'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <select
+                    ng-model="ctrl.command"
+                    ng-options="s.label for s in ctrl.commands track by s.value"
+                    class="form-control input-alt"
+                    data-e2e="orderStatusCommand"></select>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="orderStatusIsCompleted2" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.CancelForbidden'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusIsCompleted">
+                    <input id="orderStatusIsCompleted2" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.cancelForbidden" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.CancelForbidden'|translate}}</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="changePaymentForbidden" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.ChangePaymentForbidden'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="orderStatusIsCompleted">
+                    <input
+                        id="changePaymentForbidden"
+                        type="checkbox"
+                        class="adv-checkbox-input control-checkbox"
+                        ng-model="ctrl.changePaymentForbidden" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.ChangePaymentForbidden'|translate}}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label ng-if="!isMobile.value" for="ShowInMenu" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.AddEditOrderStatus.ShowInMenu'|translate}}</label
+            >
+            <div class="col-xs-12 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="ShowInMenu">
+                    <input id="ShowInMenu" type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.ShowInMenu" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span ng-if="isMobile.value">{{'Admin.Js.AddEditOrderStatus.ShowInMenu'|translate}}</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.saveStatus()"
+            data-e2e="orderStatusSave"
+            data-button-validation>
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

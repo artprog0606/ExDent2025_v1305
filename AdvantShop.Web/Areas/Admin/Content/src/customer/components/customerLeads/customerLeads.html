@@ -1,0 +1,74 @@
+﻿<article class="customer-leads">
+    <h2 class="m-b-md clearfix customer-leads__title">
+        {{'Admin.Js.CustomerLeads.Leads'|translate}}
+        <ui-modal-trigger
+            class="pull-right"
+            data-controller="'ModalAddLeadCtrl'"
+            controller-as="ctrl"
+            size="lg"
+            backdrop="static"
+            resolve="{params: {'customerId': $ctrl.customerId}}"
+            data-on-close="$ctrl.modalClose()"
+            template-url="../areas/admin/content/src/_shared/modal/addLead/addLead.html">
+            <a class="btn btn-sm btn-action customer-leads__create-btn" data-e2e="addLead"> {{'Admin.Js.CustomerLeads.CreateLead'|translate}} </a>
+        </ui-modal-trigger>
+    </h2>
+
+    <div class="m-b-lg">
+        <div class="row">
+            <div class="col-xs-12" is-mobile>
+                <ui-grid-custom
+                    grid-unique-id="gridCustomerLeads{{$ctrl.prefix}}"
+                    grid-filter-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{customerId: $ctrl.customerId}"
+                    grid-options="$ctrl.gridLeadsOptions"
+                    grid-url="'leads/getLeads'"
+                    grid-on-init="$ctrl.gridOnInit(grid)"
+                    grid-extend-ctrl="ctrl"
+                    ng-if="!isMobile.value">
+                </ui-grid-custom>
+                <ui-grid-custom
+                    grid-unique-id="gridCustomerLeads{{$ctrl.prefix}}"
+                    grid-filter-enabled="false"
+                    grid-selection-enabled="false"
+                    grid-params="{customerId: $ctrl.customerId}"
+                    grid-options="$ctrl.gridLeadsOptions"
+                    grid-url="'leads/getLeads'"
+                    grid-on-init="$ctrl.gridOnInit(grid)"
+                    grid-extend-ctrl="ctrl"
+                    ng-if="isMobile.value"
+                    grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <lead-info-trigger lead-id="row.entity.Id" on-close="grid.appScope.$ctrl.fetchData()">
+                            <div class="card card--gap-row-sm card--border-info" ng-style="{'border-color': '#' + row.entity.DealStatusColor }">
+                                <div class="card__row card__row--three">
+                                    <div class="card__col">
+                                        <span class="card__text--alt">#<span ng-bind="row.entity.Id"></span></span>
+                                    </div>
+                                    <div class="card__col">
+                                        <span class="card__text--color-alt" ng-bind="row.entity.FullName"></span>
+                                    </div>
+                                    <div class="card__col card__col--end">
+                                        <span class="card__text--alt" ng-bind="row.entity.SumFormatted"></span>
+                                    </div>
+                                </div>
+                                <div class="card__row m-b">
+                                    <div class="card__text--color-alt" ng-bind="row.entity.Description"></div>
+                                </div>
+                                <div class="card__row">
+                                    <div class="card__col">
+                                        <span class="card__text--color-alt" ng-bind="row.entity.CreatedDateFormatted"></span>
+                                    </div>
+                                    <div class="card__col card__col--end">
+                                        <span class="card__text--color-alt" ng-bind="row.entity.OrderSource"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </lead-info-trigger>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+            </div>
+        </div>
+    </div>
+</article>

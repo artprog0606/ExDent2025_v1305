@@ -1,0 +1,316 @@
+﻿@using AdvantShop.App.Landing.Extensions
+@using AdvantShop.Core.Services.Catalog
+@using AdvantShop.Core.Services.Landing
+@using AdvantShop.Core.Services.Landing.Blocks
+@using AdvantShop.ViewCommon
+@model AdvantShop.ViewModel.ProductDetailsLanding.ProductDetailsViewModelLanding
+@{
+    var productModel = Model.ProductModel;
+    var product = productModel.Product;
+    var offer = productModel.Offer;
+    var available = offer != null && (offer.Amount > 0 || productModel.AllowBuyOutOfStockProducts) && (productModel.FinalPrice > 0 || (productModel.FinalPrice == 0 && productModel.FinalDiscount != null && productModel.FinalDiscount.HasValue));
+    var prodMinAmount = product.GetMinAmount();
+    var brandLogo = product.Brand != null && product.Brand.Enabled && product.Brand.BrandLogo != null && product.Brand.BrandLogo.PhotoName.IsNotEmpty();
+
+    var showLeadButton = productModel.ShowLeadButton ?? false;
+}
+
+<div class="row between-xs">
+    <div class="col-xs-12">
+        <div class="m-b-md">
+            @if (product.Brand != null || productModel.AllowReviews)
+            {
+                <div class="lp-product-info__meta ">
+                    <div class="lp-product-info__meta-list">
+                        @if (product.Brand != null && product.Brand.Enabled)
+                        {
+                            <div class="lp-product-info__meta-item cs-br-1 details-brand-name m-b-sm">
+                                <span>@T("Product.ProductInfo.Brand"): @product.Brand.Name</span>
+                            </div>
+                        }
+                        @if (brandLogo)
+                        {
+                            <div class="col-sm-6">
+                                <figure class="details-brand fr">
+                                    <img class="details-brand-link" src="@product.Brand.BrandLogo.ImageSrc()" alt="@Html.Encode(product.Brand.Name)"/>
+                                </figure>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="lp-product-info__payment cs-br-1">
+                <div>
+                    @if ((!productModel.HidePrice || !string.IsNullOrEmpty(productModel.TextInsteadOfPrice)) && productModel.MicrodataOffers != null && Model.ProductModel.LpShowPrice)
+                    {
+                        foreach (var offerItem in productModel.MicrodataOffers)
+                        {
+                            <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                <meta itemprop="price" content="@offerItem.Price">
+                                <meta itemprop="priceCurrency" content="@offerItem.Currency">
+                                <meta itemprop="sku" content="@offerItem.Name">
+                                @if (offerItem.Available)
+                                {
+                                    <link itemprop="availability" href="https://schema.org/InStock"/>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            @*<div class="float-left">*@
+            <div class="lp-product-info__sku-wrap flex m-b-sm">
+                <div class="lp-product-info__sku-name">@T("Product.ProductInfo.Sku"):</div>
+                <div class="lp-product-info__sku-value inplace-offset"
+                     data-ng-bind="product.offerSelected.ArtNo"
+                     data-ng-init="product.offerSelected.ArtNo = '@(offer != null ? offer.ArtNo : product.ArtNo)'">
+                    @(offer != null ? offer.ArtNo : product.ArtNo)
+                </div>
+            </div>
+            @if (SettingsCatalog.DisplayDimensions)
+            {
+                var length = offer != null ? offer.GetLength() : 0;
+                var width = offer != null ? offer.GetWidth() : 0;
+                var height = offer != null ? offer.GetHeight() : 0;
+
+                if (length != 0 || width != 0 || height != 0)
+                {
+                    <div class="lp-product-info__dimensions row">
+                        <div class="lp-product-info__dimensions-name col-xs-6">@T("Product.ProductInfo.Size"):</div>
+                        <div class="lp-product-info__dimensions-value col-xs-6"
+                             data-ng-bind="product.offerSelected.Length + ' x ' + product.offerSelected.Width + ' x ' + product.offerSelected.Height">
+                            @(length + " x " + width + " x " + height)
+                        </div>
+                    </div>
+                }
+            }
+
+            @if (SettingsCatalog.DisplayWeight && offer != null)
+            {
+                <div class="lp-product-info__weight row @(productModel.Weight == 0 ? "ng-hide" : "")" data-ng-show="product.offerSelected.Weight != null ? product.offerSelected.Weight > 0 : @productModel.Weight.ToInvariantString() > 0">
+                    <div class="lp-product-info__weight-name col-xs-6">@T("Product.ProductInfo.Weight"):</div>
+                    <div class="lp-product-info__weight-value col-xs-6">
+                        <div class="details-param-value-weight" data-ng-bind="product.offerSelected.WeightFormatted">@productModel.WeightFormatted</div> @productModel.WeightUnits
+                    </div>
+                </div>
+            }
+
+            @if (product.Unit != null && product.Unit.DisplayName.IsNotEmpty())
+            {
+                <div class="lp-product-info__unit row">
+                    <div class="lp-product-info__unit-names col-xs-6">@T("Product.ProductInfo.Unit"):</div>
+                    <div class="lp-product-info__unit-value col-xs-6">@product.Unit.DisplayName</div>
+                </div>
+            }
+            @*</div>*@
+        </div>
+
+        @if (showLeadButton)
+        {
+            if (offer != null)
+            {
+                <div class="lp-product-info__sizes m-b-md">
+                    @Html.Action("SizeColorPicker", "Product", new { product })
+
+                    @if (productModel.HasCustomOptions)
+                    {
+                        @Html.Action("CustomOptions", "Product", new { product.ProductId })
+                    }
+                    <div class="details-row">
+                        @Html.RenderModules("landing_product_info", new { product, offer })
+                    </div>
+                </div>
+                <div>
+                    @{
+                        var block = productModel.BlockId != null ? new LpBlockService().Get(productModel.BlockId.Value) : null;
+                    }
+                    @if (block != null && (block.TryGetSetting("show_button_quickview") == true || block.TryGetSetting("quickview") == true))
+                    {
+                        @Html.Action("Button", "Landing", new { blockId = productModel.BlockId, offerId = "product.offerSelected.OfferId" })
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="lp-product-info__price-wrap" data-ng-init="product.discount=@product.Discount.Percent.ToInvariantString(); product.discountAmount=@product.Discount.Amount.ToInvariantString(); product.Price.PriceNumber=@productModel.FinalPrice.ToInvariantString();">
+                @if (Model.ProductModel.LpShowPrice)
+                {
+                    if (!productModel.HidePrice)
+                    {
+                        <div>
+                            <div class="lp-product-info__price">
+                                <div data-ng-if="product.Price.PriceString == null">
+                                    <div>@Html.Raw(productModel.PreparedPrice)</div>
+                                </div>
+                                <div data-ng-bind-html="product.Price.PriceString"></div>
+                            </div>
+                        </div>
+                    }
+                    else if (productModel.TextInsteadOfPrice.IsNotEmpty())
+                    {
+                        <div class="lp-product-info__price">@Html.Raw(Model.ProductModel.TextInsteadOfPrice)</div>
+                    }
+                }
+            </div>
+
+            <div class="lp-product-info__availability" data-ng-init="product.offerSelected.IsAvailable = @(productModel.IsAvailable ? "true" : "false");">
+                <div class="availability @(productModel.IsAvailable ? "available" : "not-available")"
+                     data-ng-class="{'available': product.offerSelected.IsAvailable === true, 'not-available' : product.offerSelected.IsAvailable === false}">
+                    @*data-bind-html-compile - for inplace on change avalable*@
+                    <div data-bind-html-compile="product.offerSelected.Available"></div>
+                    <div data-ng-if="product.offerSelected.Available == null">@Html.Raw(productModel.Availble)</div>
+                </div>
+            </div>
+
+            <div class="lp-product-info__sizes">
+                @if (offer != null)
+                {
+                    @Html.Action("SizeColorPicker", "Product", new { product })
+
+                    if (productModel.HasCustomOptions)
+                    {
+                        @Html.Action("CustomOptions", "Product", new { product.ProductId })
+                    }
+
+                    <div class="details-row">
+                        @Html.RenderModules("landing_product_info", new { product, offer })
+                    </div>
+                }
+            </div>
+
+            if (offer != null)
+            {
+                <div class="lp-product-info__amount" data-ng-if="product.offerSelected.IsAvailable === true || @(productModel.AllowBuyOutOfStockProducts.ToLowerString()) && product.data.AllowPreOrder">
+                    <div class="lp-product-info__amount-name">
+                        @if (productModel.CartAddTypeButton == SettingsDesign.eCartAddTypeButton.Classic || SettingsCheckout.AmountLimitation)
+                        {
+                            <span>@T("Product.ProductInfo.Amount"):</span>
+                        
+                        }
+                        
+                        @if (SettingsCheckout.AmountLimitation)
+                        {
+                            <div ng-show="product.offerSelected.AmountBuy > product.offerSelected.Amount" class="ng-hide availability not-available">
+                                <span>Доступно</span>
+                                <div class="details-avalable-text" ng-bind="product.offerSelected.Amount"></div>
+                                <div class="details-avalable-unit" ng-bind="product.data.Unit"></div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (productModel.CartAddTypeButton == SettingsDesign.eCartAddTypeButton.Classic)
+                    {
+                        <div class="details-param-value">
+                            <div class="details-spinbox-block">
+                                <div data-spinbox
+                                     data-value="product.offerSelected.AmountBuy"
+                                     data-proxy="product.offerSelected"
+                                     data-update-fn="product.updateAmount(value, proxy)"
+                                     data-step="@product.Multiplicity.ToInvariantString()"
+                                     data-max="@product.MaxAmount.ToInvariantString(1000000)"
+                                     data-min="@prodMinAmount.ToInvariantString()">
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="flex middle-xs">
+                @if (productModel.ShowAddButton && !productModel.HidePrice)
+                {
+                    <div class="lp-product-info__payment-item @(!available ? "ng-hide" : string.Empty)"
+                         @Html.Raw(productModel.BlockId != null ? "data-ng-init=\"product.lpBlockId = " + productModel.BlockId + "\"" : "")
+                         data-ng-class="{'ng-hide': product.dirty === false ? @(!available ? "true" : "false") : !product.offerSelected.IsAvailableForPurchase }">
+
+                        @Html.Partial("_CartAdd", new CartAddViewModel()
+                        {
+                            Classes = "lp-btn lp-btn--primary lp-btn--xs",
+                            NgCartAddValid = "product.validate()",
+                            NgOfferId = "product.offerSelected.OfferId",
+                            ProductId = product.ProductId,
+                            NgAmount = "product.offerSelected.AmountBuy",
+                            NgAttributesXml = "product.customOptions.xml",
+                            HideShipping = productModel.HideShipping ? "true" : "",
+                            Mode = "lp",
+                            LpId = productModel.LandingId,
+                            LpBlockId = productModel.BlockId,
+                            LpUpId = productModel.LpButton != null && productModel.LpButton.ActionUpsellLpId != null ? productModel.LpButton.ActionUpsellLpId : "",
+                            LpEntityId = LpService.EntityId != 0 ? LpService.EntityId : (int?)null,
+                            LpEntityType = LpService.EntityId != 0 ? LpService.EntityType : "",
+                            BtnContent = productModel.LpButton != null && !string.IsNullOrEmpty(productModel.LpButton.Text) ? productModel.LpButton.Text : SettingsCatalog.BuyButtonText,
+                            Size = CardAddSize.None,
+                            CartAddType = productModel.CartAddTypeButton,
+                            NgForceHiddenPopup = productModel.CartAddTypeButton == SettingsDesign.eCartAddTypeButton.WithSpinbox ?"\"true\"" : ""
+                            
+                        })
+                    </div>
+                }
+
+                @if (productModel.ShowPreOrderButton)
+                {
+                    <div class="lp-product-info__payment-item @(available ? "ng-hide" : string.Empty)"
+                         data-ng-class="{'ng-hide': product.dirty === false ? @(available ? "true" : "false") : product.offerSelected.IsAvailableForPurchase }">
+                        <a href="javascript:void(0)" class="btn btn-middle btn-action" data-pre-order-trigger data-pre-order-modal="modalPreOrder_@product.ProductId">
+                            @productModel.PreOrderButtonText
+                            <div id="modalPreOrder_@product.ProductId" class="modal ng-hide"
+                                 data-modal-control
+                                 data-modal-class="pre-order-dialog"
+                                 data-callback-close="preOrderTrigger.modalCallbackClose(modalScope)">
+                                <div data-modal-header class="modal-header">
+                                    @T("PreOrder.Index.Header") - @product.Name
+                                </div>
+                                <div class="modal-content">
+                                    <div data-pre-order-form
+                                         data-form-init="preOrderTrigger.formInit(form)"
+                                         data-success-fn="preOrderTrigger.successFn(result)"
+                                         data-offer-id="product.offerSelected.OfferId"
+                                         data-product-id="@product.ProductId"
+                                         data-amount="product.offerSelected.AmountBuy"
+                                         data-pre-order-valid="product.validate()"
+                                         data-json-hash="product.customOptions.jsonHash"
+                                         data-is-landing="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+
+            </div>
+        }
+
+        @if (productModel.BriefProperties != null)
+        {
+            foreach (var value in productModel.BriefProperties)
+            {
+                <div class="lp-product-info__briefproperties row">
+                    <div class="lp-product-info__briefproperties-name col-xs-6">@Html.Raw(@value.Property.NameDisplayed):</div>
+                    <div class="lp-product-info__briefproperties-value col-xs-6">
+                        @Html.Raw(value.Value)
+                    </div>
+                </div>
+            }
+        }
+
+        @if (productModel.DescriptionMode != "none" || productModel.ProductDetails)
+        {
+            if (product.BriefDescription.IsNotEmpty() && productModel.DescriptionMode == "briefDescription" || product.BriefDescription.IsNotEmpty() && productModel.ProductDetails)
+            {
+                <div class="details-row details-briefdescription">
+                    <div>@Html.Raw(product.BriefDescription)</div>
+                    <div>@Html.RenderModules("product_after_briefdescription", new { product, offer })</div>
+                </div>
+            }
+            else if (product.Description.IsNotEmpty() && productModel.DescriptionMode == "fullDescription")
+            {
+                <div class="details-row details-briefdescription">
+                    <div>@Html.Raw(product.Description)</div>
+                    <div>@Html.RenderModules("product_after_description", new { product })</div>
+                </div>
+            }
+        }
+    </div>
+</div>

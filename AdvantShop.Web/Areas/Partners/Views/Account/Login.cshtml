@@ -1,0 +1,66 @@
+﻿@model AdvantShop.Areas.Partners.ViewModels.Account.LoginViewModel
+@{
+    Layout = "~/Areas/Partners/Views/Account/_Layout.cshtml";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="@(isMobile ? "" : "container") partner-login-cnt container-fluid">
+    <article class="partner-login-block">
+        <h2 class="flex center-xs">Партнерская программа</h2>
+        <form class="" name="partnerAuthForm" action="@Url.Action("Login")" method="POST" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="from" value="@Model.From" />
+            <label class="row middle-xs">
+                <span class="col-xs-12 col-md-4">
+                    <span class="form-field-name input-required vertical-interval-xsmall">E-mail</span>
+                </span>
+                <span class="col-xs-12 col-md-8">
+                    <span class="form-field-input vertical-interval-xsmall">
+                        @Html.TextBox("email", null, new { @class = "input-small", required = "required", type = "text", pattern = "^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)$", autocomplete = "email", data_ng_model = "email" })
+                    </span>
+                </span>
+            </label>
+            <label class="row middle-xs">
+                <span class="col-xs-12 col-md-4">
+                    <span class="form-field-name input-required vertical-interval-xsmall">Пароль</span>
+                </span>
+                <span class="col-xs-12 col-md-8">
+                    <span class="form-field-input vertical-interval-xsmall">@Html.Password("password", null, new { @class = "input-small", autocomplete = "off", required = "required", data_ng_model = "password" })</span>
+                </span>
+            </label>
+
+            @if (Model.ShowCaptcha)
+            {
+                <label class="row middle-xs">
+                    <span class="col-xs-12 col-md-4">
+                        <span class="form-field-name input-required vertical-interval-xsmall">
+                            @T("Captcha.Code")
+                        </span>
+                    </span>
+                    <span class="col-xs-12 col-md-8">
+                        <span class="form-field-input vertical-interval-xsmall">
+                            @Html.Action("Captcha", "Common", new { ngModel = "captcha", area = "" })
+                        </span>
+                    </span>
+                </label>
+            }
+            <div class="row middle-xs">
+                <span class="col-xs-12 col-md-8 @(isMobile ? "forgot-password" : "col-xs-offset-4")">
+                    <span class="form-field-input vertical-interval-xsmall">
+                        <button type="submit" class="btn btn-submit btn-middle" data-button-validation>Войти</button>
+                        <a href="@Url.Action("ForgotPassword")" class="horizontal-interval-small">Забыли пароль?</a>
+                    </span>
+                </span>
+            </div>
+            <div class="row middle-xs">
+                <span class="col-xs-12 col-md-8 @(isMobile ? "registration" : "col-xs-offset-4")">
+                    <span class="form-field-input vertical-interval-xsmall">
+                        Еще не зарегистрированы?
+                    </span>
+                    <span class="form-field-input vertical-interval-xsmall">
+                        <a href="@Url.Action("Registration")" class="btn btn-middle btn-confirm">Зарегистрироваться</a>
+                    </span>
+                </span>
+            </div>
+        </form>
+    </article>
+</div>

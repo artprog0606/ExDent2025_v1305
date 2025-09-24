@@ -1,0 +1,96 @@
+﻿<div class="page-name-block m-b-md" is-mobile>
+    <div class="page-name-block-item-main">
+        <h3>{{'Admin.Js.okMarketExportCtrl.Title'|translate}}</h3>
+    </div>
+    <div ng-if="!isMobile.value" class="page-name-block-item-additional">
+        <ui-modal-trigger
+            data-controller="'ModalSaveOkMarketExportSettingsCtrl'"
+            data-controller-as="ctrl"
+            size="middle"
+            template-url="../areas/admin/content/src/ok/components/okMarketExport/modals/modalSaveOkMarketExportSettings/modalSaveOkMarketExportSettings.html">
+            <button class="btn btn-sm btn-success btn--margin-left" type="button">{{'Admin.Js.okMarketExportCtrl.ExportSettings'|translate}}</button>
+        </ui-modal-trigger>
+    </div>
+</div>
+<div is-mobile>
+    <ul class="m-b-md" ng-class="{'p-l-sm' : isMobile.value}">
+        <li class="m-b-md">
+            Категории товаров магазина в Одноклассниках называются каталогами. В Одноклассниках они
+            <b>не могут быть вложены</b> одна в другую.
+        </li>
+        <li class="m-b-md">Максимальное количество каталогов, которое может быть размещено в 1 группе - 100шт.</li>
+        <li class="m-b-md">При выгрузке в Одноклассники нескольких тысяч товаров, на экспорт может понадобиться несколько часов или дней.</li>
+        <li class="m-b-md">
+            <b>При удалении каталогов из списка ниже</b> - автоматически будут удалены соответствующие каталоги и товары из Одноклассников.<br />
+            При удаленни товара из магазина, из Одноклассников он будет удален только после экспорта.
+        </li>
+    </ul>
+    <div class="sticky-page-name m-b-md">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main">
+                <h1 ng-if="!isMobile.value" class="page-name-block-text">{{'Admin.Js.okMarketExportCtrl.CatalogsTitle'|translate}}</h1>
+                <h3 ng-if="isMobile.value" class="setting__subtitle">{{'Admin.Js.okMarketExportCtrl.CatalogsTitle'|translate}}</h3>
+            </div>
+            <div ng-if="!isMobile.value" class="page-name-block-item-additional" ng-if="$ctrl.grid.gridOptions.totalItems < 100">
+                <ui-modal-trigger
+                    data-controller="'ModalAddEditOkCatalogCtrl'"
+                    controller-as="ctrl"
+                    on-close="$ctrl.grid.fetchData()"
+                    template-url="../areas/admin/content/src/ok/components/okMarketExport/modals/modalAddEditOkCatalog/modalAddEditOkCatalog.html">
+                    <button
+                        class="btn btn-sm btn-success btn--margin-left"
+                        type="button"
+                        ng-disabled="$ctrl.IsExportRun == true || $ctrl.isDeleting == true">
+                        <span class="fa fa-plus"></span> {{'Admin.Js.okMarketExportCtrl.AddNewCatalog'|translate}}
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+    <ui-grid-custom
+        grid-unique-id="grid"
+        grid-extend-ctrl="$ctrl"
+        grid-filter-enabled="false"
+        grid-selection-enabled="true"
+        grid-pagination-enabled="false"
+        grid-on-init="$ctrl.gridOnInit(grid)"
+        grid-options="$ctrl.gridOptions"
+        grid-inplace-url="'okMarket/inplace'"
+        grid-url="'okMarket/getCatalogs'"
+        grid-swipe-line="true">
+        <ui-grid-custom-override-control class="ng-cloak">
+            <div class="card card--gap-row-sm">
+                <div class="fs-sm">
+                    <div>
+                        <div class="setting__label">Название :</div>
+                        <div class="m-t-xs">{{row.entity.Name}}</div>
+                    </div>
+                    <div class="m-t-sm">
+                        <div class="setting__label">Связанные категории :</div>
+                        <div class="m-t-xs">{{row.entity.Categories}}</div>
+                    </div>
+                </div>
+            </div>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="$ctrl.grid.gridOptions.TotalString"> </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>
+
+<div class="m-t m-b-md">
+    <a href="" ng-click="$ctrl.export()" ng-if="$ctrl.IsExportRun != true" ng-disabled="$ctrl.isDeleting == true" class="btn btn-sm btn-success"
+        >{{'Admin.Js.OkChannel.ExportNow'|translate}}</a
+    >
+
+    <div ng-if="$ctrl.Total != null && $ctrl.Total != 0 && $ctrl.IsExportRun == true" class="m-b-md">
+        <uib-progressbar max="$ctrl.Total" value="$ctrl.Current">
+            <span style="color: white; white-space: nowrap"><span ng-bind="$ctrl.Percent"></span> %</span>
+        </uib-progressbar>
+    </div>
+</div>
+
+<div class="m-t" ng-if="$ctrl.ExportReports != null && $ctrl.ExportReports.length > 0">
+    <div class="m-b-xs">{{'Admin.Js.OkChannel.Reports'|translate}}</div>
+    <div class="m-b-xs" ng-repeat="report in $ctrl.ExportReports">
+        <a href="../content/okmarket/{{report}}" target="_blank">{{report}}</a>
+    </div>
+</div>

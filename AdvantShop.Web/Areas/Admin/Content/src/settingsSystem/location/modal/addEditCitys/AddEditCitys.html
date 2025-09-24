@@ -1,0 +1,136 @@
+﻿<form name="formAddEditCitys" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.AddEditCitys.Add'|translate) : ('Admin.Js.AddEditCitys.Edit'|translate) }}
+        </h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal" ng-init="ctrl.init(formAddEditCitys)">
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required setting__label"> {{'Admin.Js.AddEditCitys.Name'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            data-e2e="CityName"
+                            class="form-control input-alt"
+                            ng-model="ctrl.data.Name"
+                            required
+                            validation-input-text="{{'Admin.Js.AddEditCitys.City'|translate}}"
+                            data-autofocus="!isMobile.value" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label"> {{'Admin.Js.AddEditCitys.District'|translate}} </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            data-e2e="District"
+                            class="form-control input-alt"
+                            ng-model="ctrl.data.District"
+                            validation-input-text="{{'Admin.Js.AddEditCitys.District'|translate}}" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required setting__label"> {{'Admin.Js.AddEditCitys.Region'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <select
+                            data-e2e="CityRegion"
+                            class="form-control input-alt"
+                            ng-model="ctrl.data.RegionId"
+                            ng-options="item.RegionId as item.Name for item in ctrl.data.Regions"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row setting--label-with-checkbox-reverse">
+                    <label for="CityMain" class="col-xs-11 col-md-3 control-label setting__label setting--m-none"
+                        >{{'Admin.Js.AddEditCitys.MainCity'|translate}}</label
+                    >
+                    <div class="col-xs-1 col-md-9 align-bottom">
+                        <label data-e2e="CityMain" class="adv-checkbox-label">
+                            <input id="CityMain" type="checkbox" ng-model="ctrl.data.DisplayInPopup" class="adv-checkbox-input control-checkbox" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditCitys.PhoneNumber'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="text" data-e2e="CityPhone" class="form-control input-small input-alt" ng-model="ctrl.data.PhoneNumber" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditCitys.PhoneNumberMobileVer'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            data-e2e="CityMobilePhone"
+                            class="form-control input-small input-alt"
+                            ng-model="ctrl.data.MobilePhoneNumber" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditCitys.Zip'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="text" data-e2e="CityZip" class="form-control input-small input-alt" ng-model="ctrl.data.Zip" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group setting__form-group">
+                <div class="row">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.AddEditCitys.SortingOrder'|translate}}</label>
+                    <div class="col-xs-12 col-md-9">
+                        <input type="number" data-e2e="CitySort" ng-model="ctrl.data.CitySort" class="form-control input-alt" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            data-e2e="btnSave"
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnSleep"
+            type="button"
+            data-button-validation-success="ctrl.saveCity(true)"
+            disabled
+            ng-disabled="!formAddEditCitys.modified"
+            data-button-validation
+            ng-style="isMobile.value ? {'grid-column': '1', 'grid-row': '1'} : {}">
+            {{ctrl.mode == "add" ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate) }}
+        </button>
+        <button
+            ng-if="ctrl.cityId && ctrl.cityId != 0"
+            data-e2e="btnSettings"
+            class="btn btn-sm btn-default"
+            type="button"
+            ng-click="ctrl.openAdditionalSettings(formAddEditCitys.modified)"
+            ng-style="isMobile.value ? {'grid-column': '2', 'grid-row': '1'} : {}">
+            {{'Admin.Js.AddEditCitys.AdditionalSettigns'|translate}}
+        </button>
+        <button
+            data-e2e="btnCancel"
+            class="btn btn-default btn-cancel"
+            type="button"
+            ng-click="ctrl.close()"
+            ng-style="isMobile.value ? {'grid-column': 'span 2', 'grid-row': '2'} : {'margin-left':'5px'}">
+            {{'Admin.Js.AddEdit.Cancel'|translate}}
+        </button>
+    </div>
+</form>

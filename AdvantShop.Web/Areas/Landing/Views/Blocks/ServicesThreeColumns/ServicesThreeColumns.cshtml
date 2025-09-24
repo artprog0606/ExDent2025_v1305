@@ -1,0 +1,107 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    /**/
+
+    var items = Model.Block.TryGetSettingAsList<ServicesModel>("items");
+}
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="text-center">
+            @Html.BlockHeader(Model)
+        </div>
+        @if (items != null)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_text") != null ? Model.Block.TryGetSetting("align_text") : "center-xs") lp-block-services-three-columns__row" data-e2e="ServicesContent" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="col-xs-12 col-sm-6 col-md-4 lp-block-services-three-columns-alt__item" data-e2e="ServicesItem">
+
+
+                        <div class="color-scheme__bg--alt lp-block-services-three-columns__inner">
+                            <div class="lp-block-services-three-columns__picture" data-e2e="ServicesLoadPic">
+                                @if (!Model.Inplace && items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                {
+                                    if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                    {
+                                        @:<a href="@Html.ButtonHref(items[i].Button)" class="pointer link-text-decoration-none" @Html.Raw(items[i].Button.TargetBlank ? "target=\"_blank\"" : null)>
+                                    }
+                                    else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                    {
+                                        @:<button class="lp-btn--invisible pointer" type="button" data-scroll-to-block="@items[i].Button.ActionSection">
+                                    }
+                                }
+                                @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                {
+                                    LandingPageId = Model.Block.LandingId,
+                                    BlockId = Model.Block.Id,
+                                    Current = items[i].Picture != null ? items[i].Picture.Src : null,
+                                    GalleryIconsEnabled = false,
+                                    OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                    OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                    OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                    OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                    LazyLoadEnabled = items[i].Picture != null ? items[i].Picture.LazyLoadEnabled : true,
+                                    MaxWidthPicture = PictureLoaderImageSize.XSMiddleWidth,
+                                    MaxHeightPicture = PictureLoaderImageSize.XSMiddleHeight,
+                                    WidthPicture = items[i].Picture.Width,
+                                    HeightPicture = items[i].Picture.Height
+                                })
+                                @if (!Model.Inplace && items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                {
+                                    if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                    {
+                                        @:</a>
+                                    }
+                                    else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                    {
+                                        @:</button>
+                                    }
+                                }
+                            </div>
+                            <div class="lp-block-services-three-columns__content">
+                                <div class="lp-font-size--large lp-block-services-three-columns__header" data-e2e="ServicesItemHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>
+                                    @Html.Raw(items[i].Header)
+                                </div>
+                                <div class="lp-h3--color lp-font-size--middle lp-block-services-three-columns__text" data-e2e="ServicesItemText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                    @Html.Raw(items[i].Text)
+                                </div>
+                            </div>
+                            <div class="lp-block-services-three-columns__footer">
+                                @if (items[i].ShowPrice)
+                                {
+                                    <div class="lp-block-services-three-columns__price" data-e2e="ServicesPrice" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].price")>
+                                        @Html.Raw(items[i].Price)
+                                    </div>
+                                }
+                                @if (items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                {
+                                    <div class="m-t-wl">
+                                        <div class="lp-block-services-three-columns__button">
+                                            <div class="row @Model.Block.TryGetSetting("align_btns")">
+                                                <div class="col-xs-12">
+                                                    @Html.Button(Model.Block, items[i].Button, null, items[i].Header)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+                    </div>
+                }
+            </div>
+        }
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row center-xs">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>

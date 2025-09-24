@@ -1,0 +1,101 @@
+﻿@using AdvantShop.Catalog
+@model AdvantShop.Web.Admin.Models.Catalog.Categories.AdminCategoryModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="row @(isMobile ? "category-page__form-group" : "property-groups")" in-view="$inview ? category.propertyGroupsShowed = true : null">
+    <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+        <h2 class="category-title category-page__title">@T("Admin.Category.PropertyGroups.PropertiesGroups")</h2>
+        <div class="category-page__description">
+            @T("Admin.Category.PropertyGroups.SpecifyPropertiesGroups")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox category-block">
+            <div class="ibox-content category-content border_none property-groups-content category-page__property-groups-content">
+                <div class="@(isMobile ? "" : "form-group")" ng-if="category.showGridPropertyGroups && category.propertyGroupsShowed">
+                    <ui-grid-custom grid-unique-id="gridPropertyGroups"
+                                    grid-on-init="category.gridOnInit(grid)"
+                                    grid-filter-enabled="false"
+                                    grid-pagination-enabled="false"
+                                    grid-selection-enabled="false"
+                                    grid-params="{categoryId:@Model.CategoryId}"
+                                    grid-options="category.gridPropertyGroupsOptions"
+                                    grid-on-fetch="category.gridOnFetch(grid)"
+                                    grid-url="'category/getPropertyGroups'"
+                                    grid-swipe-line="true">
+                         <ui-grid-custom-override-control class="ng-cloak">
+                                <div class="card card--gap-row-sm">
+                                     {{row.entity.Name}}
+                                </div>
+                        </ui-grid-custom-override-control>
+                    </ui-grid-custom>
+                </div>
+                <div class="flex middle-xs">
+                    <ui-modal-trigger data-controller="'ModalAddPropertyGroupCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addPropertyGroup.html")"
+                                      data-resolve="{'categoryId': @Model.CategoryId }"
+                                      data-on-close="category.gridPropertyGroups.fetchData()">
+                        <button class="btn btn-sm @(isMobile ? "btn-success" : "btn-default")" type="button" data-e2e="categoryGroupAdd">
+                            @T("Admin.Category.PropertyGroups.Add")
+                        </button>
+                    </ui-modal-trigger>
+                    <help-trigger class="ng-cloak @(isMobile ? "p-l-xs m-l-sm" : "word-spacing")" data-title="@T("Admin.Category.PropertyGroups.PropertiesGroups")">
+                        @T("Admin.Category.PropertyGroups.OneOrMoreGroups")<br>
+                        <br>
+                        @T("Admin.Category.PropertyGroups.MoreInfo")<br>
+                        <a href="http://www.advantshop.net/help/pages/property-sets" target="_blank">@T("Admin.Category.PropertyGroups.Manual")</a>
+                    </help-trigger>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" in-view="$inview ? category.recommendationsShowed = true : null">
+    <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+        <h2 class="category-title category-page__title">@T("Admin.Category.PropertyGroups.Auto-selection")</h2>
+        <div class="category-text">
+            <p>@T("Admin.Category.PropertyGroups.CrossMarketing")</p>
+            <p><b>@T("Admin.Category.PropertyGroups.ActivateTheOption")</b></p>
+            <p>@T("Admin.Category.PropertyGroups.SettingsCatalog")</p>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox category-block">
+            <div class="ibox-content category-content" ng-if="category.recommendationsShowed">
+
+                <div class="row">
+                    <div class="flex-grow-n m-b-sm @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                        <span class="relative form-label form-label--block @(isMobile ? "flex middle-xs" : "")">
+                            <span class="@(isMobile ? "flex-grow category-page__title" : "")" style="@(isMobile ? "margin:0;" : "")">@T("Admin.Category.PropertyGroups.WithThisProductBuy")</span>
+                            <help-trigger class="ng-cloak word-spacing help-trigger-icon-abs" data-title="@T("Admin.Category.PropertyGroups.WithThisProductBuy")">
+                                @T("Admin.Category.PropertyGroups.RecommendAlternativeGoods")
+                            </help-trigger>
+                        </span>
+                    </div>
+                    <div class="flex-grow flex-basis-n flex-width-n">
+                        <cat-product-recommendations data-type="@RelatedType.Related.ToString()"
+                                                     data-category-id="@Model.CategoryId"
+                                                     data-title="@Html.AttributeEncode(SettingsCatalog.RelatedProductName)">
+                        </cat-product-recommendations>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="flex-grow-n form-label form-label--block @(isMobile ? "col-xs-12 flex middle-xs" : "col-fixed-size-md")">
+                        <span class="@(isMobile ? "flex-grow category-page__title" : "")" style="@(isMobile ? "margin:0;" : "")"> @T("Admin.Category.PropertyGroups.SameGoods")</span>
+                        <help-trigger class="ng-cloak word-spacing" data-title="@T("Admin.Category.PropertyGroups.SameGoods")">
+                            @T("Admin.Category.PropertyGroups.RecommendAlternativeGoods")
+                        </help-trigger>
+                    </div>
+                    <div class="flex-grow flex-basis-n flex-width-n @(isMobile ? "m-t-sm" : "")">
+                        <cat-product-recommendations data-type="@RelatedType.Alternative.ToString()"
+                                                     data-category-id="@Model.CategoryId"></cat-product-recommendations>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1092 @@
+<form novalidate name="triggerEditForm" is-mobile>
+    <div ng-class="{'sticky-page-name p-b-md' : !isMobile.value}" sticky sticky-top="0">
+        <div class="row sticky-page-name-inner" ng-if="!isMobile.value">
+            <div class="col-xs-12">
+                <div class="flex bottom-xs between-xs">
+                    <div>
+                        <div class="sticky-hidden">
+                            <a class="breadcrumb__link--admin m-b-sm inline-block" href="triggers">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="10"
+                                    height="10"
+                                    fill="currentColor"
+                                    x="0px"
+                                    y="0px"
+                                    viewBox="0 0 492 492">
+                                    <path
+                                        d="M198.608,246.104L382.664,62.04c5.068-5.056,7.856-11.816,7.856-19.024c0-7.212-2.788-13.968-7.856-19.032l-16.128-16.12
+			                    C361.476,2.792,354.712,0,347.504,0s-13.964,2.792-19.028,7.864L109.328,227.008c-5.084,5.08-7.868,11.868-7.848,19.084
+			                    c-0.02,7.248,2.76,14.028,7.848,19.112l218.944,218.932c5.064,5.072,11.82,7.864,19.032,7.864c7.208,0,13.964-2.792,19.032-7.864
+			                    l16.124-16.12c10.492-10.492,10.492-27.572,0-38.06L198.608,246.104z" /></svg
+                                ><span>{{'Admin.Js.Triggers.Triggers'|translate}}</span>
+                            </a>
+                        </div>
+                        <div ng-if="ctrl.mode == 'edit'" class="m-r-sm">
+                            <div class="landing-block-title flex middle-xs sticky-page-name-text">
+                                <simple-edit empty-text="" class="simple-edit" on-change="ctrl.setName(ctrl.id, value)" timeout="1000">
+                                    <h1
+                                        class="input-ghost simple-edit__input page-name-block-text sticky-page-name-text"
+                                        simple-edit-content=""
+                                        contenteditable="true"
+                                        ng-bind="ctrl.name"></h1>
+                                    <simple-edit-trigger class="fas fa-pencil-alt landing-block__pencil"></simple-edit-trigger>
+                                </simple-edit>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="" ng-if="ctrl.id" ng-href="emailings/triggeremailings/{{ctrl.id}}" class="m-r-xs"
+                            >{{'Admin.Js.Triggers.EditTrigger.EmailAnalytics'|translate}}</a
+                        >
+                        <a href="" ng-if="ctrl.id" ng-click="ctrl.copyTrigger()" class="m-r-xs"
+                            >{{'Admin.Js.Triggers.EditTrigger.CopyTrigger'|translate}}</a
+                        >
+                        <a
+                            href=""
+                            class="btn btn-sm btn-success"
+                            data-button-validation-success="ctrl.save()"
+                            data-button-validation
+                            data-e2e="TriggerSave">
+                            <span class="fa fa-check"></span> {{'Admin.Js.Triggers.EditTrigger.SaveTriggerChanges'|translate}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="ibox">
+                <div class="ibox-content border_none">
+                    <div ng-class="{'m-b' : !isMobile.value}">
+                        <div>
+                            <div ng-if="ctrl.mode == 'add'">
+                                <b>{{'Admin.Js.Triggers.EditTrigger.SelectTrigger'|translate}}</b>
+                                <div class="m-t-sm m-b-sm">{{'Admin.Js.Triggers.EditTrigger.AfterEvent'|translate}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-5" ng-if="ctrl.mode == 'add'">
+                                    <select
+                                        ng-model="ctrl.eventType"
+                                        ng-options="s.Id as s.Name for s in ctrl.data.EventTypes"
+                                        ng-change="ctrl.changeEventType()"
+                                        class="form-control input-alt"></select>
+                                </div>
+                                <div class="col-xs-12 col-md-7">
+                                    <div ng-if="ctrl.mode == 'add'">
+                                        <div ng-if="ctrl.showEventObject">
+                                            {{'Admin.Js.SettingsTasks.On'|translate}}
+                                            <select
+                                                ng-model="ctrl.eventObjectGroup"
+                                                ng-if="ctrl.eventObjectGroups"
+                                                ng-options="s.value as s.label for s in ctrl.eventObjectGroups"
+                                                ng-change="ctrl.getEventObjects(ctrl.eventObjectGroup)"
+                                                class="form-control m-r-sm input-alt"
+                                                style="width: 200px; display: inline-block"></select>
+                                            <select
+                                                ng-model="ctrl.eventObject"
+                                                ng-options="s.label for s in ctrl.eventObjects track by s.value"
+                                                required
+                                                validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                                class="form-control input-alt"
+                                                style="width: 200px; display: inline-block">
+                                                <option value="">{{'Admin.Js.SettingsTasks.SelectTheType'|translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Время с последнего заказа -->
+                                    <div ng-if="ctrl.eventType == 7" ng-class="{'setting__form-group' : isMobile.value}">
+                                        <span ng-class="{'block setting-label-wrap setting__label' : isMobile.value}"
+                                            >{{'Admin.Js.Triggers.EditTrigger.Through'|translate}}</span
+                                        >
+                                        <input
+                                            type="text"
+                                            ng-model="ctrl.eventObjValue"
+                                            required
+                                            validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                            class="form-control input-alt"
+                                            style="width: 80px; display: inline-block" />
+                                        <span ng-class="{'m-l-sm' : isMobile.value}">{{'Admin.Js.Triggers.EditTrigger.Days'|translate}}</span>
+                                    </div>
+
+                                    <!-- Важные даты -->
+                                    <div ng-if="ctrl.eventType == 8" ng-class="{'setting__form-group' : isMobile.value}">
+                                        <span ng-class="{'block setting-label-wrap setting__label' : isMobile.value}"
+                                            >{{'Admin.Js.Triggers.EditTrigger.Date'|translate}}</span
+                                        >
+                                        <div
+                                            style="{{isMobile.value ? '' : 'display: inline-block; width: 150px; position: relative; vertical-align: middle; min-height: 34px;'}}">
+                                            <div
+                                                class="input-group"
+                                                ng-flatpickr
+                                                fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true}">
+                                                <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                                    <input
+                                                        type="text"
+                                                        ng-flatpickr-input
+                                                        ng-model="ctrl.triggerParams.DateTime"
+                                                        class="form-control input-alt" />
+                                                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                                                </span>
+                                                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            style="{{isMobile.value ? '' : 'display: inline-block;'}}"
+                                            class="{{isMobile.value ? 'flex middle-xs m-t-sm m-b-md' : 'm-l-sm'}}">
+                                            <select
+                                                ng-model="ctrl.triggerParams.Since"
+                                                ng-options="s.value as s.label for s in ctrl.sinceOptions"
+                                                class="form-control input-alt"
+                                                style="{{isMobile.value ? '' : 'width: 90px; display: inline-block;'}}"></select>
+                                            <input
+                                                type="text"
+                                                ng-model="ctrl.triggerParams.Days"
+                                                required
+                                                validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                                class="form-control input-alt"
+                                                ng-class="{'m-l-sm m-r-sm' : isMobile.value}"
+                                                style="{{isMobile.value ? '' : 'width: 50px; display: inline-block;'}}" />
+                                            <span>дн.</span>
+                                        </div>
+
+                                        <div style="{{isMobile.value ? '' : 'display: inline-block;'}}" class="{{isMobile.value ? '' : 'm-l-md'}}">
+                                            <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                                <input
+                                                    ng-model="ctrl.triggerParams.IgnoreYear"
+                                                    type="checkbox"
+                                                    class="adv-checkbox-input control-checkbox" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span class="{{isMobile.value ? 'flex-grow m-l-sm setting__label' : ''}}"
+                                                    >{{'Admin.Js.Triggers.EditTrigger.IgnoreYear'|translate}}</span
+                                                >
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Важные даты покупателя -->
+                                    <div ng-if="ctrl.eventType == 9">
+                                        <select
+                                            ng-model="ctrl.triggerParams.CustomFieldId"
+                                            ng-if="ctrl.eventObjectGroups"
+                                            ng-init="ctrl.triggerParams.CustomFieldId = ctrl.triggerParams.CustomFieldId || ctrl.eventObjectGroups[0].value"
+                                            ng-options="s.value as s.label for s in ctrl.eventObjectGroups"
+                                            class="form-control m-r-sm input-alt"
+                                            style="{{isMobile.value ? '' : 'width: 200px; display: inline-block;'}}"></select>
+
+                                        <div
+                                            style="{{isMobile.value ? '' : 'display: inline-block;'}}"
+                                            class="{{isMobile.value ? 'flex middle-xs m-t-sm m-b-md' : 'm-l-sm'}}">
+                                            <select
+                                                ng-model="ctrl.triggerParams.Since"
+                                                ng-options="s.value as s.label for s in ctrl.sinceOptions"
+                                                class="form-control input-alt"
+                                                style="{{isMobile.value ? '' : 'width: 90px; display: inline-block;'}}"></select>
+
+                                            <input
+                                                type="text"
+                                                ng-model="ctrl.triggerParams.Days"
+                                                required
+                                                validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}"
+                                                class="form-control input-alt"
+                                                ng-class="{'m-l-sm m-r-sm' : isMobile.value}"
+                                                style="{{isMobile.value ? '' : 'width: 50px; display: inline-block;'}}" />
+                                            <span>дн.</span>
+                                        </div>
+
+                                        <div style="{{isMobile.value ? '' : 'display: inline-block;'}}" class="{{isMobile.value ? '' : 'm-l-md'}}">
+                                            <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                                <input
+                                                    ng-model="ctrl.triggerParams.IgnoreYear"
+                                                    type="checkbox"
+                                                    class="adv-checkbox-input control-checkbox" />
+                                                <span class="adv-checkbox-emul"></span>
+                                                <span class="{{isMobile.value ? 'flex-grow m-l-sm setting__label' : ''}}"
+                                                    >{{'Admin.Js.Triggers.EditTrigger.IgnoreYear'|translate}}</span
+                                                >
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="{{isMobile.value ? 'setting__form-group' : 'm-b'}}">
+                        <b ng-class="{'block setting-label-wrap setting__label' : isMobile.value}"
+                            >{{'Admin.Js.Triggers.EditTrigger.Type'|translate}}</b
+                        >
+                        <span>{{ctrl.eventTypeDescription}}</span>
+                    </div>
+                    <div class="relative" ng-class="{'setting__form-group flex middle-xs' : isMobile.value}">
+                        <label class="adv-checkbox-label">
+                            <input
+                                ng-model="ctrl.worksOnlyOnce"
+                                type="checkbox"
+                                class="adv-checkbox-input control-checkbox"
+                                data-e2e="TriggerWorksOnlyOnce" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span ng-class="{'flex-grow setting__label m-l-sm' : isMobile.value}"
+                                >{{'Admin.Js.Triggers.EditTrigger.TriggeredOnceOrderLead'|translate}}</span
+                            >
+                        </label>
+                        <help-trigger class="ng-cloak m-l-xs" ng-class="{'col-xs-1' : isMobile.value}">
+                            {{'Admin.Js.Triggers.EditTrigger.TriggeredOnceOrderLeadText'|translate}}
+                        </help-trigger>
+                    </div>
+
+                    <div class="m-t" ng-if="ctrl.processType == 'datetime'" ng-class="{'setting__form-group row' : isMobile.value}">
+                        <span ng-class="{'block col-xs-12 setting-label-wrap setting__label' : isMobile.value}"
+                            >{{'Admin.Js.Triggers.EditTrigger.ResponseTime'|translate}}</span
+                        >
+                        <div ng-class="{'col-xs-12 flex middle-xs' : isMobile.value}" style="{{isMobile.value ? '' : 'display: inline-block;'}}">
+                            <select
+                                ng-model="ctrl.preferredHour"
+                                ng-options="s.value as s.label for s in ctrl.preferredHours"
+                                ng-init="ctrl.preferredHour = ctrl.preferredHour || 9"
+                                class="form-control input-alt"
+                                ng-class="{'m-r-sm' : isMobile.value}"
+                                style="{{isMobile.value ? '' : 'width: 120px; display: inline-block;'}}"></select>
+                            <span style="{{isMobile.value ? 'white-space: nowrap;' : ''}}"
+                                >ч. {{ctrl.isLicense ? ('Admin.Js.Triggers.EditTrigger.ServerTime'|translate) :
+                                ('Admin.Js.Triggers.EditTrigger.MoscowTime'|translate)}}</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="{{isMobile.value ? 'setting__form-group' : 'm-t'}}" ng-if="ctrl.mode == 'edit'">
+                        <div ng-if="ctrl.coupon != null">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddEditCouponCtrl'"
+                                controller-as="ctrl"
+                                size="middle"
+                                template-url="../areas/admin/content/src/coupons/modal/addEditCoupon/addEditCoupon.html"
+                                data-resolve="{'CouponId': ctrl.coupon.CouponID}"
+                                data-on-close="ctrl.reloadTriggerCoupon()">
+                                <a href="">{{'Admin.Js.Triggers.EditTrigger.TriggerCouponTemplate'|translate}}</a>
+                            </ui-modal-trigger>
+                            <a
+                                ng-click="ctrl.deleteTriggerCoupon(ctrl.coupon)"
+                                href=""
+                                class="link-invert link-decoration-none fas fa-times categories-block-icon"></a>
+                        </div>
+                        <div ng-if="ctrl.coupon == null">
+                            <ui-modal-trigger
+                                data-controller="'ModalAddEditCouponCtrl'"
+                                controller-as="ctrl"
+                                size="middle"
+                                template-url="../areas/admin/content/src/coupons/modal/addEditCoupon/addEditCoupon.html"
+                                data-resolve="{'triggerId': ctrl.id, couponMode: 3}"
+                                data-on-close="ctrl.reloadTriggerCoupon()">
+                                <a href="">{{'Admin.Js.Triggers.EditTrigger.GenerateCouponTriggered'|translate}}</a>
+                            </ui-modal-trigger>
+                        </div>
+                        <div ng-class="{'fs-xs m-t-sm' : isMobile.value}">{{'Admin.Js.Triggers.EditTrigger.InsertGenerateCoupon'|translate}}</div>
+                    </div>
+
+                    <div class="{{isMobile.value ? 'setting__form-group' : 'm-t'}}">
+                        <div class="{{isMobile.value ? '' : 'm-b-xs'}}">
+                            <b ng-class="{'block setting-label-wrap setting__label' : isMobile.value}"
+                                >{{'Admin.Js.Triggers.EditTrigger.TriggerCategory'|translate}}</b
+                            >
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-5">
+                                <ui-select class="input-alt" ng-model="ctrl.categoryId" convert-to-number validation-input-text="Категория">
+                                    <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                                    <ui-select-choices repeat="s.value as s in ctrl.categories | filter: $select.search">
+                                        <div>{{s.label}}</div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="ctrl.eventType != null">
+        <div class="col-xs-12" ng-class="{'setting__form-group' : isMobile.value}">
+            <div class="ibox">
+                <div class="ibox-content border_none">
+                    <div
+                        ng-class="{'flex middle-xs between-xs m-b-sm' : !isMobile.value,'m-b-sm' : isMobile.value && ctrl.filter != null && ctrl.filter.Comparers.length > 0}">
+                        <div ng-class="{'block setting-label-wrap setting__label' : isMobile.value}">
+                            {{'Admin.Js.Triggers.EditTrigger.SelectTriggerCondition'|translate}}
+                        </div>
+
+                        <ui-modal-trigger
+                            ng-class="{'pull-right' : !isMobile.value}"
+                            data-controller="'ModalAddEditTriggerFilterRuleCtrl'"
+                            controller-as="ctrl"
+                            data-resolve="{'event': { 'type': ctrl.eventType}, 'isLicense': ctrl.isLicense}"
+                            template-url="../areas/admin/content/src/triggers/modal/addEditFilterRule/AddEditTriggerFilterRule.html"
+                            data-on-close="ctrl.processFilterRule(null, result)">
+                            <button class="btn btn-success btn-sm" type="button">
+                                <span class="fa fa-plus"></span> {{'Admin.Js.Triggers.EditTrigger.AddCondition'|translate}}
+                            </button>
+                        </ui-modal-trigger>
+                    </div>
+                    <ol ng-if="ctrl.filter != null && ctrl.filter.Comparers.length > 0 && !isMobile.value">
+                        <li ng-repeat="comparer in ctrl.filterComparers track by $index">
+                            <b ng-bind="comparer.FieldName" data-e2e="RuleFilterName"></b>
+
+                            <span ng-repeat="fieldComparer in comparer.FieldComparers track by $index">
+                                <span ng-if="$index > 0 && comparer.FieldTypeStr != 'time'" class="m-l-sm p-r-xs"
+                                    >{{comparer.CompareType == 1 ? 'и не равно' : 'или'}}</span
+                                >
+                                <span ng-if="$index > 0 && comparer.FieldTypeStr == 'time'" class="m-l-sm p-r-xs"
+                                    >{{comparer.CompareType == 1 ? 'и' : 'или'}}</span
+                                >
+
+                                <ui-modal-trigger
+                                    data-controller="'ModalAddEditTriggerFilterRuleCtrl'"
+                                    controller-as="ctrl"
+                                    data-resolve="{'rule': ctrl.getFilterComparerItem(comparer, fieldComparer), 'event': {'type': ctrl.eventType}, 'isLicense': ctrl.isLicense}"
+                                    template-url="../areas/admin/content/src/triggers/modal/addEditFilterRule/AddEditTriggerFilterRule.html"
+                                    data-on-close="ctrl.processFilterRule(ctrl.getFilterComparerItem(comparer, fieldComparer), result)">
+                                    <a
+                                        href=""
+                                        title="{{'Admin.Js.SettingsTasks.EditTheCondition'|translate}}"
+                                        class="link-invert link-decoration-none"
+                                        data-e2e="RuleFilter">
+                                        <span ng-if="comparer.FieldTypeStr == 'time'">{{comparer.CompareType == 1 ? 'за исключением' : ''}}</span>
+
+                                        <span
+                                            ng-if="comparer.FieldValueObjectName"
+                                            ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + fieldComparer.FieldValueObjectName"></span>
+                                        <span
+                                            ng-if="fieldComparer.From"
+                                            ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + fieldComparer.From"></span>
+                                        <span
+                                            ng-if="fieldComparer.To"
+                                            ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + fieldComparer.To"></span>
+                                        <span
+                                            ng-if="fieldComparer.DateFromString"
+                                            ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + fieldComparer.DateFromString"></span>
+                                        <span
+                                            ng-if="fieldComparer.DateToString"
+                                            ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + fieldComparer.DateToString"></span>
+                                        <span
+                                            ng-if="fieldComparer.Type == 3"
+                                            ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + (fieldComparer.Flag ? '{{'Admin.Js.SettingsTasks.Yes'|translate}}' : '{{'Admin.Js.SettingsTasks.No'|translate}}')"></span>
+                                        <span
+                                            ng-if="!comparer.FieldValueObjectName && fieldComparer.Value"
+                                            ng-bind="(fieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : ctrl.getFilterCompareType($index, comparer.CompareType)) + fieldComparer.Value"></span>
+                                        <span
+                                            ng-if="!comparer.FieldValueObjectName && fieldComparer.Value == ''"
+                                            ng-bind="(fieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : ctrl.getFilterCompareType($index, comparer.CompareType)) + 'не указан'"></span>
+
+                                        <span ng-if="fieldComparer.Type == 5">
+                                            {{ctrl.getFilterCompareType($index, comparer.CompareType)}}
+                                            <span ng-repeat="item in fieldComparer.Products track by $index">
+                                                <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                            </span>
+                                        </span>
+                                        <span ng-if="fieldComparer.Type == 6">
+                                            {{ctrl.getFilterCompareType($index, comparer.CompareType)}}
+                                            <span ng-repeat="item in fieldComparer.Categories track by $index">
+                                                <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                            </span>
+                                        </span>
+                                        <span
+                                            ng-if="fieldComparer.Type == 11 || fieldComparer.Type == 12"
+                                            ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + fieldComparer.SalesFunnelName + ' ' + fieldComparer.DealStatusName"></span>
+                                        <span class="fas fa-pencil-alt p-l-xs"></span>
+                                    </a>
+                                </ui-modal-trigger>
+                                <a
+                                    href=""
+                                    ng-click="ctrl.processFilterRule(ctrl.getFilterComparerItem(comparer, fieldComparer))"
+                                    class="fa fa-times link-invert link-decoration-none p-l-xs"
+                                    title="{{'Admin.Js.SettingsTasks.Delete'|translate}}"
+                                    data-e2e="RuleFilterDelete"></a>
+                            </span>
+                        </li>
+                    </ol>
+
+                    <div ng-if="ctrl.filter != null && ctrl.filter.Comparers.length > 0 && isMobile.value">
+                        <div ng-repeat="comparer in ctrl.filterComparers">
+                            <div ng-repeat="fieldComparer in comparer.FieldComparers">
+                                <div class="swipe-line-container">
+                                    <div class="swipe-line m-t-sm">
+                                        <div data-swipe-line class="swipe-line__inner">
+                                            <div class="swipe-line__content">
+                                                <ui-modal-trigger
+                                                    data-controller="'ModalAddEditTriggerFilterRuleCtrl'"
+                                                    controller-as="ctrl"
+                                                    data-resolve="{'rule': ctrl.getFilterComparerItem(comparer, fieldComparer), 'event': {'type': ctrl.eventType}, 'isLicense': ctrl.isLicense}"
+                                                    template-url="../areas/admin/content/src/triggers/modal/addEditFilterRule/AddEditTriggerFilterRule.html"
+                                                    data-on-close="ctrl.processFilterRule(ctrl.getFilterComparerItem(comparer, fieldComparer), result)">
+                                                    <div class="card card--gap-row-sm">
+                                                        <div class="setting__label m-b-xs" ng-bind="comparer.FieldName"></div>
+                                                        <!--<div>
+                                                        <span ng-if="$index > 0 && comparer.FieldTypeStr != 'time'" class="m-l-sm p-r-xs">{{comparer.CompareType == 1 ? 'и не равно' : 'или'}}</span>
+                                                        <span ng-if="$index > 0 && comparer.FieldTypeStr == 'time'" class="m-l-sm p-r-xs">{{comparer.CompareType == 1 ? 'и' : 'или'}}</span>
+                                                    </div>-->
+                                                        <div>
+                                                            <!--<span ng-if="comparer.FieldTypeStr == 'time'">{{comparer.CompareType == 1 ? 'за исключением' : ''}}</span>-->
+
+                                                            <span
+                                                                ng-if="comparer.FieldValueObjectName"
+                                                                ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + fieldComparer.FieldValueObjectName"></span>
+                                                            <span
+                                                                ng-if="fieldComparer.From"
+                                                                ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + fieldComparer.From"></span>
+                                                            <span
+                                                                ng-if="fieldComparer.To"
+                                                                ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + fieldComparer.To"></span>
+                                                            <span
+                                                                ng-if="fieldComparer.DateFromString"
+                                                                ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + fieldComparer.DateFromString"></span>
+                                                            <span
+                                                                ng-if="fieldComparer.DateToString"
+                                                                ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + fieldComparer.DateToString"></span>
+                                                            <span
+                                                                ng-if="fieldComparer.Type == 3"
+                                                                ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + (fieldComparer.Flag ? '{{'Admin.Js.SettingsTasks.Yes'|translate}}' : '{{'Admin.Js.SettingsTasks.No'|translate}}')"></span>
+                                                            <span
+                                                                ng-if="!comparer.FieldValueObjectName && fieldComparer.Value"
+                                                                ng-bind="(fieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : ctrl.getFilterCompareType($index, comparer.CompareType)) + fieldComparer.Value"></span>
+                                                            <span
+                                                                ng-if="!comparer.FieldValueObjectName && fieldComparer.Value == ''"
+                                                                ng-bind="(fieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : ctrl.getFilterCompareType($index, comparer.CompareType)) + 'не указан'"></span>
+
+                                                            <span ng-if="fieldComparer.Type == 5">
+                                                                {{ctrl.getFilterCompareType($index, comparer.CompareType)}}
+                                                                <span ng-repeat="item in fieldComparer.Products track by $index">
+                                                                    <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                                                </span>
+                                                            </span>
+                                                            <span ng-if="fieldComparer.Type == 6">
+                                                                {{ctrl.getFilterCompareType($index, comparer.CompareType)}}
+                                                                <span ng-repeat="item in fieldComparer.Categories track by $index">
+                                                                    <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                                                </span>
+                                                            </span>
+                                                            <span
+                                                                ng-if="fieldComparer.Type == 11 || fieldComparer.Type == 12"
+                                                                ng-bind="ctrl.getFilterCompareType($index, comparer.CompareType) + fieldComparer.SalesFunnelName + ' ' + fieldComparer.DealStatusName"></span>
+                                                        </div>
+                                                    </div>
+                                                </ui-modal-trigger>
+                                            </div>
+                                            <div
+                                                data-swipe-line-right
+                                                class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                                                <a
+                                                    href=""
+                                                    ng-click="ctrl.processFilterRule(ctrl.getFilterComparerItem(comparer, fieldComparer))"
+                                                    class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                                    data-e2e="RuleFilterDelete"
+                                                    >{{'Admin.Js.Triggers.EditTrigger.DeleteSomething'|translate}}</a
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row ng-cloak action-item" ng-if="ctrl.eventType != null" ng-repeat="action in ctrl.actions">
+        <hr ng-if="$index != 0" class="m-t-sm m-b-md" style="width: 100%; height: 1px; background: black; opacity: 0.2" />
+        <div class="col-xs-12">
+            <div class="ibox">
+                <div class="ibox-content border_none">
+                    <div ng-class="{'flex middle-xs between-xs m-b-sm' : !isMobile.value, 'setting__form-group': isMobile.value}">
+                        <div ng-class="{'block setting-label-wrap setting__label' : isMobile.value}">
+                            {{'Admin.Js.Triggers.EditTrigger.SelectAction'|translate}}
+                        </div>
+                        <div ng-class="{'pull-right' : !isMobile.value}">
+                            <span class="action-item-sort m-r-sm" ng-if="$index != 0 || $index != ctrl.actions.length-1">
+                                <a
+                                    href=""
+                                    class="fas fa-arrow-up link-invert link-decoration-none"
+                                    ng-click="ctrl.changeSortOrder($index, true)"
+                                    ng-if="$index != 0"
+                                    title="Изменить сортировку"></a>
+                                <a
+                                    href=""
+                                    class="fas fa-arrow-down link-invert link-decoration-none"
+                                    ng-click="ctrl.changeSortOrder($index, false)"
+                                    ng-if="$index != ctrl.actions.length-1"
+                                    title="Изменить сортировку"></a>
+                            </span>
+                            <a href="" ng-if="$index != 0" ng-click="ctrl.removeAction($index)" class="link-danger m-r-xs" data-e2e="RemoveAction"
+                                >{{'Admin.Js.Triggers.EditTrigger.DeleteSomething'|translate}}</a
+                            >
+                            <a href="" class="btn btn-success btn-sm" ng-click="ctrl.addAction($index)">
+                                <span class="fa fa-plus"></span> {{'Admin.Js.Triggers.EditTrigger.AddAction'|translate}}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="{{isMobile.value ? '' : 'm-t m-b-md'}}">
+                        <ul class="nav nav-collapse-tab nav-tabs" ng-class="{'chips-list' : isMobile.value}" collapse-tab>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 1}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 1"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 1, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendEmail'|translate}}</a
+                                >
+                            </li>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 2}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 2"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 2, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendSMS'|translate}}</a
+                                >
+                            </li>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 8}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 8"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 8, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendPush'|translate}}</a
+                                >
+                            </li>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 4}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 4"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 4, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.EditData'|translate}}</a
+                                >
+                            </li>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 6}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 6"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 6, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendHTTP'|translate}}</a
+                                >
+                            </li>
+                            <li class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 7}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 7"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 7, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendWhatsApp'|translate}}</a
+                                >
+                            </li>
+                            <li ng-if="ctrl.IsTriggerForOrder" class="uib-tab nav-item ng-tab" ng-class="{'active' : action.ActionType == 9}">
+                                <a
+                                    href=""
+                                    ng-click="action.ActionType = 9"
+                                    ng-class="{'chip chips-list__item' : isMobile.value, 'chip--active' : isMobile.value && action.ActionType == 9, 'nav-link' : !isMobile.value}"
+                                    >{{'Admin.Js.Triggers.EditTrigger.SendToShippingService'|translate}}</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div ng-switch="action.ActionType">
+                        <div ng-switch-when="1">
+                            <div class="form-group row setting__form-group" ng-if="ctrl.emailSettingsError != null">
+                                <div class="col-xs-12">
+                                    <div ng-bind-html="ctrl.emailSettingsError" class="error-red"></div>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.SubjectLetter'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-10">
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="action.SendEmailData.EmailSubject"
+                                        textcomplete
+                                        textcomplete-data="ctrl.availableVariablesKeys"
+                                        required
+                                        validation-input-text="{{'Admin.Js.Triggers.EditTrigger.SubjectLetter'|translate}}" />
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.TextLetter'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-10 relative">
+                                    <div ng-if="action.showCkeditor != false">
+                                        <textarea
+                                            ckeditor="{height: 350}"
+                                            class="form-control wysiwyg input-alt"
+                                            ng-model="action.SendEmailData.EmailBody"
+                                            rows="5"
+                                            ckeditor-autocomplete-plugin
+                                            ckeditor-autocomplete-plugin-data="ctrl.availableVariablesKeys"
+                                            required
+                                            validation-input-text="{{'Admin.Js.Triggers.EditTrigger.TextLetter'|translate}}"></textarea>
+                                    </div>
+                                    <div class="help-block" ng-class="{'fs-xs m-t-xs' : isMobile.value}" ng-if="ctrl.availableVariables">
+                                        <div class="m-b-xs">
+                                            <ui-modal-trigger
+                                                data-controller="'ModalTriggerLetterKeysCtrl'"
+                                                controller-as="ctrl"
+                                                size="middle"
+                                                template-url="../areas/admin/content/src/triggers/modal/triggerLetterKeys/triggerLetterKeys.html"
+                                                data-resolve="ctrl.availableVariables">
+                                                <a class="link-invert link-decoration-invert"
+                                                    >{{'Admin.Js.Triggers.EditTrigger.AvailableVariables'|translate}}</a
+                                                >
+                                                <span class="help-trigger-icon-wrap inline-block">
+                                                    <span class="help-trigger-icon">
+                                                        <svg
+                                                            ng-if="!$ctrl.isInfoIcon"
+                                                            width="16"
+                                                            height="16"
+                                                            class="help-trigger-icon--svg"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            viewBox="0 0 512 512">
+                                                            <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                                            <path
+                                                                fill="currentColor"
+                                                                d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                                C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                                c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                                            <path
+                                                                fill="currentColor"
+                                                                d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                                c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                                c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </span>
+                                            </ui-modal-trigger>
+                                        </div>
+                                        <span ng-repeat="item in ctrl.availableVariables track by $index">
+                                            {{$index != 0 ? ', ' : ''}}<span
+                                                class="letter-format-key"
+                                                title="{{item.Description}}"
+                                                ng-bind="item.Key"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.RecipientIsCustomer'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-4">
+                                    <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                        <input
+                                            ng-model="action.SendEmailData.Params.RecipientIsCustomer"
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox"
+                                            required
+                                            ng-required="!action.SendEmailData.Params.RecipientIsCustomer && !action.SendEmailData.Params.RecipientIsAnother" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.RecipientIsAnother'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-4">
+                                    <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                        <input
+                                            ng-model="action.SendEmailData.Params.RecipientIsAnother"
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox"
+                                            required
+                                            ng-required="!action.SendEmailData.Params.RecipientIsCustomer && !action.SendEmailData.Params.RecipientIsAnother" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group" ng-if="action.SendEmailData.Params.RecipientIsAnother">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.EmailToReceive'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-10">
+                                    <input
+                                        type="email"
+                                        class="form-control input-alt"
+                                        ng-model="action.SendEmailData.Params.EmailToReceive"
+                                        required
+                                        validation-input-text="{{'Admin.Js.Triggers.EditTrigger.EmailToReceive'|translate}}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-switch-when="2">
+                            <div ng-if="ctrl.IsSmsActive">
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-md-2">
+                                        <span class="block" ng-class="{'setting-label-wrap setting__label' : isMobile.value}"
+                                            >{{'Admin.Js.Triggers.EditTrigger.SMSText'|translate}}</span
+                                        >
+                                        <count-sms sms-text="action.SendSmsData.SmsText"></count-sms>
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <div ng-if="action.SendSmsData.SmsTemplateId != null || ctrl.IsSmsAndSocialMediaActive">
+                                            <div class="m-b">
+                                                <ui-modal-trigger
+                                                    data-controller="'ModalSelectSmsTemplateCtrl'"
+                                                    controller-as="ctrl"
+                                                    size="middle"
+                                                    template-url="../areas/admin/content/src/_shared/modal/selectSmsTemplate/selectSmsTemplate.html"
+                                                    data-on-close="ctrl.selectSmsTemplate(action, result)">
+                                                    <a href="" class="">{{'Admin.Js.Triggers.EditTrigger.SelectTemplate'|translate}}</a>
+                                                </ui-modal-trigger>
+                                            </div>
+                                        </div>
+
+                                        <div ng-if="action.SendSmsData.SmsTemplateId != null" class="m-b-xs">
+                                            {{'Admin.Js.Triggers.EditTrigger.Sample'|translate}} {{action.SendSmsData.SmsTemplateId}}
+                                        </div>
+
+                                        <textarea
+                                            maxlength="480"
+                                            class="form-control"
+                                            ng-model="action.SendSmsData.SmsText"
+                                            ng-readonly="action.SendSmsData.SmsTemplateId != null && ctrl.IsSmsAndSocialMediaActive"
+                                            rows="3"
+                                            required
+                                            validation-input-text="Текст sms"></textarea>
+
+                                        <div class="help-block" ng-class="{'fs-xs m-t-xs' : isMobile.value}">
+                                            {{'Admin.Js.Triggers.EditTrigger.ConditionSMS'|translate}}
+                                        </div>
+                                        <div class="help-block" ng-class="{'fs-xs m-t-xs' : isMobile.value}" ng-if="ctrl.availableVariables">
+                                            <div class="m-b-xs">
+                                                <ui-modal-trigger
+                                                    data-controller="'ModalTriggerLetterKeysCtrl'"
+                                                    controller-as="ctrl"
+                                                    size="middle"
+                                                    template-url="../areas/admin/content/src/triggers/modal/triggerLetterKeys/triggerLetterKeys.html"
+                                                    data-resolve="ctrl.availableVariables">
+                                                    <a class="link-invert link-decoration-invert"
+                                                        >{{'Admin.Js.Triggers.EditTrigger.AvailableVariables'|translate}}</a
+                                                    >
+                                                    <span class="help-trigger-icon inline-block">
+                                                        <svg
+                                                            ng-if="!$ctrl.isInfoIcon"
+                                                            width="16"
+                                                            height="16"
+                                                            class="help-trigger-icon--svg"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            viewBox="0 0 512 512">
+                                                            <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                                            <path
+                                                                fill="currentColor"
+                                                                d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                            C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                            c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                                            <path
+                                                                fill="currentColor"
+                                                                d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                            c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                            c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </ui-modal-trigger>
+                                            </div>
+                                            <span ng-repeat="item in ctrl.availableVariables track by $index">
+                                                {{$index != 0 ? ', ' : ''}}<span
+                                                    class="letter-format-key"
+                                                    title="{{item.Description}}"
+                                                    ng-bind="item.Key"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.RecipientIsCustomer'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-4">
+                                        <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                            <input
+                                                ng-model="action.SendSmsData.Params.RecipientIsCustomer"
+                                                type="checkbox"
+                                                class="adv-checkbox-input control-checkbox"
+                                                required
+                                                ng-required="!action.SendSmsData.Params.RecipientIsCustomer && !action.SendSmsData.Params.RecipientIsAnother" />
+                                            <span class="adv-checkbox-emul"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.RecipientIsAnother'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-4">
+                                        <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                            <input
+                                                ng-model="action.SendSmsData.Params.RecipientIsAnother"
+                                                type="checkbox"
+                                                class="adv-checkbox-input control-checkbox"
+                                                required
+                                                ng-required="!action.SendSmsData.Params.RecipientIsCustomer && !action.SendSmsData.Params.RecipientIsAnother" />
+                                            <span class="adv-checkbox-emul"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group" ng-if="action.SendSmsData.Params.RecipientIsAnother">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.SmsToReceive'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <input
+                                            type="text"
+                                            mask-control=""
+                                            mask-control-preset="phone"
+                                            class="form-control input-alt"
+                                            ng-model="action.SendSmsData.Params.PhoneToReceive"
+                                            required
+                                            validation-input-text="{{'Admin.Js.Triggers.EditTrigger.SmsToReceive'|translate}}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="!ctrl.IsSmsActive" class="form-group row">
+                                <div class="col-xs-12" ng-class="{'m-b-md' : !isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.SMSSetSend'|translate}}
+                                    <a href="settingsmail?notifyTab=sms" target="_blank"
+                                        >{{'Admin.Js.Triggers.EditTrigger.SMSNotifications'|translate}}</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-switch-when="3"></div>
+
+                        <div ng-switch-when="4">
+                            <trigger-action-edit-field
+                                event-type="ctrl.eventType"
+                                action="action"
+                                fields="ctrl.fields"
+                                is-license="ctrl.isLicense"
+                                ng-if="ctrl.fields && ctrl.fields.length"
+                                comparers="ctrl.filterComparers">
+                            </trigger-action-edit-field>
+                        </div>
+
+                        <div ng-switch-when="6">
+                            <trigger-action-send-request
+                                event-type="ctrl.eventType"
+                                action="action"
+                                send-request-parameters="ctrl.sendRequestParameters">
+                            </trigger-action-send-request>
+                        </div>
+
+                        <div ng-switch-when="7">
+                            <div ng-if="ctrl.IsWazzupActive" class="row" ng-class="{'form-group' : !isMobile.value}">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.MessageText'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-10">
+                                    <textarea
+                                        class="form-control input-alt"
+                                        ng-model="action.MessageText"
+                                        rows="3"
+                                        required
+                                        validation-input-text="Текст сообщения"></textarea>
+                                    <div class="help-block" ng-class="{'fs-xs m-t-xs' : isMobile.value}" ng-if="ctrl.availableVariables">
+                                        <span>{{'Admin.Js.SettingsTasks.AvailableVariables'|translate}}</span>
+                                        <span ng-repeat="item in ctrl.availableVariables track by $index">
+                                            {{$index != 0 ? ', ' : ''}}<span
+                                                class="letter-format-key"
+                                                title="{{item.Description}}"
+                                                ng-bind="item.Key"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="!ctrl.IsWazzupActive" class="row" ng-class="{'form-group' : !isMobile.value}">
+                                <div class="col-xs-12 m-b-md">
+                                    {{'Admin.Js.Triggers.EditTrigger.SendMessagesModule'|translate}}
+                                    <a href="modules/market?name=wazzup" target="_blank">Wazzup</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-switch-when="8">
+                            <trigger-action-send-notification
+                                action="action"
+                                available-variables="ctrl.availableVariables"
+                                push-notification-error-message="ctrl.PushNotificationErrorMessage"
+                                allow-send-notification="ctrl.AllowSendNotification">
+                            </trigger-action-send-notification>
+                        </div>
+
+                        <div ng-switch-when="9">
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12">
+                                    <strong>
+                                        {{'Admin.Js.Triggers.EditTrigger.SendToShippingService.AvailableShippings'|translate}}:
+                                        {{ctrl.ShippingMethodsUseUnloadOrder}}
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                    {{'Admin.Js.Triggers.EditTrigger.SendEmailOnError'|translate}}
+                                </div>
+                                <div class="col-xs-12 col-md-4">
+                                    <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                        <input
+                                            ng-model="action.SendToShippingServiceData.SendEmailOnError"
+                                            type="checkbox"
+                                            class="adv-checkbox-input control-checkbox" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div ng-if="action.SendToShippingServiceData.SendEmailOnError">
+                                <div class="form-group row setting__form-group" ng-if="ctrl.emailSettingsError != null">
+                                    <div class="col-xs-12">
+                                        <div ng-bind-html="ctrl.emailSettingsError" class="error-red"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.EmailForError'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <input
+                                            type="text"
+                                            class="form-control input-alt"
+                                            ng-model="action.SendToShippingServiceData.EmailForError"
+                                            required
+                                            validation-input-text="{{'Admin.Js.Triggers.EditTrigger.EmailForError'|translate}}" />
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.SubjectLetter'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-10">
+                                        <input
+                                            type="text"
+                                            class="form-control input-alt"
+                                            ng-model="action.SendToShippingServiceData.EmailSubject"
+                                            textcomplete
+                                            textcomplete-data="ctrl.SendToShippingServiceVariables"
+                                            required
+                                            validation-input-text="{{'Admin.Js.Triggers.EditTrigger.SubjectLetter'|translate}}" />
+                                    </div>
+                                </div>
+                                <div class="form-group row setting__form-group">
+                                    <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                        {{'Admin.Js.Triggers.EditTrigger.TextLetter'|translate}}
+                                    </div>
+                                    <div class="col-xs-12 col-md-10 relative">
+                                        <div ng-if="action.showCkeditor != false">
+                                            <textarea
+                                                ckeditor="{height: 350}"
+                                                class="form-control wysiwyg input-alt"
+                                                ng-model="action.SendToShippingServiceData.EmailBody"
+                                                rows="5"
+                                                ckeditor-autocomplete-plugin
+                                                ckeditor-autocomplete-plugin-data="ctrl.SendToShippingServiceVariables"
+                                                required
+                                                validation-input-text="{{'Admin.Js.Triggers.EditTrigger.TextLetter'|translate}}"></textarea>
+                                        </div>
+                                        <div
+                                            class="help-block"
+                                            ng-class="{'fs-xs m-t-xs' : isMobile.value}"
+                                            ng-if="ctrl.SendToShippingServiceVariables">
+                                            <span ng-repeat="item in ctrl.SendToShippingServiceVariables track by $index">
+                                                {{$index != 0 ? ', ' : ''}}<span class="letter-format-key" ng-bind="item"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="form-group row setting__form-group"
+                        ng-if="ctrl.mode == 'edit' && !action.IsNew && (action.ActionType == 1 || action.ActionType == 2 || action.ActionType == 7)">
+                        <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                            {{'Admin.Js.Triggers.EditTrigger.CouponGeneration'|translate}}
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <span ng-repeat="coupon in action.Coupons" class="p-r-sm">
+                                <ui-modal-trigger
+                                    data-controller="'ModalAddEditCouponCtrl'"
+                                    controller-as="ctrl"
+                                    size="middle"
+                                    template-url="../areas/admin/content/src/coupons/modal/addEditCoupon/addEditCoupon.html"
+                                    data-resolve="{'CouponId': coupon.CouponID}"
+                                    data-on-close="ctrl.reloadCoupons(action)">
+                                    <a href="" class="">{{'Admin.Js.Triggers.EditTrigger.CouponTemplate'|translate}}</a>
+                                </ui-modal-trigger>
+                                <a
+                                    ng-click="ctrl.deleteCoupon(coupon, action)"
+                                    href=""
+                                    class="link-invert link-decoration-none fas fa-times categories-block-icon"></a>
+                            </span>
+
+                            <ui-modal-trigger
+                                ng-if="action.Coupons == null || action.Coupons.length == 0"
+                                data-controller="'ModalAddEditCouponCtrl'"
+                                controller-as="ctrl"
+                                size="middle"
+                                template-url="../areas/admin/content/src/coupons/modal/addEditCoupon/addEditCoupon.html"
+                                data-resolve="{'triggerActionId': action.Id, couponMode: 1}"
+                                data-on-close="ctrl.reloadCoupons(action)">
+                                <a href="">{{'Admin.Js.Triggers.EditTrigger.AddCouponTemplate'|translate}}</a>
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+
+                    <div class="ng-cloak" ng-show="ctrl.processType == 'none'">
+                        <div class="form-group row setting__form-group">
+                            <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                {{'Admin.Js.Triggers.EditTrigger.ResponseTime'|translate}}
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <label class="adv-checkbox-label" ng-class="{'flex middle-xs' : isMobile.value}">
+                                    <input
+                                        ng-model="action.hideDelay"
+                                        ng-change="action.TimeDelay = action.hideDelay ? null : (action.TimeDelay || {'Interval':1,'IntervalType':2})"
+                                        type="checkbox"
+                                        class="adv-checkbox-input control-checkbox"
+                                        data-e2e="TriggerTimeDelay" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span ng-class="{'flex-grow m-l-sm setting__label' : isMobile.value}"
+                                        >{{'Admin.Js.Triggers.EditTrigger.Straightaway'|translate}}</span
+                                    >
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" ng-if="!action.hideDelay">
+                            <div class="col-xs-12 col-md-2" ng-class="{'setting-label-wrap setting__label' : isMobile.value}">
+                                {{'Admin.Js.Triggers.EditTrigger.Delay'|translate}}
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <input type="number" class="form-control input-alt" ng-model="action.TimeDelay.Interval" />
+                            </div>
+                            <div class="col-xs-12 col-md-4" ng-class="{'m-t-sm' : isMobile.value}">
+                                <select
+                                    ng-model="action.TimeDelay.IntervalType"
+                                    convert-to-number
+                                    ng-options="s.value as s.label for s in ctrl.intervalTypes"
+                                    class="form-control input-alt"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

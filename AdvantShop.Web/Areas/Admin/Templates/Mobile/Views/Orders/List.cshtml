@@ -1,0 +1,100 @@
+﻿@using AdvantShop.Core.Common.Extensions
+@using AdvantShop.Web.Admin.Models.Orders
+@model AdvantShop.Web.Admin.ViewModels.Orders.OrdersViewModel
+
+@{
+    Html.AddAsset("orders");
+}
+
+<article class="orders-page">
+    @Html.Header(new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel()
+{
+    Title = T("Admin.Orders.Index.Title").ToString(),
+    Controls = new List<IButton>()
+    {
+        new ButtonModel()
+        {
+            ColorType = eColorType.Secondary,
+            Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+            Link = Url.AbsoluteActionUrl("Add"),
+            Icon =  new ButtonIcon()
+            {
+                SvgName = "plus-alt",
+                Attributes = new { width=16, height=16 }
+            }
+        }
+    }
+})
+
+    <ul class="orders-page__chips-list chips-list">
+        @foreach (OrdersPreFilterType item in Enum.GetValues(typeof(OrdersPreFilterType)))
+        {
+            <li class="chips-list__item" @Html.Raw(Model.PreFilter == item ? "scroll-into-view=\"true\"" : "")>
+                <a href="@(Url.AbsoluteActionUrl("Index") + (item !=OrdersPreFilterType.None ? "?filterBy=" + item.ToString().ToLower() : "" ))" class="chip @(Model.PreFilter == item ? "chip--active" : "" )">
+                    @item.Localize()
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div ng-init="orders.init(@Model.EnableMangers.ToLowerString())"
+         class="orders-page__grid-wrap">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-row-identificator="'OrderId'"
+                        grid-on-init="orders.gridOnInit(grid)"
+                        grid-options="orders.gridOptions"
+                        grid-params="{filterBy: '@Model.PreFilter.ToString().ToLower()'}"
+                        grid-url="'orders/getorders'"
+                        grid-filter-enabled="true"
+                        grid-selection-enabled="true"
+                        grid-swipe-line="true"
+                        grid-filter-hidden-total-items-count="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <a ng-href="orders/edit/{{row.entity.OrderId}}" class="card card--gap-row-sm">
+                    <div class="card__row card__row--flow-column">
+                        <div class="card__col flex flex-wrap g-xs">
+                            <span class="card__text--alt">#<span ng-bind="row.entity.Number"></span></span>
+                            <span class="card__text" ng-style="{'color': '#' + row.entity.Color}" ng-bind="row.entity.StatusName"></span>
+                        </div>
+                        <div class="card__col card__col--end">
+                            <span class="card__text--alt" ng-bind="row.entity.SumFormatted"></span>
+                        </div>
+                    </div>
+                    <div class="card__row">
+                        <div class="card__col">
+                            <span class="card__text" ng-bind="row.entity.BuyerName"></span>
+                        </div>
+                        <div class="card__col card__col--end">
+                            <span class="card__text" ng-style="row.entity.IsPaid ? {'color':'green'} : {'color':'red'}" ng-bind="row.entity.IsPaid ? 'Оплачен' : 'Не оплачен'"></span>
+                        </div>
+                    </div>
+                    <div class="card__row">
+                        <div class="card__col">
+                            <span class="card__text card__text--color-alt" ng-bind="row.entity.City"></span>
+                        </div>
+                        <div class="card__col card__col--end">
+                            <span class="card__text card__text--color-alt" ng-bind="row.entity.OrderDateFormatted"></span>
+                        </div>
+                    </div>
+                    <div ng-if="row.entity.OrderItemsPhoto.length > 0">
+                        <div class="flex flex-nowrap middle-xs m-t-sm">
+                            <div ng-repeat="item in row.entity.OrderItemsPhoto | limitTo:4 track by $index">
+                                <div class="{{item.isGift ? 'card__order-item-certificate' : 'card__order-item-icon'}}">
+                                    <img ng-src="{{item.PhotoPath || '../images/nophoto_xsmall.png'}}" />
+                                </div>
+                            </div>
+                            <div ng-if="row.entity.OrderItems.length > 4">...</div>
+                        </div>
+                    </div>
+                </a>
+            </ui-grid-custom-override-control>
+
+            <ui-grid-custom-footer class="ui-grid-custom-footer--mobile" ng-bind="orders.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+
+    </div>
+</article>

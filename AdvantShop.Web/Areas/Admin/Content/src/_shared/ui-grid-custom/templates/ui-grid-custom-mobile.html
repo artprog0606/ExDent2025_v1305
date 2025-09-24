@@ -1,0 +1,49 @@
+﻿<div
+    ng-switch="grid.appScope.$ctrl.gridSelectionEnabled === true || grid.appScope.$ctrl.gridSwipeLine"
+    ng-click="grid.appScope.$ctrl.gridSelectionEnabled && grid.options.enableFullRowSelection ? grid.appScope.$ctrl.gridApi.selection.toggleRowSelection(row.entity, $event) : null">
+    <div ng-switch-default bind-html-compile="itemTemplate"></div>
+    <div ng-switch-when="true">
+        <!--        product-item product-item&#45;&#45;m-b-md-->
+        <div class="card card--checkbox" ng-if="!grid.appScope.$ctrl.gridSwipeLine">
+            <span class="adv-checkbox-label card__col">
+                <ui-grid-selection-row-header-buttons></ui-grid-selection-row-header-buttons>
+            </span>
+            <span class="card__col">
+                <span bind-html-compile="itemTemplate"></span>
+            </span>
+        </div>
+        <div class="swipe-line-container">
+            <div class="swipe-line ui-grid-custom__swipe-line" ng-if="grid.appScope.$ctrl.gridSwipeLine">
+                <div class="swipe-line__inner" data-swipe-line>
+                    <div
+                        data-swipe-line-left
+                        ng-if="grid.appScope.$ctrl.gridSelectionEnabled"
+                        on-stick-left="grid.appScope.$ctrl.gridApi.selection.selectRow(row.entity)"
+                        on-unstick-left="grid.appScope.$ctrl.gridApi.selection.unSelectRow(row.entity)"
+                        is-sticked="row.isSelected"
+                        class="swipe-line__left">
+                        <div
+                            class="adv-checkbox-label"
+                            ng-click="$event.stopPropagation();grid.appScope.$ctrl.gridApi.selection.toggleRowSelection(row.entity, $event)">
+                            <input class="adv-checkbox-input" name="" ng-model="row.isSelected" type="checkbox" />
+                            <span class="adv-checkbox-emul"></span>
+                        </div>
+                    </div>
+
+                    <div class="swipe-line__content">
+                        <span bind-html-compile="itemTemplate"></span>
+                    </div>
+                    <div
+                        data-swipe-line-right
+                        data-ng-if="grid.appScope.$ctrl.useInSwipeBlock.length > 0"
+                        class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                        <div
+                            data-ng-repeat="item in grid.appScope.$ctrl.useInSwipeBlock track by $index"
+                            data-ng-click-capture="item.onClickSwipeElement($event)"
+                            bind-html-compile="item.cellTemplate"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

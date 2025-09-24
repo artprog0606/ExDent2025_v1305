@@ -1,0 +1,28 @@
+﻿@using AdvantShop.CDN;
+
+@model AdvantShop.ViewModel.Common.FontsViewModel
+
+@{
+    @*if (Model.UseCDNFonts)
+        {
+            <link rel="preconnect" href="@CDNService.GetCDNUrl(eCDN.Fonts)">
+        }*@
+
+    var postfix = Model.UseCDNFonts ? "cdn" : "local";
+    var bundleName = SettingsDesign.Template + (SettingsDesign.IsMobileTemplate ? "_Mobile" : "") + "_" + String.Join("_", Model.FileNameSourceList);
+    var pathList = new List<string>();
+
+    foreach (var fileName in Model.FileNameSourceList)
+    {
+        pathList.Add(String.Format("{0}.{1}.css", fileName, postfix));
+    }
+
+    Html.AddBundles(pathList, bundleName);
+
+    <style>
+        /*fonts css*/
+          @Html.RenderCssBundle(bundleName, inline: true)
+    </style>
+
+}
+

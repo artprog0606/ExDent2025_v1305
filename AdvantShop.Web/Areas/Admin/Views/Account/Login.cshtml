@@ -1,0 +1,40 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Shared.Account.AccountLoginViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Account/_AccountLayout.cshtml";
+}
+
+<form class="admin-login-block__form" role="form" name="form" action="login" method="POST" novalidate>
+
+    <div class="relative" ng-init="error.login = '@Model.Login.DefaultOrEmpty()'">
+        <input @*ng-attr-type="{{error.inputTypeLogin}}"*@ type="text" name="txtLogin" id="txtLogin" class="admin-signin-field auth-field" placeholder="Логин" ng-model="error.login" required @(Model.Login.IsNullOrEmpty() ? "autofocus" : null) />
+
+        @*<a href="" tabindex="-1"  class="showhidepass" ng-click="error.inputTypeLogin = error.inputTypeLogin == 'password' ? 'text' : 'password'">
+                <span class="fa" ng-class="(error.inputTypeLogin == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+            </a>*@
+    </div>
+
+    <div class="relative">
+        <input type="password" ng-attr-type="{{error.inputTypePassword}}" name="txtPassword" id="txtPassword" class="admin-signin-field auth-field auth-field-password" placeholder="Пароль" ng-model="error.password" required @(Model.Login.IsNullOrEmpty() ? null : "autofocus") />
+
+        <a href="" tabindex="-1" class="showhidepass" ng-init="error.inputTypePassword = 'password'" ng-click="error.inputTypePassword = error.inputTypePassword == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(error.inputTypePassword == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+    </div>
+
+
+    @if (Model.ShowCaptcha)
+    {
+        <div class="m-b-md auth-captcha">
+            @Html.Action("Captcha", "Common", new { ngModel = "captcha", area = "" })
+        </div>
+    }
+    <div class="m-b-md m-t-sm text-center">
+        <a href="@Url.AbsoluteActionUrl("ForgotPassword", "Account")" class="forget-link">@T("Admin.Account.Forgot")</a>
+    </div>
+    <div class="row middle-xs">
+        <div class="col-xs-12">
+            <button type="submit" class="btn-auth btn-md">@T("Admin.Account.Enter")</button>
+        </div>
+    </div>
+    <input type="hidden" name="from" value="@Model.From" />
+</form>

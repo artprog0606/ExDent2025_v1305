@@ -1,0 +1,129 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Emailings.EmailingLogViewModel
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (Model.TriggerId.HasValue && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Triggers/_TriggersLayout.cshtml";
+    }
+    else if (Model.TriggerId.HasValue && isMobile)
+    {
+        Layout = "~/Areas/Admin/Views/Store/_StoreLayout.cshtml";
+    }
+    else
+    {
+        Layout = null;
+    }
+
+    Html.AddAsset("emailings");
+}
+
+
+  @if (isMobile)
+  {
+      var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+      headerModel.Controls = new List<IButton>
+  ();
+      headerModel.DefaultTitle = "Таблица рассылки";
+      headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+      {
+         Url = Url.AbsoluteActionUrl("TriggerEmailings", "Emailings", new { id = Model.TriggerId })
+      };
+
+    @Html.Header(headerModel)
+    }
+
+
+
+    @if (!SettingsMail.UseAdvantshopMail)
+    {
+        @Html.Partial("AnalyticsUnavailable")
+    }
+
+    @*<div class="row m-b">
+            <div class="col-xs-12">
+                <div class="breadcrumb--admin">
+                    @for (int i = 0; i < Model.BreadCrumbs.Count; i++)
+                    {
+                        var bc = Model.BreadCrumbs[i];
+                        if (bc.Key.IsNotEmpty())
+                        {
+                            <a class="breadcrumb__item--admin breadcrumb__link--admin" href="@bc.Key">@bc.Value</a>
+                        }
+                        else
+                        {
+                            <span class="breadcrumb__item--admin breadcrumb__item--admin">@bc.Value</span>
+                        }
+                        if (i < Model.BreadCrumbs.Count - 1)
+                        {
+                            <span class="breadcrumb__item--admin breadcrumb__separator--admin">></span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>*@
+<div ng-controller="EmailingLogCtrl as emailingLog">
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        @T("Admin.EmailingLog.Title")
+                    </h1>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="m-b-sm">
+                <div class="m-b-sm">
+                    Письмо: @Model.EmailSubject
+                </div>
+                @if (Model.BackUrl.IsNotEmpty() && !isMobile)
+                {
+                    if (Model.TriggerId.HasValue)
+                    {
+                        <a class="sticky-hidden" href="@Model.BackUrl">@T("Admin.Back")</a>
+                    }
+                    else
+                    {
+                        <a class="sticky-hidden" href="" ng-click="$ctrl.changeView('details', '@Model.EmailingId')">@T("Admin.Back")</a>
+                    }
+                }
+            </div>
+            <ui-grid-custom grid-unique-id="grid"
+                            grid-on-init="emailingLog.gridOnInit(grid)"
+                            grid-options="emailingLog.gridOptions"
+                            grid-url="'emailings/getEmailingLog'"
+                            grid-selection-enabled="false"
+                            grid-search-visible="false"
+                            grid-params="{emailingId:'@Model.EmailingId', @(Model.Statuses.IsNotEmpty() ? "Statuses: '" + Model.Statuses+ "'" : "")}"
+                            grid-extend-ctrl="emailingLog"
+                            grid-swipe-line="true">
+                <ui-grid-custom-override-control class="ng-cloak">
+                    <div class="card card--gap-row-sm card--p-18">
+                        <div>
+                            <div class="m-b-sm">
+                                <div class="m-b-xs setting__label">Email</div>
+                                <div>{{row.entity.Email}}</div>
+                            </div>
+                            <div class="m-b-sm">
+                                <div class="m-b-xs setting__label">Тема письма</div>
+                                <div>{{row.entity.Subject}}</div>
+                            </div>
+                            <div class="flex between-xs middle-xs">
+                                <div>{{row.entity.CreatedFormatted}}</div>
+                                <div>{{row.entity.StatusName}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </ui-grid-custom-override-control>
+                <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="emailingLog.grid.gridOptions.TotalString">
+                </ui-grid-custom-footer>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

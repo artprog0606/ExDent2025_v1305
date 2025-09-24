@@ -1,0 +1,173 @@
+﻿@using AdvantShop.Trial
+@using AdvantShop.Web.Admin.Models.Cms.Menus
+
+@model AdvantShop.Web.Admin.ViewModels.Shared.Common.LeftMenuViewModel
+@{
+    var mySitesChannel = Model.SalesChannelsMenuItems.Find(x => x.Name == T("Core.SalesChannels.SalesChannel.Dashboard").ToString());
+    var isTrial = TrialService.IsTrialEnabled;
+    AdminMenuModel thirdMenuItem = null;
+}
+
+<nav class="main-menu main-menu--box-shadow" data-ng-controller="mainMenuCtrl as mainMenu">
+    <ul class="main-menu__list">
+
+        @for (int i = 0; i < Model.MenuItems.Count(); i++)
+        {
+            var menuCategoryAccessibleToUser = Model.MenuItems[i].Menu.Any(y => y.IsAccessibleToUser());
+
+            //var menuSelected = Model.MenuItems[i].Menu.Find(z => z.Selected);
+
+            if (menuCategoryAccessibleToUser)
+            {
+                if (Model.MenuItems[i].Menu.Count > 0)
+                {
+                    foreach (var rootItem in Model.MenuItems[i].Menu)
+                    {
+
+                        var ngInitAttr = String.Format("data-ng-init=mainMenu.changeActiveMenu('{0}')", Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary));
+                        if (!rootItem.IsAccessibleToUser() || !rootItem.ActiveInSaas)
+                        {
+                            continue;
+                        }
+                        
+                        //делаем 3 элементом меню  покупатели либо модули
+                        if (isTrial && i == 0) 
+                        {
+                            thirdMenuItem = rootItem;
+                            i++;
+                            continue;
+                        }
+                        <li class="main-menu__item"
+                            @(rootItem.Selected ? ngInitAttr : "")
+                            data-ng-class="{'main-menu__item--selected': mainMenu.menuSelected === '@Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary)'}">
+                            <a class="navigation-item navigation-item--main-menu navigation-item--vertical"
+                               data-ng-class="{'navigation-item--selected': mainMenu.menuSelected === '@Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary)'}"
+                               data-ng-click="mainMenu.getContent('@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))')"
+                               @*href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))"*@>
+                                <div class="navigation-item__icon">
+                                    <span class="main-menu__item-icon">@Html.Raw(rootItem.IconContent)</span>
+                                    @if (!string.IsNullOrEmpty(rootItem.StatisticsDataType) && rootItem.ActiveInSaas)
+                                    {
+                                        <span class="main-menu__item-counter">
+                                            <span data-statistics-count data-type="@rootItem.StatisticsDataType" class="main-menu__item-count"
+                                                  data-ng-bind-html="statisticsCount.getValue()"></span>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="navigation-item__text">
+                                    @T(string.IsNullOrEmpty(rootItem.MobileName) ? rootItem.Name : rootItem.MobileName)
+                                </div>
+                            </a>
+                        </li>
+                        
+
+
+                        if (Model.NumberLimitationMenuItem != 0 && i >= (mySitesChannel != null ? Model.NumberLimitationMenuItem - 1 : Model.NumberLimitationMenuItem))
+                        {
+                            break;
+                        }
+
+                        i++;
+                    }
+                }
+            }
+        }
+
+        @if (mySitesChannel != null)
+        {
+
+            var channelUrl = mySitesChannel.MenuUrlAction != null ? Url.AbsoluteActionUrl(mySitesChannel.MenuUrlAction.Action, mySitesChannel.MenuUrlAction.Controller, mySitesChannel.MenuUrlAction.RouteDictionary) : mySitesChannel.Url != null ? mySitesChannel.Url : null;
+            var ngInitAttr = String.Format("data-ng-init=\"mainMenu.menuSelected = '{0}'\"", channelUrl);
+            <li class="main-menu__item"
+                @Html.Raw(mySitesChannel.Selected ? ngInitAttr : "")
+                data-ng-class="{'main-menu__item--selected': mainMenu.menuSelected === '@channelUrl'}">
+                <a class="navigation-item navigation-item--vertical"
+                   data-ng-class="{'navigation-item--selected': mainMenu.menuSelected === '@channelUrl'}"
+                   data-ng-click="mainMenu.getContent('@channelUrl')"
+                   @*href="@(channel.MenuUrlAction != null ? Url.AbsoluteActionUrl(channel.MenuUrlAction.Action, channel.MenuUrlAction.Controller, channel.MenuUrlAction.RouteDictionary)  : channel.Url != null ? channel.Url : null)"*@>
+                    <div class="navigation-item__icon main-menu__item-icon">
+                        @Html.Raw(mySitesChannel.MenuIcon)
+                    </div>
+                    <div class="navigation-item__text">
+                        @T(string.IsNullOrEmpty(mySitesChannel.MobileName) ? mySitesChannel.Name : mySitesChannel.MobileName)
+                    </div>
+
+                    @if (mySitesChannel.ChildMenuRoute != null)
+                    {
+
+                        if (mySitesChannel.ChildMenuRoute.Route == null)
+                        {
+                            mySitesChannel.ChildMenuRoute.Route = new Dictionary<string, object>();
+                        }
+
+                        mySitesChannel.ChildMenuRoute.Route.Add("IsOpen", mySitesChannel.Selected);
+
+                        @Html.Action(mySitesChannel.ChildMenuRoute.Action, mySitesChannel.ChildMenuRoute.Controller, mySitesChannel.ChildMenuRoute.RouteDictionary)
+                    }
+                </a>
+            </li>
+        }
+        
+        @if (thirdMenuItem != null && (thirdMenuItem.IsAccessibleToUser() || thirdMenuItem.ActiveInSaas))
+        {
+            var ngInitAttr = String.Format("data-ng-init=mainMenu.changeActiveMenu('{0}')", Url.AbsoluteActionUrl(thirdMenuItem.Action, thirdMenuItem.Controller, thirdMenuItem.RouteDictionary));
+
+            <li class="main-menu__item"
+                @(thirdMenuItem.Selected ? ngInitAttr : "")
+                @{
+                    if (string.IsNullOrEmpty(thirdMenuItem.MobileName))
+                    {
+                        if (thirdMenuItem.Name == "Мобильное приложение")
+                        {
+                            thirdMenuItem.Name = "Приложение";
+                        }
+                        if (thirdMenuItem.Name == "Яндекс.Маркет Pro")
+                        {
+                            thirdMenuItem.Name = "Яндекс.Маркет";
+                        }
+                    }
+                }
+                data-ng-class="{'main-menu__item--selected': mainMenu.menuSelected === '@Url.AbsoluteActionUrl(thirdMenuItem.Action, thirdMenuItem.Controller, thirdMenuItem.RouteDictionary)'}">
+                <a class="navigation-item navigation-item--main-menu navigation-item--vertical"
+                   data-ng-class="{'navigation-item--selected': mainMenu.menuSelected === '@Url.AbsoluteActionUrl(thirdMenuItem.Action, thirdMenuItem.Controller, thirdMenuItem.RouteDictionary)'}"
+                   data-ng-click="mainMenu.getContent('@(thirdMenuItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(thirdMenuItem.Action, thirdMenuItem.Controller, thirdMenuItem.RouteDictionary))')"
+                   @*href="@(rootItem.IsEmptyUrl() ? "#" : Url.AbsoluteActionUrl(rootItem.Action, rootItem.Controller, rootItem.RouteDictionary))"*@>
+                    <div class="navigation-item__icon main-menu__item-icon">
+                        @Html.Raw(thirdMenuItem.IconContent)
+                        @if (!string.IsNullOrEmpty(thirdMenuItem.StatisticsDataType) && thirdMenuItem.ActiveInSaas)
+                        {
+                            <span class="main-menu__item-counter">
+                                <span data-statistics-count data-type="@thirdMenuItem.StatisticsDataType" class="main-menu__item-count"
+                                      data-ng-bind-html="statisticsCount.getValue()"></span>
+                            </span>
+                        }
+                    </div>
+                    <div class="navigation-item__text">
+                        @T(string.IsNullOrEmpty(thirdMenuItem.MobileName) ? thirdMenuItem.Name : thirdMenuItem.MobileName)
+                    </div>
+                </a>
+            </li>
+        }
+        
+        <li class="main-menu__item main-menu__item-more-btn">
+            <button type="button"
+                    data-ng-class="{'active':  mainMenu.menuSelected === 'openSidebarMenu'}"
+                    data-ng-click="mainMenu.toggleMenu()"
+                    class="main-menu__more-btn btn-more">
+                <div class="btn-more__icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                              fill="currentColor" />
+                        <path d="M12 20C13.1046 20 14 19.1046 14 18C14 16.8954 13.1046 16 12 16C10.8954 16 10 16.8954 10 18C10 19.1046 10.8954 20 12 20Z"
+                              fill="currentColor" />
+                        <path d="M12 8C13.1046 8 14 7.10457 14 6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6C10 7.10457 10.8954 8 12 8Z"
+                              fill="currentColor" />
+                    </svg>
+                </div>
+                <div class="btn-more__text">
+                    @T("Admin.Home.Menu.Mobile.More")
+                </div>
+            </button>
+        </li>
+    </ul>
+</nav>

@@ -1,0 +1,59 @@
+﻿@model AdvantShop.Web.Admin.Models.Customers.CustomerViewModel
+@{
+    var card = Model.BonusCard;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+<div class="ibox bonus-card-client">
+    <div class="ibox-content">
+        <div class="@(isMobile && card != null ? "" : "align-items-baseline  m-n customer-data__item")" style="padding-bottom:0;">
+            <h3 class="category-title @(isMobile ? "view-partner__title" : "bonus-card-client__title")">@T("Admin.Customers.ViewBonusCard.BonusCard")</h3>
+             @if (isMobile && card == null)
+             {
+                <ui-modal-trigger data-controller="'ModalAddCardCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                                  template-url="@Html.GetAssetPath("addcard.html")"
+                                  data-resolve="{params:{customerId:'@Model.Customer.Id', firstName:'@Model.Customer.FirstName', lastName:'@Model.Customer.LastName', isMobile: @isMobile.ToLowerString()}}">
+                    <a data-e2e="AddCard" href="">
+                        @T("Admin.Cards.Index.AddCard")
+                    </a>
+                </ui-modal-trigger>
+            }
+        </div>
+
+        @if (card != null)
+        {
+
+                <div class="row">
+                    <div data-e2e="NumberBonusCart" class="col-xs-12 col-md-12 bonus-card-client__row m-b-xs">
+                        <span class="bonus-card-client__text bonus-card-client__text--alt">@T("Admin.Customers.ViewBonusCard.CardNumber")</span>
+                        <span>
+                            <a href="@Url.AbsoluteActionUrl("Edit", "Cards", new {id = card.CardId})">@card.CardNumber</a>
+                            @if (card.Blocked)
+                            {
+                                <span data-e2e="IsBlocked" class="link-danger bonus-card-client__blocked-text">@T("Admin.Customers.ViewBonusCard.CardIsBlocked")</span>
+                            }
+                        </span>
+                    </div>
+                    <div data-e2e="GradeCart" class="col-xs-12 col-md-12 bonus-card-client__row m-b-xs">
+                        <span class="bonus-card-client__text bonus-card-client__text--alt">@T("Admin.Customers.ViewBonusCard.Grade")</span>
+                        <span>@card.Grade.Name @(card.Grade.BonusPercent.ToInvatiant())%</span>
+                    </div>
+                    <div data-e2e="BalanceCart" class="col-xs-12 col-md-12 bonus-card-client__row m-b-xs">
+                        <span class="bonus-card-client__text bonus-card-client__text--alt">@T("Admin.Customers.ViewBonusCard.Balance")</span>
+                        <span>@card.BonusesTotalAmount.ToInvatiant()</span>
+                    </div>
+                </div>
+
+        }
+        else if(!isMobile)
+        {
+            <ui-modal-trigger data-controller="'ModalAddCardCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                              template-url="@Html.GetAssetPath("addcard.html")"
+                              data-resolve="{params:{customerId:'@Model.Customer.Id', firstName:'@Model.Customer.FirstName', lastName:'@Model.Customer.LastName'}}">
+                <a data-e2e="AddCard" class="btn btn-sm btn-success btn--margin-left" href="">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.Cards.Index.AddCard")
+                </a>
+            </ui-modal-trigger>
+        }
+    </div>
+</div>

@@ -1,0 +1,52 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div ng-controller="UnitsCtrl as units" ng-init="@(isMobile ? "settingsCatalog.addChildCtrl('units', units)" : "")">
+    <div class="sticky-page-name @(isMobile ? "" : "m-t-n-xs")" sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main flex middle-xs setting--flex-column @(isMobile ? "m-b" : "")">
+                @if (!isMobile)
+                {
+                    <h2 class="sticky-page-name-text m-t-none setting--align-top setting__subtitle">
+                        @T("Admin.Units.Index.Title")
+                    </h2>
+                }
+            </div>
+            @if (!isMobile)
+            {
+                <div class="page-name-block-item-additional">
+                    <ui-modal-trigger data-controller="'ModalAddEditUnitCtrl'" controller-as="ctrl"
+                                      template-url="@Html.GetAssetPath("addEditUnit.html")"
+                                      data-on-close="units.grid.fetchData()">
+                        <button class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span>
+                            @T("Admin.Units.Index.AddUnit")
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            }
+            </div>
+    </div>
+
+    <div class="">
+        <ui-grid-custom grid-unique-id="gridUnits"
+                        grid-on-init="units.gridOnInit(grid)"
+                        grid-options="units.gridOptions"
+                        grid-url="'units/getunits'"
+                        grid-inplace-url="'units/inplaceunit'"
+                        grid-extend-ctrl="units"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-header-control>
+                <span class="ui-grid-custom-override-header__cell">@T("Admin.Js.Units.Name")</span>
+                <span class="ui-grid-custom-override-header__cell">@T("Admin.Js.Units.UsedForProducts")</span>
+            </ui-grid-custom-override-header-control>
+            <ui-grid-custom-override-control class="ng-cloak">
+                @Html.Partial("../../Templates/Mobile/Views/SettingsCatalog/UnitsGridItemInSettingCatalog")
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="units.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+</div>

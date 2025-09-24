@@ -1,0 +1,270 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Settings.SEOSettingsModel
+@{
+    Layout = "~/Areas/Admin/Views/Settings/_SettingsLayout.cshtml";
+    var isAdminv3 = AdminAreaTemplate.Current == "adminv3";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsSeo");
+}
+
+@using (Html.BeginAbsoluteUrlForm("Index", "SettingsSeo", FormMethod.Post, new { enctype = "multipart/form-data", name = "form", novalidate = "novalidate" }))
+{
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.DefaultTitle = T("Admin.Settings.Commonpage.Seo").ToString();
+    headerModel.ShowOnlySticky = true;
+
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Settings.IndexSettings").ToString(),
+        Url = Url.AbsoluteActionUrl("Index", "Settings"),
+        NgBackTriggerCallback = "settingsSeo.onSelectTab(null)"
+    };
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex == 'seoParams'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" , "data-e2e=\"settingsSeoSave\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex == 'seoRobotTxt'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"", "data-e2e=\"settingsSeoSave\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex == 'seoGA'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"", "data-e2e=\"settingsSeoSave\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex == 'seoOpenGraph'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"", "data-e2e=\"settingsSeoSave\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+    headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                    },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex == 'seo404'\"", "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"", "data-e2e=\"settingsSeoSave\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+
+
+    headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.OnlyIcon
+            },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Add,
+                // Attributes = new[] { "ng-if=\"settingsSeo.tabActiveIndex === 'seo301'\"" },
+                WrapStart = " <ui-modal-trigger ng-if=\"settingsSeo.tabActiveIndex === 'seo301'\" data-controller=\"'ModalAddEdit301RedCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/addEdit301Red/addEdit301Red.html\" data-on-close=\"settingsSeo.grid301Red.fetchData()\">",
+                WrapEnd = "</ui-modal-trigger>",
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "plus-alt",
+                    Attributes = new { width = 16, height = 16 },
+                }
+            }
+      );
+
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Attributes = new string[] { "ng-if = \"settingsSeo.tabActiveIndex === 'seo301'\"" };
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "document-export",
+            Attributes = new { width = 24, height = 24 }
+        },
+        Text = T("Admin.Settings.System.301Redirects.Export"),
+        Attributes = new string[] { "data-e2e=\"ExportCards\"" , "ng-click=\"settingsSeo.startExport301Red()\""}
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+            {
+                eButtonModificators.HorizontalPaddingZero
+            },
+        Icon = new ButtonIcon()
+        {
+            SvgName = "import",
+            Attributes = new { width = 22, height = 22 }
+        },
+        Text = T("Admin.Settings.System.301Redirects.Import"),
+        WrapStart = " <ui-modal-trigger data-controller=\"'ModalImport301RedCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/settings/modal/import301Red/import301Red.html\" data-on-close=\"settingsSeo.grid301Red.fetchData()\">",
+        WrapEnd = "</ui-modal-trigger>",
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+
+    if (!isMobile)
+    {
+        <div class="sticky-page-name p-n m-n" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner header-hidden">
+                <div class="page-name-block-item-main">
+                    <h1 class="page-name-block-text sticky-page-name-text">
+                        <span class="float-header-page" ng-bind="app.getTitle()"></span>
+                    </h1>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" />
+                </div>
+            </div>
+        </div>
+    }
+
+    if (isAdminv3 && !isMobile)
+    {
+        @Html.Back(T("Admin.Settings.Commonpage.Seo.Settings").ToString(), Url.AbsoluteActionUrl("Index", "Settings"))
+        <div class="row middle-xs settings-details__header" style="padding:0;margin-bottom:12px;">
+            <div class="col-xs-6">
+                <h1 class="page-name-block-text"> @T("Admin.Settings.Commonpage.Seo")</h1>
+
+            </div>
+            <div class="col-xs-6">
+                <div class="text-right">
+                    <input type="submit" class="btn btn-sm btn-success" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="settingsSeoSave" />
+                </div>
+            </div>
+
+        </div>
+    }
+
+    @Html.AntiForgeryToken()
+
+    <uib-tabset uid="seoTab"
+                on-select-batch="settingsSeo.onSelectTab(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab index="'seoParams'" classes="ng-tab" heading="@T("Admin.Settings.SEO.SEOSettings")">
+            <uib-tab-heading ng-class="{'tab-warning' : seoParamsForm.$invalid}">
+                @T("Admin.Settings.SEO.SEOSettings")
+                <span ng-if="seoParamsForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!seoParamsForm.$invalid && seoParamsForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="seoParamsForm" validation-tab-index="'seoParams'">
+                @Html.Partial("_SEOSettings", Model)
+            </ng-form>
+        </uib-tab>
+        <uib-tab index="'seoRobotTxt'" classes="ng-tab" heading="@T("Admin.Settings.SEO.RobotsTxt")">
+            <uib-tab-heading ng-class="{'tab-warning' : seoRobotTxtForm.$invalid}">
+                @T("Admin.Settings.SEO.RobotsTxt")
+                <span ng-if="seoRobotTxtForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!seoRobotTxtForm.$invalid && seoRobotTxtForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="seoRobotTxtForm" validation-tab-index="'seoRobotTxt'">
+                @Html.Partial("_RobotsTxt", Model)
+            </ng-form>
+        </uib-tab>
+        <uib-tab index="'seoGA'" classes="ng-tab" heading="@T("Admin.Settings.SEO.GoogleAnalytics")">
+            <uib-tab-heading ng-class="{'tab-warning' : seoGAForm.$invalid}">
+                @T("Admin.Settings.SEO.GoogleAnalytics")
+                <span ng-if="seoGAForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!seoGAForm.$invalid && seoGAForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="seoGAForm" validation-tab-index="'seoGA'">
+                @Html.Partial("_GoogleAnalytics", Model)
+            </ng-form>
+        </uib-tab>
+        <uib-tab index="'seoOpenGraph'" classes="ng-tab" heading="@T("Admin.Settings.SEO.OpenGraph")">
+            <uib-tab-heading ng-class="{'tab-warning' : seoOpenGraphForm.$invalid}">
+                @T("Admin.Settings.SEO.OpenGraph")
+                <span ng-if="seoOpenGraphForm.$invalid" class="fa fa-exclamation-triangle tab-warning-icon"></span>
+                <span ng-if="!seoOpenGraphForm.$invalid && seoOpenGraphForm.modified" class="fa fa-floppy-o tab-warning-icon"></span>
+            </uib-tab-heading>
+            <ng-form name="seoOpenGraphForm" validation-tab-index="'seoOpenGraph'">
+                @Html.Partial("_OpenGraph", Model)
+            </ng-form>
+        </uib-tab>
+        <uib-tab index="'seo301'" heading="@T("Admin.Settings.System.301Redirects")" classes="ng-tab" removable="true">
+            @Html.Partial("_301Redirects", Model)
+        </uib-tab>
+        <uib-tab index="'seo404'" heading="@T("Admin.Settings.System.Error404")" classes="ng-tab" removable="true">
+            @Html.Partial("_Error404", Model)
+        </uib-tab>
+        @if (!isAdminv3)
+        {
+            <div class="js-not-tabs">
+                <input type="submit" class="btn btn-sm btn-success btn--margin-left" value="@T("Admin.Settings.Save")" data-button-validation disabled ng-disabled="!form.modified" data-e2e="settingsSeoSave" />
+            </div>
+        }
+    </uib-tabset>
+}

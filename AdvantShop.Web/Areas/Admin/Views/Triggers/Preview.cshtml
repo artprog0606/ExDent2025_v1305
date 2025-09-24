@@ -1,0 +1,75 @@
+﻿@{
+    Html.AddAsset("triggers");
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+    headerModel.Controls = new List<IButton>();
+    headerModel.DefaultTitle = "Триггерный маркетинг";
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+        Attributes = new[] { "ng-click=\"triggers.deleteTriggers()\"" },
+        Text = T("Отключить канал"),
+        Icon = new ButtonIcon()
+        {
+            SvgName = "on",
+            Attributes = new { width = 24, height = 24 }
+        }
+    });
+
+    headerModel.Controls.Add(moreButton);
+
+    @Html.Header(headerModel)
+}
+
+
+<div class="@(isMobile ? "" : "flex middle-xs  m-l-lg")" style="@(isMobile ? "" : "height: 100%;")">
+    <div class="row @(isMobile ? "setting--flex-column-reverse" : "")" ">
+        <div class="col-xs-12 col-md-6">
+            <h1 class="bold">
+                Триггерный маркетинг
+            </h1>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">
+                Автоматически отправляйте e-mail и SMS-рассылки
+            </div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">
+                Настройте автоматическую отправку e-mail-писем и SMS вашим клиентам в нужное время. Такими рассылками вы можете: стимулировать посетителя купить ваш товар; предлагать дополнительные товары после заказа; возвращать покупателей в магазин за новыми покупками.
+            </div>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">Настраивайте различные события (триггеры) в системе</div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">
+                Отправляйте письма или целые цепочки при поступлении нового заказа/лида, смены статуса заказа/лида, оплаты, доставки, наступлении какой-либо даты (например, день рождения клиента).
+            </div>
+
+            <div class="m-t m-b-xs bold-title bold f-s-18 @(isMobile ? "m-b" : "")">Анализируйте и улучшайте рассылки</div>
+            <div style="@(isMobile ? "opacity:0.7" : "")">
+                Смотрите подробные отчеты открываемости и кликабельности писем, оптимизируйте рассылки и получайте высокие показатели открытий, переходов, тем самым увеличивая конверсию.
+            </div>
+
+            <div class="m-t-lg @(isMobile ? "m-b-lg" : "")">
+                <ui-modal-trigger data-controller="'ModalAddTriggerCtrl'" controller-as="ctrl" template-url="@Html.GetAssetPath("addTrigger.html")">
+                    <button class="btn btn-md btn-success" type="button" ng-disabled="false" data-e2e="TriggerAddModal">
+                        Подключить триггерный маркетинг
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <img src="../Areas/admin/Content/src/_shared/modal/salesChannels/images/trig-voronka.png">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,326 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SettingsMail.MailSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div data-ng-controller="SettingsSmsCtrl as settingsSms">
+    @if (!isMobile)
+    {
+        <div class="setting-title m-t-none">
+            <h3 class="font-bold">@T("Admin.Settings.NotifyEMails.SMSNotifications")</h3>
+        </div>
+    }
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.ActiveSmsModule, T("Admin.Settings.NotifyEMails.SMSNotifications.ConnectedSMSModule"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 relative">
+            @Html.DropDownListFor(x => x.ActiveSmsModule, Model.SmsModules, new { @class = "form-control input-alt", ng_model = "settingsSms.activeSmsModule" })
+            <div class="m-t-sm">
+                <a class="link-decoration-none" href="@Url.AbsoluteActionUrl("Market", "Modules", new {name = "sms"})" target="_blank">@T("Admin.Settings.NotifyEMails.SMSNotifications.FindInstallSMSModule")</a>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="settingsSms.activeSmsModule != null && settingsSms.activeSmsModule != '-1'" class="ng-cloack">
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.AdminPhone, T("Admin.Settings.NotifyEMails.SMSNotifications.AdministratorsPhone"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                @Html.TextBoxFor(x => x.AdminPhone, new { @class = "form-control input-alt", ng_model = "settingsSms.AdminPhone", mask_control = "", mask_control_preset = "phone" })
+                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "col-xs-1" : "")">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.AdministratorsPhoneExample")
+                </help-trigger>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SmsBanLevel, T("Admin.Settings.NotifyEMails.SMSNotifications.SmsBanLevel"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                @Html.DropDownListFor(x => x.SmsBanLevel, Model.SmsBanLevels, new { @class = "form-control input-alt", ng_model = "settingsSms.SmsBanLevel" })
+                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "col-xs-1" : "")">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.SmsBanLevelHint")
+                </help-trigger>
+            </div>
+        </div>
+        
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.Settings.NotifyEMails.SMSNotifications.OrderNotifications")</h3>
+        </div>
+
+        <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SendSmsToCustomerOnNewOrder, T("Admin.Settings.NotifyEMails.SMSNotifications.SendOrderNotifications"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                <div>
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.SendSmsToCustomerOnNewOrder, new { @class = "adv-checkbox-input", ng_model = "settingsSms.SendSmsToCustomerOnNewOrder" })
+                        <span class="adv-checkbox-emul"></span>
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.ToUser")
+                    </label>
+                </div>
+                <div class="@(isMobile ? "m-l-sm" : "")">
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.SendSmsToAdminOnNewOrder, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.SendSmsToAdminOnNewOrder" })
+                        <span class="adv-checkbox-emul"></span>
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.ToAdmin")
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SmsTextOnNewOrder, T("Admin.Settings.NotifyEMails.SMSNotifications.SMSText"))
+                </div>
+                <div class="setting-label-wrap setting__label">
+                    <count-sms sms-text="settingsSms.SmsTextOnNewOrder"></count-sms>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative">
+                @Html.TextAreaFor(x => x.SmsTextOnNewOrder, new { @class = "form-control input-alt", ng_model = "settingsSms.SmsTextOnNewOrder" })
+            </div>
+        </div>
+
+        <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SendSmsToCustomerOnNewOrder, T("Admin.Settings.NotifyEMails.SMSNotifications.NotificationsStatusChanges"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                <div>
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.SendSmsToCustomerOnOrderStatusChanging, new { @class = "adv-checkbox-input", ng_model = "settingsSms.SendSmsToCustomerOnOrderStatusChanging" })
+                        <span class="adv-checkbox-emul"></span>
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.ToUser")
+                    </label>
+                </div>
+                <div class="@(isMobile ? "m-l-sm" : "")">
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.SendSmsToAdminOnOrderStatusChanging, new { @class = "adv-checkbox-input", ng_model = "settingsSms.SendSmsToAdminOnOrderStatusChanging" })
+                        <span class="adv-checkbox-emul"></span>
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.ToAdmin")
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.SMSTemplatesStatusChanges")
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-9 relative">
+                <ui-grid-custom grid-unique-id="gridSmsTemplates"
+                                grid-row-identificator="'Id'"
+                                grid-on-init="settingsSms.gridOnInit(grid)"
+                                grid-options="settingsSms.gridOptions"
+                                grid-url="'settingsSms/getList'"
+                                grid-inplace-url="'settingsSms/inplace'"
+                                grid-extend-ctrl="settingsSms"
+                                grid-swipe-line="true">
+                    <ui-grid-custom-override-control class="ng-cloak">
+                        <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+                            <div class="flex between-xs center-xs">
+                                <div class="flex-grow card__col m-r-xs card--p-18">
+                                    <ui-modal-trigger data-controller="'ModalAddEditSmsTemplateOnOrderChangingCtrl'" controller-as="ctrl" size="lg"
+                                                      template-url="@Html.GetAssetPath("addEditSmsTemplateOnOrderChanging.html")"
+                                                      data-resolve="{value:{'id': row.entity.Id }}"
+                                                      data-on-close="grid.appScope.$ctrl.fetchData()">
+                                        <div class="">
+                                            <div class=""><div class="setting__label">@T("Admin.Settings.NotifyEMails.SMSNotifications.OrderStatus"): </div>{{row.entity.OrderStatusName}}</div>
+                                            <div class="m-t-xs"><div class="setting__label">@T("Admin.Settings.NotifyEMails.SMSNotifications.SMSText"): </div><span style="word-break:break-all;">{{row.entity.SmsText}}</span></div>
+                                        </div>
+                                    </ui-modal-trigger>
+                                </div>
+                                <div class="card__col card__col--end setting--align-center card--p-18">
+                                    <ui-grid-custom-switch row="row" field-name="Enabled" class="js-grid-not-clicked"></ui-grid-custom-switch>
+                                </div>
+                            </div>
+                        </div>
+                    </ui-grid-custom-override-control>
+                </ui-grid-custom>
+
+                <div>
+                    <ui-modal-trigger data-controller="'ModalAddEditSmsTemplateOnOrderChangingCtrl'" controller-as="ctrl" size="lg"
+                                      template-url="@Html.GetAssetPath("addEditSmsTemplateOnOrderChanging.html")"
+                                      data-on-close="settingsSms.grid.fetchData()">
+                        <a href="" class="btn btn-sm btn-success" data-e2e="btnAdd">
+                            @T("Admin.Settings.NotifyEMails.SMSNotifications.AddTemplate")
+                        </a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+
+    <div class="form-group row m-t-lg setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.SendSmsToCustomerOnOrderPayStatusChanging, "Отправлять уведомления при смене статуса оплаты заказа")
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+            <div>
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.SendSmsToCustomerOnOrderPayStatusChanging, new { @class = "adv-checkbox-input", ng_model = "settingsSms.SendSmsToCustomerOnOrderPayStatusChanging" })
+                    <span class="adv-checkbox-emul"></span>
+                    Пользователю
+                </label>
+            </div>
+            <div class="@(isMobile ? "m-l-sm" : "")">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.SendSmsToAdminOnOrderPayStatusChanging, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.SendSmsToAdminOnOrderPayStatusChanging" })
+                    <span class="adv-checkbox-emul"></span>
+                    Администратору
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.SmsTextOnOrderPayStatusChanging, "Текст sms")
+            </div>
+            <div class="setting-label-wrap setting__label">
+                <count-sms sms-text="settingsSms.SmsTextOnOrderPayStatusChanging"></count-sms>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 relative">
+            @Html.TextAreaFor(x => x.SmsTextOnOrderPayStatusChanging, new { @class = "form-control input-alt", ng_model = "settingsSms.SmsTextOnOrderPayStatusChanging" })
+        </div>
+    </div>
+    
+    <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.SMSVariables")<br />
+                    (@T("Admin.Settings.NotifyEMails.SMSNotifications.SMSNumber"))
+                </div>
+            </div>
+            <div class="col-xs relative setting--grid-span-grey">
+                @Html.Raw(Model.OrderSmsKeys)
+                @*#FIRST_NAME#, #LAST_NAME#, #FULL_NAME#<br>
+                #ORDER_NUMBER# - Номер заказа<br>
+                #ORDER_SUM# - Сумма заказа<br>
+                #ORDER_STATUS# - Статус заказа<br>
+                #ORDER_STATUS_COMMENT# - Комментарий к статусу заказа<br>
+                #ORDER_PAYMENT_NAME# - Метод оплаты<br>
+                #ORDER_SHIPPING_NAME# - Метод доставки<br>
+                #ORDER_PICKPOINT_ADDRESS# - Пункт выдачи<br>
+                #ORDER_TRACK_NUMBER# - Номер отслеживания заказа<br>
+                #ORDER_PAY_STATUS# - Оплата: @T("Core.Orders.Order.PaySpend"), @T("Core.Orders.Order.PayCancel")<br>
+                #ORDER_IS_PAID# - Заказ @T("Core.Orders.Order.OrderPaid"), @T("Core.Orders.Order.OrderNotPaid")<br>
+                #ORDER_BILLING_SHORTLINK# - Короткая ссылка на оплату*@
+            </div>
+        </div>
+
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.Settings.NotifyEMails.SMSNotifications.LeadNotifications")</h3>
+        </div>
+
+        <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SendSmsToAdminOnNewLead, T("Admin.Settings.NotifyEMails.SMSNotifications.LeadNotificationsSend"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative">
+                @*<div>
+                        <label class="adv-checkbox-label">
+                            @Html.CheckBoxFor(x => x.SendSmsToCustomerOnNewLead, new { @class = "adv-checkbox-input", ng_model = "settingsSms.SendSmsToCustomerOnNewLead" })
+                            <span class="adv-checkbox-emul"></span>
+                            Пользователю
+                        </label>
+                    </div>*@
+                <div>
+                    <label class="adv-checkbox-label">
+                        @Html.CheckBoxFor(x => x.SendSmsToAdminOnNewLead, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.SendSmsToAdminOnNewLead" })
+                        <span class="adv-checkbox-emul"></span>
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.ToAdmin")
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.SmsTextOnNewLead, "Текст sms")
+                </div>
+                <div class="setting-label-wrap setting__label">
+                    <count-sms sms-text="settingsSms.SmsTextOnNewLead"></count-sms>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative">
+                @Html.TextAreaFor(x => x.SmsTextOnNewLead, new { @class = "form-control input-alt", ng_model = "settingsSms.SmsTextOnNewLead" })
+            </div>
+        </div>
+
+        <div class="form-group row m-t-lg setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.SMSVariables")<br />
+                    (@T("Admin.Settings.NotifyEMails.SMSNotifications.SMSNumber"))
+                </div>
+            </div>
+            <div class="col-xs relative setting--grid-span-grey">
+                @Html.Raw(Model.LeadSmsKeys)
+            </div>
+        </div>
+
+        <div class="setting-title">
+            <h3 class="setting__subtitle">@T("Admin.Settings.NotifyEMails.SMSNotifications.TestSMS")</h3>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.Phone")
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3 relative">
+                <input type="text" ng-model="settingsSms.testPhone" class="form-control input-alt" data-mask-control data-mask-control-preset="phone" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @T("Admin.Settings.NotifyEMails.SMSNotifications.SMSText")
+                </div>
+                <div class="setting-label-wrap setting__label">
+                    <count-sms sms-text="settingsSms.testSmsText"></count-sms>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative">
+                <textarea ng-model="settingsSms.testSmsText" class="form-control input-alt"></textarea>
+                <div class="m-t">
+                    <button type="button" class="btn btn-sm btn-success"
+                            ng-click="settingsSms.sendTestSms(settingsSms.testPhone, settingsSms.testSmsText)"
+                            ng-disabled="settingsSms.testPhone == null || settingsSms.testPhone.length == 0 || settingsSms.testSmsText == null || settingsSms.testSmsText.length == 0">
+                        @T("Admin.Settings.NotifyEMails.SMSNotifications.Send")
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

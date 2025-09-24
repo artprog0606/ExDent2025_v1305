@@ -1,0 +1,800 @@
+﻿@using AdvantShop.Design
+@using AdvantShop.Web.Admin.Models.Settings.Templates
+@using AdvantShop.Core.Modules;
+@model AdvantShop.Web.Admin.Models.Settings.Templates.SettingsTemplateModel
+
+@{
+    bool isMobile = SettingsDesign.IsMobileTemplate;
+    var template = SettingsDesign.TemplateInDb.ToString();
+}
+
+@* Дизайн и представление *@
+<div class="setting-title m-t-none">
+    <h3 class="setting__subtitle">@T("Admin.Design.Index.SettingTitle")</h3>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-hide="settingsTemplate.isHidden('Theme')">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <label for="settingsTemplateCurrentTheme" class="setting-label-wrap control-label">
+            @T("Admin.Design.Index.Theme")
+        </label>
+    </div>
+    <div class="col-xs col-md-2 relative">
+        <select class="form-control input-alt-mobile"
+                id="settingsTemplateCurrentTheme"
+                ng-model="settingsTemplate.CurrentTheme"
+                ng-options="item.Title for item in settingsTemplate.designData.Themes"
+                ng-change="settingsTemplate.changeDesign('@eDesign.Theme', settingsTemplate.CurrentTheme.Name)"></select>
+    </div>
+    <div class="col-xs-slim col-md-3 relative">
+        <a href="" class="select-add" accept="application/zip" ngf-drop ngf-max-size="5MB" ngf-select=""
+           ngf-change="settingsTemplate.addDesign($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event, '@eDesign.Theme')">@T("Admin.Design.Index.Add")</a>
+
+        <a href="design/theme?design=@(eDesign.Theme)&theme={{settingsTemplate.CurrentTheme.Name}}"
+           ng-if="settingsTemplate.CurrentTheme.Name !== '_none'"
+           class="select-delete"
+           title="@T("Admin.Design.Index.Edit")">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+        <a href="" class="select-delete"
+           ng-if="settingsTemplate.CurrentTheme.Name !== '_none' && settingsTemplate.CurrentTheme.Custom"
+           ng-click="settingsTemplate.deleteDesign('@eDesign.Theme', settingsTemplate.CurrentTheme.Name)">
+            <i class="fa fa-times"></i>
+        </a>
+        <help-trigger class="ng-cloak m-l-xs m-t-n-xxs m-b-xxs @(isMobile ? "p-l-sm" : "")" use-template="true" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Design.Index.Theme")">
+            <div class="help-content">
+                @Html.Action("FilesHelpTextByFileType", "Common", new { type = AdvantShop.Helpers.EFileType.ZipArchive, maxFileSize = "5MB" })
+                <br />
+                <br />
+                @T("Admin.Design.Index.ThemeHote")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-hide="settingsTemplate.isHidden('Background')">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <label class="setting-label-wrap control-label">
+            @T("Admin.Design.Index.Background")
+        </label>
+    </div>
+    <div class="col-xs col-md-2 relative">
+        <select class="form-control input-alt-mobile"
+                id="settings-template-current-theme"
+                ng-model="settingsTemplate.CurrentBackGround"
+                ng-options="item.Title for item in settingsTemplate.designData.BackGrounds"
+                ng-change="settingsTemplate.changeDesign('@eDesign.Background', settingsTemplate.CurrentBackGround.Name)"></select>
+    </div>
+    <div class="col-xs-slim col-md-3 relative">
+        <a href="" class="select-add" accept="application/zip" ngf-drop ngf-max-size="5MB" ngf-select=""
+           ngf-change="settingsTemplate.addDesign($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event, '@eDesign.Background')">@T("Admin.Design.Index.Add")</a>
+
+        <a href="design/theme?design=@(eDesign.Background)&theme={{settingsTemplate.CurrentBackGround.Name}}"
+           ng-if="settingsTemplate.CurrentBackGround.Name !== '_none'"
+           class="select-delete"
+           title="@T("Admin.Design.Index.Edit")">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+        <a href="" class="select-delete"
+           ng-if="settingsTemplate.CurrentBackGround.Name !== '_none' && settingsTemplate.CurrentBackGround.Custom"
+           ng-click="settingsTemplate.deleteDesign('@eDesign.Background', settingsTemplate.CurrentBackGround.Name)">
+            <i class="fa fa-times"></i>
+        </a>
+        <help-trigger class="ng-cloak m-l-xs m-t-n-xxs m-b-xxs @(isMobile ? "p-l-sm" : "")" use-template="true" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Design.Index.Background")">
+            <div class="help-content">
+                @Html.Action("FilesHelpTextByFileType", "Common", new { type = AdvantShop.Helpers.EFileType.ZipArchive, maxFileSize = "5MB" })
+                <br />
+                <br />
+                @T("Admin.Design.Index.BackgroundHote")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <label for="settingsTemplateColorSchemes" class="setting-label-wrap control-label">
+            @T("Admin.Design.Index.ColorScheme")
+        </label>
+    </div>
+    <div class="col-xs col-md-2 relative">
+        <select class="form-control input-alt-mobile"
+                id="settingsTemplateColorSchemes"
+                ng-model="settingsTemplate.CurrentColorScheme"
+                ng-options="item.Title for item in settingsTemplate.designData.ColorSchemes"
+                ng-change="settingsTemplate.changeDesign('@eDesign.Color', settingsTemplate.CurrentColorScheme.Name)"></select>
+    </div>
+    <div class="col-xs-slim col-md-3 relative">
+        <a href="" class="select-add" accept="application/zip" ngf-drop ngf-max-size="5MB" ngf-select=""
+           ngf-change="settingsTemplate.addDesign($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event, '@eDesign.Color')">@T("Admin.Design.Index.Add")</a>
+
+        <a href="design/theme?design=@(eDesign.Color)&theme={{settingsTemplate.CurrentColorScheme.Name}}"
+           class="select-delete"
+           title="@T("Admin.Design.Index.Edit")">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+
+        <a href="" class="select-delete select-delete--middle-size"
+           ng-if="settingsTemplate.CurrentColorScheme.Name !== '_none' && settingsTemplate.CurrentColorScheme.Custom"
+           ng-click="settingsTemplate.deleteDesign('@eDesign.Color', settingsTemplate.CurrentColorScheme.Name)" title="@T("Admin.Design.Index.Delete")">
+            <i class="fa fa-times"></i>
+        </a>
+        <help-trigger class="ng-cloak m-l-xs m-t-n-xxs m-b-xxs @(isMobile ? "p-l-sm" : "")" use-template="true" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Design.Index.ColorScheme")">
+            <div class="help-content">
+                @Html.Action("FilesHelpTextByFileType", "Common", new { type = AdvantShop.Helpers.EFileType.ZipArchive, maxFileSize = "5MB" })
+                <br />
+                <br />
+                @T("Admin.Design.Index.ColorSchemeHote")
+            </div>
+        </help-trigger>
+    </div>
+</div>
+
+@if (Model.MainPageModeOptions.Count != 0)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateMainPageMode" class="setting-label-wrap control-label">
+                @T("Admin.Settings.Template.MainPageModeTitle")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 flex middle-xs relative">
+            @Html.DropDownListFor(x => x.MainPageMode, Model.MainPageModeOptions, new { id = "settingsTemplateMainPageMode", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.MainPageMode" })
+            <help-trigger class="help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Template.MainPageModeTitle")">
+                <div class="help-content">@T("Admin.Settings.Template.MainPageModeHint")</div>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+@if (Model.MenuStyleOptions.Count != 0)
+{
+    <div class="form-group row setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateMenuStyle" class="setting-label-wrap control-label">
+                @T("Admin.Settings.Template.MenuStyleTitle")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 relative flex middle-xs">
+            @Html.DropDownListFor(x => x.MenuStyle, Model.MenuStyleOptions, new { id = "settingsTemplateMenuStyle", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.MenuStyle" })
+            <help-trigger class="help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" data-title="@T("Admin.Settings.Template.MenuStyleTitle")">
+                <div class="help-content">@T("Admin.Settings.Template.MenuStyleHint")</div>
+            </help-trigger>
+        </div>
+    </div>
+}
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <label for="settingsTemplateTopPanel1" class="setting-label-wrap control-label">
+            @T("Admin.Settings.Template.SearchBlockLocationTitle")
+        </label>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs relative">
+        @Html.DropDownListFor(x => x.SearchBlockLocation, Model.SearchBlockLocationOptions, new { id = "settingsTemplateTopPanel1", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.SearchBlockLocation" })
+        <help-trigger class="help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.Template.SearchBlockLocationTitle")">
+            <div class="help-content">@T("Admin.Settings.Template.SearchBlockLocationHint")</div>
+        </help-trigger>
+    </div>
+</div>
+
+@if (Model.TopPanel != null)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateTopPanel2" class="setting-label-wrap control-label">
+                @T("Admin.Settings.Template.TopPanelTitle")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            @Html.DropDownListFor(x => x.TopPanel, Model.TopPanelOptions, new { id = "settingsTemplateTopPanel1", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.TopPanel" })
+        </div>
+    </div>
+}
+@if (Model.Header != null)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateHeader" class="setting-label-wrap control-label">
+                @T("Admin.Settings.Template.HeaderTitle")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            @Html.DropDownListFor(x => x.Header, Model.HeaderOptions, new { id = "settingsTemplateHeader", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.Header" })
+        </div>
+    </div>
+}
+@if (Model.TopMenu != null)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateTopMenu" class="setting-label-wrap control-label">
+                @T("Admin.Settings.Template.TopMenuTitle")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            @Html.DropDownListFor(x => x.TopMenu, Model.TopMenuOptions, new { id = "settingsTemplateTopMenu", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.TopMenu" })
+        </div>
+    </div>
+
+    <div class="form-group setting__form-group">
+        <div class="row middle-xs control-label">
+            <div class="col-xs col-md-3 col-wl-2">
+                <label class="setting__font-weight--xs" for="settingsTemplateTopMenuVisibility">
+                    @T("Admin.Settings.SystemSettings.HideGeneralMenu")
+                </label>
+            </div>
+            <div class="col-xs-slim col-md-4 relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label">
+                    @Html.CheckBoxFor(x => x.TopMenuVisibility, new { id = "settingsTemplateTopMenuVisibility", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.TopMenuVisibility" })
+                    <span class="adv-checkbox-emul" data-e2e="RecentlyViewVisibility"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.FontStyle != null)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            Шрифт
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <div class="row">
+                <div class="col-xs-6">
+                    @Html.DropDownListFor(x => x.FontStyle, Model.FontStyleOptions, new { id = "settingsTemplateFontStyle", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.FontStyle" })
+                </div>
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(x => x.FontSize, Model.FontSizeOptions, new { id = "settingsTemplateFontSize", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.FontSize" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.TitleStyle != null)
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            Шрифт Заголовков
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <div class="row">
+                <div class="col-xs-6">
+                    @Html.DropDownListFor(x => x.TitleStyle, Model.TitleStyleOptions, new { id = "settingsTemplateTitleStyle", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.TitleStyle" })
+                </div>
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(x => x.TitleSize, Model.TitleSizeOptions, new { id = "settingsTemplateTitleSize", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.TitleSize" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            Стиль Заголовков
+        </div>
+        <div class="col-xs-12 col-md-2 relative">
+            @Html.DropDownListFor(x => x.TitleWeight, Model.TitleWeightOptions, new { id = "settingsTemplateTitleWeight", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.TitleWeight" })
+        </div>
+    </div>
+}
+
+@if (template == "Modern2")
+{
+    <div class="form-group setting__form-group">
+        <div class="row control-label middle-xs">
+            <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+                <label for="settingsTemplateAllowChooseDarkTheme" class="setting__font-weight--xs">
+                    Разрешить пользователям переключать тему
+                </label>
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.AllowChooseDarkTheme, new { id = "settingsTemplateAllowChooseDarkTheme", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.AllowChooseDarkTheme" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="settingsTemplate.AllowChooseDarkTheme" class="form-group setting__form-group">
+        <div class="row control-label middle-xs">
+            <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+                <label for="settingsTemplateUseAnotherForDarkTheme" class="setting__font-weight--xs">
+                    Использовать другой логотип для тёмной темы
+                </label>
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.UseAnotherForDarkTheme, new { id = "settingsTemplateUseAnotherForDarkTheme", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.UseAnotherForDarkTheme" })
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="settingsTemplate.UseAnotherForDarkTheme && settingsTemplate.AllowChooseDarkTheme">
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-2 setting-form-label-wrap__mobile">
+                <div class="setting-label-wrap setting__label">
+                    Логотип на главной странице для тёмной темы
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-9">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class=" @(isMobile ? "":"flex")">
+                            <div class="setting-logo-wrap">
+                                @Html.PictureUploader(AdvantShop.Catalog.PhotoType.DarkThemeLogo, 0, Model.DarkThemeLogoImgSrc, fileTypes: AdvantShop.Helpers.EFileType.Image)
+                            </div>
+                            @if (CustomerContext.CurrentCustomer.CustomerRole == Role.Administrator && !isMobile || Demo.IsDemoEnabled && !isMobile)
+                            {
+                                <div class="flex p-l-md" style="flex-direction:column;">
+                                    <div class="p-b-sm">
+                                        @if (SettingsMain.IsTechDomainsReady)
+                                        {
+                                            @Html.AbsoluteActionLink(T("Admin.Settings.Common.Common.CreateLogo").ToString(), "RedirectWithAuth", "Account", new
+                                            {
+                                                domain = SettingsMain.TechDomainStore,
+                                                path = "?logoGeneratorEditOnPageLoad=true"
+                                            }, new
+                                            {
+                                                @class = "btn btn-md btn-submit",
+                                                target = "_blank"
+                                            })
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-md btn-submit" data-e2e="btnLogo" href="../?logoGeneratorEditOnPageLoad=true" target="_blank">@T("Admin.Settings.Common.Common.CreateLogo")</a>
+                                        }
+                                    </div>
+
+                                    <a href="https://www.advantshop.net/help/pages/logo" target="_blank" class=" link-academy link-invert inline-flex middle-xs">
+                                        <svg version="1.1" viewBox="0 0 512 512" width="18" height="18" fill="#989a9b" class="m-r-xs custom-svg_mobile">
+                                            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                        </svg>
+                                        <span>@T("Admin.Settings.Index.LogoInstruction")</span>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <div class="setting-size-text m-t-xs">
+                            @T("Admin.Settings.Index.LogoImgSizeRecommendations")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="form-group setting__form-group" ng-hide="settingsTemplate.isHidden('LimitedCategoryMenu')">
+    <div class="row middle-xs control-label @(isMobile ? "flex-nowrap" : "")">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-shrink-1" : "")">
+            <label for="settingsTemplateRecentlyViewVisibility" class="setting__font-weight--xs">
+                @T("Admin.Settings.LimitedCategoryMenu")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.LimitedCategoryMenu, new { id = "settingsLimitedCategoryMenu", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.LimitedCategoryMenu" })
+                <span class="adv-checkbox-emul" data-e2e="LimitedCategoryMenu"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.LimitedCategoryMenu")'>
+            @T("Admin.Settings.LimitedCategoryMenuHint")
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group setting__form-group"  ng-hide="settingsTemplate.isHidden('UseAdaptiveRootCategory')">
+    <div class="row middle-xs control-label @(isMobile ? "flex-nowrap" : "")">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-shrink-1" : "")">
+            <label for="settingsTemplateRecentlyViewVisibility" class="setting__font-weight--xs">
+                @T("Admin.Settings.Template.UseAdaptiveRootCategoryTitle")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.UseAdaptiveRootCategory, new { id = "settingsTemplateUseAdaptiveRootCategory", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.UseAdaptiveRootCategory" })
+                <span class="adv-checkbox-emul" data-e2e="UseAdaptiveRootCategory"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.Template.UseAdaptiveRootCategoryTitle")'>
+            @T("Admin.Settings.Template.UseAdaptiveRootCategoryHint")
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Action("OtherSettings", new { section = AdvantShop.Configuration.ETemplateSettingSection.Design, settings = Model.OtherSettingsSections })
+
+@* Отображать блоки *@
+<div class="setting-title setting-title__m-t-md">
+    <h3 class="setting__subtitle">@T("Admin.Settings.Template.Display")</h3>
+</div>
+@* @if (ModulesRepository.IsInstallModule("MobileApp")) *@
+@* { *@
+@*     <div class="form-group setting__form-group"> *@
+@*         <div class="row middle-xs control-label"> *@
+@*             <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")"> *@
+@*                 <label for="settingsTemplateMobileAppBannerVisibility"> *@
+@*                     @T("Admin.Settings.Template.MobileAppBannerVisibilityTitle") *@
+@*                 </label> *@
+@*             </div> *@
+@*             <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")"> *@
+@*                 <label class="adv-checkbox-label flex"> *@
+@*                     @Html.CheckBoxFor(x => x.MobileAppBannerVisibility, new { id = "settingsTemplateMobileAppBannerVisibility", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.MobileAppBannerVisibility" }) *@
+@*                     <span class="adv-checkbox-emul" data-e2e="MobileAppBannerVisibility"></span> *@
+@*                 </label> *@
+@*             </div> *@
+@*             <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.Template.MobileAppBannerVisibilityTitle")'> *@
+@*                 @T("Admin.Settings.Template.MobileAppBannerVisibilityNote") *@
+@*             </help-trigger> *@
+@*         </div> *@
+@*     </div> *@
+@* } *@
+
+<div class="form-group setting__form-group">
+    <div class="row middle-xs control-label">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateRecentlyViewVisibility" class="setting__font-weight--xs">
+                @T("Admin.Settings.Template.RecentlyViewVisibilityTitle")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.RecentlyViewVisibility, new { id = "settingsTemplateRecentlyViewVisibility", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.RecentlyViewVisibility" })
+                <span class="adv-checkbox-emul" data-e2e="RecentlyViewVisibility"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.Template.RecentlyViewVisibilityTitle")'>
+            @T("Admin.Settings.Template.RecentlyViewVisibilityHint")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group setting__form-group">
+    <div class="row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateWishListVisibility" class="setting__font-weight--xs">
+                @T("Admin.Settings.Template.WishListVisibilityTitle")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.WishListVisibility, new { id = "settingsTemplateWishListVisibility", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.WishListVisibility" })
+                <span class="adv-checkbox-emul" data-e2e="WishListVisibility"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.Template.WishListVisibilityTitle")'>
+            @T("Admin.Settings.Template.WishListVisibilityHint")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateIsStoreClosed" class="setting__font-weight--xs">
+                @T("Admin.Settings.SystemSettings.IsStoreClosed")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md  @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.IsStoreClosed, new { id = "settingsTemplateIsStoreClosed", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.IsStoreClosed" })
+                <span data-e2e="IsStoreClosed" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.IsStoreClosed")'>
+            @T("Admin.Settings.SystemSettings.IsStoreClosedNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group setting__form-group">
+    <div class="form-group row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateEnableInplace" class="setting__font-weight--xs">
+                @T("Admin.Settings.SystemSettings.EnableInplace")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.EnableInplace, new { id = "settingsTemplateEnableInplace", @class = "adv-checkbox-input input-alt-mobile", ng_model = "settingsTemplate.EnableInplace" })
+                <span data-e2e="EnableInplace" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.EnableInplace")'>
+            @T("Admin.Settings.SystemSettings.EnableInplaceNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group setting__form-group"  ng-hide="settingsTemplate.isHidden('DisplayToolBarBottom')">
+    <div class="row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateDisplayToolBarBottom" class="setting__font-weight--xs">
+                @T("Admin.Settings.SystemSettings.DisplayToolBarBottom")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.DisplayToolBarBottom, new { id = "settingsTemplateDisplayToolBarBottom", @class = "adv-checkbox-input", ng_model = "settingsTemplate.DisplayToolBarBottom" })
+                <span data-e2e="DisplayToolBarBottom" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.DisplayToolBarBottom")'>
+            @T("Admin.Settings.SystemSettings.DisplayToolBarBottomNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateHideCityInTopPanel" class="setting__font-weight--xs">
+                @T("Admin.Settings.SystemSettings.HideCityInTopPanel")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.HideCityInTopPanel, new { id = "settingsTemplateHideCityInTopPanel", @class = "adv-checkbox-input", ng_model = "settingsTemplate.HideCityInTopPanel" })
+                <span data-e2e="HideCityInTopPanel" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.HideCityInTopPanel")'>
+            @T("Admin.Settings.SystemSettings.HideCityInTopPanelNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row control-label middle-xs">
+        <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? "flex-grow" : "")">
+            <label for="settingsTemplateAutodetectCity" class="setting__font-weight--xs">
+                @T("Admin.Settings.SystemSettings.DisplayCityInTopPanel")
+            </label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.AutodetectCity, new { id = "settingsTemplateAutodetectCity", @class = "adv-checkbox-input", ng_model = "settingsTemplate.AutodetectCity" })
+                <span data-e2e="DisplayCityInTopPanel" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.DisplayCityInTopPanel")'>
+            @T("Admin.Settings.SystemSettings.DisplayCityInTopPanelNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group setting__form-group">
+    <div class="row control-label middle-xs" ng-if="!settingsTemplate.AutodetectCity">
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <label for="settingsTemplateDefaultCityIfNotAutodetect" class="control-label">
+                @T("Admin.Settings.SystemSettings.DefaultCityIfNotAutodetect")
+            </label>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <div class="row">
+                <div class="col-xs-12 flex">
+                    @Html.TextBoxFor(x => x.DefaultCityIfNotAutodetect,
+                        new
+                             {
+                            id = "settingsTemplateDefaultCityIfNotAutodetect",
+                            @class = "form-control input-alt-mobile",
+                            ng_model = "settingsTemplate.DefaultCityIfNotAutodetect",
+                            autocompleter_address = "",
+                            autocompleter_params = "{withId: true}",
+                            validation_input_text = T("Admin.Settings.SystemSettings.DefaultCityIfNotAutodetect"),
+                            on_select = "settingsTemplate.processCity(item)",
+                            ng_blur = "settingsTemplate.changeCityName()",
+                            required = "required"
+                        })
+                    @Html.HiddenFor(x => x.DefaultCityIdIfNotAutodetect,
+                        new
+                             {
+                            id = "settingsTemplateDefaultCityIdIfNotAutodetect",
+                            ng_model = "settingsTemplate.DefaultCityIdIfNotAutodetect",
+                            ng_value = "settingsTemplate.DefaultCityIdIfNotAutodetect",
+                        })
+                </div>
+                <div class="col-xs-12 @(isMobile ? "m-t-sm help-block-wrap" : "")">
+                    <span class="help-block" ng-bind="settingsTemplate.DefaultCityDescription" ng-init="settingsTemplate.DefaultCityDescription = settingsTemplate.DefaultCityDescription || '@Model.DefaultCityDescription'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="setting-title setting-title__m-t-md">
+    <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.Other")</h3>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="control-label">
+            @Html.LabelFor(x => x.AdditionalHeadMetaTag, T("Admin.Settings.SystemSettings.AdditionalHeadMetaTag"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 flex middle-xs relative">
+        @Html.TextBoxFor(x => x.AdditionalHeadMetaTag, new { @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.AdditionalHeadMetaTag" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs p-l-xs @(isMobile ? "m-l-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.AdditionalHeadMetaTag")'>
+            @T("Admin.Settings.SystemSettings.AdditionalHeadMetaTagNote")
+            <br><br>
+            @T("Admin.Settings.SystemSettings.AdditionalHeadMetaTagNoteLink")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info setting__mobile-adv-panel-info adv-panel-info--show">
+            <a data-e2e="AdditionalHeadTag" href="http://www.advantshop.net/help/pages/add-tag-head" target="_blank">
+                @T("Admin.SettingsSystem.SystemCommon.InstructionAdditionalTagInHead")
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="setting-title setting-title__m-t-md">
+    <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.CustomersNotifications")</h3>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row middle-xs @(isMobile ? "" : "control-label")">
+        <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow control-label setting--m-b-none" : "")">
+            <label for="settingsTemplateShowUserAgreementTextField" class="setting__font-weight--xs">@T("Admin.Settings.Checkout.ShowUserAgreementTextField")</label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.ShowUserAgreementText, new { id = "settingsTemplateShowUserAgreementTextField", @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowUserAgreementText" })
+                <span data-e2e="ShowUserAgreementText" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.Checkout.ShowUserAgreementTextField")'>
+            @T("Admin.Settings.SystemSettings.ShowUserAgreementTextNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row control-label @(isMobile ? "middle-xs" : "")">
+        <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow setting__font-weight--xs" : "")">
+            @Html.LabelFor(x => x.AgreementDefaultChecked, T("Admin.Settings.Checkout.AgreementDefaultChecked"))
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.AgreementDefaultChecked, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.AgreementDefaultChecked" })
+                <span data-e2e="AgreementDefaultChecked" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.Checkout.AgreementDefaultChecked")'>
+            @T("Admin.Settings.Checkout.AgreementDefaultCheckedHint")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="control-label">
+            @Html.LabelFor(x => x.UserAgreementText, T("Admin.Settings.Checkout.UserAgreementText"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9">
+        @Html.TextAreaFor(x => x.UserAgreementText, new { @class = "wysiwyg input-alt-mobile", ckeditor = "", ng_model = "settingsTemplate.UserAgreementText" })
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row middle-xs @(isMobile ? "" : "control-label")">
+        <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow control-label setting--m-b-none" : "")">
+            <label for="settingsShowUserAgreementForPromotionalNewsletter" class="setting__font-weight--xs">@T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletter")</label>
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.ShowUserAgreementForPromotionalNewsletter, new { id = "settingsShowUserAgreementForPromotionalNewsletter", @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowUserAgreementForPromotionalNewsletter" })
+                <span data-e2e="ShowUserAgreementForPromotionalNewsletter" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletter")'>
+            @T("Admin.Settings.SystemSettings.ShowUserAgreementForPromotionalNewsletterNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group setting__form-group">
+    <div class="row control-label @(isMobile ? "middle-xs" : "")">
+        <div class="col-xs col-md-3 col-wl-2 @(isMobile ? "flex-grow setting__font-weight--xs" : "")">
+            @Html.LabelFor(x => x.SetUserAgreementForPromotionalNewsletterChecked, T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterChecked"))
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.SetUserAgreementForPromotionalNewsletterChecked, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.SetUserAgreementForPromotionalNewsletterChecked" })
+                <span data-e2e="SetUserAgreementForPromotionalNewsletterChecked" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "")" data-title='@T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterChecked")'>
+            @T("Admin.Settings.SystemSettings.SetUserAgreementForPromotionalNewsletterCheckedHint")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="control-label">
+            @Html.LabelFor(x => x.UserAgreementForPromotionalNewsletter, T("Admin.Settings.SystemSettings.UserAgreementForPromotionalNewsletter"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9">
+        @Html.TextAreaFor(x => x.UserAgreementForPromotionalNewsletter, new { @class = "wysiwyg input-alt-mobile", ckeditor = "", ng_model = "settingsTemplate.UserAgreementForPromotionalNewsletter" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <label for="settingsDisplayCityBubbleType" class="setting-label-wrap control-label">
+            @T("Admin.Settings.SystemSettings.DisplayCityBubble")
+        </label>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs relative">
+        @Html.DropDownListFor(x => x.DisplayCityBubbleType, Model.DisplayCityBubbleTypes, new { id = "settingsDisplayCityBubbleType", @class = "form-control input-alt-mobile", ng_model = "settingsTemplate.DisplayCityBubbleType" })
+        <help-trigger class="help-trigger-icon-abs m-l-xs @(isMobile ? "p-l-sm" : "")" classes="'setting__catalog-popover-custom'" data-title="@T("Admin.Settings.SystemSettings.DisplayCityBubble")">
+            @T("Admin.Settings.SystemSettings.DisplayCityBubbleNote")
+        </help-trigger>
+    </div>
+</div>
+<div ng-if="settingsTemplate.DisplayCityBubbleType != @((int)SettingsDesign.EDisplayCityBubbleType.NoDisplay)">
+    <div class="form-group setting__form-group">
+        <div class="row control-label @(isMobile ? "flex-nowrap" : "")">
+            <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? " setting--m-b-none flex-grow setting__font-weight--xs" : "")">
+                @Html.LabelFor(x => x.HideCountriesInZoneDialog, T("Admin.Settings.SystemSettings.HideCountriesInZoneDialog"))
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.HideCountriesInZoneDialog, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.HideCountriesInZoneDialog" })
+                    <span data-e2e="HideCountriesInZoneDialog" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group setting__form-group">
+        <div class="row control-label @(isMobile ? "flex-nowrap" : "")">
+            <div class="col-xs-slim col-md-3 col-wl-2 @(isMobile ? " setting--m-b-none flex-grow setting__font-weight--xs" : "")">
+                @Html.LabelFor(x => x.HideSearchInZoneDialog, T("Admin.Settings.SystemSettings.HideSearchInZoneDialog"))
+            </div>
+            <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+                <label class="adv-checkbox-label flex">
+                    @Html.CheckBoxFor(x => x.HideSearchInZoneDialog, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.HideSearchInZoneDialog" })
+                    <span data-e2e="HideSearchInZoneDialog" class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group @(isMobile ? "setting__form-group" : "control-label")">
+    <div class="row flex-nowrap middle-xs @(isMobile ? "flex-nowrap" : "")">
+        <div class="col-xs-slim col-md-3 col-wl-2 flex-shrink-1 @(isMobile ? "control-label setting--m-b-none flex-grow setting__font-weight--xs" : "")">
+            @Html.LabelFor(x => x.ShowCookiesPolicyMessage, T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessage"))
+        </div>
+        <div class="relative col-xs-slim relative flex middle-xs first-xs last-md @(isMobile ? "p-r-xs" : "")">
+            <label class="adv-checkbox-label flex">
+                @Html.CheckBoxFor(x => x.ShowCookiesPolicyMessage, new { @class = "adv-checkbox-input", ng_model = "settingsTemplate.ShowCookiesPolicyMessage" })
+                <span data-e2e="ShowCookiesPolicyMessage" class="adv-checkbox-emul"></span>
+            </label>
+        </div>
+        <help-trigger class="ng-cloak last-md @(isMobile ? "m-l-sm p-l-sm m-r-sm" : "m-r-sm")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessage")'>
+            @T("Admin.Settings.SystemSettings.ShowCookiesPolicyMessageNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="control-label">
+            @Html.LabelFor(x => x.CookiesPolicyMessage, T("Admin.Settings.SystemSettings.CookiesPolicyMessage"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9">
+        @Html.TextAreaFor(x => x.CookiesPolicyMessage, new { @class = "wysiwyg", ckeditor = "", ng_model = "settingsTemplate.CookiesPolicyMessage" })
+        <p class="m-b-none">@T("Admin.SettingsSystem.SystemCommon.VariableStoreUrl")</p>
+    </div>
+</div>
+

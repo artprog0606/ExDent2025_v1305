@@ -1,0 +1,576 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.SdekShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info" style="@(isMobile ? "display:flex;" : "max-width:910px;")">
+            <div>
+                Если у вас нет учетной записи в сервисе СДЭК, Вам необходимо заполнить форму по <a href="https://go.advantshop.net/cdek" target="_blank">ссылке</a>, чтобы получить бонус. <a href="https://www.advantshop.net/help/pages/cdek-bonus" target="_blank">Подробнее...</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n  @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Sdek.Login")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.AuthLogin, new { ng_model = "shippingMethod.Params.AuthLogin", ng_attr_type = "{{shippingMethod.inputTypeLogin}}", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Sdek.Login") })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypeLogin = 'password'" ng-click="shippingMethod.inputTypeLogin = shippingMethod.inputTypeLogin == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypeLogin == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Sdek.Login")">
+            @T("Admin.ShippingMethods.Sdek.LoginForIntegration")<br><br>
+            @T("Admin.ShippingMethods.Sdek.ImportantNotPersonalAccountData")
+            <br><br>
+            @T("Admin.ShippingMethods.Sdek.ForDetailsSeeInstructions")<a href="http://www.advantshop.net/help/pages/install-sdek" target="_blank">@T("Admin.ShippingMethods.Sdek.InstructionsConnectSdecDeliveryModule")</a>
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Sdek.Password")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.AuthPassword, new { ng_model = "shippingMethod.Params.AuthPassword", ng_attr_type = "{{shippingMethod.inputTypePassword}}", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Sdek.Password") })
+        <a class="showhidepass @(isMobile ? "m-l-sm" : "")" style="top:0;right:25px;" ng-init="shippingMethod.inputTypePassword = 'password'" ng-click="shippingMethod.inputTypePassword = shippingMethod.inputTypePassword == 'password' ? 'text' : 'password'">
+            <span class="fa" ng-class="(shippingMethod.inputTypePassword == 'password') ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </a>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Sdek.Password")">
+            @T("Admin.ShippingMethods.Sdek.PasswordForIntegration") <br><br>
+            @T("Admin.ShippingMethods.Sdek.ImportantNotPersonalAccountData")
+            <br><br>
+            @T("Admin.ShippingMethods.Sdek.ForDetailsSeeInstructions")<a href="http://www.advantshop.net/help/pages/install-sdek" target="_blank">@T("Admin.ShippingMethods.Sdek.InstructionsConnectSdecDeliveryModule")</a>
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Sdek.CityOfWarehouse")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <sdek-select-city sdek-city-name="@Model.CityFrom" sdek-city-id="@Model.CityFromId" style="@(isMobile ? "width:100%;" : "")"></sdek-select-city>
+        <script type="text/ng-template" id="sdekSelectCity/tpl.html">
+            @Html.TextBoxFor(x => x.CityFrom, new
+            {
+                ng_model = "$ctrl.sdekCityName",
+                @class = "form-control input-alt",
+                required = "required",
+                validation_input_text = T("Admin.ShippingMethods.Sdek.CityOfWarehouse"),
+                autocomplete = "false",
+                uib_typeahead = "item for items in $ctrl.findCity($viewValue)",
+                typeahead_on_select = "$ctrl.selectCity($item)",
+                typeahead_template_url = "sdekSelectCity/city-item.html",
+                typeahead_focus_first = "true"
+            })
+            <input type="hidden" name="CityFromId" value="{{$ctrl.sdekCityId}}" ng-model="$ctrl.sdekCityId" class="" />
+        </script>
+        <script type="text/ng-template" id="sdekSelectCity/city-item.html">
+            <a><span ng-bind="match.model.cityName"></span><span ng-if="match.model.subRegion">, {{match.model.subRegion}}</span><span ng-if="match.model.region">, {{match.model.region}}</span><span ng-if="match.model.country">, {{match.model.country}}</span></a>
+        </script>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Sdek.CityOfWarehouse")">
+            @T("Admin.ShippingMethods.Sdek.ParameterToDeliveryService")<br><br>
+            @T("Admin.ShippingMethods.Sdek.ParameterIsRequiredForCostOfDelivery")<br><br>
+            @T("Admin.ShippingMethods.Sdek.ForExampleMoscow")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Sdek.ActiveTariffs")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @{
+            var selectedTariff = Model.ListTariffs.FindAll(x => x.Selected == true);
+        }
+        <div class="@(isMobile ? "flex-grow" : "")"
+             data-ng-init='shippingMethod.tariffsList = @JsonConvert.SerializeObject(Model.ListTariffs); shippingMethod.selectedTariff = @JsonConvert.SerializeObject(selectedTariff)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.selectedTariff"
+                       validation-input-text="@T("Admin.ShippingMethods.Sdek.ActiveTariffs")"
+                       ng-required="true"
+                       data-e2e="SelectTariffs">
+                <ui-select-match placeholder="@T("Admin.ShippingMethods.Sdek.SelectTariffs")">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="tariff in shippingMethod.tariffsList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="tariff.Disabled === true"
+                                   @* refresh="product.getTagsByPaging(250, $select.search)" *@
+                                   refresh-delay="0">
+                    {{tariff.Text}}
+                </ui-select-choices>
+            </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="Tariff" id="Tariff" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTariff track by $index"></option>
+            </select>
+            <input type="hidden" name="DeliveryTypes" value="" ng-if="!shippingMethod.Params.Tariff.length"/>
+        </div>
+        <help-trigger class="ng-cloak @(!isMobile ? "help-trigger-icon-abs" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Sdek.ActiveTariffs")">
+            @T("Admin.ShippingMethods.Sdek.NeedChooseOneOption")<br><br>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.ShippingMethods.Sdek.NumberOfCopiesOfWaybills")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.DeliveryNote, new { ng_model = "shippingMethod.Params.DeliveryNote", min = "1", max = "10", pattern = "10|[1-9]+", type = "number", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.Sdek.NumberOfCopiesOfWaybills") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.Sdek.ActiveTariffs")">
+            @T("Admin.ShippinhMethods.Sdek.NumberOfInvoices")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="WithInsure">@T("Admin.ShippingMethods.Sdek.WithInsurance")</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="MethodWithInsure"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.ShippingMethods.Sdek.WithInsurance")</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="AllowInspection">@T("Admin.ShippingMethods.Sdek.AllowInspection")</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.AllowInspection, new { ng_model = "shippingMethod.Params.AllowInspection", ng_init = "shippingMethod.Params.AllowInspection=" + Model.AllowInspection.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>@T("Admin.ShippingMethods.Sdek.AllowInspection")</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="PartialDelivery">Частичная доставка</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "")">
+            @Html.CheckBoxFor(x => x.PartialDelivery, new { ng_model = "shippingMethod.Params.PartialDelivery", ng_init = "shippingMethod.Params.PartialDelivery=" + Model.PartialDelivery.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Частичная доставка</span>
+            }
+        </label>
+        <help-trigger class="m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Частичная доставка">
+            Во время доставки товара покупатель может отказаться от одной или нескольких позиций, и выкупить только часть заказа
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="TryingOn">Примерка</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "")">
+            @Html.CheckBoxFor(x => x.TryingOn, new { ng_model = "shippingMethod.Params.TryingOn", ng_init = "shippingMethod.Params.TryingOn=" + Model.TryingOn.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Примерка</span>
+            }
+        </label>
+        <help-trigger class="m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Примерка">
+            При получении можно примерить товар
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="ShowPointsAsList">Отображать пункты выдачи списком</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "")">
+            @Html.CheckBoxFor(x => x.ShowPointsAsList, new { ng_model = "shippingMethod.Params.ShowPointsAsList", ng_init = "shippingMethod.Params.ShowPointsAsList=" + Model.ShowPointsAsList.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="ShowPointsAsList"></span>
+            @if (isMobile)
+            {
+                <span>Отображать пункты выдачи списком</span>
+            }
+        </label>
+        <help-trigger class="m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Отображать пункты выдачи списком">
+            Отображать пункты выдачи списком или с помощью виджета с картой
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="!shippingMethod.Params.ShowPointsAsList">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="!shippingMethod.Params.ShowPointsAsList && @(Model.ShowSdekWidjet.ToLowerString())">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="ShowSdekWidjet"> Использовать виджет СДЭК</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowSdekWidjet, new { ng_model = "shippingMethod.Params.ShowSdekWidjet", ng_init = "shippingMethod.Params.ShowSdekWidjet=" + Model.ShowSdekWidjet.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span> Использовать виджет СДЭК</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="!shippingMethod.Params.ShowPointsAsList && !shippingMethod.Params.ShowSdekWidjet">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="ShowAddressComment">Отображать описание схемы проезда</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowAddressComment, new { ng_model = "shippingMethod.Params.ShowAddressComment", ng_init = "shippingMethod.Params.ShowAddressComment=" + Model.ShowAddressComment.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отображать описание схемы проезда</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="UseSeller">Передавать реквизиты истинного продавца</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.UseSeller, new { ng_model = "shippingMethod.Params.UseSeller", ng_init = "shippingMethod.Params.UseSeller=" + Model.UseSeller.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="MethodUseSeller"></span>
+            @if (isMobile)
+            {
+                <span>Передавать реквизиты истинного продавца</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSeller">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Адрес истинного продавца
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SellerAddress, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SellerAddress", validation_input_text = "Адрес истинного продавца" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Адрес истинного продавца">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSeller">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Наименование истинного продавца
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SellerName, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SellerName", validation_input_text = "Наименование истинного продавца" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Наименование истинного продавца">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSeller">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        ИНН истинного продавца
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SellerINN, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SellerINN", validation_input_text = "ИНН истинного продавца" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="ИНН истинного продавца">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSeller">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Телефон истинного продавца
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SellerPhone, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SellerPhone", validation_input_text = "Телефон истинного продавца" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Телефон истинного продавца">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSeller">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Форма собственности
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.SellerOwnershipForm, Model.SellerOwnershipForms, new { ng_model = "shippingMethod.Params.SellerOwnershipForm", ng_init = "shippingMethod.Params.SellerOwnershipForm='" + Model.SellerOwnershipForm + "'", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Код формы собственности">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="UseSender">Передавать отправителя в заказе в СДЭК</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.UseSender, new { ng_model = "shippingMethod.Params.UseSender", ng_init = "shippingMethod.Params.UseSender=" + Model.UseSender.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="MethodUseSender"></span>
+            @if (isMobile)
+            {
+                <span>Передавать отправителя в заказе в СДЭК</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSender">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Название компании
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderCompany, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderCompany", validation_input_text = "Название компании" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Название компании">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSender">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        ФИО контактного лица
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderName, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderName", validation_input_text = "ФИО контактного лица" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="ФИО контактного лица">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSender">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Электронный адрес
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderEmail, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderEmail", validation_input_text = "Электронный адрес" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Электронный адрес">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-show="shippingMethod.Params.UseSender">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Номер телефона
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderPhone, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderPhone", validation_input_text = "Номер телефона" })
+        <div>
+            Должен передаваться в международном формате: код страны (для России +7) и сам номер (10 и более цифр)
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Номер телефона">
+            Используется при передаче заказа в СДЭК
+        </help-trigger>
+    </div>
+</div>
+
+
+
+
+@Html.Partial("_SyncStatuses", Model)
+
+
+
+<div class="shipping-item-settings-header inline content-header m-b-md m-t-sm pointer" ng-click="shippingMethod.sdek.showCallCourier=!shippingMethod.sdek.showCallCourier">
+    @T("Admin.ShippingMethods.Sdek.FormCallCourier") <i class="fa fa-caret-down" ng-if="!shippingMethod.sdek.showCallCourier"></i><i class="fa fa-caret-up" ng-if="shippingMethod.sdek.showCallCourier"></i>
+</div>
+
+<div ng-if="shippingMethod.sdek.showCallCourier">
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.NameOfContactPerson")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" ng-required="shippingMethod.sdek.showCallCourier" validation-input-text="@T("Admin.ShippingMethods.Sdek.NameOfContactPerson")" name="DefaultCourierNameContact" ng-model="shippingMethod.sdek.DefaultCourierNameContact" value="@Model.DefaultCourierNameContact" class="form-control input-alt" />
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.PhoneOfContactPerson")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text"
+                   ng-required="shippingMethod.sdek.showCallCourier"
+                   validation-input-text="@T("Admin.ShippingMethods.Sdek.PhoneOfContactPerson")"
+                   name="DefaultCourierPhone"
+                   ng-model="shippingMethod.sdek.DefaultCourierPhone"
+                   value="@Model.DefaultCourierPhone"
+                   class="form-control input-alt" />
+        </div>
+    </div>
+
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.TotalWeight")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" ng-required="shippingMethod.sdek.showCallCourier" validation-input-text="@T("Admin.ShippingMethods.Sdek.TotalWeight")" name="DefaultCourierWeight" ng-model="shippingMethod.sdek.Weight" value="0" class="form-control input-alt" />
+        </div>
+    </div>
+    <div class="shipping-item-settings-header m-b-md m-t-sm setting__subtitle">
+        @T("Admin.ShippingMethods.Sdek.DateTimeOfCallCourier")
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.Day")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                <span class="flatpickr-custom-wrap @(isMobile ? "flex-grow" : "")">
+                    <input type="text" name="date" required="required" validation-input-text="@T("Admin.ShippingMethods.Sdek.Day")" ng-model="shippingMethod.sdek.Date" ng-init="shippingMethod.sdek.Date='@(DateTime.Now.ToString("yyyy-MM-dd"))'" class="form-control input-alt" ng-flatpickr-input>
+                    <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                </span>
+                <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.Time")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative @(isMobile ? "flex middle-xs" : "")">
+            <input type="text" name="timeFrom" required="required" validation-input-text="@T("Admin.ShippingMethods.Sdek.Time")" ng-model="shippingMethod.sdek.TimeFrom" value="12:00" class="form-control inline input-alt" style="@(isMobile ? "margin-right:5px;" : "width: 90px;")" /> - <input type="text" name="timeTo" ng-model="shippingMethod.sdek.TimeTo" value="15:00" required="required" validation_input_text="@T("Admin.ShippingMethods.Sdek.Time")" class="form-control inline input-alt" style="@(isMobile ? "margin-left:5px;" : "width: 100px;")" />
+        </div>
+    </div>
+    <div class="shipping-item-settings-header m-b-md m-t-sm setting__subtitle">
+        @T("Admin.ShippingMethods.Sdek.StoreAddress")
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.CityOfOnlineStore")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" ng-required="shippingMethod.sdek.showCallCourier" validation-input-text="@T("Admin.ShippingMethods.Sdek.CityOfOnlineStore")" name="DefaultCourierCity" ng-model="shippingMethod.sdek.DefaultCourierCity" value="@Model.DefaultCourierCity" class="form-control input-alt" />
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.Street")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" name="DefaultCourierStreet" ng-model="shippingMethod.sdek.DefaultCourierStreet" value="@Model.DefaultCourierStreet" class="form-control input-alt" />
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.House")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" name="DefaultCourierHouse" ng-model="shippingMethod.sdek.DefaultCourierHouse" value="@Model.DefaultCourierHouse" class="form-control input-alt" />
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">@T("Admin.ShippingMethods.Sdek.Office")</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" name="DefaultCourierFlat" ng-model="shippingMethod.sdek.DefaultCourierFlat" value="@Model.DefaultCourierFlat" class="form-control input-alt" />
+        </div>
+    </div>
+    <div class="form-group row middle-xs">
+        <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+            <span class="text-required">Комментарий</span>
+        </div>
+        <div class="col-xs-12 col-md-4 relative">
+            <input type="text" name="Comment" ng-model="shippingMethod.sdek.Comment" value="" class="form-control input-alt" />
+        </div>
+    </div>
+
+    <input type="hidden" name="sdekMethodId" ng-model="shippingMethod.sdek.MethodId" value="@Model.ShippingMethodId" />
+
+    <div class="m-b-md">
+        <div class="form-group row middle-xs">
+            <div class="col-xs-12">
+                <a class="btn btn-sm btn-success" ng-click="shippingMethod.callSdekCourier()">@T("Admin.ShippingMethods.Sdek.CallACourier")</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info " style="@(isMobile ? "display:flex;" : "")">
+            <a href="http://www.advantshop.net/help/pages/install-sdek" target="_blank">@T("Admin.ShippingMethods.Sdek.InstructionsConnectSdecModule")</a>
+        </div>
+    </div>
+</div>

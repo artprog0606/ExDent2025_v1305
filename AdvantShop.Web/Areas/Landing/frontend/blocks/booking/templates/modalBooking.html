@@ -1,0 +1,234 @@
+﻿<div class="lp-form" data-ng-init="modalBooking.initModalBooking(form)">
+    <div
+        class="lp-form__title lp-form__title--vertical lp-font-size--large"
+        data-ng-if="modalBooking.formData.Title"
+        data-ng-bind="modalBooking.formData.Title"></div>
+    <div data-ng-switch="modalBooking.view">
+        <div data-ng-switch-when="services">
+            <div
+                class="lp-form__subtitle lp-form__subtitle--vertical modal-booking-form__subtitle"
+                data-ng-if="modalBooking.formData.SubTitle"
+                data-ng-bind="modalBooking.formData.SubTitle"></div>
+            <div class="row between-xs">
+                <div class="col-xs-12">
+                    <div class="lp-accordion lp-accordion-theme--list">
+                        <div data-ng-repeat="category in modalBooking.categories track by $index" data-ng-init="indexCategory = $index">
+                            <input
+                                type="checkbox"
+                                class="lp-accordion__state"
+                                id="accordion_{{modalBooking.modalId}}_{{indexCategory}}"
+                                data-ng-model="modalBooking.categories[indexCategory].expanded" />
+                            <div
+                                class="lp-accordion__item lp-accordion__item--box-shadow-none"
+                                data-ng-class="{'color-scheme__bg--alt': !modalBooking.categories[indexCategory].expanded, 'color-scheme__bg':modalBooking.categories[indexCategory].expanded }">
+                                <label class="lp-accordion__trigger lp-font-size--large" for="accordion_{{modalBooking.modalId}}_{{indexCategory}}">
+                                    {{category.Name}}
+                                </label>
+                                <div class="lp-accordion__content lp-font-size--middle">
+                                    <ol class="lp-accordion__content-list">
+                                        <li data-ng-repeat="service in category.Services track by $index">
+                                            <div class="lp-accordion__content-item block">
+                                                <div class="flex between-xs">
+                                                    <div class="booking-accordion__part--left">
+                                                        <div class="flex between-xs">
+                                                            <label class="booking-accordion__name pointer">
+                                                                <input
+                                                                    class="lp-checkbox"
+                                                                    type="checkbox"
+                                                                    checklist-model="modalBooking.selectedServices"
+                                                                    checklist-value="service.Id" />
+                                                                <span class="lp-checkbox-decor modal-booking__checkbox"></span>
+                                                                <span class="block" data-ng-bind="service.Name"></span>
+                                                            </label>
+                                                            <div
+                                                                class="block booking-accordion__time hidden-xs visible-sm"
+                                                                data-ng-bind="service.DurationFormatted"></div>
+                                                        </div>
+                                                        <read-more
+                                                            class="block m-t-md lp-font-size--small"
+                                                            ng-if="modalBooking.categories[indexCategory].expanded"
+                                                            data-max-height="68"
+                                                            data-content="service.Description | sanitize"></read-more>
+                                                    </div>
+                                                    <div class="booking-accordion__part--right">
+                                                        <div
+                                                            class="lp-block-services-accordion__price block booking-accordion__price"
+                                                            data-ng-bind="service.PriceFormatted"></div>
+                                                        <div class="hidden-sm" data-ng-bind="service.DurationFormatted"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row middle-xs lp-form__body">
+                <div class="col-xs-12 lp-form__submit-block">
+                    <button
+                        type="button"
+                        class="lp-btn lp-btn--primary lp-btn--md"
+                        data-ng-disabled="!modalBooking.selectedServices.length"
+                        data-ng-click="modalBooking.showDates()">
+                        Продолжить
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div data-ng-switch-when="date">
+            <div
+                class="lp-form__subtitle lp-form__subtitle--vertical modal-booking-form__subtitle"
+                data-ng-if="modalBooking.formData.SubTitle"
+                data-ng-bind="modalBooking.formData.SubTitle"></div>
+            <div class="lp-form__subtitle lp-form__subtitle--vertical" data-ng-if="modalBooking.showServices">
+                <a href="javascript:void(0)" data-ng-click="modalBooking.showServicesView()">Выбрать услуги</a>
+            </div>
+            <div class="row center-xs start-sm lp-form__body--vertical lp-form__body" ng-if="!modalBooking.bookingByDays">
+                <div class="col-md-6 col-xs-12 lp-modal-booking-col">
+                    <div
+                        class="lp-flatpickr"
+                        ng-model="modalBooking.modelDate"
+                        data-ng-flatpickr
+                        data-fp-opts="modalBooking.fpOptionsByTime"
+                        data-fp-on-change="modalBooking.changeDateByTime()"
+                        data-fp-on-setup="modalBooking.onFlatpickrByTimeInit(fpItem)"></div>
+                </div>
+                <div class="col-md-6 col-xs-12 lp-modal-booking-col">
+                    <div class="lp-modal-booking-btn-group">
+                        <button
+                            class="lp-btn lp-modal-booking-time-btn"
+                            data-ng-repeat="time in modalBooking.times"
+                            data-ng-disabled="time.Disabled"
+                            data-ng-click="modalBooking.setTime(time)">
+                            {{time.From}}
+                        </button>
+                    </div>
+                    <p class="text-center lp-modal-booking-no-time" data-ng-if="modalBooking.hasFreeTime === false">
+                        На выбранный день нет свободного времени
+                    </p>
+                </div>
+                <div class="col-xs-12 lp-form__submit-block" ng-if="modalBooking.shoppingCart && modalBooking.time">
+                    <button
+                        type="button"
+                        data-ladda="modalBooking.formSubmitInProcess"
+                        data-button-validation
+                        data-button-validation-success="modalBooking.submit()"
+                        class="lp-btn lp-btn--primary lp-btn--md">
+                        {{modalBooking.formData.ButtonText}}
+                    </button>
+                </div>
+            </div>
+            <div class="row center-xs start-sm lp-form__body--vertical lp-form__body" ng-if="modalBooking.bookingByDays">
+                <div class="col-md-6 col-xs-12 lp-modal-booking-col">
+                    <div class="control-label">
+                        <span>Дата начала</span>
+                    </div>
+                    <div
+                        class="input-group"
+                        data-ng-flatpickr
+                        data-fp-opts="modalBooking.fpStartOptions"
+                        data-fp-on-change="modalBooking.changeStartDate()"
+                        data-fp-on-setup="modalBooking.onFlatpickrStartInit(fpItem)">
+                        <span class="flatpickr-custom-wrap">
+                            <input
+                                type="text"
+                                class="lp-input input-alt"
+                                required
+                                ng-flatpickr-input
+                                ng-model="modalBooking.startDate"
+                                validation-input-text="Дата начала" />
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xs-12 lp-modal-booking-col">
+                    <div class="control-label">
+                        <span>Дата окончания</span>
+                    </div>
+                    <div
+                        class="input-group"
+                        data-ng-flatpickr
+                        data-fp-opts="modalBooking.fpEndOptions"
+                        data-fp-on-change="modalBooking.changeEndDate()"
+                        data-fp-on-setup="modalBooking.onFlatpickrEndInit(fpItem)">
+                        <span class="flatpickr-custom-wrap">
+                            <input
+                                type="text"
+                                class="lp-input input-alt"
+                                required
+                                ng-flatpickr-input
+                                ng-model="modalBooking.endDate"
+                                ng-disabled="!(modalBooking.startDate && modalBooking.flatpickrStart && modalBooking.flatpickrStart.selectedDates.length)"
+                                validation-input-text="Дата окончания" />
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-12 lp-form__submit-block" ng-if="!modalBooking.shoppingCart">
+                    <button
+                        type="button"
+                        class="lp-btn lp-btn--primary lp-btn--md"
+                        data-button-validation
+                        data-button-validation-success="modalBooking.showBookingForm()">
+                        Продолжить
+                    </button>
+                </div>
+                <div class="col-xs-12 lp-form__submit-block" ng-if="modalBooking.shoppingCart">
+                    <button
+                        type="button"
+                        data-ladda="modalBooking.formSubmitInProcess"
+                        data-button-validation
+                        data-button-validation-success="modalBooking.submit()"
+                        class="lp-btn lp-btn--primary lp-btn--md">
+                        {{modalBooking.formData.ButtonText}}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div data-ng-switch-when="form">
+            <div>
+                <div data-ng-switch="modalBooking.resultData == null">
+                    <div data-ng-switch-when="true">
+                        <div class="lp-form__subtitle lp-form__subtitle--vertical" ng-if="!modalBooking.bookingByDays">
+                            <div>Дата: {{modalBooking.modelDate}}</div>
+                            <div class="modal-booking-form__time">
+                                Время: {{modalBooking.time.From}}
+                                <a href="javascript:void(0)" data-ng-click="modalBooking.showDates()" class="modal-booking-form__change-time"
+                                    >Изменить</a
+                                >
+                            </div>
+                        </div>
+                        <div class="lp-form__subtitle lp-form__subtitle--vertical" ng-if="modalBooking.bookingByDays">
+                            <div>
+                                Дата: {{modalBooking.flatpickrStart.formatDate(modalBooking.flatpickrStart.selectedDates[0], "d.m.Y")}} -
+                                {{modalBooking.flatpickrEnd.formatDate(modalBooking.flatpickrEnd.selectedDates[0], "d.m.Y")}}
+                                <a href="javascript:void(0)" data-ng-click="modalBooking.showDates()" class="modal-booking-form__change-time"
+                                    >Изменить</a
+                                >
+                            </div>
+                        </div>
+                        <form novalidate="novalidate" name="formBooking">
+                            <div class="row middle-xs lp-form__body--vertical lp-form__body">
+                                <div data-ng-include="modalBooking.fieldsTpl"></div>
+                                <div class="col-xs-12 lp-form__submit-block">
+                                    <button
+                                        type="button"
+                                        data-ladda="modalBooking.formSubmitInProcess"
+                                        data-button-validation
+                                        data-button-validation-success="modalBooking.submit()"
+                                        class="lp-btn lp-btn--primary lp-btn--md">
+                                        {{modalBooking.formData.ButtonText}}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div data-ng-switch-when="false" class="ng-cloak lp-form__content--success">
+                        <span data-ng-bind-html="modalBooking.resultData.Message | sanitize"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

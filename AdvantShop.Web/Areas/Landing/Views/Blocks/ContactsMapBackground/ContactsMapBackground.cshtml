@@ -1,0 +1,39 @@
+﻿@model BlockModel
+
+@{
+    bool renderSocials = Model.Block.ExistSocials();
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.BlockHeader(Model)
+            </div>
+        </div>
+    </div>
+</div>
+<div class="lp-block-contacts-map-background__wrap">
+    <div class="lp-container lp-block-contacts-map-background__content-wrap">
+        <div class="row middle-xs">
+            <div class="col-xs-12">
+                <div class="color-scheme__bg lp-block-contacts-map-background__popup center-xs start-sm">
+
+                    <div class="lp-font-size--middle lp-block-contacts-map__text">
+                        @Html.SubBlock(Model, "text")
+                    </div>
+
+                    @if (renderSocials)
+                    {
+                        <div class="lp-block-contacts-map__social">
+                            @Html.Partial("_Socials", Model.Block)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lp-block-contacts-map-background__iframe-wrap">
+        @Html.Raw(Model.Block.TryGetSetting("map_code"))
+    </div>
+</div>

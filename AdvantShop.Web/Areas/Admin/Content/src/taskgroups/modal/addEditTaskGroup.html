@@ -1,0 +1,208 @@
+﻿<form name="formAddEditTaskGroup" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.Taskgroups.AddEdit.NewProject'|translate) : ('Admin.Js.Taskgroups.AddEdit.EditingProject'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.formAddEditTaskGroup = formAddEditTaskGroup">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">
+                <span class="text-required"> {{'Admin.Js.Taskgroups.AddEdit.Name'|translate}} </span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    data-e2e="taskGroupName"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.name"
+                    required
+                    validation-input-text="{{'Admin.Js.Taskgroups.AddEdit.Name'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="row" ng-class="{'form-group' : !isMobile.value}">
+            <div class="col-xs-7" ng-class="{'control-label' : isMobile.value}">{{'Admin.Js.TaskStatuses.AddEditStatus.Statuses'|translate}}</div>
+            <div class="col-xs-4" ng-class="{'control-label' : isMobile.value}">{{'Admin.Js.TaskStatuses.AddEditStatus.StatusType'|translate}}</div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <project-statuses task-group-id="ctrl.id" on-change="ctrl.onChangeProjectStatuses(items, systemItems)"></project-statuses>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label" ng-class="{'flex middle-xs' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}"
+                    >{{'Admin.Js.Taskgroups.AddEdit.Participants'|translate}} ({{'Admin.Js.Taskgroups.AddEdit.Roles'|translate}})</span
+                >
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.Participants'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.Roles.TextOne'|translate}}
+                    <br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.Roles.TextTwo'|translate}}
+                    <br />
+                    <a href="https://www.advantshop.net/help/pages/sozdanie-proekt" target="_blank"
+                        >{{'Admin.Js.Taskgroups.AddEdit.ProjectCreating'|translate}}</a
+                    >
+                </help-trigger>
+            </label>
+            <div class="col-xs-12 col-md-9" data-e2e="ParticipantsProject">
+                <ui-select multiple ng-model="ctrl.managerRoleIds" convert-to-number class="input-alt">
+                    <ui-select-match placeholder="Выберите роли">{{$item.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.managerRoles | filter:$select.search"> {{s.label}} </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label" ng-class="{'flex middle-xs' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}"
+                    >{{'Admin.Js.Taskgroups.AddEdit.Participants'|translate}} ({{'Admin.Js.Taskgroups.AddEdit.Employees'|translate}})</span
+                >
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.Participants'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.Employees.TextOne'|translate}}
+                    <br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.Employees.TextTwo'|translate}}
+                    <br />
+                    <a href="https://www.advantshop.net/help/pages/sozdanie-proekt" target="_blank"
+                        >{{'Admin.Js.Taskgroups.AddEdit.ProjectCreating'|translate}}</a
+                    >
+                </help-trigger>
+            </label>
+            <div class="col-xs-12 col-md-9" data-e2e="ParticipantsIdsProject">
+                <ui-select multiple ng-model="ctrl.participantIds" convert-to-number class="input-alt">
+                    <ui-select-match placeholder="Выберите сотрудников">{{$item.label}}</ui-select-match>
+                    <ui-select-choices repeat="s.value as s in ctrl.participants | filter:$select.search"> {{s.label}} </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}">{{'Admin.Js.Taskgroups.AddEdit.Observers'|translate}}</span>
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.Observers'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.Observers.TextOne'|translate}}
+                    <br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.Observers.TextTwo'|translate}}
+                    <br />
+                    <a href="https://www.advantshop.net/help/pages/sozdanie-proekt" target="_blank"
+                        >{{'Admin.Js.Taskgroups.AddEdit.ProjectCreating'|translate}}</a
+                    >
+                </help-trigger>
+            </label>
+            <div class="col-xs-12 col-md-9" data-e2e="ObserverProject">
+                <ui-select multiple ng-model="ctrl.managerIds" convert-to-number class="input-alt">
+                    <ui-select-match placeholder="{{'Admin.Js.Taskgroups.AddEdit.SelectEmployees'|translate}}">{{$item.label}}</ui-select-match>
+                    <ui-select-choices repeat="manager.value as manager in ctrl.managers | filter:$select.search">
+                        {{manager.label}}
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label relative" ng-class="{'flex middle-xs' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}"> {{'Admin.Js.Taskgroups.AddEdit.ManagerTasks'|translate}}</span>
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.ManagerTasks'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.ManagerTasks.TextOne'|translate}}<br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.ManagerTasks.TextTwo'|translate}}<br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.ManagerTasks.TextThree'|translate}}<br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.ManagerTasks.TextFour'|translate}}
+                </help-trigger>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <select
+                    ng-model="ctrl.managersTaskGroupConstraint"
+                    ng-options="s.value as s.label for s in ctrl.managersTaskConstraints"
+                    class="form-control input-alt"
+                    data-e2e="ManagersTaskGroupConstraint"></select>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label setting__label">{{'Admin.Js.Taskgroups.AddEdit.SortingOrder'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input type="text" data-e2e="taskGroupSortOrder" ng-model="ctrl.sortOrder" class="form-control input-alt" />
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-class="{'setting--label-with-checkbox-reverse middle-xs' : isMobile.value}">
+            <label
+                for="ProjectIsPrivateComments"
+                class="col-md-3 control-label setting__label setting--m-none"
+                ng-class="{'flex middle-xs flex-grow' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}">{{'Admin.Js.Taskgroups.AddEdit.PrivateComments'|translate}}</span>
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.PrivateComments'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.PrivateComments.TextOne'|translate}}
+                    <br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.PrivateComments.TextTwo'|translate}}
+                    <br />
+                    <a href="https://www.advantshop.net/help/pages/sozdanie-proekt" target="_blank"
+                        >{{'Admin.Js.Taskgroups.AddEdit.ProjectCreating'|translate}}</a
+                    >
+                </help-trigger>
+            </label>
+            <div class="col-md-9" ng-class="{'p-r-xs' : isMobile.value}">
+                <label class="adv-checkbox-label" data-e2e="ProjectIsPrivateComments">
+                    <input
+                        id="ProjectIsPrivateComments"
+                        type="checkbox"
+                        ng-model="ctrl.isPrivateComments"
+                        class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul" data-e2e="ProjectIsPrivateCommentsSpan"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-class="{'setting--label-with-checkbox-reverse middle-xs' : isMobile.value}">
+            <label for="ProjectEnabled" class="col-md-3 control-label setting__label setting--m-none"
+                >{{'Admin.Js.Taskgroups.AddEdit.Activity'|translate}}</label
+            >
+            <div class="col-md-9" ng-class="{'p-r-xs' : isMobile.value}">
+                <label class="adv-checkbox-label" data-e2e="ProjectEnabled">
+                    <input id="ProjectEnabled" type="checkbox" ng-model="ctrl.enabled" class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul" data-e2e="ProjectEnabledSpan"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-class="{'setting--label-with-checkbox-reverse middle-xs' : isMobile.value}">
+            <label
+                for="ProjectIsNotCompleted"
+                class="col-md-3 control-label setting__label setting--m-none"
+                ng-class="{'flex middle-xs flex-grow' : isMobile.value}">
+                <span ng-class="{'flex-grow m-r-sm' : isMobile.value}">{{'Admin.Js.Taskgroups.AddEdit.NotThisProjectTasks'|translate}}</span>
+                <help-trigger data-use-template="true" class="ng-cloak" data-title="{{'Admin.Js.Taskgroups.AddEdit.NotThisProjectTasks'|translate}}">
+                    {{'Admin.Js.Taskgroups.AddEdit.NotThisProjectTasks.TextOne'|translate}}
+                    <br /><br />
+                    {{'Admin.Js.Taskgroups.AddEdit.NotThisProjectTasks.TextTwo'|translate}}
+                </help-trigger>
+            </label>
+            <div class="col-md-9" ng-class="{'p-r-xs' : isMobile.value}">
+                <label class="adv-checkbox-label" data-e2e="ProjectIsNotCompleted">
+                    <input id="ProjectIsNotCompleted" type="checkbox" ng-model="ctrl.isNotBeCompleted" class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul" data-e2e="ProjectIsNotCompletedSpan"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-e2e="taskGroupButtonSave"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !formAddEditTaskGroup.modified)"
+            ng-bind="ctrl.mode == 'add' ? ('Admin.Js.Taskgroups.AddEdit.Add'|translate) : ('Admin.Js.Taskgroups.AddEdit.Save'|translate)"></button>
+        <button
+            class="btn btn-sm btn-default"
+            type="button"
+            ng-click="ctrl.copyTaskGroup()"
+            ng-if="ctrl.mode === 'edit'"
+            ng-style="isMobile.value ? {'grid-column': '2', 'grid-row': '1'} : {}">
+            {{'Admin.Js.Taskgroups.AddEdit.Copy'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.Taskgroups.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,149 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.TinkoffPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            @if (string.IsNullOrWhiteSpace(Model.RegistrationScriptUri))
+            {
+                <div>
+                    Если у вас нет учетной записи в сервисе Тинькофф, вы можете зарегистрироваться
+                    по <a href="https://go.advantshop.net/tinkoff" target="_blank">ссылке</a>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <span>Если у вас нет учетной записи в сервисе Тинькофф, вы можете</span>
+                    <ui-modal-trigger data-controller="'ModalTBankRegistrationCtrl'" controller-as="ctrl" size="md"
+                                      backdrop="static"
+                                      window-class="modal"
+                                      template-url="@Html.GetAssetPath("tBankRegistration.html")"
+                                      resolve="{params: {'advId': '@SettingsLic.AdvId', 'scriptPath': '@Model.RegistrationScriptUri'}}">
+                        @if (!isMobile)
+                        {
+                            <button class="btn btn-sm btn-success" type="button">
+                                зарегистрироваться
+                            </button>
+                        }
+                        else
+                        {
+                            <a>
+                                зарегистрироваться
+                            </a>
+                        }
+                    </ui-modal-trigger>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Tinkoff.TerminalIdentifier")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.TerminalKey, new { ng_model = "paymentMethod.Parameters.TerminalKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.Tinkoff.TerminalIdentifier").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Tinkoff.TerminalIdentifier")">
+            @T("Admin.PaymentMethods.Tinkoff.UniqueIdentifier")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.Tinkoff.SecretKey")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SecretKey, new { ng_model = "paymentMethod.Parameters.SecretKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.Tinkoff.SecretKey").ToString() })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.Tinkoff.SecretKey")">
+            @T("Admin.PaymentMethods.Tinkoff.UsedSignRequests")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span>Считать заказ оплаченным при блокировке денег на карте клиента (холдировании)</span>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.AuthorizedIsPaid, new { ng_model = "paymentMethod.Parameters.AuthorizedIsPaid", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="AuthorizedIsPaid" class="col-xs setting__label">
+                <span>Считать заказ оплаченным при блокировке денег на карте клиента (холдировании)</span>
+            </label>
+        }
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span>@T("Admin.PaymentMethods.Tinkoff.SendDataForPrint")</span>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.SendReceiptData, new { ng_model = "paymentMethod.Parameters.SendReceiptData", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="SendReceiptData" class="col-xs setting__label">
+                <span>@T("Admin.PaymentMethods.Tinkoff.SendDataForPrint")</span>
+            </label>
+        }
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="">
+            @T("Admin.PaymentMethods.Tinkoff.SendDataForPrint")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMeythods.Tinkoff.TaxSystem")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.Taxation, Model.Taxations, new { ng_model = "paymentMethod.Parameters.Taxation", ng_init = "paymentMethod.Parameters.Taxation='" + Model.Taxation + "'", @class = "form-control input-alt" })
+
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "help-trigger-icon-abs")" data-title="@T("Admin.PaymentMeythods.Tinkoff.TaxSystem")">
+            @T("Admin.PaymentMethods.Tinkoff.UsedWhenSendingData")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group" ng-if="paymentMethod.Parameters.SendReceiptData">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span>ФФД подключенной кассы</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.DropDownListFor(x => x.TypeFfd, Model.TypesFfd, new { ng_model = "paymentMethod.Parameters.TypeFfd", ng_init = "paymentMethod.Parameters.TypeFfd='" + Model.TypeFfd + "'", @class = "form-control input-alt" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="@Model.ExistsUnitsWithOutMeasure.ToLowerString() && paymentMethod.Parameters.SendReceiptData && paymentMethod.Parameters.TypeFfd === '1'">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <div>
+                Имеются единицы измерения без указания меры для ФФД. <a target="_blank" href="settingscatalog?catalogTab=units&gridUnits=%7B%22WithOutMeasureType%22:true%7D">Смотреть...</a>
+            </div>
+        </div>
+    </div>
+</div>

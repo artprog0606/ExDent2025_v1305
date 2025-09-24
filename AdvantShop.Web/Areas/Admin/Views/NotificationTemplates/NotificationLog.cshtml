@@ -1,0 +1,71 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Core.Services.Bonuses.Notification
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("notificationtemplates");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.SmsTemplates.SmsLog.Title") + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Bonus")
+    };
+
+    @Html.Header(headerModel)
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }
+}
+
+@if (!isMobile)
+{
+    <div class="sticky-page-name m-t-n-xs m-b-xs " sticky sticky-top="0">
+        <div class="page-name-block sticky-page-name-inner">
+            <div class="page-name-block-item-main flex middle-xs">
+                <h2 class="m-r-xs  sticky-page-name-text m-t-none">
+                    @T("Admin.SmsTemplates.SmsLog.Title")
+                </h2>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="gridlog"
+                        grid-on-init="notificationtemplates.gridlogOnInit(gridlog)"
+                        grid-options="notificationtemplates.gridlogOptions"
+                        grid-url="'notificationtemplates/getnotificationlogs'"
+                        grid-filter-enabled="true"
+                        grid-selection-enabled="false"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm">
+                    <div class="m-b-sm">
+                        <div class="m-b-xs setting__label">Контакт</div>
+                        <div class="">{{row.entity.Contact}}</div>
+                    </div>
+                    <div class="m-b-sm">
+                        <div class="m-b-xs setting__label">Сообщение</div>
+                        <div class="">{{row.entity.Body}}</div>
+                    </div>
+                    <div>
+                        <div class="m-b-xs setting__label">Создано</div>
+                        <div class="">{{row.entity.Created_Str}}</div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>

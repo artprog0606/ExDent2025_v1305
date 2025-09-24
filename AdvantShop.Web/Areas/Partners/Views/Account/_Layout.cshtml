@@ -1,0 +1,40 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate; 
+}
+<!DOCTYPE html>
+<html data-ng-app="app" @Html.GetNgController()>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow" />
+    <title>@Html.GetPageTitle()</title>
+    <base href="@UrlService.GetUrl("partners/")" />
+    @Html.Action("Favicon", "Common", new { area = "" })
+    @Html.Partial("~/Areas/Partners/Views/Shared/_HeadScripts.cshtml")
+</head>
+<body class="cs-t-1 text-floating partner-acc-bg @(isMobile ? "auth-body" : "")">
+    @Html.DisableChromeAutoFill()
+    @Html.AntiForgeryToken()
+    <div hidden>@Html.StaticBlock("LiveCounter")</div>
+    @Html.Action("GoogleAnalytics", "Common", new { area = "" })
+    <div class="@(isMobile ? "" : "stretch-container")">
+        <main class="@(isMobile ? "" : "stretch-middle") flex middle-xs center-xs">
+            <div class="cs-bg-7 partner-acc-cnt">
+                <div class="flex center-xs vertical-interval-big no-top">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            @Html.Partial("_Logo", new AdvantShop.Areas.Partners.Models.Common.LogoModel { DisplayHref = false })
+                        </div>
+                    </div>
+                </div>
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+    <div class="color-scheme--light">
+        @Html.Action("CookiesPolicy", "Common", new { area = "" })
+    </div>
+    @Html.GetNotifyMessages()
+    @Html.Partial("~/Areas/Partners/Views/Shared/_FooterScripts.cshtml")
+</body>
+</html>

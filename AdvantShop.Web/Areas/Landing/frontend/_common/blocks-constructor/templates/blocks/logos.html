@@ -1,0 +1,191 @@
+<div>
+    <div data-tabs class="tabs tabs-horizontal tabs-lp--minimalistic">
+        <ul class="tabs-headers row center-xs start-sm">
+            <li
+                id="tabPartnersFront"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Внешний вид
+                </span>
+            </li>
+            <li
+                id="tabPartners"
+                class="tabs-header-item tabs-lp__header-item--minimalistic-slim col-xs-12 col-sm-slim"
+                data-tab-header=""
+                data-ng-class="{'tabs-header-active block-constructor-settings-link' : tabHeader.selected}">
+                <span
+                    class="tabs-header-item-link"
+                    data-ng-click="tabs.change(tabHeader)"
+                    data-ng-class="{'link-dotted-invert' : !tabHeader.selected, 'cs-l-2 link-dotted-invert link-dotted-none' : tabHeader.selected}">
+                    Партнеры
+                </span>
+            </li>
+        </ul>
+        <div class="tabs-content">
+            <div class="tab-content" data-tab-content="tabPartnersFront" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="blocks-constructor-settings-col">
+                            <div ng-include="$ctrl.modalData.generalOptionsTemplateUrl"></div>
+                            <div class="blocks-constructor-row" ng-if="$ctrl.modalData.settings.items_in_row !== undefined">
+                                <div class="blocks-constructor-row__name">Кол-во элементов в строке</div>
+                                <input
+                                    class="blocks-constructor-input"
+                                    type="number"
+                                    min="1"
+                                    data-e2e="ItemsInRow"
+                                    ng-model="$ctrl.modalData.settings.items_in_row"
+                                    value="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="blocks-constructor-settings-col--alt">
+                            <div ng-include="$ctrl.modalData.generalRightOptionsTemplateUrl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" data-tab-content="tabPartners" data-ng-class="{'tab-content-active': tabContent.header.selected}">
+            <div class="blocks-constructor-settings-col">
+                <div
+                    ng-if="!$ctrl.modalData.settings.gridColumns"
+                    id="photosSortable"
+                    class="photos-list"
+                    ng-controller="SubBlockGalleryConstructorCtrl as gallery">
+                    <div>
+                        <div class="flex middle-xs flex-wrap" as-sortable="$ctrl.sortableOptions" ng-model="$ctrl.modalData.settings.items">
+                            <div
+                                class="photos-list__item-wrap"
+                                data-ng-repeat="item in $ctrl.modalData.settings.items | blocksConstructorPictureAsObj"
+                                data-as-sortable-item
+                                data-e2e="LogosImg">
+                                <div class="photos-list__item flex center-xs middle-xs">
+                                    <div class="photos-list__item--inner" as-sortable-item-handle ondragstart="return false;">
+                                        <div class="photos-list__item-delete" data-e2e="ItemDel">
+                                            <span
+                                                sweetalert
+                                                sweet-options="{title: 'Вы уверены, что хотите удалить изображение?', type: 'warning', showCancelButton: true }"
+                                                sweet-on-confirm="gallery.delete($ctrl.modalData.landingpageId, $ctrl.modalData.blockId, item.picture.src,
+                                                                                                    [{maxWidth: $ctrl.modalData.settings.settings_picture.maxWidthPicture  || 80, maxHeight: $ctrl.modalData.settings.settings_picture.maxHeightPicture || 80, postfix: 'preview'}],
+                                                                                                    'landinginplace/removepicture',
+                                                                                                    $ctrl.modalData.settings.items, $index)">
+                                                <span>
+                                                    <svg
+                                                        width="16px"
+                                                        class="photos-list__delete link-service--secondary link-decoration-none"
+                                                        data-e2e="LogosDel"
+                                                        height="16px"
+                                                        viewBox="0 0 16 16"
+                                                        version="1.1"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        title="Удалить"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M8.8890873,8.18198052 L12.363961,11.6568542 L11.6568542,12.363961 L8.18198052,8.8890873 L4.70710678,12.363961 L4,11.6568542 L7.47487373,8.18198052 L4,4.70710678 L4.70710678,4 L8.18198052,7.47487373 L11.6568542,4 L12.363961,4.70710678 L8.8890873,8.18198052 Z"></path>
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <picture-loader-trigger
+                                            data-lp-id="{{$ctrl.modalData.landingpageId}}"
+                                            block-id="{{$ctrl.modalData.blockId}}"
+                                            current="item.picture.src"
+                                            delete-picture="false"
+                                            parameters="[{maxHeight: 80,postfix: 'preview'}]"
+                                            gallery-icons-enabled="false"
+                                            max-width-picture="180"
+                                            max-height-picture="180"
+                                            on-apply="gallery.onUploadPicture($ctrl.modalData.settings.items, result, $index)"
+                                            on-resize="gallery.onResizePicture($ctrl.modalData.settings.items, result, $index)"
+                                            on-lazy-load-change="$ctrl.modalData.settings.items[$index].lazyLoadEnabled = result"
+                                            lazy-load-enabled="$ctrl.modalData.settings.items[$index].lazyLoadEnabled"
+                                            picture-show-type="'preview'"
+                                            width-picture="item.picture.width"
+                                            height-picture="item.picture.height">
+                                            <div class="picture-loader-trigger-image-wrap flex middle-xs center-xs">
+                                                <div style="width: 144px; height: 100px">
+                                                    <img
+                                                        picture-loader-element-trigger
+                                                        ng-src="{{item.picture.preview || item.picture.src || $ctrl.NO_PHOTO_PATH}}" />
+                                                </div>
+                                            </div>
+                                        </picture-loader-trigger>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="photos-list__item-wrap">
+                                <picture-loader-trigger
+                                    data-lp-id="{{$ctrl.modalData.landingpageId}}"
+                                    data-block-id="{{$ctrl.modalData.blockId}}"
+                                    data-delete-picture="false"
+                                    gallery-icons-enabled="false"
+                                    parameters="[{maxHeight: 80,postfix: 'preview'}]"
+                                    data-max-width-picture="180"
+                                    data-max-height-picture="180"
+                                    on-apply="gallery.onUploadPicture($ctrl.modalData.settings.items, result, ($ctrl.modalData.settings.items.length || 0) + 1)"
+                                    on-resize="gallery.onResizePicture($ctrl.modalData.settings.items, result, $index)"
+                                    on-lazy-load-change="$ctrl.modalData.settings.items[$ctrl.modalData.settings.items.length || 0].lazyLoadEnabled = result"
+                                    lazy-load-enabled="true"
+                                    picture-show-type="'preview'"
+                                    width-picture="item.picture.width"
+                                    height-picture="item.picture.height">
+                                    <div class="photos-list__item photos-list__add flex center-xs middle-xs" no-drag>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                            version="1.1"
+                                            data-e2e="ImgAdd"
+                                            id="Capa_1"
+                                            x="0px"
+                                            y="0px"
+                                            viewBox="0 0 42 42"
+                                            style="enable-background: new 0 0 42 42"
+                                            xml:space="preserve"
+                                            width="10px"
+                                            height="10px">
+                                            <polygon points="42,19 23,19 23,0 19,0 19,19 0,19 0,23 19,23 19,42 23,42 23,23 42,23 " fill="#3797eb" />
+                                        </svg>
+                                    </div>
+                                </picture-loader-trigger>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" ng-if="$ctrl.modalData.settings.gridColumns">
+                    <div class="col-xs-12 blocks-constructor-settings-col--alt">
+                        <lp-grid
+                            lp-id="$ctrl.modalData.landingpageId"
+                            block-id="$ctrl.modalData.blockId"
+                            source="$ctrl.modalData.settings.items"
+                            data-e2e="gridColumn">
+                            <lp-grid-column
+                                type="picture"
+                                field="picture"
+                                classes="'col-xs-2'"
+                                title="Логотип"
+                                settings-picture="$ctrl.modalData.settings.settings_picture"
+                                ng-if="$ctrl.modalData.settings.gridColumns.icon === true"></lp-grid-column>
+                            <lp-grid-column
+                                type="text"
+                                field="link"
+                                placeholder="'Введите ссылку'"
+                                classes="'col-xs'"
+                                title="Cсылка для логотипа"
+                                ng-if="$ctrl.modalData.settings.gridColumns.link === true"></lp-grid-column>
+                        </lp-grid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

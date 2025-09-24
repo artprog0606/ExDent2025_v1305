@@ -1,0 +1,84 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.ShippingByShippingCostShippingAdminModel
+
+@using AdvantShop.Repository.Currencies
+@{
+    var baseCurrency = CurrencyService.GetAllCurrencies().FirstOrDefault(x => x.Rate == 1f);
+    var baseCurrencySymbol = baseCurrency != null ? baseCurrency.Symbol : "BaseCurrency";
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.ShipByCost.CostOfDeliveryIsSelectedBy")
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm">
+        <div class="m-b-sm">
+            <label class="adv-radio-label">
+               <span class="adv-radio-label-text"> @T("Admin.ShippingMethods.ShipByCost.MaximumDeliveryCost")</span>
+                @Html.RadioButton("ByMaxShippingCost", "true", Model.ByMaxShippingCost == true, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.ByMaxShippingCost" })
+                <span class="adv-radio-emul"></span>
+            </label>
+        </div>
+        <div class="m-b-sm">
+            <label class="adv-radio-label">
+                <span class="adv-radio-label-text">@T("Admin.ShippingMethods.ShipByCost.SumOfCosts")</span>
+                @Html.RadioButton("ByMaxShippingCost", "false", Model.ByMaxShippingCost == false, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.ByMaxShippingCost" })
+                <span class="adv-radio-emul"></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.ShipByCost.CountNumberOfProducts")
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm">
+        <div class="m-b-sm">
+            <label class="adv-radio-label">
+                <span class="adv-radio-label-text">@T("Admin.ShippingMethods.ShipByCost.YesConsider")</span>
+                @Html.RadioButton("UseAmount", "true", Model.UseAmount == true, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.UseAmount" })
+                <span class="adv-radio-emul"></span>
+            </label>
+        </div>
+        <div class="m-b-sm">
+            <label class="adv-radio-label">
+                <span class="adv-radio-label-text">@T("Admin.ShippingMethods.ShipByCost.NotConsider")</span>
+                @Html.RadioButton("UseAmount", "false", Model.UseAmount == false, new { @class = "adv-radio-input", ng_model = "shippingMethod.Params.UseAmount" })
+                <span class="adv-radio-emul"></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.ShippingMethods.FixedRate.DeliveryTime")
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.DeliveryTime, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.DeliveryTime" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.FixedRate.DeliveryTime")">
+            @T("Admin.ShippingMethods.FixedRate.DeliveryTimeAsPeriodOfTime")<br><br>
+            @T("Admin.ShippingMethods.FixedRate.ForExample2days")
+        </help-trigger>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Стоимость доставки по умолчанию
+    </div>
+    <div class="col-xs-12 col-md-2 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        <div class="input-group setting__price-margin-in-numbers">
+            @Html.TextBoxFor(x => x.DefaultShippingCost, new { ng_model = "shippingMethod.Params.DefaultShippingCost", @class = "form-control", validation_input_text = "Стоимость доставки по умолчанию" })
+            <div class="input-group-btn">
+                <span class="btn btn-default"><span>@baseCurrencySymbol</span></span>
+            </div>
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Стоимость доставки по умолчанию">
+            Стоимость доставки по умолчанию для товаров, у которых она не указана
+        </help-trigger>
+    </div>
+</div>

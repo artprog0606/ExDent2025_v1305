@@ -1,0 +1,137 @@
+﻿<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.Settings.TemplatesDocx.Templates.DocumentTemplate'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="form-group row setting__form-group">
+                    <label class="col-xs-12 col-md-3 control-label">
+                        <span class="text-required setting__label"> {{'Admin.Js.Settings.TemplatesDocx.Templates.Name'|translate}} </span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-model="ctrl.name"
+                            required
+                            validation-input-text="{{'Admin.Js.Settings.TemplatesDocx.Templates.Name'|translate}}"
+                            data-autofocus="!isMobile.value" />
+                    </div>
+                </div>
+                <div class="form-group row setting__form-group">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">
+                        <span class="text-required">{{'Admin.Js.Settings.TemplatesDocx.Templates.Type'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <ui-select
+                            data-e2e="BookingServiceCurrency"
+                            class="input-alt"
+                            ng-model="ctrl.type"
+                            required
+                            validation-input-text="{{'Admin.Js.Settings.TemplatesDocx.Templates.Type'|translate}}"
+                            ng-disabled="ctrl.mode === 'edit'">
+                            <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.types | filter: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+
+                        <div ng-if="ctrl.type" class="setting--m-t-sm">
+                            <ui-modal-trigger
+                                data-controller="'DescriptionTemplateCtrl'"
+                                controller-as="ctrl"
+                                size="lg"
+                                data-resolve="{params: { type: ctrl.type, profiMode: ctrl.profiMode}}"
+                                template-url="../areas/admin/content/src/settingsTemplatesDocx/modal/DescriptionTemplate/descriptionTemplate.html">
+                                <a href="" class="edit link-decoration-none m-l-xs"
+                                    >{{'Admin.Js.Settings.TemplatesDocx.Templates.ViewDescription'|translate}}</a
+                                >
+                            </ui-modal-trigger>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row setting__form-group">
+                    <label class="col-xs-12 col-md-3 control-label setting__label">
+                        <span class="text-required">{{'Admin.Js.Settings.TemplatesDocx.Templates.TemplateFile'|translate}}</span>
+                    </label>
+                    <div class="col-xs-12 col-md-9">
+                        <button
+                            class="btn btn-action btn-sm"
+                            type="button"
+                            ngf-drop
+                            ngf-max-size="15MB"
+                            ngf-select=""
+                            accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            ngf-change="ctrl.selectFile($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                            <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold"
+                                >{{ctrl.mode === 'add' ? ('Admin.Js.Settings.TemplatesDocx.Templates.AttachFile'|translate) :
+                                ('Admin.Js.Settings.TemplatesDocx.Templates.AttachNewFile'|translate)}}</span
+                            >
+                        </button>
+                        <help-trigger
+                            class="ng-cloak m-l-xs"
+                            ng-if="ctrl.fileUploadHelpText"
+                            use-template="true"
+                            data-title="{{'Admin.Js.Settings.TemplatesDocx.Templates.DocumentTemplateFile'|translate}}">
+                            <div class="help-content">
+                                <span ng-bind="ctrl.fileUploadHelpText"></span><br /><br />
+                                <span>{{'Admin.Js.Settings.TemplatesDocx.Templates.ReadMore'|translate}}</span><br />
+                                <a href="https://www.advantshop.net/help/pages/shablon-dokumentov" target="_blank"
+                                    >{{'Admin.Js.Settings.TemplatesDocx.Templates.DocumentTemplates'|translate}}</a
+                                >
+                            </div>
+                        </help-trigger>
+                        <span ng-bind="ctrl.files != null && ctrl.files.length > 0 ? ctrl.files[0].name : null"></span>
+                    </div>
+                </div>
+                <div class="form-group row setting__form-group">
+                    <label class="col-xs-12 col-md-3 control-label setting__label"
+                        >{{'Admin.Js.Settings.TemplatesDocx.Templates.SortOrder'|translate}}</label
+                    >
+                    <div class="col-xs-12 col-md-9">
+                        <input type="number" ng-model="ctrl.sortOrder" class="form-control input-alt" />
+                    </div>
+                </div>
+                <div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+                    <label for="65" class="col-md-3 control-label setting__label setting--m-none"
+                        >{{'Admin.Js.Settings.TemplatesDocx.Templates.ExpertMode'|translate}}</label
+                    >
+                    <div class="col-md-9" ng-class="{'p-r-xs' : isMobile.value}">
+                        <label class="adv-checkbox-label control-checkbox">
+                            <input id="65" type="checkbox" class="adv-checkbox-input" ng-model="ctrl.profiMode" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group row setting__form-group setting--label-with-checkbox-reverse" ng-show="ctrl.profiMode || ctrl.debugMode">
+                    <label for="66" class="col-md-3 control-label setting__label setting--m-none"
+                        >{{'Admin.Js.Settings.TemplatesDocx.Templates.ShowErrors'|translate}}</label
+                    >
+                    <div class="col-md-9" ng-class="{'p-r-xs' : isMobile.value}">
+                        <label class="adv-checkbox-label control-checkbox">
+                            <input id="66" type="checkbox" class="adv-checkbox-input" ng-model="ctrl.debugMode" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ladda="ctrl.btnLoading"
+            type="button"
+            data-use-template="true"
+            data-button-validation-success="ctrl.save(); ctrl.btnLoading = true;"
+            data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.Settings.TemplatesDocx.Templates.Create'|translate) :
+            ('Admin.Js.Settings.TemplatesDocx.Templates.Save'|translate)}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.dismiss()">
+            {{'Admin.Js.Settings.TemplatesDocx.Templates.Cancel'|translate}}
+        </button>
+    </div>
+</form>

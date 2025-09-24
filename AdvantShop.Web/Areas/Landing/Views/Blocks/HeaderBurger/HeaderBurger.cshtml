@@ -1,0 +1,79 @@
+﻿@model BlockModel
+@{
+    bool renderBlockContacts = Model.Block.TryGetSetting("show_email") == true || Model.Block.TryGetSetting("show_phone") == true || Model.Block.TryGetSetting("show_button") == true;
+
+    bool renderSocials = Model.Block.ExistSocials();
+
+    bool rightBlockEmpty = !renderBlockContacts && !renderSocials;
+}
+<header class="lp-header @(Model.Block.TryGetSetting("runDown") == true && Model.Block.TryGetSetting("fixedOnScroll") == true ? "color-scheme__bg-opacity" : "")">
+    <div class="container-fluid">
+        <div class="lp-container">
+            <div class="row middle-xs lp-header__container lp-header__container--strut">
+
+                <div class="col-xs-2 col-md-4 lp-col--vertical-padding text-left lp-menu-header__burger-container lp-menu-header--burger">
+                    @if (Model.Block.NeedRenderMenu())
+                    {
+                        @Html.SubBlock(Model, "menuHeader")
+                    }
+                </div>
+
+                @if (Model.Block.TryGetSetting("show_logo") == true)
+                {
+                    <div class="col-xs col-md-@(Model.Block.TryGetSetting("show_button") == true && Model.Block.TryGetSetting("show_button2") == true ? "3" : "4") col-wl-4 lp-col--vertical-padding text-center">
+                        <div class="lp-header-logo">
+                            @Html.SubBlock(Model, "logo")
+                        </div>
+                    </div>
+                }
+
+                <div class="col-xs-12 col-md-@(Model.Block.TryGetSetting("show_button") == true && Model.Block.TryGetSetting("show_button2") == true ? "5" : "4") col-wl-4 lp-col--vertical-padding hidden-xs visible-md">
+                    @if (renderBlockContacts || renderSocials)
+                    {
+                        <div class="row middle-xs center-xs end-md">
+                            @if (!renderBlockContacts && renderSocials)
+                            {
+                                @Html.Partial("_Socials", Model.Block)
+                            }
+                            else if (renderBlockContacts)
+                            {
+                                <div>
+                                    @if (Model.Block.TryGetSetting("show_email") == true)
+                                    {
+                                        <div class="lp-header__email col-xs-12" data-e2e="headerBurgerEmail">
+                                            @Html.SubBlock(Model, "email")
+                                        </div>
+                                    }
+                                    @if (Model.Block.TryGetSetting("show_phone") == true)
+                                    {
+                                        <div class="lp-header__phone" data-e2e="headerBurgerPhone">
+                                            @Html.SubBlock(Model, "phone")
+                                        </div>
+                                    }
+                                </div>
+                                if (Model.Block.TryGetSetting("show_button2") == true)
+                                {
+                                    <div class="lp-header__callback" data-e2e="HeadersBtn2">
+                                        @Html.Button(Model.Block, "button2")
+                                    </div>
+                                }
+                                if (Model.Block.TryGetSetting("show_button") == true)
+                                {
+                                    <div class="lp-header__callback" data-e2e="HeadersBtn">
+                                        @Html.Button(Model.Block, "button")
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+                @if (Model.Block.TryGetSetting("show_phone") == true)
+                {
+                    <div class="col-xs-2 hidden-md lp-col--vertical-padding lp-header__phone-col">
+                        @Html.SubBlock(Model, "phone_mobile", false)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</header>

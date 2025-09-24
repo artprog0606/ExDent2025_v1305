@@ -1,0 +1,132 @@
+﻿<div class="row m-n" is-mobile ng-class="{'middle-xs' : isMobile.value}">
+    <div
+        class="admin-comment-item__avatar"
+        style="{{isMobile.value ? '' : '-webkit-flex-basis: 70px; -ms-flex-preferred-size: 70px; flex-basis: 70px; min-width: 70px;'}}">
+        <!--<a ng-href="customers/view/{{$ctrl.comment.CustomerId}}">
+            <img ng-src="{{$ctrl.comment.AvatarSrc}}" alt="" />
+        </a>-->
+        <sidebar-user-trigger customer-id="$ctrl.comment.CustomerId">
+            <img ng-src="{{$ctrl.comment.AvatarSrc}}" alt="" />
+        </sidebar-user-trigger>
+    </div>
+    <div class="admin-comment-item__data" ng-if="!isMobile.value">
+        <span class="admin-comment-item__header">
+            <sidebar-user-trigger customer-id="$ctrl.comment.CustomerId">
+                <a href="" class="admin-comment-item-name" ng-bind="$ctrl.comment.Name" data-e2e="commentName"></a>
+            </sidebar-user-trigger>
+
+            <span class="admin-comment-item-date" ng-bind="$ctrl.comment.DateCreatedFormatted"></span>
+        </span>
+
+        <span class="admin-comment-item__actions">
+            <span class="admin-comment-item-link" ng-click="$ctrl.parent.reply($ctrl.comment)" data-e2e="commentAnswer"
+                >{{'Admin.Js.Partials.Reply'|translate}}</span
+            >
+            <span class="admin-comment-item-link" ng-if="$ctrl.comment.IsOwner" ng-click="$ctrl.edit($ctrl.comment)" data-e2e="commentEdit"
+                >{{'Admin.Js.Partials.Edit'|translate}}</span
+            >
+            <span
+                class="admin-comment-item-link"
+                ng-if="$ctrl.comment.CanDelete"
+                ng-click="$ctrl.parent.delete($ctrl.comment.Id)"
+                data-e2e="commentDelete"
+                >{{'Admin.Js.Partials.Delete'|translate}}</span
+            >
+        </span>
+
+        <div
+            ng-if="$ctrl.parent.editingComment != $ctrl.comment.Id"
+            class="admin-comment-item-text"
+            ng-bind-html="$ctrl.comment.Text | linky:'_blank' | nl2br"
+            data-e2e="commentText"></div>
+        <div ng-if="$ctrl.parent.editingComment == $ctrl.comment.Id" class="admin-comment-item-edit">
+            <div class="form-group">
+                <textarea
+                    class="form-control r-v input-alt-mobile"
+                    ng-model="$ctrl.text"
+                    placeholder="{{'Admin.Js.Partials.EnterAComment'|translate}}"
+                    required
+                    autofocus="$ctrl.texFocus"
+                    data-e2e="commentEditText"></textarea>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-action btn-sm" ng-click="$ctrl.save()" data-e2e="commentSave">
+                    {{'Admin.Js.Partials.Save'|translate}}
+                </button>
+                <button type="button" class="btn btn-default btn-sm" ng-click="$ctrl.cancelEdit()" data-e2e="commentCancel">
+                    {{'Admin.Js.Partials.Cancel'|translate}}
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="$ctrl.comment.ParentComment != null" class="admin-comment-item-answer">
+            {{'Admin.Js.Partials.ReplyToComment'|translate}}
+            <a
+                ng-href="customers/view/{{$ctrl.comment.ParentComment.CustomerId}}"
+                class="admin-comment-item-link"
+                ng-bind="$ctrl.comment.ParentComment.Name"
+                ng-click="$ctrl.parent.showComment($event, $ctrl.comment.ParentId)"
+                data-e2e="commentParentName"></a>
+        </div>
+    </div>
+    <div ng-if="isMobile.value">
+        <span class="admin-comment-item__header">
+            <sidebar-user-trigger customer-id="$ctrl.comment.CustomerId">
+                <a href="" class="admin-comment-item-name" ng-bind="$ctrl.comment.Name" data-e2e="commentName"></a>
+            </sidebar-user-trigger>
+
+            <span class="admin-comment-item-date" ng-bind="$ctrl.comment.DateCreatedFormatted"></span>
+        </span>
+    </div>
+    <div ng-if="isMobile.value" class="admin-comment-item__mobile-comment">
+        <div
+            ng-if="$ctrl.parent.editingComment != $ctrl.comment.Id"
+            class="admin-comment-item-text"
+            ng-bind-html="$ctrl.comment.Text | linky:'_blank' | nl2br"
+            data-e2e="commentText"></div>
+        <div ng-if="$ctrl.parent.editingComment == $ctrl.comment.Id" class="admin-comment-item-edit">
+            <div class="form-group">
+                <textarea
+                    class="form-control r-v"
+                    ng-model="$ctrl.text"
+                    placeholder="{{'Admin.Js.Partials.EnterAComment'|translate}}"
+                    required
+                    autofocus="$ctrl.texFocus"
+                    data-e2e="commentEditText"></textarea>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-action btn-sm" ng-click="$ctrl.save()" data-e2e="commentSave">
+                    {{'Admin.Js.Partials.Save'|translate}}
+                </button>
+                <button type="button" class="btn btn-default btn-sm" ng-click="$ctrl.cancelEdit()" data-e2e="commentCancel">
+                    {{'Admin.Js.Partials.Cancel'|translate}}
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="$ctrl.comment.ParentComment != null" class="admin-comment-item-answer">
+            <span>{{'Admin.Js.Partials.ReplyToComment'|translate}}</span>
+            <a
+                ng-href="customers/view/{{$ctrl.comment.ParentComment.CustomerId}}"
+                class="admin-comment-item-link"
+                ng-bind="$ctrl.comment.ParentComment.Name"
+                ng-click="$ctrl.parent.showComment($event, $ctrl.comment.ParentId)"></a>
+        </div>
+
+        <span class="admin-comment-item__actions">
+            <span class="admin-comment-item-link" ng-click="$ctrl.parent.reply($ctrl.comment)" data-e2e="commentAnswer"
+                >{{'Admin.Js.Partials.Reply'|translate}}</span
+            >
+            <span class="admin-comment-item-link" ng-if="$ctrl.comment.IsOwner" ng-click="$ctrl.edit($ctrl.comment)" data-e2e="commentEdit"
+                >{{'Admin.Js.Partials.Edit'|translate}}</span
+            >
+            <span
+                class="admin-comment-item-link"
+                ng-if="$ctrl.comment.CanDelete"
+                ng-click="$ctrl.parent.delete($ctrl.comment.Id)"
+                data-e2e="commentDelete"
+                >{{'Admin.Js.Partials.Delete'|translate}}</span
+            >
+        </span>
+    </div>
+</div>

@@ -1,0 +1,403 @@
+﻿@using AdvantShop.Track
+@using AdvantShop.Trial
+
+@*
+    <a class="text-decoration-none" ng-click="congratulationsDashboard.skipDashboard()">@T("Admin.Home.Congratulations.SkipWizard")</a>
+*@
+
+@{
+    Html.AddAsset("home");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">Настройка магазина</span>";
+    headerModel.ShowOnlySticky = true;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Shared/_Layout.cshtml";
+    }
+}
+
+@Html.Header(headerModel)
+
+<div class="dashboard-content">
+    <div class="dashboard-content__container">
+        <div class="dashboard-content__list ng-cloak">
+            @if (TrialService.IsTrialEnabled)
+            {
+                <div class="dashboard-content__item dashboard-content__item--black-bg dashboard-content__item--p-md dashboard-content__item--shadow @(isMobile ? "" : "dashboard-content__item--flex")" style="margin-bottom:16px;">
+                    <div class="dashboard-content__item-about">
+                        <p class="dashboard-content__text" style="@(isMobile ? "" : "color:#fff;")">@T("Admin.Home.CongratulationsDashboard.HaveTrial")</p>
+                    </div>
+                    <div class="dashboard-content__btn-blue-wrap">
+                        <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Tariffs", "Service")">@T("Admin.Home.CongratulationsDashboard.SelectTariff")</a>
+                    </div>
+                </div>
+            }
+            <div class="dashboard-content__progress-bar-wrapper">
+                <h3 class="dashboard-content__title dashboard-content__title--sub dashboard-content__title--m-b-sm" style="margin-top:16px;">@T("Admin.Home.CongratulationsDashboard.StoreProgress")</h3>
+                <div class="dashboard-content__progress-bar dashboard-content__progress-bar--step-{{congratulationsDashboard.currentStepComplited}}"></div>
+                <p class="dashboard-content__text dashboard-content__text--sub">@T("Admin.Home.CongratulationsDashboard.CompleteTasks")</p>
+            </div>
+
+            <div ng-if="!congratulationsDashboard.steps[0].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                <h3 class="dashboard-content__title dashboard-content__title--m-b-sm">@T("Admin.Home.CongratulationsDashboard.QuickSetup")</h3>
+                <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.EnterCompanyInfo")</p>
+                <form>
+                    <div class="dashboard-content__form-block row">
+                        <div class="dashboard-content__form-item col-xs-12">
+                            <span class="dashboard-content__form-item--title">@T("Admin.Home.CongratulationsDashboard.StoreName") <span class="error-color">*</span></span>
+                            <input class="form-control" type="text" ng-model="congratulationsDashboard.storeName" placeholder="@(isMobile ? T("Admin.Home.CongratulationsDashboard.StoreName").ToString() : "")" required validation-input-text="Название магазина" />
+                        </div>
+
+                        <div class="dashboard-content__form-item col-xs-12 col-md-4">
+                            <span class="dashboard-content__form-item--title">@T("Admin.Home.CongratulationsDashboard.Country")</span>
+                            <select ng-model="congratulationsDashboard.countryId"
+                                    ng-change="congratulationsDashboard.getRegions()"
+                                    ng-options="s.Value as s.Text for s in congratulationsDashboard.data.Countries"
+                                    convert-to-number
+                                    class="form-control">
+                            </select>
+                        </div>
+
+                        <div class="dashboard-content__form-item col-xs-12 col-md-4" ng-show="congratulationsDashboard.hasRegions">
+                            <span class="dashboard-content__form-item--title">@T("Admin.Home.CongratulationsDashboard.Region")</span>
+                            <select ng-model="congratulationsDashboard.regionId"
+                                    ng-options="s.Value as s.Text for s in congratulationsDashboard.regions"
+                                    convert-to-number
+                                    class="form-control">
+                            </select>
+                        </div>
+
+                        <div class="dashboard-content__form-item col-xs-12 col-md-4">
+                            <span class="dashboard-content__form-item--title">@T("Admin.Home.CongratulationsDashboard.City") <span class="error-color">*</span></span>
+                            <input type="text" ng-model="congratulationsDashboard.city"
+                                   autocompleter on-type="city"
+                                   placeholder="Москва"
+                                   required validation-input-text="@T("Admin.Home.CongratulationsDashboard.City")"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="dashboard-content__form-item col-xs-12 col-md-4">
+                            <span class="dashboard-content__form-item--title">@T("Admin.Home.CongratulationsDashboard.PhoneNumber") <span class="error-color">*</span></span>
+                            <input type="tel" ng-model="congratulationsDashboard.phone"
+                                   placeholder="+7(800)455-20-40"
+                                   autocomplete="off"
+                                   mask_control
+                                   mask-control-preset="phone"
+                                   required
+                                   validation-input-text="@T("Admin.Home.CongratulationsDashboard.PhoneNumber")"
+                                   class="form-control" />
+                            <span class="m-b-lg subtext-input @(isMobile ? "dashboard-content__text dashboard-content__text--sub" : "")">@T("Admin.Home.CongratulationsDashboard.DisplayClients")</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--right">
+                        <button type="submit"
+                                class="btn btn-sm btn-success"
+                                button-validation button-validation-success="congratulationsDashboard.saveStoreInfo()">
+                            @T("Admin.Home.CongratulationsDashboard.Next")
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            @if (isMobile)
+            {
+                <div ng-if="!congratulationsDashboard.steps[1].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                    <div class="flex" style="margin-bottom:12px;">
+                        <h3 class="dashboard-content__title m-r-sm flex-grow">@T("Admin.Home.CongratulationsDashboard.FirstItem")</h3>
+                        <div class="dashboard-content__item-right-icon">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_873_2630)">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M38.465 0.184135C34.8023 0.757077 31.5737 2.10575 28.4655 4.3612C27.1809 5.29349 1.66078 30.8009 0.987264 31.8258C0.252051 32.9447 0 33.9095 0 35.6042C0 37.3056 0.247161 38.244 1.01197 39.4454C1.38616 40.0332 4.60363 43.3355 12.8327 51.5773L24.1392 62.9016L25.2584 63.4508L26.3775 64H28.4561H30.5346L31.4751 63.5697C32.4039 63.1446 32.5756 62.9793 45.3727 50.1885C52.4993 43.0655 58.6961 36.7853 59.1434 36.2324C61.6146 33.1786 63.2739 29.3638 63.843 25.427C64.0553 23.9588 64.0551 20.444 63.8428 19.0819C63.0656 14.0974 60.9463 9.91346 57.415 6.39263C54.0501 3.03741 49.86 0.930215 45.0659 0.181874C43.5056 -0.0616265 40.0289 -0.0603701 38.465 0.184135ZM50.9093 12.2659C51.5358 12.5812 51.915 13.209 51.915 13.9305C51.915 14.6519 51.5358 15.2798 50.9093 15.595C49.6811 16.2134 48.2785 15.326 48.2785 13.9305C48.2785 12.917 49.1189 12.0462 50.0968 12.0462C50.3037 12.0462 50.6693 12.145 50.9093 12.2659ZM44.6439 18.6821C45.269 19.009 45.6985 19.8978 45.5791 20.6175C45.5017 21.0849 45.312 21.3362 44.1255 22.5438C43.375 23.3076 42.7609 23.9871 42.7609 24.0538C42.7609 24.1206 43.3311 24.7396 44.0281 25.4294C45.6914 27.0754 45.8924 27.5372 45.3943 28.5681C44.9746 29.4369 43.9564 29.8434 43.0512 29.5035C42.8571 29.4307 41.4286 28.105 39.8768 26.5575C36.7379 23.4275 36.3845 23.1796 35.0489 23.1713C33.6791 23.1626 32.3521 24.0779 31.9014 25.3422C31.6511 26.0444 31.689 27.2179 31.9827 27.8668C32.1436 28.2218 32.8995 29.1049 34.0803 30.3171C36.1218 32.4126 36.5795 33.1064 36.9957 34.7368C37.6287 37.2171 36.9673 39.5784 35.1125 41.4588C33.6939 42.897 32.0743 43.5827 30.0957 43.5827C28.4847 43.5827 26.7359 42.9733 25.6337 42.028L25.1217 41.5888L23.7528 42.9658C22.7438 43.9806 22.2611 44.3759 21.9181 44.4689C20.726 44.7919 19.5622 43.8906 19.5622 42.6445C19.5622 41.9781 19.697 41.7806 21.1726 40.2845L22.5048 38.9338L21.1726 37.5831C19.6994 36.0896 19.5622 35.8891 19.5622 35.2293C19.5622 34.388 20.1918 33.589 20.9984 33.4068C21.9474 33.1923 22.1794 33.3554 25.2678 36.411C27.0471 38.1713 28.3441 39.354 28.6536 39.4983C31.2921 40.7297 34.2027 38.1592 33.2896 35.4043C33.0975 34.8247 32.8001 34.4553 31.1672 32.7672C29.7254 31.2765 29.1592 30.5954 28.815 29.9373C27.3049 27.0516 27.7823 23.7643 30.0405 21.4977C31.8761 19.6553 34.4426 18.9493 36.9266 19.6037C37.6863 19.8039 38.9432 20.455 39.5127 20.9433L40.0231 21.3811L41.3607 20.0582C42.0963 19.3306 42.8111 18.6737 42.949 18.5983C43.3345 18.3877 44.1589 18.4285 44.6439 18.6821Z" fill="#9B51E0" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_873_2630">
+                                        <rect width="64" height="64" fill="white" />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.GoRemoveAdd")</p>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                        <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Index", "Catalog")" target="_blank">@T("Admin.Home.CongratulationsDashboard.Goods")</a>
+                    </div>
+                    <div class="dashboard-content__help-block">
+                        <div class="dashboard-content__help-icon">
+                            <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                            	C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                            	c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                            	c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                            	c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                            </svg>
+                        </div>
+                        <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/add-product" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsAddManual")</a>
+                    </div>
+                </div>
+
+                <div ng-if="!congratulationsDashboard.steps[2].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                    <div class="flex" style="margin-bottom:12px;">
+                        <h3 class="dashboard-content__title m-r-sm flex-grow">@T("Admin.Home.CongratulationsDashboard.CustomizeStoreDesign")</h3>
+                        <div class="dashboard-content__item-right-icon">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.50586 3.125V6.25H4.38086H7.25586V3.125V0H4.38086H1.50586V3.125ZM56.7559 3.125V6.25H59.6309H62.5059V3.125V0H59.6309H56.7559V3.125ZM9.33948 4.083C9.29348 4.129 9.25586 4.93712 9.25586 5.87875C9.25586 7.562 9.25023 7.5965 8.92636 7.9205C8.60436 8.24237 8.55948 8.25 6.98886 8.25H5.38086V32V55.75H6.98886C8.55536 55.75 8.60523 55.7584 8.92298 56.0762C9.23986 56.3931 9.25011 56.4527 9.28373 58.17L9.31836 59.9375H32.0059H54.6934L54.728 58.17C54.7616 56.4527 54.7719 56.3931 55.0887 56.0762C55.4065 55.7584 55.4564 55.75 57.0229 55.75H58.6309V32V8.25H57.0229C55.4564 8.25 55.4065 8.24162 55.0887 7.92375C54.7719 7.60687 54.7616 7.54725 54.728 5.83L54.6934 4.0625L32.0582 4.03088C19.609 4.0135 9.38561 4.037 9.33948 4.083ZM32.4256 6.76463C32.5941 6.8415 32.8734 7.16488 33.0461 7.48338C35.5481 12.0977 46.414 32.7694 46.4586 33C46.493 33.1776 45.7611 36.2539 44.7634 40.125C43.7977 43.8719 43.0074 47.0079 43.0069 47.0938C43.0061 47.202 43.2434 47.25 43.7791 47.25C44.6749 47.25 45.1309 47.549 45.1309 48.1366C45.1309 48.9753 44.6851 49.25 43.3246 49.25C42.8055 49.25 42.3809 49.2806 42.3809 49.318C42.3809 49.4791 40.6055 56.3454 40.482 56.6621C40.1959 57.3959 40.3432 57.3839 32.0725 57.3466C24.6166 57.313 24.5091 57.309 24.254 57.0537C24.072 56.8716 23.6886 55.6857 22.9611 53.0537L21.927 49.3125L20.7476 49.2443C20.099 49.2068 19.4684 49.1299 19.3461 49.0734C18.8294 48.8344 18.7236 47.996 19.1526 47.5392C19.3887 47.288 19.5446 47.25 20.3401 47.25C21.0696 47.25 21.2559 47.212 21.2559 47.063C21.2559 46.9601 20.4089 43.8242 19.3736 40.0942C18.2585 36.0766 17.5162 33.1851 17.5525 33C17.5976 32.7692 28.4752 12.0761 30.9662 7.48225C31.3889 6.703 31.8224 6.48975 32.4256 6.76463ZM25.2614 22.5796L19.5944 33.2844L21.4447 39.9859C22.4625 43.6717 23.3412 46.814 23.3974 46.9688L23.4996 47.25H32.1305H40.7612L40.8794 46.9688C41.0146 46.647 44.3809 33.5396 44.3809 33.3351C44.3809 33.2116 33.9665 13.4531 33.3002 12.3125L33.0082 11.8125L33.007 18.8346L33.0059 25.8566L33.6771 26.164C34.6229 26.597 35.3137 27.2706 35.7769 28.2111C36.1162 28.9006 36.1765 29.163 36.1834 29.9836C36.1904 30.827 36.1407 31.0496 35.7849 31.7725C34.5072 34.3679 31.2859 34.9945 29.1484 33.0634C28.8637 32.8064 28.4514 32.2286 28.2269 31.7725C27.871 31.0496 27.8214 30.827 27.8284 29.9836C27.8352 29.163 27.8955 28.9006 28.2349 28.2111C28.698 27.2706 29.3889 26.597 30.3346 26.164L31.0059 25.8566V18.8659C31.0059 15.0209 30.9884 11.875 30.9671 11.875C30.9457 11.875 28.3781 16.6921 25.2614 22.5796ZM30.8711 28.1593C30.1794 28.6254 29.8809 29.1803 29.8809 30C29.8809 31.2728 30.7331 32.125 32.0059 32.125C33.2786 32.125 34.1309 31.2728 34.1309 30C34.1309 28.7272 33.2786 27.875 32.0059 27.875C31.4712 27.875 31.1874 27.9461 30.8711 28.1593ZM24.0107 49.2812C24.0135 49.2984 24.3934 50.6625 24.855 52.3125L25.6942 55.3125L32.22 55.3449L38.7456 55.3773L38.8685 54.9074C39.6982 51.7324 40.2559 49.5184 40.2559 49.3981C40.2559 49.2855 38.3107 49.25 32.1309 49.25C27.6621 49.25 24.0081 49.2641 24.0107 49.2812ZM1.50586 60.875V64H4.38086H7.25586V60.875V57.75H4.38086H1.50586V60.875ZM56.7559 60.875V64H59.6309H62.5059V60.875V57.75H59.6309H56.7559V60.875Z" fill="#F2994A" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.ChooseDesignColorLogo")</p>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                        <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Index", "Design")" target="_blank">@T("Admin.Home.CongratulationsDashboard.ChangeDesign")</a>
+                    </div>
+                    <div class="dashboard-content__help-block">
+                        <div class="dashboard-content__help-icon">
+                            <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                                C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                                c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                                c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                                c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                            </svg>
+                        </div>
+                        <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/shablony-dizaina" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsTemplates")</a>
+                    </div>
+                </div>
+
+                <div ng-if="!congratulationsDashboard.steps[3].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                    <div class="flex" style="margin-bottom:12px;">
+                        <h3 class="dashboard-content__title m-r-sm flex-grow">@T("Admin.Home.CongratulationsDashboard.ConnectDomain")</h3>
+                        <div class="dashboard-content__item-right-icon">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M30.1922 0.190604C25.3747 1.22273 20.8367 6.54708 18.164 14.303C17.5527 16.0775 16.7454 18.9012 16.7454 19.2658C16.7454 19.4863 17.3028 19.4947 32.0047 19.4947C46.7186 19.4947 47.264 19.4864 47.264 19.2654C47.264 18.8149 46.233 15.275 45.6187 13.6161C42.0947 4.10022 36.1386 -1.08342 30.1922 0.190604ZM22.7197 1.36607C15.4468 3.56628 8.97347 8.51603 4.89187 14.9982C4.1468 16.1816 2.61187 19.1231 2.61187 19.3677C2.61187 19.4519 4.61033 19.4947 8.53671 19.4947H14.4616L14.797 18.1133C16.4503 11.3045 19.2471 5.76749 22.888 2.09513C23.4943 1.48364 23.9783 0.986712 23.9638 0.990589C23.9492 0.994466 23.3893 1.16344 22.7197 1.36607ZM41.1197 2.09051C44.7174 5.70045 47.4511 11.0828 49.1491 17.9L49.5463 19.4947H55.4719C59.6024 19.4947 61.3975 19.454 61.3975 19.3607C61.3975 19.1278 59.8119 16.102 59.0812 14.9404C57.8103 12.9199 56.6154 11.4536 54.5844 9.42258C51.6736 6.51194 49.389 4.8777 45.8328 3.16278C43.9663 2.26274 42.468 1.68163 40.8696 1.23799L40.0409 1.0081L41.1197 2.09051ZM1.5965 21.9649C1.3511 22.5969 0.625286 25.5472 0.43517 26.6865C-0.145057 30.1617 -0.145057 33.8429 0.43517 37.318C0.625286 38.4573 1.3511 41.4076 1.5965 42.0396L1.73008 42.3836H32.0047H62.2793L62.4128 42.0396C62.7363 41.2056 63.4211 38.2968 63.6715 36.6926C64.063 34.1837 64.063 29.8208 63.6715 27.3119C63.4211 25.7077 62.7363 22.7989 62.4128 21.9649L62.2793 21.621H32.0047H1.73008L1.5965 21.9649ZM8.85728 25.2398C9.12181 25.5043 9.12569 25.5166 10.5614 30.5313C11.1078 32.4395 11.5829 34.0009 11.6173 34.0009C11.6517 34.0009 12.1263 32.4397 12.672 30.5314C14.0915 25.5669 14.1111 25.5061 14.3774 25.2398C14.6839 24.9332 15.376 24.9244 15.7438 25.2222C15.9573 25.395 16.2613 26.2757 17.0714 29.0682C17.6492 31.0603 18.2128 32.9998 18.324 33.3781C18.5727 34.2251 18.4327 34.5707 19.8841 29.525C20.6431 26.8863 21.111 25.4668 21.2832 25.2794C21.8532 24.6596 23.0435 25.1252 23.0391 25.9664C23.0371 26.3655 19.6806 38.0299 19.4262 38.5224C19.2357 38.891 19.0146 39.0065 18.5001 39.0065C17.7711 39.0065 17.6791 38.8094 16.4864 34.6914C15.8688 32.5589 15.3018 30.5889 15.2265 30.3137C15.0929 29.8255 15.0599 29.9168 13.8477 34.1286C12.5114 38.7713 12.4038 39.0065 11.6173 39.0065C10.8042 39.0065 10.7633 38.9075 8.87179 32.3711C7.90533 29.0312 7.1146 26.1441 7.1146 25.9554C7.1146 25.1609 8.29406 24.6766 8.85728 25.2398ZM25.7379 25.2169C25.9378 25.382 26.298 26.4643 27.2054 29.6258C27.8669 31.9304 28.4475 33.8594 28.4958 33.9127C28.5441 33.9658 29.1298 32.1085 29.7976 29.7852C30.8008 26.2939 31.0664 25.5121 31.3275 25.2794C31.8611 24.8042 32.6028 24.9514 32.9201 25.5959C33.0123 25.783 33.6154 27.7772 34.2604 30.0275C34.9055 32.2777 35.4459 34.1061 35.4614 34.0905C35.4769 34.075 36.0519 32.1226 36.7392 29.7519C38.0818 25.1205 38.1383 24.998 38.9366 24.998C39.3887 24.998 39.8437 25.355 39.9545 25.7965C40.0514 26.1825 36.5003 38.4188 36.1927 38.7586C35.8725 39.1125 35.0813 39.0945 34.7195 38.7251C34.5171 38.5186 34.127 37.3189 33.2555 34.2229C32.6019 31.9013 32.0391 30.0024 32.0047 30.0029C31.9703 30.0033 31.4951 31.565 30.9488 33.4733C29.5131 38.488 29.5092 38.5002 29.2446 38.7647C28.9517 39.0577 28.2904 39.0818 27.9073 38.8135C27.5938 38.5938 27.6418 38.7426 25.5053 31.3801C24.6772 28.527 23.9998 26.062 23.9998 25.9023C23.9998 25.1704 25.1383 24.7214 25.7379 25.2169ZM42.6773 25.2794C42.8838 25.4871 43.283 26.6902 44.2007 29.8707L45.4442 34.1806L45.7208 33.2478C45.8729 32.7347 46.4353 30.7953 46.9706 28.9379C48.0132 25.3206 48.1692 24.998 48.8773 24.998C49.6918 24.998 49.7941 25.2177 51.1065 29.7806C51.7741 32.1015 52.359 33.9588 52.4067 33.9081C52.4542 33.8574 53.0113 32.0148 53.6447 29.8134C54.836 25.6722 54.9258 25.4134 55.2579 25.1584C55.8236 24.724 56.8948 25.2278 56.8948 25.9282C56.8948 26.1022 56.1009 28.9893 55.1307 32.3441C53.92 36.5305 53.2855 38.532 53.1077 38.7251C52.9303 38.9178 52.7055 39.0065 52.3938 39.0065C51.848 39.0065 51.4507 38.6782 51.2894 38.094C50.3718 34.7708 48.9435 30.0254 48.8823 30.0965C48.8385 30.1471 48.2612 32.0742 47.599 34.3787C46.3052 38.8826 46.2477 39.0065 45.4503 39.0065C44.6305 39.0065 44.6385 39.0259 42.6889 32.318C41.585 28.5197 40.8998 25.9569 40.9426 25.7863C41.1316 25.0334 42.1396 24.7389 42.6773 25.2794ZM2.61187 44.6368C2.61187 44.8815 4.14667 47.8229 4.88975 49.0022C6.19504 51.0742 7.366 52.5202 9.36371 54.5271C12.1959 57.3724 14.6508 59.1385 18.0575 60.7817C19.8891 61.6653 21.5722 62.3233 23.0749 62.7432L23.9636 62.9916L22.886 61.9119C19.2957 58.3145 16.559 52.9241 14.8603 46.1046L14.4631 44.5099H8.53746C4.61058 44.5099 2.61187 44.5526 2.61187 44.6368ZM16.7454 44.7387C16.7454 45.1057 17.5549 47.9342 18.1654 49.7005C20.8833 57.5637 25.3882 62.8155 30.2796 63.8231C35.9157 64.9842 41.5441 60.3737 45.1223 51.6652C46.0417 49.4272 47.264 45.4721 47.264 44.7344C47.264 44.5196 46.6002 44.5099 32.0047 44.5099C17.3028 44.5099 16.7454 44.5182 16.7454 44.7387ZM49.3857 45.229C48.8148 48.0177 47.3843 52.1032 46.0063 54.8808C44.4844 57.9484 42.4682 60.7854 40.6715 62.3866L39.97 63.0118L40.4588 62.884C43.3793 62.1199 46.8442 60.5472 49.6404 58.7162C53.252 56.3514 56.8975 52.6041 59.2076 48.8825C60.0138 47.5835 61.3975 44.9214 61.3975 44.6691C61.3975 44.5424 60.1854 44.5099 55.4653 44.5099H49.5331L49.3857 45.229Z" fill="#56CCF2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.NowTechnicalAddress") @UrlService.GetUrl() @T("Admin.Home.CongratulationsDashboard.HaveYourOwnDomain")</p>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                        <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("DomainsManage", "Service")" target="_blank">@T("Admin.Home.CongratulationsDashboard.ConnectDomainDo")</a>
+                    </div>
+                    <div class="dashboard-content__help-block">
+                        <div class="dashboard-content__help-icon">
+                            <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                                C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                                c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                                c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                                c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                            </svg>
+                        </div>
+                        <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/svoy-domen-na-saas-from-admin-panel" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsConnectingDomains")</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                    <div class="flex" style="margin-bottom:12px;">
+                        <h3 class="dashboard-content__title m-r-sm flex-grow">@T("Admin.Home.CongratulationsDashboard.HowLaunchOnlineStore")</h3>
+                        <div class="dashboard-content__item-right-icon">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9496 19.5411C7.226 22.8998 0.0489939 25.6866 0.000781334 25.7339C-0.0807898 25.8139 6.25117 28.1488 6.55001 28.1488C6.62454 28.1488 6.79737 27.896 6.93395 27.587C7.21278 26.9567 7.24576 26.9432 8.78479 26.8272C9.60213 26.7656 9.83288 26.7875 9.9585 26.9387C10.1215 27.1352 9.91835 27.2202 8.7114 27.4606C7.90903 27.6203 8.11686 27.2515 6.26124 31.809C4.53742 36.0429 3.56083 39.6638 3.45459 42.2153L3.39039 43.7565L4.06826 44.0664C5.08312 44.5302 6.43156 44.7046 7.51175 44.5115C8.50407 44.3342 9.44453 43.9696 9.52799 43.7299C9.57255 43.602 10.2424 32.5246 10.3783 29.6683L10.4108 28.9849L12.4878 28.5091C13.6302 28.2475 14.6327 28.031 14.7157 28.0281C14.8282 28.0242 14.8335 28.1174 14.7367 28.3953C14.617 28.7387 14.4803 28.8077 12.9809 29.2803C12.0867 29.5622 11.3549 29.8209 11.3549 29.8551C11.3549 29.9653 11.89 30.136 22.0221 33.2588L31.9968 36.3331L41.4078 33.4419C48.4738 31.2712 52.4719 29.9616 57.4536 28.1863C61.1027 26.8858 64.0484 25.7827 63.9994 25.7349C63.8699 25.6083 32.1399 13.4194 31.9612 13.4275C31.8784 13.4312 24.6732 16.1824 15.9496 19.5411ZM12.7638 37.9427L12.8025 43.3175L13.2253 44.1596C14.8422 47.3815 20.668 49.8764 28.1601 50.5558C29.9657 50.7196 34.0674 50.7159 35.9018 50.549C43.4007 49.8665 49.2033 47.3703 50.7927 44.1432L51.1964 43.3235L51.2351 37.9458L51.274 32.568L50.9204 32.6711C50.7261 32.7279 46.3893 34.0602 41.2832 35.6321L31.9995 38.4898L22.7157 35.6321C17.6097 34.0602 13.2728 32.7279 13.0785 32.6711L12.7249 32.568L12.7638 37.9427Z" fill="#3d8af6" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.EightLessonsCourse")</p>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md">
+                        <a class="btn btn-sm btn-success"
+                           href="https://www.advantshop.net/courses/createshopcourse?utm_source=advantshop&utm_medium=site&utm_campaign=dashboard"
+                           target="_blank">@T("Admin.Home.CongratulationsDashboard.MoreAboutCourse")</a>
+                    </div>
+                </div>
+                
+                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                    <div class="flex" style="margin-bottom:12px;">
+                        <h3 class="dashboard-content__title m-r-sm flex-grow">@T("Admin.Home.CongratulationsDashboard.MyAchievements")</h3>
+                        <div class="dashboard-content__item-right-icon">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9496 19.5411C7.226 22.8998 0.0489939 25.6866 0.000781334 25.7339C-0.0807898 25.8139 6.25117 28.1488 6.55001 28.1488C6.62454 28.1488 6.79737 27.896 6.93395 27.587C7.21278 26.9567 7.24576 26.9432 8.78479 26.8272C9.60213 26.7656 9.83288 26.7875 9.9585 26.9387C10.1215 27.1352 9.91835 27.2202 8.7114 27.4606C7.90903 27.6203 8.11686 27.2515 6.26124 31.809C4.53742 36.0429 3.56083 39.6638 3.45459 42.2153L3.39039 43.7565L4.06826 44.0664C5.08312 44.5302 6.43156 44.7046 7.51175 44.5115C8.50407 44.3342 9.44453 43.9696 9.52799 43.7299C9.57255 43.602 10.2424 32.5246 10.3783 29.6683L10.4108 28.9849L12.4878 28.5091C13.6302 28.2475 14.6327 28.031 14.7157 28.0281C14.8282 28.0242 14.8335 28.1174 14.7367 28.3953C14.617 28.7387 14.4803 28.8077 12.9809 29.2803C12.0867 29.5622 11.3549 29.8209 11.3549 29.8551C11.3549 29.9653 11.89 30.136 22.0221 33.2588L31.9968 36.3331L41.4078 33.4419C48.4738 31.2712 52.4719 29.9616 57.4536 28.1863C61.1027 26.8858 64.0484 25.7827 63.9994 25.7349C63.8699 25.6083 32.1399 13.4194 31.9612 13.4275C31.8784 13.4312 24.6732 16.1824 15.9496 19.5411ZM12.7638 37.9427L12.8025 43.3175L13.2253 44.1596C14.8422 47.3815 20.668 49.8764 28.1601 50.5558C29.9657 50.7196 34.0674 50.7159 35.9018 50.549C43.4007 49.8665 49.2033 47.3703 50.7927 44.1432L51.1964 43.3235L51.2351 37.9458L51.274 32.568L50.9204 32.6711C50.7261 32.7279 46.3893 34.0602 41.2832 35.6321L31.9995 38.4898L22.7157 35.6321C17.6097 34.0602 13.2728 32.7279 13.0785 32.6711L12.7249 32.568L12.7638 37.9427Z" fill="#54b8d0" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.MyAchievementsCompleteTasks")</p>
+                    <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md">
+                        <a class="btn btn-sm btn-success"
+                           href="@Url.AbsoluteActionUrl("Achievements", "Home")">
+                            @T("Admin.Home.CongratulationsDashboard.GoToAchievements")
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div ng-if="!congratulationsDashboard.steps[1].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex">
+                    <div class="dashboard-content__item-about">
+                        <h3 class="dashboard-content__title dashboard-content__title">@T("Admin.Home.CongratulationsDashboard.FirstItem")</h3>
+                        <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.GoRemoveAdd")</p>
+                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                            <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Index", "Catalog")" target="_blank">@T("Admin.Home.CongratulationsDashboard.Goods")</a>
+                        </div>
+                        <div class="dashboard-content__help-block">
+                            <div class="dashboard-content__help-icon">
+                                <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                    <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                    <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                            		C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                            		c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                    <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                            		c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                            		c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                                </svg>
+                            </div>
+                            <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/add-product" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsAddManual")</a>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__item-right-content">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_873_2630)">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M38.465 0.184135C34.8023 0.757077 31.5737 2.10575 28.4655 4.3612C27.1809 5.29349 1.66078 30.8009 0.987264 31.8258C0.252051 32.9447 0 33.9095 0 35.6042C0 37.3056 0.247161 38.244 1.01197 39.4454C1.38616 40.0332 4.60363 43.3355 12.8327 51.5773L24.1392 62.9016L25.2584 63.4508L26.3775 64H28.4561H30.5346L31.4751 63.5697C32.4039 63.1446 32.5756 62.9793 45.3727 50.1885C52.4993 43.0655 58.6961 36.7853 59.1434 36.2324C61.6146 33.1786 63.2739 29.3638 63.843 25.427C64.0553 23.9588 64.0551 20.444 63.8428 19.0819C63.0656 14.0974 60.9463 9.91346 57.415 6.39263C54.0501 3.03741 49.86 0.930215 45.0659 0.181874C43.5056 -0.0616265 40.0289 -0.0603701 38.465 0.184135ZM50.9093 12.2659C51.5358 12.5812 51.915 13.209 51.915 13.9305C51.915 14.6519 51.5358 15.2798 50.9093 15.595C49.6811 16.2134 48.2785 15.326 48.2785 13.9305C48.2785 12.917 49.1189 12.0462 50.0968 12.0462C50.3037 12.0462 50.6693 12.145 50.9093 12.2659ZM44.6439 18.6821C45.269 19.009 45.6985 19.8978 45.5791 20.6175C45.5017 21.0849 45.312 21.3362 44.1255 22.5438C43.375 23.3076 42.7609 23.9871 42.7609 24.0538C42.7609 24.1206 43.3311 24.7396 44.0281 25.4294C45.6914 27.0754 45.8924 27.5372 45.3943 28.5681C44.9746 29.4369 43.9564 29.8434 43.0512 29.5035C42.8571 29.4307 41.4286 28.105 39.8768 26.5575C36.7379 23.4275 36.3845 23.1796 35.0489 23.1713C33.6791 23.1626 32.3521 24.0779 31.9014 25.3422C31.6511 26.0444 31.689 27.2179 31.9827 27.8668C32.1436 28.2218 32.8995 29.1049 34.0803 30.3171C36.1218 32.4126 36.5795 33.1064 36.9957 34.7368C37.6287 37.2171 36.9673 39.5784 35.1125 41.4588C33.6939 42.897 32.0743 43.5827 30.0957 43.5827C28.4847 43.5827 26.7359 42.9733 25.6337 42.028L25.1217 41.5888L23.7528 42.9658C22.7438 43.9806 22.2611 44.3759 21.9181 44.4689C20.726 44.7919 19.5622 43.8906 19.5622 42.6445C19.5622 41.9781 19.697 41.7806 21.1726 40.2845L22.5048 38.9338L21.1726 37.5831C19.6994 36.0896 19.5622 35.8891 19.5622 35.2293C19.5622 34.388 20.1918 33.589 20.9984 33.4068C21.9474 33.1923 22.1794 33.3554 25.2678 36.411C27.0471 38.1713 28.3441 39.354 28.6536 39.4983C31.2921 40.7297 34.2027 38.1592 33.2896 35.4043C33.0975 34.8247 32.8001 34.4553 31.1672 32.7672C29.7254 31.2765 29.1592 30.5954 28.815 29.9373C27.3049 27.0516 27.7823 23.7643 30.0405 21.4977C31.8761 19.6553 34.4426 18.9493 36.9266 19.6037C37.6863 19.8039 38.9432 20.455 39.5127 20.9433L40.0231 21.3811L41.3607 20.0582C42.0963 19.3306 42.8111 18.6737 42.949 18.5983C43.3345 18.3877 44.1589 18.4285 44.6439 18.6821Z" fill="#9B51E0" />
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_873_2630">
+                                    <rect width="64" height="64" fill="white" />
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+
+                <div ng-if="!congratulationsDashboard.steps[2].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex">
+                    <div class="dashboard-content__item-about">
+                        <h3 class="dashboard-content__title">@T("Admin.Home.CongratulationsDashboard.CustomizeStoreDesign")</h3>
+                        <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.ChooseDesignColorLogo")</p>
+                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                            <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("Index", "Design")" target="_blank">@T("Admin.Home.CongratulationsDashboard.ChangeDesign")</a>
+                        </div>
+                        <div class="dashboard-content__help-block">
+                            <div class="dashboard-content__help-icon">
+                                <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                    <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                    <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                                    C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                                    c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                    <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                                    c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                                    c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                                </svg>
+                            </div>
+                            <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/shablony-dizaina" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsTemplates")</a>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__item-right-content">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M1.50586 3.125V6.25H4.38086H7.25586V3.125V0H4.38086H1.50586V3.125ZM56.7559 3.125V6.25H59.6309H62.5059V3.125V0H59.6309H56.7559V3.125ZM9.33948 4.083C9.29348 4.129 9.25586 4.93712 9.25586 5.87875C9.25586 7.562 9.25023 7.5965 8.92636 7.9205C8.60436 8.24237 8.55948 8.25 6.98886 8.25H5.38086V32V55.75H6.98886C8.55536 55.75 8.60523 55.7584 8.92298 56.0762C9.23986 56.3931 9.25011 56.4527 9.28373 58.17L9.31836 59.9375H32.0059H54.6934L54.728 58.17C54.7616 56.4527 54.7719 56.3931 55.0887 56.0762C55.4065 55.7584 55.4564 55.75 57.0229 55.75H58.6309V32V8.25H57.0229C55.4564 8.25 55.4065 8.24162 55.0887 7.92375C54.7719 7.60687 54.7616 7.54725 54.728 5.83L54.6934 4.0625L32.0582 4.03088C19.609 4.0135 9.38561 4.037 9.33948 4.083ZM32.4256 6.76463C32.5941 6.8415 32.8734 7.16488 33.0461 7.48338C35.5481 12.0977 46.414 32.7694 46.4586 33C46.493 33.1776 45.7611 36.2539 44.7634 40.125C43.7977 43.8719 43.0074 47.0079 43.0069 47.0938C43.0061 47.202 43.2434 47.25 43.7791 47.25C44.6749 47.25 45.1309 47.549 45.1309 48.1366C45.1309 48.9753 44.6851 49.25 43.3246 49.25C42.8055 49.25 42.3809 49.2806 42.3809 49.318C42.3809 49.4791 40.6055 56.3454 40.482 56.6621C40.1959 57.3959 40.3432 57.3839 32.0725 57.3466C24.6166 57.313 24.5091 57.309 24.254 57.0537C24.072 56.8716 23.6886 55.6857 22.9611 53.0537L21.927 49.3125L20.7476 49.2443C20.099 49.2068 19.4684 49.1299 19.3461 49.0734C18.8294 48.8344 18.7236 47.996 19.1526 47.5392C19.3887 47.288 19.5446 47.25 20.3401 47.25C21.0696 47.25 21.2559 47.212 21.2559 47.063C21.2559 46.9601 20.4089 43.8242 19.3736 40.0942C18.2585 36.0766 17.5162 33.1851 17.5525 33C17.5976 32.7692 28.4752 12.0761 30.9662 7.48225C31.3889 6.703 31.8224 6.48975 32.4256 6.76463ZM25.2614 22.5796L19.5944 33.2844L21.4447 39.9859C22.4625 43.6717 23.3412 46.814 23.3974 46.9688L23.4996 47.25H32.1305H40.7612L40.8794 46.9688C41.0146 46.647 44.3809 33.5396 44.3809 33.3351C44.3809 33.2116 33.9665 13.4531 33.3002 12.3125L33.0082 11.8125L33.007 18.8346L33.0059 25.8566L33.6771 26.164C34.6229 26.597 35.3137 27.2706 35.7769 28.2111C36.1162 28.9006 36.1765 29.163 36.1834 29.9836C36.1904 30.827 36.1407 31.0496 35.7849 31.7725C34.5072 34.3679 31.2859 34.9945 29.1484 33.0634C28.8637 32.8064 28.4514 32.2286 28.2269 31.7725C27.871 31.0496 27.8214 30.827 27.8284 29.9836C27.8352 29.163 27.8955 28.9006 28.2349 28.2111C28.698 27.2706 29.3889 26.597 30.3346 26.164L31.0059 25.8566V18.8659C31.0059 15.0209 30.9884 11.875 30.9671 11.875C30.9457 11.875 28.3781 16.6921 25.2614 22.5796ZM30.8711 28.1593C30.1794 28.6254 29.8809 29.1803 29.8809 30C29.8809 31.2728 30.7331 32.125 32.0059 32.125C33.2786 32.125 34.1309 31.2728 34.1309 30C34.1309 28.7272 33.2786 27.875 32.0059 27.875C31.4712 27.875 31.1874 27.9461 30.8711 28.1593ZM24.0107 49.2812C24.0135 49.2984 24.3934 50.6625 24.855 52.3125L25.6942 55.3125L32.22 55.3449L38.7456 55.3773L38.8685 54.9074C39.6982 51.7324 40.2559 49.5184 40.2559 49.3981C40.2559 49.2855 38.3107 49.25 32.1309 49.25C27.6621 49.25 24.0081 49.2641 24.0107 49.2812ZM1.50586 60.875V64H4.38086H7.25586V60.875V57.75H4.38086H1.50586V60.875ZM56.7559 60.875V64H59.6309H62.5059V60.875V57.75H59.6309H56.7559V60.875Z" fill="#F2994A" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div ng-if="!congratulationsDashboard.steps[3].Activated" class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex">
+                    <div class="dashboard-content__item-about">
+                        <h3 class="dashboard-content__title">@T("Admin.Home.CongratulationsDashboard.ConnectDomain")</h3>
+                        <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.NowTechnicalAddress") @UrlService.GetUrl() @T("Admin.Home.CongratulationsDashboard.HaveYourOwnDomain")</p>
+                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-b-md">
+                            <a class="btn btn-sm btn-success" href="@Url.AbsoluteActionUrl("DomainsManage", "Service")" target="_blank">@T("Admin.Home.CongratulationsDashboard.ConnectDomainDo")</a>
+                        </div>
+                        <div class="dashboard-content__help-block">
+                            <div class="dashboard-content__help-icon">
+                                <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+                                    <circle fill="currentColor" cx="256" cy="378.5" r="25"></circle>
+                                    <path fill="currentColor" d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+                                    C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+                                    c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"></path>
+                                    <path fill="currentColor" d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+                                    c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+                                    c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"></path>
+                                </svg>
+                            </div>
+                            <a class="dashboard-content__help-link" href="https://www.advantshop.net/help/pages/svoy-domen-na-saas-from-admin-panel" target="_blank">@T("Admin.Home.CongratulationsDashboard.InstructionsConnectingDomains")</a>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__item-right-content">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M30.1922 0.190604C25.3747 1.22273 20.8367 6.54708 18.164 14.303C17.5527 16.0775 16.7454 18.9012 16.7454 19.2658C16.7454 19.4863 17.3028 19.4947 32.0047 19.4947C46.7186 19.4947 47.264 19.4864 47.264 19.2654C47.264 18.8149 46.233 15.275 45.6187 13.6161C42.0947 4.10022 36.1386 -1.08342 30.1922 0.190604ZM22.7197 1.36607C15.4468 3.56628 8.97347 8.51603 4.89187 14.9982C4.1468 16.1816 2.61187 19.1231 2.61187 19.3677C2.61187 19.4519 4.61033 19.4947 8.53671 19.4947H14.4616L14.797 18.1133C16.4503 11.3045 19.2471 5.76749 22.888 2.09513C23.4943 1.48364 23.9783 0.986712 23.9638 0.990589C23.9492 0.994466 23.3893 1.16344 22.7197 1.36607ZM41.1197 2.09051C44.7174 5.70045 47.4511 11.0828 49.1491 17.9L49.5463 19.4947H55.4719C59.6024 19.4947 61.3975 19.454 61.3975 19.3607C61.3975 19.1278 59.8119 16.102 59.0812 14.9404C57.8103 12.9199 56.6154 11.4536 54.5844 9.42258C51.6736 6.51194 49.389 4.8777 45.8328 3.16278C43.9663 2.26274 42.468 1.68163 40.8696 1.23799L40.0409 1.0081L41.1197 2.09051ZM1.5965 21.9649C1.3511 22.5969 0.625286 25.5472 0.43517 26.6865C-0.145057 30.1617 -0.145057 33.8429 0.43517 37.318C0.625286 38.4573 1.3511 41.4076 1.5965 42.0396L1.73008 42.3836H32.0047H62.2793L62.4128 42.0396C62.7363 41.2056 63.4211 38.2968 63.6715 36.6926C64.063 34.1837 64.063 29.8208 63.6715 27.3119C63.4211 25.7077 62.7363 22.7989 62.4128 21.9649L62.2793 21.621H32.0047H1.73008L1.5965 21.9649ZM8.85728 25.2398C9.12181 25.5043 9.12569 25.5166 10.5614 30.5313C11.1078 32.4395 11.5829 34.0009 11.6173 34.0009C11.6517 34.0009 12.1263 32.4397 12.672 30.5314C14.0915 25.5669 14.1111 25.5061 14.3774 25.2398C14.6839 24.9332 15.376 24.9244 15.7438 25.2222C15.9573 25.395 16.2613 26.2757 17.0714 29.0682C17.6492 31.0603 18.2128 32.9998 18.324 33.3781C18.5727 34.2251 18.4327 34.5707 19.8841 29.525C20.6431 26.8863 21.111 25.4668 21.2832 25.2794C21.8532 24.6596 23.0435 25.1252 23.0391 25.9664C23.0371 26.3655 19.6806 38.0299 19.4262 38.5224C19.2357 38.891 19.0146 39.0065 18.5001 39.0065C17.7711 39.0065 17.6791 38.8094 16.4864 34.6914C15.8688 32.5589 15.3018 30.5889 15.2265 30.3137C15.0929 29.8255 15.0599 29.9168 13.8477 34.1286C12.5114 38.7713 12.4038 39.0065 11.6173 39.0065C10.8042 39.0065 10.7633 38.9075 8.87179 32.3711C7.90533 29.0312 7.1146 26.1441 7.1146 25.9554C7.1146 25.1609 8.29406 24.6766 8.85728 25.2398ZM25.7379 25.2169C25.9378 25.382 26.298 26.4643 27.2054 29.6258C27.8669 31.9304 28.4475 33.8594 28.4958 33.9127C28.5441 33.9658 29.1298 32.1085 29.7976 29.7852C30.8008 26.2939 31.0664 25.5121 31.3275 25.2794C31.8611 24.8042 32.6028 24.9514 32.9201 25.5959C33.0123 25.783 33.6154 27.7772 34.2604 30.0275C34.9055 32.2777 35.4459 34.1061 35.4614 34.0905C35.4769 34.075 36.0519 32.1226 36.7392 29.7519C38.0818 25.1205 38.1383 24.998 38.9366 24.998C39.3887 24.998 39.8437 25.355 39.9545 25.7965C40.0514 26.1825 36.5003 38.4188 36.1927 38.7586C35.8725 39.1125 35.0813 39.0945 34.7195 38.7251C34.5171 38.5186 34.127 37.3189 33.2555 34.2229C32.6019 31.9013 32.0391 30.0024 32.0047 30.0029C31.9703 30.0033 31.4951 31.565 30.9488 33.4733C29.5131 38.488 29.5092 38.5002 29.2446 38.7647C28.9517 39.0577 28.2904 39.0818 27.9073 38.8135C27.5938 38.5938 27.6418 38.7426 25.5053 31.3801C24.6772 28.527 23.9998 26.062 23.9998 25.9023C23.9998 25.1704 25.1383 24.7214 25.7379 25.2169ZM42.6773 25.2794C42.8838 25.4871 43.283 26.6902 44.2007 29.8707L45.4442 34.1806L45.7208 33.2478C45.8729 32.7347 46.4353 30.7953 46.9706 28.9379C48.0132 25.3206 48.1692 24.998 48.8773 24.998C49.6918 24.998 49.7941 25.2177 51.1065 29.7806C51.7741 32.1015 52.359 33.9588 52.4067 33.9081C52.4542 33.8574 53.0113 32.0148 53.6447 29.8134C54.836 25.6722 54.9258 25.4134 55.2579 25.1584C55.8236 24.724 56.8948 25.2278 56.8948 25.9282C56.8948 26.1022 56.1009 28.9893 55.1307 32.3441C53.92 36.5305 53.2855 38.532 53.1077 38.7251C52.9303 38.9178 52.7055 39.0065 52.3938 39.0065C51.848 39.0065 51.4507 38.6782 51.2894 38.094C50.3718 34.7708 48.9435 30.0254 48.8823 30.0965C48.8385 30.1471 48.2612 32.0742 47.599 34.3787C46.3052 38.8826 46.2477 39.0065 45.4503 39.0065C44.6305 39.0065 44.6385 39.0259 42.6889 32.318C41.585 28.5197 40.8998 25.9569 40.9426 25.7863C41.1316 25.0334 42.1396 24.7389 42.6773 25.2794ZM2.61187 44.6368C2.61187 44.8815 4.14667 47.8229 4.88975 49.0022C6.19504 51.0742 7.366 52.5202 9.36371 54.5271C12.1959 57.3724 14.6508 59.1385 18.0575 60.7817C19.8891 61.6653 21.5722 62.3233 23.0749 62.7432L23.9636 62.9916L22.886 61.9119C19.2957 58.3145 16.559 52.9241 14.8603 46.1046L14.4631 44.5099H8.53746C4.61058 44.5099 2.61187 44.5526 2.61187 44.6368ZM16.7454 44.7387C16.7454 45.1057 17.5549 47.9342 18.1654 49.7005C20.8833 57.5637 25.3882 62.8155 30.2796 63.8231C35.9157 64.9842 41.5441 60.3737 45.1223 51.6652C46.0417 49.4272 47.264 45.4721 47.264 44.7344C47.264 44.5196 46.6002 44.5099 32.0047 44.5099C17.3028 44.5099 16.7454 44.5182 16.7454 44.7387ZM49.3857 45.229C48.8148 48.0177 47.3843 52.1032 46.0063 54.8808C44.4844 57.9484 42.4682 60.7854 40.6715 62.3866L39.97 63.0118L40.4588 62.884C43.3793 62.1199 46.8442 60.5472 49.6404 58.7162C53.252 56.3514 56.8975 52.6041 59.2076 48.8825C60.0138 47.5835 61.3975 44.9214 61.3975 44.6691C61.3975 44.5424 60.1854 44.5099 55.4653 44.5099H49.5331L49.3857 45.229Z" fill="#56CCF2" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex">
+                    <div class="dashboard-content__item-about">
+                        <h3 class="dashboard-content__title">@T("Admin.Home.CongratulationsDashboard.HowLaunchOnlineStore")</h3>
+                        <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.EightLessonsCourse")</p>
+                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md">
+                            <a class="btn btn-sm btn-success"
+                               href="https://www.advantshop.net/courses/createshopcourse?utm_source=advantshop&utm_medium=site&utm_campaign=dashboard"
+                               target="_blank">@T("Admin.Home.CongratulationsDashboard.MoreAboutCourse")</a>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__item-right-content">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9496 19.5411C7.226 22.8998 0.0489939 25.6866 0.000781334 25.7339C-0.0807898 25.8139 6.25117 28.1488 6.55001 28.1488C6.62454 28.1488 6.79737 27.896 6.93395 27.587C7.21278 26.9567 7.24576 26.9432 8.78479 26.8272C9.60213 26.7656 9.83288 26.7875 9.9585 26.9387C10.1215 27.1352 9.91835 27.2202 8.7114 27.4606C7.90903 27.6203 8.11686 27.2515 6.26124 31.809C4.53742 36.0429 3.56083 39.6638 3.45459 42.2153L3.39039 43.7565L4.06826 44.0664C5.08312 44.5302 6.43156 44.7046 7.51175 44.5115C8.50407 44.3342 9.44453 43.9696 9.52799 43.7299C9.57255 43.602 10.2424 32.5246 10.3783 29.6683L10.4108 28.9849L12.4878 28.5091C13.6302 28.2475 14.6327 28.031 14.7157 28.0281C14.8282 28.0242 14.8335 28.1174 14.7367 28.3953C14.617 28.7387 14.4803 28.8077 12.9809 29.2803C12.0867 29.5622 11.3549 29.8209 11.3549 29.8551C11.3549 29.9653 11.89 30.136 22.0221 33.2588L31.9968 36.3331L41.4078 33.4419C48.4738 31.2712 52.4719 29.9616 57.4536 28.1863C61.1027 26.8858 64.0484 25.7827 63.9994 25.7349C63.8699 25.6083 32.1399 13.4194 31.9612 13.4275C31.8784 13.4312 24.6732 16.1824 15.9496 19.5411ZM12.7638 37.9427L12.8025 43.3175L13.2253 44.1596C14.8422 47.3815 20.668 49.8764 28.1601 50.5558C29.9657 50.7196 34.0674 50.7159 35.9018 50.549C43.4007 49.8665 49.2033 47.3703 50.7927 44.1432L51.1964 43.3235L51.2351 37.9458L51.274 32.568L50.9204 32.6711C50.7261 32.7279 46.3893 34.0602 41.2832 35.6321L31.9995 38.4898L22.7157 35.6321C17.6097 34.0602 13.2728 32.7279 13.0785 32.6711L12.7249 32.568L12.7638 37.9427Z" fill="#3d8af6" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow dashboard-content__item--flex">
+                    <div class="dashboard-content__item-about">
+                        <h3 class="dashboard-content__title">@T("Admin.Home.CongratulationsDashboard.MyAchievements")</h3>
+                        <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.MyAchievementsCompleteTasks")</p>
+                        <div class="dashboard-content__btn-blue-wrap dashboard-content__btn-blue-wrap--p-t-md">
+                            <a class="btn btn-sm btn-success"
+                               href="@Url.AbsoluteActionUrl("Achievements", "Home")">
+                                @T("Admin.Home.CongratulationsDashboard.GoToAchievements")
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dashboard-content__item-right-content">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9496 19.5411C7.226 22.8998 0.0489939 25.6866 0.000781334 25.7339C-0.0807898 25.8139 6.25117 28.1488 6.55001 28.1488C6.62454 28.1488 6.79737 27.896 6.93395 27.587C7.21278 26.9567 7.24576 26.9432 8.78479 26.8272C9.60213 26.7656 9.83288 26.7875 9.9585 26.9387C10.1215 27.1352 9.91835 27.2202 8.7114 27.4606C7.90903 27.6203 8.11686 27.2515 6.26124 31.809C4.53742 36.0429 3.56083 39.6638 3.45459 42.2153L3.39039 43.7565L4.06826 44.0664C5.08312 44.5302 6.43156 44.7046 7.51175 44.5115C8.50407 44.3342 9.44453 43.9696 9.52799 43.7299C9.57255 43.602 10.2424 32.5246 10.3783 29.6683L10.4108 28.9849L12.4878 28.5091C13.6302 28.2475 14.6327 28.031 14.7157 28.0281C14.8282 28.0242 14.8335 28.1174 14.7367 28.3953C14.617 28.7387 14.4803 28.8077 12.9809 29.2803C12.0867 29.5622 11.3549 29.8209 11.3549 29.8551C11.3549 29.9653 11.89 30.136 22.0221 33.2588L31.9968 36.3331L41.4078 33.4419C48.4738 31.2712 52.4719 29.9616 57.4536 28.1863C61.1027 26.8858 64.0484 25.7827 63.9994 25.7349C63.8699 25.6083 32.1399 13.4194 31.9612 13.4275C31.8784 13.4312 24.6732 16.1824 15.9496 19.5411ZM12.7638 37.9427L12.8025 43.3175L13.2253 44.1596C14.8422 47.3815 20.668 49.8764 28.1601 50.5558C29.9657 50.7196 34.0674 50.7159 35.9018 50.549C43.4007 49.8665 49.2033 47.3703 50.7927 44.1432L51.1964 43.3235L51.2351 37.9458L51.274 32.568L50.9204 32.6711C50.7261 32.7279 46.3893 34.0602 41.2832 35.6321L31.9995 38.4898L22.7157 35.6321C17.6097 34.0602 13.2728 32.7279 13.0785 32.6711L12.7249 32.568L12.7638 37.9427Z" fill="#54b8d0" />
+                        </svg>
+                    </div>
+                </div>
+            }
+
+            <div class="dashboard-content__item dashboard-content__item--p-md dashboard-content__item--shadow">
+                <h3 class="dashboard-content__title dashboard-content__title--m-b-sm">@T("Admin.Home.CongratulationsDashboard.SubscribeSocialNetworks")</h3>
+                <p class="dashboard-content__text">@T("Admin.Home.CongratulationsDashboard.LatestNewsArticlesLives") </p>
+                <div class="dashboard-content__social-links-wrap">
+                    <a class="dashboard-content__social-link" href="https://vk.com/advantshop" target="_blank">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.0218 0C7.15962 0 0 7.15962 0 16.0218C0 24.8404 7.15962 32.0437 16.0218 32.0437C24.884 32.0437 32.0437 24.884 32.0437 16.0218C32 7.15962 24.8404 0 16.0218 0ZM24.1419 17.7244C24.884 18.4666 25.6698 19.1214 26.3683 19.9509C26.6739 20.3001 26.9359 20.693 27.1542 21.0859C27.4598 21.6971 27.1978 22.3083 26.6739 22.352H23.3997C22.5703 22.4393 21.8718 22.09 21.3042 21.5225C20.8677 21.0423 20.4311 20.5621 19.9945 20.0819C19.8199 19.9072 19.6453 19.6889 19.3834 19.558C18.9468 19.2524 18.5539 19.3397 18.292 19.8199C18.03 20.3001 17.9864 20.824 17.9427 21.3479C17.899 22.1337 17.6808 22.3083 16.895 22.352C15.236 22.4393 13.6644 22.1774 12.2237 21.3479C10.9141 20.6057 9.95361 19.558 9.08049 18.3793C7.3779 16.0655 6.06821 13.5771 4.93315 10.9577C4.67121 10.3902 4.84584 10.0409 5.50068 10.0409C6.59209 10.0409 7.63984 10.0409 8.73124 10.0409C9.1678 10.0409 9.4734 10.3029 9.60437 10.6958C10.1719 12.1364 10.8704 13.4898 11.7872 14.7121C12.0055 15.0614 12.2674 15.367 12.6166 15.6289C13.0095 15.8909 13.2715 15.8035 13.4461 15.367C13.5771 15.105 13.6207 14.7995 13.6207 14.5375C13.708 13.5334 13.708 12.573 13.5771 11.5689C13.4898 10.9577 13.1405 10.5648 12.5293 10.4338C12.2237 10.3902 12.2674 10.2592 12.3984 10.0846C12.6603 9.77899 12.9222 9.60437 13.4025 9.60437H17.1132C17.6808 9.73533 17.8117 9.99727 17.899 10.5648V14.6685C17.899 14.8868 18.03 15.5853 18.4229 15.7162C18.7722 15.8035 18.9468 15.5416 19.1651 15.367C20.0382 14.4065 20.693 13.3151 21.2606 12.1801C21.5225 11.6562 21.7408 11.1323 21.9154 10.6085C22.09 10.2156 22.3083 10.0409 22.7449 10.0409H26.3247C26.412 10.0409 26.543 10.0409 26.6303 10.0409C27.2415 10.1282 27.4161 10.3902 27.1978 11.0014C26.8922 11.9181 26.3247 12.704 25.8008 13.4461C25.1896 14.2756 24.5784 15.0614 23.9673 15.8909C23.3997 16.6767 23.4434 17.0696 24.1419 17.7244Z" fill="#0077FF" />
+                        </svg>
+                    </a>
+
+                    <a class="dashboard-content__social-link" href="https://www.youtube.com/advantshop" target="_blank">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.0068 18.9971L19.2114 15.9995L14.0068 13.002V18.9971Z" fill="#FF0000" />
+                            <path d="M16 0C7.16479 0 0 7.16479 0 16C0 24.8352 7.16479 32 16 32C24.8352 32 32 24.8352 32 16C32 7.16479 24.8352 0 16 0ZM25.9976 16.0164C25.9976 16.0164 25.9976 19.2612 25.5859 20.8259C25.3552 21.6824 24.6799 22.3577 23.8235 22.5881C22.2588 23 16 23 16 23C16 23 9.75757 23 8.17651 22.5718C7.32007 22.3413 6.64478 21.6658 6.41406 20.8093C6.0022 19.2612 6.0022 16 6.0022 16C6.0022 16 6.0022 12.7554 6.41406 11.1907C6.64453 10.3342 7.33643 9.64233 8.17651 9.41187C9.74121 9 16 9 16 9C16 9 22.2588 9 23.8235 9.42822C24.6799 9.65869 25.3552 10.3342 25.5859 11.1907C26.0142 12.7554 25.9976 16.0164 25.9976 16.0164Z" fill="#FF0000" />
+                        </svg>
+                    </a>
+
+                    <a class="dashboard-content__social-link" href="https://t.me/advantshop" target="_blank">
+                        <svg width="32" height="32" id="Livello_1" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240"><defs><linearGradient id="linear-gradient" x1="120" y1="240" x2="120" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1d93d2" /><stop offset="1" stop-color="#38b0e3" /></linearGradient></defs><circle cx="120" cy="120" r="120" fill="url(#linear-gradient)" /><path d="M81.229,128.772l14.237,39.406s1.78,3.687,3.686,3.687,30.255-29.492,30.255-29.492l31.525-60.89L81.737,118.6Z" fill="#c8daea" /><path d="M100.106,138.878l-2.733,29.046s-1.144,8.9,7.754,0,17.415-15.763,17.415-15.763" fill="#a9c6d8" /><path d="M81.486,130.178,52.2,120.636s-3.5-1.42-2.373-4.64c.232-.664.7-1.229,2.1-2.2,6.489-4.523,120.106-45.36,120.106-45.36s3.208-1.081,5.1-.362a2.766,2.766,0,0,1,1.885,2.055,9.357,9.357,0,0,1,.254,2.585c-.009.752-.1,1.449-.169,2.542-.692,11.165-21.4,94.493-21.4,94.493s-1.239,4.876-5.678,5.043A8.13,8.13,0,0,1,146.1,172.5c-8.711-7.493-38.819-27.727-45.472-32.177a1.27,1.27,0,0,1-.546-.9c-.093-.469.417-1.05.417-1.05s52.426-46.6,53.821-51.492c.108-.379-.3-.566-.848-.4-3.482,1.281-63.844,39.4-70.506,43.607A3.21,3.21,0,0,1,81.486,130.178Z" fill="#fff" /></svg>
+                    </a>
+                    <a class="dashboard-content__social-link" href="https://ok.ru/group/53126028329100" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 109" width="32" height="32">
+                            <defs></defs>
+                            <circle fill="#f7931e" cx="54.5" cy="54.5" r="54.5" />
+                            <path fill="#fff" d="M54.45,24.9A16.35,16.35,0,1,0,70.8,41.25,16.36,16.36,0,0,0,54.45,24.9Zm0,23.11a6.76,6.76,0,1,1,6.76-6.76A6.75,6.75,0,0,1,54.45,48Z" />
+                            <path fill="#fff" d="M60.22,70.61A26.41,26.41,0,0,0,70.89,66a4.44,4.44,0,1,0-5.56-6.93,19.3,19.3,0,0,1-11.11,3.24A19.76,19.76,0,0,1,43,59.08,4.45,4.45,0,1,0,37.46,66a27.28,27.28,0,0,0,11,4.66l-9.38,9.8a4.44,4.44,0,1,0,6.4,6.17l8.71-9.28,9.6,9.34a4.44,4.44,0,1,0,6.28-6.29Z" />
+                            <path fill="#fff" d="M54.22,62.32Z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

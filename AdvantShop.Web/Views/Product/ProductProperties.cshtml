@@ -1,0 +1,78 @@
+﻿@model AdvantShop.ViewModel.ProductDetails.PropductPropertiesViewModel
+@{
+    var lineCounter = 1;
+    int? currentGroupId = null;
+    int countVisible = Model.CountVisible;
+    bool needCompactView = countVisible > 0 && countVisible < Model.PropertyValues.Count;
+    int counterLine = 0;
+}
+<div>
+    @if (needCompactView)
+    {
+        <input type="checkbox" id="stateProperies" class="properties__state" />
+    }
+    <ul class="properties" id="properties">
+        @foreach (var propertyValue in Model.PropertyValues)
+        {
+            if (propertyValue.Property.Group != null && currentGroupId != propertyValue.Property.Group.PropertyGroupId)
+            {
+                currentGroupId = propertyValue.Property.Group.PropertyGroupId;
+                lineCounter = 1;
+                <li class="properties-group"><div class="properties-group-name cs-t-5">@Html.Raw(propertyValue.Property.Group.NameDisplayed)</div></li>
+            }
+            else if (propertyValue.Property.Group == null && currentGroupId != null)
+            {
+                currentGroupId = null;
+                lineCounter = 1;
+                <li class="properties-group"><div class="properties-group-name cs-t-5">@T("Product.ProductProperties.Other")</div></li>
+            }
+            else
+            {
+                lineCounter++;
+            }
+            <li class="properties-item @(lineCounter % 2 == 0 ? "properties-item-even" : "properties-item-odd cs-bg-4") @(needCompactView && counterLine >= countVisible ? "properties__item--state-hidden" : "")">
+                <div class="row properties-item-row">
+                    <div class="col-xs-5">
+                        <div class="properties-item-name">
+                            @Html.Raw(propertyValue.Property.NameDisplayed)
+                            @if (propertyValue.Property.Unit.IsNotEmpty())
+                            {
+                                <span class="properties-item-unit">(@Html.Raw(propertyValue.Property.Unit))</span>
+                            }
+                            @if (propertyValue.Property.Description.IsNotEmpty())
+                            {
+                                var id = "propertyPopover_" + propertyValue.Property.PropertyId;
+
+                                <span class="properties-item-hint icon-question-after" data-uib-popover-template="'@id'" data-popover-trigger="'mouseenter'" data-popover-placement="right" data-popover-append-to-body="true"></span>
+                                <script type="text/ng-template" id="@id">
+                                    <div>
+                                        @Html.Raw(propertyValue.Property.Description)
+                                    </div>
+                                </script>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-xs-7">
+                        <div class="properties-item-value">
+                            <span class="inplace-offset" @Html.InplaceProperty(propertyValue.PropertyValueId, propertyValue.PropertyId, Model.ProductId, PropertyInplaceField.Value, ".properties-item")>@Html.Raw(propertyValue.Value)</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {
+                counterLine += 1;
+            }
+        }
+    </ul>
+    @if (needCompactView)
+    {
+        <label for="stateProperies" class="link-dotted properties__trigger cs-l-1">
+            <span class="properties__trigger--show">@T("Product.ProductTabs.Properties.ShowAll")</span>
+            <span class="properties__trigger--hide">@T("Product.ProductTabs.Properties.Hide")</span>
+        </label>
+    }
+</div>
+@if (Model.RenderInplaceAddBlock)
+{
+    <div data-inplace-properties-new data-product-id="@Model.ProductId"></div>
+}

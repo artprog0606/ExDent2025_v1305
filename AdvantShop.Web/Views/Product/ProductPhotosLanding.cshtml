@@ -1,0 +1,341 @@
+﻿@using AdvantShop.Catalog;
+@model AdvantShop.ViewModel.ProductDetailsLanding.ProductPhotosViewLandingModel
+@{
+    Layout = null;
+    var photosModel = Model.ProductPhotosModel;
+    var colorId = photosModel.MainPhoto.ColorID;
+    var sizeId = Model.ProductPhotosModel.ProductModel.SizeId;
+    var modalId = photosModel.ProductModel.BlockId + "-" + photosModel.Product.ProductId;
+}
+
+
+<div data-ng-controller="ProductPhotosLandingCtrl as productPhotosLanding" data-lozad-adv="productPhotosLanding.loadData(product)">
+    <div class="gallery-block" data-lozad-adv="product.setPreview({'colorId': @(colorId != null ? colorId.ToString() : "null"), 'previewPath':'@photosModel.MainPhoto.ImageSrcMiddle()','originalPath':'@photosModel.MainPhoto.ImageSrcBig()', 'title':'@Html.AttributeEncode(photosModel.MainPhoto.Title)', 'PhotoId': @photosModel.MainPhoto.PhotoId})">
+        @if (photosModel.Video != null && photosModel.ProductModel.ShowVideo == true)
+        {
+            <div class="ng-cloak">
+                <div id="modalProductVideo-@modalId" data-modal-control  data-modal-class="modal-iframe-modal" data-callback-close="product.showVideo(false)">
+                    <div class="modal-content" data-ng-if="product.visibleVideo === true">
+                        <div class="modal-iframe-video-inner">
+                            <div class="embed-container">
+                                @Html.Raw(photosModel.Video.PlayerCode)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (photosModel.Photos.Count > 1)
+        {
+            var itemsCountMain = Model.PreviewInAdmin ? Math.Min(photosModel.Photos.Count, 1) : photosModel.Photos.Count;
+            var itemsCount = Model.PreviewInAdmin ? Math.Min(photosModel.Photos.Count, 3) : photosModel.Photos.Count;
+
+            var offer = OfferService.GetMainOffer(photosModel.Product.Offers, photosModel.Product.AllowPreOrder, colorId != null ? colorId : null, sizeId != null ? sizeId : null);
+
+            <div data-lozad-adv="product.carouselExist = true; productPhotosLanding.addPhotoViewer(advBaguetteBox); @(offer != null ? "productPhotosLanding.setColor(" + offer.ColorID + ");" : "")" @Html.Raw(photosModel.EnabledModalPreview && photosModel.Photos.Count > 0 ? "" : "data-adv-baguette-box ignore-class=\"ignore-baguette\"")>
+
+                @if (Model.QuickView)
+                {
+                    <div data-ng-if="productPhotosLanding.showDefaultPhoto">
+                        <figure class="gallery-picture text-static">
+                            <a class="gallery-picture-link link-text-decoration-none"
+                               href="@photosModel.MainPhoto.ImageSrcBig()"
+                               @Html.Raw(photosModel.EnabledModalPreview && photosModel.Photos.Count > 0 ? "data-ng-click=\"product.modalPreviewOpen($event)\"" : "data-adv-baguette-box")>
+                                <img itemprop="image" class="gallery-picture-obj"
+                                     src="@photosModel.MainPhoto.ImageSrcMiddle()"
+                                     data-qazy
+                                     alt="@photosModel.MainPhoto.Alt"
+                                     style="max-height: @(photosModel.PreviewPhotoHeight + "px");"
+                                     data-ng-src="{{product.picture.previewPath}}" />
+                            </a>
+                            <span class="gallery-picture-labels">
+                                @Html.RenderLabels(photosModel.Product.Recomended, photosModel.Product.OnSale, photosModel.Product.BestSeller, photosModel.Product.New, photosModel.Discount, customLabels: photosModel.Labels, warranty: photosModel.Product.ExportOptions.ManufacturerWarranty)
+                            </span>
+                        </figure>
+
+                        @if (photosModel.Video != null && photosModel.ProductModel.ShowVideo == true)
+                        {
+                            <div class="flex center-xs m-t-md m-b-md" data-ng-click="product.showVideo(true)" data-modal-open="modalProductVideo-@modalId">
+                                <div>
+                                    <div class="flex middle-xs pointer">
+                                        <div>
+                                            <svg width="27px" height="27px" style="margin-right: 14px;" viewBox="0 0 52 52" version="1.1" data-e2e="VideoPlayBtn" xmlns="http://www.w3.org/2000/svg">
+                                                <circle stroke="currentColor" class="svg-fill-custom" fill="transparent" cx="26" cy="26" r="25.5"></circle>
+                                                <polygon fill="currentColor" transform="translate(27.950000, 26.000000) rotate(90.000000) translate(-27.950000, -26.000000) " points="27.95 21.45 35.75 30.55 20.15 30.55"></polygon>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="link-decoration-invert">Смотреть видео</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div>
+                        <slick settings="productPhotosLanding.carouselOptionsFor" class="product-details__carousel-for text-center">
+                            @for (var i = 0; i < itemsCountMain; i++)
+                            {
+                                var photo = photosModel.Photos[i];
+
+                                <div class="details-carousel-item js-details-carousel-item" data-ng-click="product.photoInit()" @(photo.ColorID != null ? "data-color-id=" + photo.ColorID : "") data-main-photo="@photo.Main.ToString().ToLower()" data-parameters="{'colorId': @(photo.ColorID != null ? photo.ColorID.ToString() : "null") , 'main' : @photo.Main.ToString().ToLower(), 'previewPath': '@photo.ImageSrcMiddle()', 'originalPath': '@photo.ImageSrcBig()', 'title': '@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                    <figure class="gallery-photos-item">
+                                        <a href="@photo.ImageSrcBig()" class="js-details-carousel-item__link" data-ng-click="$event.preventDefault()">
+                                            <img class="gallery-photos-item-obj img-not-resize" @(i == 0 ? "src": "data-lazy")="@photo.ImageSrcMiddle()" alt="@photo.Alt" title="@photo.Title" />
+                                        </a>
+                                    </figure>
+                                </div>
+                            }
+                        </slick>
+
+                        @if (photosModel.Video != null && photosModel.ProductModel.ShowVideo == true)
+                        {
+                            <div class="flex center-xs m-t-md m-b-md" data-ng-click="product.showVideo(true)" data-modal-open="modalProductVideo-@modalId">
+                                <div>
+                                    <div class="flex middle-xs pointer">
+                                        <div>
+                                            <svg width="27px" height="27px" style="margin-right: 14px;" viewBox="0 0 52 52" version="1.1" data-e2e="VideoPlayBtn" xmlns="http://www.w3.org/2000/svg">
+                                                <circle stroke="currentColor" class="svg-fill-custom" fill="transparent" cx="26" cy="26" r="25.5"></circle>
+                                                <polygon fill="currentColor" transform="translate(27.950000, 26.000000) rotate(90.000000) translate(-27.950000, -26.000000) " points="27.95 21.45 35.75 30.55 20.15 30.55"></polygon>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="link-decoration-invert">Смотреть видео</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div>
+                            <slick class="@(Model.PreviewInAdmin ? "product-details__carousel--preview-admin" : "") product-details__carousel-nav" settings="productPhotosLanding.carouselOptionsNav">
+                                @for (var i = 0; i < itemsCount; i++)
+                                {
+                                    var photo = photosModel.Photos[i];
+
+                                    <div class="details-carousel-item js-details-carousel-item" data-ng-click="product.photoInit()" @(photo.ColorID != null ? "data-color-id=" + photo.ColorID : "") data-parameters="{'colorId': @(photo.ColorID != null ? photo.ColorID.ToString() : "null") , 'main' : @photo.Main.ToString().ToLower(), 'previewPath': '@photo.ImageSrcMiddle()', 'originalPath': '@photo.ImageSrcBig()', 'title': '@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                        <figure class="gallery-photos-item flex center-xs middle-xs">
+                                            <div class="product-details__image-limit-height">
+                                                <img class="gallery-photos-item-obj img-not-resize" @(i < 3 ? "src": "data-lazy")="@photo.ImageSrcSmall()" alt="@photo.Alt" title="@photo.Title" />
+                                            </div>
+                                        </figure>
+                                    </div>
+                                }
+                            </slick>
+                        </div>
+                    </div>
+                    if (photosModel.ProductModel.Gifts != null && photosModel.ProductModel.Gifts.Count > 0)
+                    {
+                        <div class="product-gifts-info product-gifts-info--abs"
+                             data-ng-style="{'top': productPhotosLanding.getHeightSlickFor()}">
+                            <h2 class="product-gifts-info__title lp-h3 lp-h3--color">@T("Landing.Product.ProductPhotos.GiftsTitle")</h2>
+                            @Html.Action("ProductGifts", "Product", new {productModel = photosModel.ProductModel})
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div>
+                        <div class="gallery-photos-slider-list-horizontal ng-cloak"
+                             data-carousel
+                             data-filter-Fn="productPhotosLanding.filterPhoto(item, index, array)"
+                             data-carousel-class="gallery-photos-slider carousel-nav--inside-landing"
+                             data-init-fn="product.addCarousel(carousel)"
+                             data-item-select="product.carouselItemSelect(carousel, item, index)"
+                             data-visible-max="1"
+                             data-stretch="true"
+                             data-dots="true"
+                             data-dots-class="carousel-dots--landing"
+                             data-dots-item-class="carousel-dots-item--landing"
+                             data-prev-class="carousel-arrow-prev--inside-landing"
+                             data-next-class="carousel-arrow-next--inside-landing">
+                            @for (var i = 0; i < itemsCountMain; i++)
+                            {
+                                var photo = photosModel.Photos[i];
+
+                                <div class="details-carousel-item text-center" data-ng-click="product.photoInit()" data-parameters="{'colorId': @(photo.ColorID != null ? photo.ColorID.ToString() : "null") , 'main' : @photo.Main.ToString().ToLower(), 'previewPath': '@photo.ImageSrcMiddle()', 'originalPath': '@photo.ImageSrcBig()', 'title': '@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                    <figure class="gallery-photos-item">
+                                        <a href="@photo.ImageSrcBig()" data-ng-click="$event.preventDefault()">
+                                            <img class="gallery-photos-item-obj img-not-resize" data-src="@photo.ImageSrcMiddle()" alt="@photo.Alt" title="@photo.Title" />
+                                        </a>
+                                    </figure>
+                                </div>
+                            }
+                        </div>
+                        @if (photosModel.ProductModel.Gifts != null && photosModel.ProductModel.Gifts.Count > 0)
+                        {
+                            <div class="product-gifts-info">
+                                <h2 class="product-gifts-info__title lp-h3 lp-h3--color">@T("Landing.Product.ProductPhotos.GiftsTitle")</h2>
+                                @Html.Action("ProductGifts", "Product", new {productModel = photosModel.ProductModel})
+                            </div>
+                        }
+                    </div>
+
+                    if (photosModel.Video != null && photosModel.ProductModel.ShowVideo == true)
+                    {
+                        <div class="flex center-xs m-t-md m-b-md" data-ng-click="product.showVideo(true)" data-modal-open="modalProductVideo-@modalId">
+                            <div>
+                                <div class="flex middle-xs pointer">
+                                    <div>
+                                        <svg width="27px" height="27px" style="margin-right: 14px;" viewBox="0 0 52 52" version="1.1" data-e2e="VideoPlayBtn" xmlns="http://www.w3.org/2000/svg">
+                                            <circle stroke="currentColor" class="svg-fill-custom" fill="transparent" cx="26" cy="26" r="25.5"></circle>
+                                            <polygon fill="currentColor" transform="translate(27.950000, 26.000000) rotate(90.000000) translate(-27.950000, -26.000000) " points="27.95 21.45 35.75 30.55 20.15 30.55"></polygon>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="link-decoration-invert">Смотреть видео</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        }
+        else
+        {
+            <figure class="gallery-picture text-static">
+                <a class="gallery-picture-link link-text-decoration-none"
+                   href="@photosModel.MainPhoto.ImageSrcBig()"
+                   @Html.Raw(photosModel.EnabledModalPreview && photosModel.Photos.Count > 0 ? "data-ng-click=\"product.modalPreviewOpen($event)\"" : "data-adv-baguette-box")>
+                    <img itemprop="image" class="gallery-picture-obj"
+                         src="@photosModel.MainPhoto.ImageSrcMiddle()"
+                         data-qazy
+                         alt="@photosModel.MainPhoto.Alt"
+                         style="max-height: @(photosModel.PreviewPhotoHeight + "px");"
+                         data-ng-src="{{product.picture.previewPath}}" />
+                </a>
+                <span class="gallery-picture-labels">
+                    @Html.RenderLabels(photosModel.Product.Recomended, photosModel.Product.OnSale, photosModel.Product.BestSeller, photosModel.Product.New, photosModel.Discount, customLabels: photosModel.Labels, warranty: photosModel.Product.ExportOptions.ManufacturerWarranty)
+                </span>
+                @Html.Action("ProductGifts", "Product", new { productModel = photosModel.ProductModel })
+            </figure>
+
+            if (photosModel.Video != null && photosModel.ProductModel.ShowVideo == true)
+            {
+                <div class="flex center-xs m-t-md m-b-md" data-ng-click="product.showVideo(true)" data-modal-open="modalProductVideo-@modalId">
+                    <div>
+                        <div class="flex middle-xs pointer">
+                            <div>
+                                <svg width="27px" height="27px" style="margin-right: 14px;" viewBox="0 0 52 52" version="1.1" data-e2e="VideoPlayBtn" xmlns="http://www.w3.org/2000/svg">
+                                    <circle stroke="currentColor" class="svg-fill-custom" fill="transparent" cx="26" cy="26" r="25.5"></circle>
+                                    <polygon fill="currentColor" transform="translate(27.950000, 26.000000) rotate(90.000000) translate(-27.950000, -26.000000) " points="27.95 21.45 35.75 30.55 20.15 30.55"></polygon>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="link-decoration-invert">Смотреть видео</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+
+        @if (photosModel.ActiveThreeSixtyView)
+        {
+            <div id="modalProductRotate" data-modal-control data-move-in-body="false" data-modal-class="modal-rotate" data-callback-close="product.showRotate(false)">
+                <div>
+                    @*<div class="page-title-row details-title-row modal-header">
+                        <h2 class="details-title page-title">@Html.GetPageH1()</h2>
+                    </div>*@
+                    <figure class="details-rotate modal-content" data-ng-if="product.visibleRotate === true">
+                        <div data-rotate
+                             data-image-path="pictures/product/rotate/@Html.Raw(photosModel.Product.ProductId)/"
+                             data-total-frames="@photosModel.Photos360.Count"
+                             data-height="@(photosModel.PreviewPhotoHeight)"
+                             data-width="@(photosModel.PreviewPhotoWidth)"
+                             data-end-frame="@photosModel.Photos360.Count"
+                             data-img-list=".threesixty_images"
+                             data-progress=".spinner"
+                             data-ext="@photosModel.Photos360Ext">
+                        </div>
+                    </figure>
+                </div>
+            </div>
+        }
+
+        <div class="row between-xs middle-xs details-additional-graphics">
+            <div>
+                @if (photosModel.ActiveThreeSixtyView)
+                {
+                    <a href="javascript:void(0)" class="prod-photo-view-change rotate" data-ng-click="product.showRotate(true)" data-modal-open="modalProductRotate">
+                    </a>
+                }
+            </div>
+            @if (photosModel.EnabledModalPreview && photosModel.Photos.Count > 0)
+            {
+                <div>
+                    <a href="javascript:void(0)" class="gallery-zoom icon-search-before-abs cs-l-3 link-dotted" data-ng-click="product.modalPreviewOpen($event, product.picture)">@T("Product.ProductPhotos.Zoom")</a>
+                </div>
+            }
+        </div>
+
+    </div>
+    @if (photosModel.EnabledModalPreview && photosModel.Photos.Count > 0)
+    {
+        <div class="modal ng-hide"
+             id="modalPreview_@photosModel.Product.ProductId"
+             data-modal-control
+             data-callback-open="product.modalPreviewCallbackOpen(modal)"
+             data-modal-class="details-modal-preview">
+            <div data-modal-header class="modal-header">@Html.GetPageH1()</div>
+            <div class="modal-content details-modal-preview-block">
+
+                @if (photosModel.Photos != null && photosModel.Photos.Count > 1)
+                {
+                    <a href="javascript:void(0)" ng-click="product.carouselPreviewPrev()" class="icon-left-open-before details-modal-preview-arrow link-text-decoration-none"></a>
+                }
+
+                <div class="details-modal-preview-cell details-modal-preview-cell-photo">
+                    <figure class="gallery-picture details-preview-block"
+                            data-ng-style="{'height' : product.modalPreviewHeight + 'px'}"
+                            data-ng-class="{'modal-preview-image-load' : product.modalPreviewState === 'load','modal-preview-image-complete' : product.modalPreviewState === 'complete'}"
+                            data-window-resize="product.resizeModalPreview(event)">
+                        <a href="javascript:void(0)"
+                           class="details-preview-block-link"
+                           data-ng-style="{'height' : product.modalPreviewHeight + 'px'}"
+                           @Html.Raw(photosModel.EnabledZoom && photosModel.Photos.Count > 0 ? "data-zoomer  data-type=\"inner\" data-zoomer-title=\"product.picture.title\" data-preview-path=\"product.picture.originalPath\"  data-original-path=\"product.picture.originalPath\"" : string.Empty)>
+                            <img alt="@photosModel.MainPhoto.Alt"
+                                 class="gallery-picture-obj"
+                                 data-ng-style="{'max-height' : product.modalPreviewHeight + 'px'}"
+                                 data-ng-src="{{product.picture.originalPath}}" />
+                        </a>
+                    </figure>
+                </div>
+
+                @if (photosModel.Photos != null && photosModel.Photos.Count > 1)
+                {
+                    <a href="javascript:void(0)" ng-click="product.carouselPreviewNext()" class="icon-right-open-before details-modal-preview-arrow link-text-decoration-none"></a>
+                }
+
+                <div class="carousel details-modal-carousel">
+                    <div class="carousel-inner">
+                        <div class="gallery-photos-slider-list-vertical details-modal-preview-aside"
+                             data-carousel
+                             data-is-vertical="true"
+                             data-stretch="false"
+                             data-init-fn="product.addModalPictureCarousel(carousel)"
+                             data-item-select="product.carouselItemSelect(carousel, item, index)"
+                             data-item-select-class="details-carousel-selected">
+                            @{
+                                var i = 0;
+                            }
+                            @foreach (var photo in photosModel.Photos)
+                            {
+                                <div class="details-carousel-item-vertical" data-parameters="{'colorId': @(photo.ColorID != null ? photo.ColorID.ToString() : "null") , 'main' : @photo.Main.ToString().ToLower(), 'previewPath': '@photo.ImageSrcMiddle()', 'originalPath': '@photo.ImageSrcBig()', 'title': '@Html.AttributeEncode(photo.Title)', 'PhotoId': @photo.PhotoId }">
+                                    <figure class="gallery-photos-item" style="height: @(photosModel.CarouselPhotoHeight + "px"); width: @(photosModel.CarouselPhotoWidth + "px");">
+                                        <img class="gallery-photos-item-obj" data-src="@photo.ImageSrcXSmall()" alt="@photo.Alt" title="@photo.Title" />
+                                    </figure>
+                                </div>
+                                i++;
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

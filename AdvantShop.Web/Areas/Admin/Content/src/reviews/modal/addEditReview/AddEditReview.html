@@ -1,0 +1,227 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddEditReview.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-group row setting__form-group" ng-if="ctrl.mode == 'add' && !ctrl.parentId">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span class="text-required">{{'Admin.Js.AddEditReview.Article'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9 flex">
+                <input
+                    ng-show="ctrl.addArticulIsSelect"
+                    type="text"
+                    class="form-control input-alt m-r-sm"
+                    ng-model="ctrl.ArtNo"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditReview.Article'|translate}}"
+                    data-e2e="ReviewArtNo" />
+                <ui-modal-trigger
+                    data-controller="'ModalProductsSelectvizrCtrl'"
+                    size="xs-11"
+                    resolve="{ multiSelect: false, options: {selectvizrProperty: 'ProductArtNo'}, gridSelectionItemsSelectedFn: {
+                                                fn: ctrl.checkSelectedItem
+                                              }}"
+                    template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html"
+                    data-on-close="ctrl.addArticul(result)">
+                    <a href="" style="min-width: 140px" class="btn btn-sm btn-action">{{'Admin.Js.ProductReport.ChooseProduct'|translate}}</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" ng-if="ctrl.mode != 'add' || ctrl.parentId">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span>{{'Admin.Js.AddEditReview.Product'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <a
+                    ng-href="{{ctrl.productUrl}}?tab=tabReviews"
+                    href=""
+                    target="_blank"
+                    title="{{'Admin.Js.AddEditReview.ViewingProduct'|translate}}>{{ctrl.productName}}"
+                    >{{ctrl.productName}}</a
+                >
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span class="text-required">{{'Admin.Js.AddEditReview.Author'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.Name"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditReview.Author'|translate}}"
+                    data-e2e="ReviewName" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title"> {{'Admin.Js.AddEditReview.Email'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.Email"
+                    data-e2e="ReviewEmail"
+                    ng-pattern="/^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$/i"
+                    validation-input-text="{{'Admin.Js.AddEditReview.Email'|translate}}" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span ng-class="{'text-required': ctrl.Photos.length === 0}">{{'Admin.Js.AddEditReview.Text'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <textarea
+                    data-e2e="ReviewText"
+                    id="ReviewText"
+                    name="ReviewText"
+                    ng-model="ctrl.Text"
+                    class="form-control wysiwyg"
+                    ckeditor="{height: 250}"
+                    ng-required="ctrl.Photos.length == 0"
+                    validation-input-text="{{'Admin.Js.AddEditReview.Text'|translate}}"
+                    validation-input-not-empty="ctrl.validateCkeditor(modelValue)"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-12 col-md-3 control-label form-control-title"> {{'Admin.Js.AddEditReview.Photo'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <div class="row col-xs">
+                    <div class="m-r-sm m-b-sm" ng-repeat="photo in ctrl.Photos">
+                        <div ng-bind="photo.name" ng-if="photo.name"></div>
+                        <img
+                            ng-style="{'max-height': ctrl.reviewImageHeight, 'max-width': ctrl.reviewImageWidth}"
+                            ng-src="{{photo.ImageSrc}}"
+                            ng-if="!photo.name" />
+                        <img
+                            ng-style="{'max-height': ctrl.reviewImageHeight, 'max-width': ctrl.reviewImageWidth}"
+                            ngf-src="photo"
+                            ng-if="photo.name" />
+                        <div>
+                            <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="ctrl.deletePhoto(photo.PhotoId, $index)"
+                                >{{'Admin.Js.AddEditReview.Remove'|translate}}</a
+                            >
+                        </div>
+                    </div>
+                </div>
+                <figure class="flex middle-xs">
+                    <button
+                        data-e2e="ReviewImg"
+                        class="btn btn-action btn-sm"
+                        type="button"
+                        multiple
+                        ngf-drop
+                        ngf-max-size="15MB"
+                        accept="image/*"
+                        ngf-select=""
+                        ngf-change="ctrl.uploadImage($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                        <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">{{'Admin.Js.AddEditReview.SelectFile'|translate}}</span>
+                    </button>
+                    <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                        <div class="help-content" ng-bind-html="ctrl.filesHelpText"></div>
+                    </help-trigger>
+                </figure>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title"> {{'Admin.Js.AddEditReview.Added'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <div
+                    style="{{isMobile.value ? '' : 'display: inline-block; width: 250px; position:relative; vertical-align: middle; min-height: 34px;'}}">
+                    <div
+                        class="input-group"
+                        ng-flatpickr
+                        fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y.m.d H:i', wrap: true, enableTime: true}">
+                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                            <input
+                                id="store-review-edit-date"
+                                type="text"
+                                required
+                                class="form-control input-alt-mobile"
+                                data-e2e="ReviewDateAdd"
+                                ng-flatpickr-input
+                                ng-model="ctrl.AddDate"
+                                validation-input-text="{{'Admin.Js.AddEditReview.Added'|translate}}" />
+                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                        </span>
+                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <label ng-if="!isMobile.value" class="col-xs-slim col-md-3 control-label first-sm">
+                {{'Admin.Js.AddEditReview.Verified'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-9 first-xs" ng-class="{'flex middle-xs' : isMobile.value}">
+                <label class="adv-checkbox-label">
+                    <input type="checkbox" ng-model="ctrl.Checked" class="adv-checkbox-input control-checkbox" data-e2e="ReviewCheckedSelected" />
+                    <span class="adv-checkbox-emul" data-e2e="ReviewCheckedClick"></span>
+                    <span ng-if="isMobile.value" class="setting__label flex-grow m-l-sm">{{'Admin.Js.AddEditReview.Verified'|translate}}</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row middle-xs setting__form-group">
+            <label ng-if="!isMobile.value" class="col-xs-slim col-md-3 control-label first-sm">
+                {{'Admin.Js.AddEditReview.ShowOnMain'|translate}}
+            </label>
+            <div class="col-xs-12 col-md-9 first-xs" ng-class="{'flex middle-xs' : isMobile.value}">
+                <label class="adv-checkbox-label">
+                    <input type="checkbox" ng-model="ctrl.showOnMain" class="adv-checkbox-input control-checkbox" data-e2e="ReviewShowOnMain" />
+                    <span class="adv-checkbox-emul" data-e2e="ReviewShowOnMai"></span>
+                    <span ng-if="isMobile.value" class="setting__label flex-grow m-l-sm">{{'Admin.Js.AddEditReview.ShowOnMain'|translate}}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group row middle-xs setting__form-group" ng-if="ctrl.mode != 'add'">
+            <label class="col-xs-slim col-md-3 control-label"> {{'Admin.Js.Reviews.LikesDislikes'|translate}} </label>
+            <div class="col-xs-slim control-label">
+                <span style="color: #298800" ng-bind="ctrl.LikesCount"></span> / <span style="color: #f81f1f" ng-bind="ctrl.DislikesCount"></span>
+            </div>
+        </div>
+
+        <div class="form-group row middle-xs setting__form-group" ng-if="ctrl.mode != 'add' && ctrl.Rating != null">
+            <label class="col-xs-slim col-md-3 control-label"> {{'Admin.Js.Reviews.Rating'|translate}} </label>
+            <div class="col-xs-slim control-label">
+                <span ng-bind="ctrl.Rating"></span>
+            </div>
+        </div>
+
+        <div class="form-group row middle-xs setting__form-group" ng-if="ctrl.mode != 'add'">
+            <label class="col-xs-slim col-md-3 control-label"> {{'Admin.Js.AddEditReview.Ip'|translate}} </label>
+            <div class="col-xs-slim control-label">
+                <span>{{::ctrl.Ip}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation=""
+            data-ladda="ctrl.isLoading"
+            ng-style="isMobile.value ? {'grid-column': '1', 'grid-row': '1'} : {}">
+            {{'Admin.Js.AddEdit.Save'|translate}}
+        </button>
+        <button
+            class="btn btn-sm btn-default"
+            type="button"
+            ng-click="ctrl.answer()"
+            ng-if="ctrl.mode == 'edit'"
+            ng-style="isMobile.value ? {'grid-column': '2', 'grid-row': '1'} : {}">
+            {{'Admin.Js.AddEdit.Answer'|translate}}
+        </button>
+        <button
+            class="btn btn-default btn-cancel"
+            type="button"
+            ng-click="ctrl.close()"
+            ng-style="isMobile.value ? {'grid-column': 'span 2', 'grid-row': '2'} : {'margin-left':'5px'}">
+            {{'Admin.Js.AddEdit.Cancel'|translate}}
+        </button>
+    </div>
+</form>

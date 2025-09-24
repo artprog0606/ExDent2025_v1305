@@ -1,0 +1,74 @@
+﻿@model AdvantShop.Areas.Mobile.Models.Home.CarouselMobileViewModel
+@{
+    var isMultipleSlides = Model.Sliders.Count > 1;
+}
+@helper  CarouselImage(AdvantShop.Core.Services.CMS.Carousel slider, int i)
+{
+    <img width="@(SettingsDesign.CarouselMobileWidth)" height="@(SettingsDesign.CarouselMobileHeight)" @Html.Raw(i == 0 ? "src" : "src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" data-src")="@slider.Picture.ImageSrc()" class="@(i != 0 ? "carousel-placeholder" : "")" alt="@Html.Encode(slider.Picture.Description)" />
+}
+
+@helper Slide(AdvantShop.Core.Services.CMS.Carousel slider, int i)
+{
+    if (slider.Url.IsNotEmpty())
+    {
+        <a href="@(slider.Url)" @Html.Raw(slider.Blank ? "target=\"_blank\"" : string.Empty)>
+            @CarouselImage(slider, i)
+        </a>
+    }
+    else
+    {
+        <span class="carousel-main-link-noop">
+            @CarouselImage(slider, i)
+        </span>
+    }
+}
+<div>
+    <div class="carousel">
+        <div class="carousel-inner carousel-inner--min-height-mobile">
+            <div data-carousel
+                 class="carousel-main-list @(isMultipleSlides ? "carousel-main-list--with-clones" : "")"
+                 data-carousel-class="carousel-mobile"
+                 data-dots="true"
+                 data-nav="false"
+                 data-dots-class="carousel-mobile-dots"
+                 data-dots-item-class="cs-bg-i-11"
+                 data-dots-item-inner-selected-class="cs-selected"
+                 data-visible-max="1"
+                 data-speed="@Model.Speed"
+                 data-auto="true"
+                 data-auto-pause="@Model.Pause">
+                @{
+                    int i = 0;
+                }
+                @if (isMultipleSlides)
+                {
+                    <div class="carousel-item carousel-main-item js-carousel-clone">
+                        @Slide(Model.Sliders.Last(), Model.Sliders.Count - 1)
+                    </div>
+                }
+                @foreach (var slider in Model.Sliders)
+                {
+                    <div class="carousel-main-item">
+                        @Slide(slider, i)
+                    </div>
+                    i++;
+                }
+                @if (isMultipleSlides)
+                {
+                    <div class="carousel-item carousel-main-item js-carousel-clone">
+                        @Slide(Model.Sliders.First(), i)
+                    </div>
+                }
+            </div>
+        </div>
+        @if (Model.Sliders.Count > 1)
+        {
+            <ul class="carousel-dots carousel-mobile-dots">
+                @for (var j = 0; j < Model.Sliders.Count; j++)
+                {
+                    <li class="carousel-dots-item @(j == 0 ? "carousel-dots-selected" : "")" data-index="@j"><i class="carousel-dots-item-inner cs-bg-i-11 @(j == 0 ? "cs-selected" : "")"></i></li>
+                }
+            </ul>
+        }
+    </div>
+</div>

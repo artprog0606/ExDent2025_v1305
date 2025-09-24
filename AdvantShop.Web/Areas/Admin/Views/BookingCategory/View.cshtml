@@ -1,0 +1,105 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Booking.Category.CategoryModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/Mobile/Views/Booking/_BookingLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/Admin/Views/Booking/_BookingLayout.cshtml";
+    }
+}
+
+<div class="row" @Html.Raw(isMobile ? "ng-init=\"app.bookingServices = bookingServices\"" : "")>
+    @if (!isMobile)
+    {
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            @Html.Action("CategoriesTreeView", new { affiliateId = Model.AffiliateId, categoryIdSelected = Model.Id })
+        </div>
+    }
+    <div class="col-xs-12 col-md-9 col-wl-10">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="sticky-page-name" sticky sticky-top="0">
+                    <div class="page-name-block sticky-page-name-inner">
+                        <div class="page-name-block-item-main">
+                            <h1 class="page-name-block-text sticky-page-name-text bottom-cell @(isMobile ? "setting__subtitle" : "inline m-r-xs")">
+                                @T("Admin.Booking.View.CategoryServices") "@Model.Name"
+                            </h1>
+                             @if (!isMobile)
+                             {
+                                <div class="m-t-xs">
+                                    <a href="@Url.AbsoluteActionUrl("Index")">@T("Admin.Booking.View.ToTheListOfCategories")</a>
+                                </div>
+                             }
+                            @Html.HiddenFor(model => model.Id, new { ng_model = "bookingServices.categoryId" })
+                            @Html.HiddenFor(model => model.AffiliateId, new { ng_model = "bookingServices.affiliateId" })
+                        </div>
+                        @if (!isMobile)
+                        {
+                            <div class="page-name-block-item-additional">
+                                <ui-modal-trigger data-controller="'ModalAddEditBookingCategoryCtrl'" controller-as="ctrl"
+                                                  backdrop="static"
+                                                  template-url="@Html.GetAssetPath("addEditCategoryBooking.html")"
+                                                  data-resolve="{params: {'id': bookingServices.categoryId}}"
+                                                  data-on-close="bookingServices.onCategoryAddedEdit()"
+                                                  data-e2e-booking="BookingCategory"
+                                                  data-e2e-booking-booking-category-id="{{bookingServices.categoryId}}">
+                                    <button data-e2e="EditBookingCategory" class="btn btn-sm btn-success" type="button"
+                                            disabled ng-disabled="!bookingServices.jstreeCategoriesInited">
+                                        @T("Admin.BookingCategory.View.Edit")
+                                    </button>
+                                </ui-modal-trigger>
+                                <ui-modal-trigger data-controller="'ModalAddUpdateBookingServiceCtrl'" controller-as="ctrl" size="lg" backdrop="static"
+                                                  data-resolve="{params: {categoryId : bookingServices.categoryId, affiliateId: bookingServices.affiliateId}}"
+                                                  on-close="bookingServices.onServiceAddedOrUpdated()"
+                                                  template-url="@Html.GetAssetPath("addUpdateBookingService.html")" class="btn--margin-left">
+                                    <button data-e2e="AddBookingService" class="btn btn-sm btn-success" type="button"
+                                            disabled ng-disabled="!bookingServices.gridServicesInited">
+                                        <span class="fa fa-plus"></span>
+                                        @T("Admin.BookingCategory.View.AddService")
+                                    </button>
+                                </ui-modal-trigger>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <div class="@(isMobile ? "" : "m-t-sm")">
+                    <ui-grid-custom grid-unique-id="grid"
+                                    grid-row-identificator="'Id'"
+                                    grid-on-init="bookingServices.gridServicesOnInit(grid)"
+                                    grid-options="bookingServices.gridServicesOptions"
+                                    grid-url="'bookingService/getServices'"
+                                    grid-params="{categoryFilterId : bookingServices.categoryId, LeftJoinAffiliateId: bookingServices.affiliateId}"
+                                    grid-inplace-url="'bookingService/inplaceService'"
+                                    grid-search-placeholder="'@T("Admin.BookingCategory.View.SearchByName")'"
+                                    grid-extend-ctrl="bookingServices"
+                                    grid-swipe-line="true">
+                        <ui-grid-custom-override-control class="ng-cloak">
+                            <div class="card card--image-horizontal product-item">
+                                <div class="product-item__link card__image-wrap">
+                                    <img class="product-item__img" ng-src="{{row.entity.PhotoSrc || '../images/nophoto_small.png'}}" />
+                                </div>
+                                <div class="card__content" style="display:block;">
+                                    <div class="product-item__header">
+                                        <div class="product-item__title product-item__link" ng-bind="row.entity.Name"></div>
+                                    </div>
+                                    <div class="product-item__art" ng-if="row.entity.ArtNo">Артикул: <span ng-bind="row.entity.ArtNo"></span></div>
+                                    <div class="card__row card__row--bottom" style="margin-top:15px;">
+                                        <div class="" style="font-weight:500;" ng-bind="row.entity.PriceString"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui-grid-custom-override-control>
+                        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="bookingServices.gridServices.gridOptions.TotalString">
+                        </ui-grid-custom-footer>
+                    </ui-grid-custom>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

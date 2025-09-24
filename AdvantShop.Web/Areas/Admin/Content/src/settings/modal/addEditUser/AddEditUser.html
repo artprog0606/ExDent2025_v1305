@@ -1,0 +1,365 @@
+<form novalidate name="addEditUserForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{ctrl.mode == "add" ? ('Admin.Js.AddEditUser.Add'|translate) : ('Admin.Js.AddEditUser.Edit'|translate)}}</h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.addEditUserForm = addEditUserForm">
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span class="text-required">{{'Admin.Js.AddEditUser.Surname'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    data-e2e="userLastName"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.lastName"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditUser.Surname'|translate}}"
+                    data-autofocus="!isMobile.value" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span class="text-required">{{'Admin.Js.AddEditUser.Name'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    data-e2e="userFirstName"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.firstName"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditUser.Name'|translate}}" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span class="text-required">{{'Admin.Js.AddEditUser.Email'|translate}}</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    data-e2e="userEmail"
+                    type="text"
+                    class="form-control input-alt"
+                    ng-model="ctrl.email"
+                    required
+                    validation-input-text="{{'Admin.Js.AddEditUser.Email'|translate}}" />
+            </div>
+        </div>
+        <div
+            class="form-group row setting__form-group"
+            ng-if="(ctrl.mode == 'edit' || ctrl.mode == 'me') && (ctrl.isAdmin || ctrl.customerRole == 50)">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span>{{'Admin.Js.AddEditUser.Password'|translate}}</span>
+            </label>
+            <div class="col-xs-9">
+                <div>
+                    <ui-modal-trigger
+                        data-controller="'ModalChangeUserPasswordCtrl'"
+                        controller-as="ctrl"
+                        data-resolve="{'params': {customerId: ctrl.customerId, editcurrent: ctrl.mode == 'me'}}"
+                        template-url="../areas/admin/content/src/settings/modal/changeUserPassword/ChangeUserPassword.html">
+                        <a href="" ng-class="{'inline-block m-b-sm' : isMobile.value}">{{'Admin.Js.AddEditUser.ChangePassword'|translate}}</a>
+                    </ui-modal-trigger>
+                </div>
+                <div>
+                    <a href="" ng-click="ctrl.changePassword()">{{'Admin.Js.AddEditUser.SendLinkToChangePassword'|translate}}</a>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Photo'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input type="hidden" ng-model="ctrl.avatar" /><!--to enable save button-->
+                <div ng-if="ctrl.avatar != null && ctrl.avatar != ''">
+                    <img ng-src="{{ctrl.photoSrc}}" width="70" height="70" />
+                    <div>
+                        <a href="" class="picture-uploader-buttons-delete link-danger" ng-click="ctrl.deleteAvatar()"
+                            >{{'Admin.Js.AddEditUser.Delete'|translate}}</a
+                        >
+                    </div>
+                </div>
+                <ui-modal-trigger
+                    data-controller="'ModalCropImageCtrl'"
+                    controller-as="ctrl"
+                    template-url="../areas/admin/content/src/_shared/modal/cropImage/cropImage.html"
+                    on-close="ctrl.updateAvatar(result)"
+                    data-resolve="{params: { isCircle: true }}">
+                    <a href="">{{'Admin.Js.AddEditUser.UploadPhoto'|translate}}</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Position'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input type="text" data-e2e="userPosition" ng-model="ctrl.position" class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Department'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <select
+                    data-e2e="userDepartment"
+                    ng-model="ctrl.departmentId"
+                    ng-options="s.value as s.label for s in ctrl.departments"
+                    class="form-control input-alt"
+                    convert-to-number>
+                    <option value="">{{'Admin.Js.AddEditUser.NotSelected'|translate}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Phone'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    data-e2e="userPhone"
+                    ng-model="ctrl.phone"
+                    data-mask-control
+                    data-mask-control-preset="phone"
+                    class="form-control input-alt" />
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.BirthDate'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <div class="dropup">
+                    <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                        <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                            <input data-e2e="userBirthDay" type="text" class="form-control input-alt" ng-flatpickr-input ng-model="ctrl.birthDay" />
+                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                        </span>
+                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.City'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <input
+                    type="text"
+                    data-e2e="userCity"
+                    ng-model="ctrl.city"
+                    class="form-control input-alt"
+                    autocompleter
+                    on-type="city"
+                    autocomplete="off" />
+            </div>
+        </div>
+
+        <div ng-if="ctrl.customerFields != null" ng-repeat="field in ctrl.customerFields">
+            <div class="form-group row setting__form-group" ng-if="field.Enabled">
+                <label class="col-xs-12 col-md-3 control-label form-control-title" ng-class="{'text-required' : field.Required}">
+                    {{field.Name}}
+                </label>
+                <div ng-switch="field.FieldType" class="col-xs-12 col-md-9">
+                    <!--Select-->
+                    <div ng-switch-when="0">
+                        <select ng-model="field.Value" ng-options="s.Value as s.Text for s in field.Values" class="form-control input-alt">
+                            <option ng-if="!field.Required" value="">––––</option>
+                        </select>
+                    </div>
+                    <!--Text-->
+                    <div ng-switch-when="1">
+                        <input
+                            type="text"
+                            ng-model="field.Value"
+                            class="form-control input-alt"
+                            ng-required="field.Required"
+                            validation-input-text="{{field.Name}}" />
+                    </div>
+                    <!--Number-->
+                    <div ng-switch-when="2">
+                        <input
+                            type="number"
+                            ng-model="field.Value"
+                            class="form-control input-alt"
+                            ng-required="field.Required"
+                            validation-input-text="{{field.Name}}" />
+                    </div>
+                    <!--TextArea-->
+                    <div ng-switch-when="3">
+                        <textarea
+                            class="form-control input-alt"
+                            ng-model="field.Value"
+                            ng-required="field.Required"
+                            validation-input-text="{{field.Name}}"></textarea>
+                    </div>
+                    <!--Date-->
+                    <div ng-switch-when="4">
+                        <div class="input-group" ng-flatpickr fp-opts="{dateFormat: 'd.m.Y', startDateFormat:'Y-m-d', wrap: true}">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow' : isMobile.value}">
+                                <input
+                                    data-e2e="userBirthDay"
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-flatpickr-input
+                                    ng-model="field.Value"
+                                    ng-required="field.Required"
+                                    validation-input-text="{{field.Name}}" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                    </div>
+                    <!--Tel-->
+                    <div ng-switch-when="5">
+                        <input
+                            type="text"
+                            ng-model="field.Value"
+                            data-mask-control
+                            data-mask-control-preset="phone"
+                            class="form-control input-alt"
+                            ng-required="field.Required"
+                            validation-input-text="{{field.Name}}" />
+                    </div>
+                    <!--Checkbox-->
+                    <div ng-switch-when="6">
+                        <label class="adv-checkbox-label">
+                            <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="field.Value" />
+                            <span class="adv-checkbox-emul"></span>
+                        </label>
+                    </div>
+                    <!--Email-->
+                    <div ng-switch-when="7">
+                        <input
+                            type="text"
+                            class="form-control input-alt"
+                            ng-pattern="/^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)|(admin)$/i"
+                            ng-model="field.Value"
+                            ng-required="field.Required"
+                            validation-input-text="{{field.Name}}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group" ng-if="!ctrl.editHimself || ctrl.isAdmin">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Head'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <select
+                    data-e2e="userHeadUser"
+                    ng-model="ctrl.headUserId"
+                    ng-options="s.value as s.label for s in ctrl.users"
+                    class="form-control input-alt">
+                    <option value="">{{'Admin.Js.AddEditUser.NotSelected'|translate}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" ng-if="ctrl.hasRoleActionAccess && !ctrl.editHimself">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.AccessRights'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <div class="flex top-xs">
+                    <div class="flex-grow flex flex-column">
+                        <label class="adv-radio-label" ng-hide="(!ctrl.hasRoleActionAccess || !ctrl.moderatorsAvailable) && ctrl.mode == 'add'">
+                            <input
+                                type="radio"
+                                name="permissions"
+                                class="adv-radio-input"
+                                ng-model="ctrl.customerRole"
+                                value="50"
+                                disabled
+                                ng-disabled="!ctrl.isAdmin || !ctrl.moderatorsAvailable"
+                                data-e2e="userPermissionsModerInput" />
+                            <span class="adv-radio-label-text">{{'Admin.Js.AddEditUser.Moderator'|translate}}</span>
+                            <span class="adv-radio-emul" data-e2e="userPermissionsModer"></span>
+                        </label>
+                    </div>
+
+                    <label class="adv-radio-label flex-grow" ng-if="ctrl.isAdmin">
+                        <input
+                            type="radio"
+                            name="permissions"
+                            class="adv-radio-input"
+                            ng-model="ctrl.customerRole"
+                            value="100"
+                            disabled
+                            ng-disabled="!ctrl.isAdmin"
+                            data-e2e="userPermissionsAdminInput" />
+                        <span class="adv-radio-label-text">{{'Admin.Js.AddEditUser.Administrator'|translate}}</span>
+                        <span class="adv-radio-emul" data-e2e="userPermissionsAdmin"></span>
+                    </label>
+                </div>
+                <div
+                    ng-if="ctrl.customerRole == 50 && (ctrl.trialEnabled || (ctrl.moderatorsAvailable && ctrl.hasRoleActionAccess))"
+                    data-ng-class="{'m-t-xs': isMobile.value}">
+                    <ui-modal-trigger
+                        data-controller="'ModalEditUserRoleActionsCtrl'"
+                        controller-as="ctrl"
+                        data-resolve="{'params': {'customerId': ctrl.customerId, 'roleActionKeys': ctrl.roleActionKeys}}"
+                        template-url="../areas/admin/content/src/settings/modal/editUserRoleActions/EditUserRoleActions.html"
+                        data-on-close="ctrl.selectRoleActions(result);addEditUserForm.modified=true;">
+                        <a href="">{{'Admin.Js.AddEditUser.Configure'|translate}}</a>
+                    </ui-modal-trigger>
+                    <input type="text" ng-model="ctrl.roleActionKeys" hidden />
+                    <!-- to enable submit button -->
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" ng-if="!ctrl.editHimself || ctrl.isAdmin">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">{{'Admin.Js.AddEditUser.Roles'|translate}}</label>
+            <div class="col-xs-12 col-md-9">
+                <ui-select multiple ng-model="ctrl.selectedRolesIds" ng-change="ctrl.getRolesValidation()" class="input-alt">
+                    <ui-select-match placeholder="{{'Admin.Js.AddEditUser.SelectRoles'|translate}}">{{$item.Name}}</ui-select-match>
+                    <ui-select-choices repeat="role.Id as role in ctrl.roles | greedysearch: {Name: $select.search}">
+                        {{role.Name}}
+                    </ui-select-choices>
+                </ui-select>
+
+                <div>
+                    <div ng-repeat="err in ctrl.rolesErrors" class="error-color">{{err}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group setting--label-with-checkbox-reverse" ng-if="!ctrl.editHimself">
+            <label class="col-xs-11 col-md-3 setting__label">{{'Admin.Js.AddEditDepartment.Active'|translate}}</label>
+            <div class="col-xs-1 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="userEnabled">
+                    <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.enabled" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group">
+            <label class="col-xs-12 col-md-3 control-label form-control-title"> {{'Admin.Js.AddEditUser.Sign'|translate}} </label>
+            <div class="col-xs-12 col-md-9">
+                <textarea class="form-control input-alt" ng-model="ctrl.sign" rows="5"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+            <label class="col-xs-11 col-md-3 setting__label">{{'Admin.Js.AddEditUser.AdminAppNotificationsEnabled'|translate}}</label>
+            <div class="col-xs-1 col-md-9">
+                <label class="adv-checkbox-label" data-e2e="adminAppNotificationsEnabled">
+                    <input type="checkbox" class="adv-checkbox-input control-checkbox" ng-model="ctrl.adminAppNotificationsEnabled" />
+                    <span class="adv-checkbox-emul"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row setting__form-group" style="display: none">
+            <label class="col-xs-12 col-md-3 control-label form-control-title">
+                <span>FCM Token</span>
+            </label>
+            <div class="col-xs-12 col-md-9">
+                <label>
+                    <textarea class="form-control input-alt" ng-model="ctrl.fcmToken" disabled></textarea>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-e2e="userButtonSave"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            ladda="ctrl.btnSleep"
+            disabled
+            ng-disabled="(ctrl.mode == 'edit' || ctrl.mode == 'me') && (!ctrl.formInited || !addEditUserForm.modified)"
+            ng-bind="ctrl.mode == 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

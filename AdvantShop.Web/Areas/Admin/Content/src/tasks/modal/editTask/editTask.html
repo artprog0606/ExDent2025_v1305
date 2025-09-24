@@ -1,0 +1,501 @@
+<form novalidate name="editTaskForm" class="task-modal" is-mobile>
+    <div class="modal-header">
+        <div ng-if="!isMobile.value" class="close" ng-click="ctrl.dismiss()"></div>
+        <div class="flex middle-xs" ng-class="{'m-r-lg': !isMobile.value}">
+            <h2
+                class="modal-header-title modal-header-title--nowrap"
+                ng-class="{'flex-grow': isMobile.value, 'task-modal__header' : !isMobile.value}">
+                <span>
+                    {{'Admin.Js.Tasks.EditTask.TaskNumber' | translate}}
+                    <span ng-bind="ctrl.id"></span>
+                    <span>({{ctrl.statusName}})</span>
+                </span>
+            </h2>
+            <span class="m-l-sm m-t-xs copy-link" ng-if="!isMobile.value">
+                <span class="copy-link_inner">
+                    <span class="modal-header-title modal-header-title--ellipsis" ng-bind="ctrl.taskUrl"> </span>
+                    <i
+                        class="fa fa-copy pointer m-l-xs"
+                        ng-click="ctrl.copy(ctrl.taskUrl)"
+                        title="{{'Admin.Js.Tasks.EditTask.CopyTheLink'|translate}}"
+                        aria-hidden="true"></i>
+                </span>
+            </span>
+            <div ng-if="isMobile.value" ng-click="ctrl.edittaskObservers()" class="relative m-r-xs">
+                <a
+                    class="far fa-eye text-decoration-none task-modal__observe link-invert m-r-xs"
+                    ng-class="{'task-modal__observe-active' : ctrl.observingTask === true }"
+                    title="{{ctrl.observingTask === true ? ('Admin.Js.Tasks.ModalEditTaskCtrl.Observing'|translate) : ('Admin.Js.Tasks.ModalEditTaskCtrl.NotObserving'|translate)}}"></a>
+                <span class="task-modal__observe-count-absolute" ng-class="{'hidden-xs' : ctrl.observerIds.length <= 0 && isMobile.value}"
+                    >{{ctrl.observerIds.length > 0 ? (isMobile.value ? ctrl.observerIds.length : '(' + ctrl.observerIds.length + ')') : ''}}</span
+                >
+            </div>
+            <div
+                ng-if="isMobile.value"
+                class=""
+                popover-class="more-button-popover"
+                uib-popover-template="'editItems'"
+                popover-is-open="ctrl.popoverIsOpen"
+                popover-append-to-body="true">
+                <button type="button" class="btn btn--simple btn-secondary btn--with-icon btn--only-icon lead-info__more-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                            fill="currentColor" />
+                        <path
+                            d="M12 20C13.1046 20 14 19.1046 14 18C14 16.8954 13.1046 16 12 16C10.8954 16 10 16.8954 10 18C10 19.1046 10.8954 20 12 20Z"
+                            fill="currentColor" />
+                        <path
+                            d="M12 8C13.1046 8 14 7.10457 14 6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6C10 7.10457 10.8954 8 12 8Z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body" ng-init="ctrl.editTaskForm = editTaskForm" ng-class="{'task-modal-content-new-item': !isMobile.value}">
+        <div ng-class="{'m-r-sm m-l-sm': !isMobile.value}">
+            <!--<div class="copy-link  m-b" ng-if="isMobile.value">
+                <span class="copy-link_inner flex middle-xs">
+                    <span class="modal-header-title--ellipsis" ng-bind="ctrl.taskUrl">
+                    </span>
+                    <i class="fa fa-copy pointer m-l-xs" ng-click="ctrl.copy(ctrl.taskUrl)" title="{{'Admin.Js.Tasks.EditTask.CopyTheLink'|translate}}" aria-hidden="true"></i>
+                </span>
+            </div>-->
+            <div class="ng-cloak" ng-if="!ctrl.isReadonlyTask && !isMobile.value">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div
+                            class="btn-group m-r m-b-md"
+                            ng-repeat="statusList in ctrl.statusGroup"
+                            ng-if="statusList.data.length > 1 || (statusList.data.length === 1 && statusList.data[0].id !== ctrl.statusId)">
+                            <button
+                                class="btn btn-sm"
+                                ng-class="statusList.actionButton ? 'btn-action' : 'btn-success'"
+                                ng-click="statusList.actionButton ?  ctrl.finishTask(ctrl.id, statusList.data) : ctrl.pressButtonChangeStatus(statusList)">
+                                {{statusList.text}}
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-save dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                ng-class="statusList.actionButton ? 'btn-action' : 'btn-success'"
+                                ng-if="!ctrl.isReadonlyTask && statusList.data.length > 1">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right left-popover" ng-if="!ctrl.isReadonlyTask && statusList.data.length > 1">
+                                <li class="dropdown-submenu" ng-repeat="status in statusList.data">
+                                    <a
+                                        ng-click="statusList.actionButton ?  ctrl.finishTask(ctrl.id, status) : ctrl.pressButtonChangeStatus(statusList, $index)"
+                                        ng-bind="status.name"></a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button
+                            data-e2e="edittaskDelTask"
+                            type="button"
+                            class="btn btn-sm btn-red-white btn-default m-r inline-block m-b-md"
+                            ng-click="ctrl.deleteTask()"
+                            ng-if="ctrl.canDelete">
+                            {{'Admin.Js.Tasks.EditTask.Delete' | translate}}
+                        </button>
+
+                        <div class="btn-group m-r m-b-md">
+                            <div
+                                data-submenu-container="{'type': 'modern','checkOrientation': true, 'blockOrientation': '.task-modal-content-new-item', 'delayHover': 500}">
+                                <div data-submenu-parent class="row">
+                                    <a
+                                        ng-click="ctrl.changeObserver(ctrl.currentManagerId, true)"
+                                        class="far fa-eye text-decoration-none task-modal__observe link-invert m-r-xs"
+                                        ng-class="{'task-modal__observe-active' : ctrl.observingTask === true }"
+                                        title="{{ctrl.observingTask === true ? ('Admin.Js.Tasks.ModalEditTaskCtrl.Observing'|translate) : ('Admin.Js.Tasks.ModalEditTaskCtrl.NotObserving'|translate)}}"></a>
+                                    {{ctrl.observerIds.length > 0 ? '(' + ctrl.observerIds.length + ')' : ''}}
+                                    <div class="dropdown-menu pull-left task-modal__observe-submenu" data-submenu bs-modifiable="false">
+                                        <div class="task-modal__observe-submenu-title">{{'Admin.Js.Tasks.EditTask.AddObserver' | translate}}</div>
+                                        <ui-select
+                                            class="input-alt-mobile"
+                                            multiple
+                                            data-e2e="edittaskObservers"
+                                            ng-click="ctrl.getUiSelectCtrl($select)"
+                                            tabindex="100"
+                                            ng-model="ctrl.observerIds"
+                                            convert-to-number
+                                            on-select="ctrl.changeObserver($model)"
+                                            on-remove="ctrl.changeObserver($model)">
+                                            <ui-select-match placeholder="{{'Admin.Js.Tasks.ModalEditTaskCtrl.NoObservers'|translate}}">
+                                                {{$item.label}}
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="s.value as s in ctrl.managersObserve | greedysearch: $select.search">
+                                                <div>{{s.label}}</div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            data-e2e="edittaskCopyTask"
+                            type="button"
+                            class="btn btn-sm float-right btn-gray btn-default inline-block m-b-md"
+                            ng-click="ctrl.copyTask()"
+                            ng-if="ctrl.canDelete">
+                            {{'Admin.Js.Tasks.EditTask.Copy' | translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="m-b-sm control-label"><span class="text-required">{{'Admin.Js.Tasks.EditTask.Name' | translate}}</span></label>
+                        <div>
+                            <input
+                                data-e2e="edittaskName"
+                                type="text"
+                                class="form-control input-alt-mobile"
+                                placeholder="{{'Admin.Js.Tasks.EditTask.EnterTaskName'|translate}}"
+                                ng-model="ctrl.name"
+                                ng-readonly="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                                required
+                                validation-input-text="{{'Admin.Js.Tasks.EditTask.Name'|translate}}" />
+                        </div>
+                    </div>
+                    <div class="form-horizontal" ng-if="ctrl.leadId != null" bs-modifiable="false">
+                        <div class="form-group row">
+                            <div class="col-xs-5">
+                                <div class="control-label">
+                                    <a
+                                        href="leads?salesFunnelId={{ctrl.leadSalesFunnelId}}&leadIdInfo={{ctrl.leadId}}"
+                                        target="_blank"
+                                        data-e2e="leadLink"
+                                        ><span ng-bind="ctrl.leadTitle"></span
+                                    ></a>
+                                </div>
+                            </div>
+                            <div class="col-xs">
+                                <div class="row pull-right">
+                                    <div class="col-xs-4 control-label">Этап сделки</div>
+                                    <div class="col-xs-8">
+                                        <select
+                                            data-e2e="leadDealStatus"
+                                            class="form-control input-alt-mobile"
+                                            ng-model="ctrl.leadDealStatusId"
+                                            ng-options="s.value as s.label for s in ctrl.leadDealStatuses"
+                                            ng-change="ctrl.changeLeadDealStatus()"
+                                            ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                                            convert-to-number></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="ctrl.orderId != null">
+                        <a href="orders/edit/{{ctrl.orderId}}" target="_blank" data-e2e="orderLink"
+                            >{{'Admin.Js.Tasks.EditTask.Order' | translate}}<span ng-bind="ctrl.orderNumber"></span
+                        ></a>
+                    </div>
+                    <div class="form-group" ng-if="ctrl.clientCustomerId != null">
+                        <a href="customers/view/{{ctrl.clientCustomerId}}" ng-bind="ctrl.clientName" target="_blank" data-e2e="taskCustomerLink"></a>
+                    </div>
+                    <div class="form-group" ng-if="ctrl.reviewId != null">
+                        <ui-modal-trigger
+                            size="lg"
+                            data-controller="'ModalAddEditReviewCtrl'"
+                            template-url="../areas/admin/content/src/reviews/modal/addEditReview/AddEditReview.html"
+                            data-resolve="{'reviewId': ctrl.reviewId}">
+                            <span data-e2e="OpenReview" class="link">{{'Admin.Js.Tasks.EditTask.ViewReview' | translate}}</span>
+                        </ui-modal-trigger>
+                    </div>
+                    <div class="form-group" ng-if="ctrl.bindedTaskId != null">
+                        <ui-modal-trigger
+                            size="lg"
+                            data-controller="'ModalEditTaskCtrl'"
+                            template-url="../areas/admin/content/src/tasks/modal/editTask/editTask.html"
+                            data-resolve="{'id': ctrl.bindedTaskId}">
+                            <a href="tasks?modal={{ctrl.bindedTaskId}}" onclick="return false;"
+                                >{{'Admin.Js.Tasks.EditTask.Task' | translate}}{{ctrl.bindedTaskId}}</a
+                            >
+                        </ui-modal-trigger>
+                    </div>
+                    <div class="form-group">
+                        <label class="m-b-sm control-label"><span>{{'Admin.Js.Tasks.EditTask.Description' | translate}}</span></label>
+                        <div ng-if="ctrl.formInited">
+                            <textarea
+                                data-e2e="edittaskDescription"
+                                class="form-control b-n wysiwyg r-v"
+                                rows="12"
+                                placeholder=""
+                                ckeditor="ctrl.ckeditor"
+                                ng-model="ctrl.description"
+                                ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                                ng-readonly="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div
+                        class="form-group"
+                        ng-if="ctrl.statusType === 'Completed' || ctrl.statusType === 'Accepted' || ctrl.statusType === 'Canceled'">
+                        <label class="">{{'Admin.Js.Tasks.EditTask.ResultOfPerformance' | translate}}</label>
+                        <div data-e2e="edittaskRezult" ng-bind-html="ctrl.result | linky:'_blank' | nl2br"></div>
+                    </div>
+                    <div class="form-group" bs-modifiable="false">
+                        <label class="control-label" ng-if="ctrl.attachments.length > 0"
+                            >{{'Admin.Js.Tasks.EditTask.AttachedFiles' | translate}}</label
+                        >
+                        <ol ng-if="ctrl.attachments.length > 0">
+                            <li ng-repeat="attachment in ctrl.attachments track by $index">
+                                <a href="" target="_blank" ng-href="{{attachment.FilePathAdmin}}" ng-bind="attachment.OriginFileName"></a>
+                                - <span ng-bind="attachment.FileSize"></span>
+                                <a
+                                    href=""
+                                    ng-click="ctrl.deleteAttachment(attachment.Id)"
+                                    ng-if="!ctrl.isReadonlyTask && !ctrl.acceptedOrCanceled"
+                                    class="fa fa-times link-invert link-decoration-none"
+                                    title="{{'Admin.Js.Tasks.EditTask.Delete'|translate}}"></a>
+                            </li>
+                        </ol>
+                        <!--<p class="" ng-if="ctrl.attachments.length == 0">
+                            {{'Admin.Js.Tasks.EditTask.NoFiles'|translate}}
+                        </p>-->
+                        <figure class="" ng-if="!ctrl.isReadonlyTask && !ctrl.acceptedOrCanceled">
+                            <button
+                                data-e2e="edittaskAttachment"
+                                class="btn btn-action btn-sm"
+                                type="button"
+                                ngf-drop
+                                ngf-max-size="15MB"
+                                ngf-select=""
+                                multiple
+                                ngf-change="ctrl.uploadAttachment($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                                ladda="ctrl.loadingFiles">
+                                <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">{{'Admin.Js.Tasks.EditTask.AttachFile' | translate}}</span>
+                            </button>
+                            <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                <div class="help-content" ng-bind-html="ctrl.filesHelpText"></div>
+                            </help-trigger>
+                        </figure>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4" bs-modifiable="false">
+                    <div class="form-group" ng-if="!ctrl.isReadonlyTask">
+                        <div class="m-b-xs">
+                            <label class="control-label">{{'Admin.Js.Tasks.EditTask.Executor' | translate}}</label>
+                            <div
+                                ng-if="!(ctrl.managerIds.length == 1 && ctrl.managerIds[0] == ctrl.currentManagerId)&& !ctrl.acceptedOrCanceled"
+                                class="m-l-sm inline">
+                                <a
+                                    ng-href=""
+                                    data-e2e="AssignedToMe"
+                                    class="pointer"
+                                    ng-click="ctrl.changeAssignedManager(ctrl.currentManagerId, true)"
+                                    ng-if="ctrl.canAssingToMe">
+                                    {{'Admin.Js.Tasks.EditTask.PutOnMe' | translate}}
+                                </a>
+                            </div>
+                        </div>
+                        <ui-select
+                            class="input-alt"
+                            ng-disabled="ctrl.acceptedOrCanceled"
+                            multiple
+                            data-e2e="edittaskAssigned"
+                            ng-click="ctrl.getUiSelectCtrl($select)"
+                            tabindex="100"
+                            ng-model="ctrl.managerIds"
+                            convert-to-number
+                            on-select="ctrl.changeAssignedManager($model)"
+                            on-remove="ctrl.changeAssignedManager($model)">
+                            <ui-select-match placeholder="{{'Admin.Js.Tasks.ModalEditTaskCtrl.NotAssigned'|translate}}">
+                                {{$item.label}}
+                            </ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.managersAssign | greedysearch: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <!--<select data-e2e="edittaskAssigned" ng-model="ctrl.assignedManagerId" ng-options="s.value as s.label for s in ctrl.managersAssign" class="form-control" convert-to-number></select>-->
+                    </div>
+                    <div class="form-group task-appointed">
+                        <label class="control-label">{{'Admin.Js.Tasks.EditTask.TaskManager' | translate}}</label>
+                        <div ng-if="ctrl.isAutomatic && ctrl.appointedManagerId==null" class="m-b-xs">
+                            <span ng-bind="'Admin.Js.Tasks.AppointedManager.Automatic' |translate "></span>
+                            <a href="" ng-click="ctrl.showAppointed=!ctrl.showAppointed">изменить</a>
+                        </div>
+                        <ui-select
+                            class="input-alt"
+                            data-e2e="edittaskAppointed"
+                            ng-if="ctrl.appointedManagerId != null || !ctrl.isAutomatic || ctrl.showAppointed"
+                            ng-model="ctrl.appointedManagerId"
+                            ng-change="ctrl.validateTaskData()"
+                            ng-click="ctrl.getUiSelectCtrl($select)"
+                            on-select="ctrl.changeAppointedManager($model)"
+                            ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                            convert-to-number>
+                            <ui-select-match>{{$select.selected.label}}</ui-select-match>
+                            <ui-select-choices repeat="s.value as s in ctrl.managersAppoint | greedysearch: $select.search">
+                                <div>{{s.label}}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <!--<select data-e2e="edittaskAppointed" ng-model="ctrl.appointedManagerId" ng-options="s.value as s.label for s in ctrl.managersAppoint" class="form-control" convert-to-number></select>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">{{'Admin.Js.Tasks.EditTask.PeriodOfExecution' | translate}}</label>
+                        <div
+                            class="input-group"
+                            ng-if="!ctrl.isReadonlyTask && !ctrl.acceptedOrCanceled"
+                            ng-flatpickr
+                            fp-on-change="ctrl.changeDueDate(selectedDates, dateStr)"
+                            fp-opts="{dateFormat: 'd.m.Y H:i', startDateFormat: 'Y-m-dTH:i', wrap: true, enableTime: true, minuteIncrement: 10}"
+                            fp-on-setup="ctrl.flatpickrOnSetup(fpItem)"
+                            fp-on-change="ctrl.flatpickrOnChange(selectedDates, dateStr, instance)">
+                            <span class="flatpickr-custom-wrap" ng-class="{'flex-grow': isMobile.value}">
+                                <input
+                                    data-e2e="edittaskDuedate"
+                                    mask-control
+                                    data-mask-control-preset="datetime"
+                                    type="text"
+                                    class="form-control input-alt"
+                                    ng-flatpickr-input
+                                    ng-model="ctrl.dueDate" />
+                                <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                            </span>
+                            <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                        <div ng-if="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled">
+                            <input type="text" class="form-control" readonly value="{{ctrl.dueDate | date : 'short'}}" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="ctrl.reminderActive && ctrl.dueDate != null && ctrl.dueDate != ''">
+                        <label class="adv-checkbox-label line-height" data-e2e="edittaskRemind">
+                            <input
+                                type="checkbox"
+                                class="adv-checkbox-input control-checkbox"
+                                ng-change="ctrl.changeReminder(ctrl.remind ? ctrl.reminder : null)"
+                                ng-model="ctrl.remind"
+                                ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled" />
+                            <span class="adv-checkbox-emul"></span>
+                            <span>{{'Admin.Js.Tasks.EditTask.Reminder' | translate}}</span>
+                        </label>
+                        <select
+                            ng-if="ctrl.remind"
+                            ng-class="{'m-t-sm': isMobile.value}"
+                            data-e2e="edittaskReminder"
+                            ng-model="ctrl.reminder"
+                            ng-options="s.value as s.label for s in ctrl.reminderTypes"
+                            ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                            class="form-control input-alt m-t-xs"
+                            data-ng-on-change="ctrl.changeReminder(ctrl.reminder)"
+                            convert-to-number></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">{{'Admin.Js.Tasks.EditTask.Priority' | translate}}</label>
+                        <select
+                            data-e2e="edittaskPriopity"
+                            ng-model="ctrl.priority"
+                            ng-options="s.value as s.label for s in ctrl.priorities"
+                            ng-disabled="ctrl.isReadonlyTask || ctrl.acceptedOrCanceled"
+                            data-ng-on-change="ctrl.changePriority(ctrl.priority)"
+                            class="form-control input-alt-mobile"
+                            convert-to-number></select>
+                    </div>
+                    <div class="form-group">
+                        <!--                        ng-change="ctrl.validateTaskGroupManager(); ctrl.validateTaskGroupObserver(); ctrl.validateTaskData(); ctrl.getManagers();"-->
+                        <label class="control-label"><span class="text-required">{{'Admin.Js.Tasks.EditTask.Project' | translate}}</span></label>
+                        <select
+                            data-e2e="edittaskGroup"
+                            ng-model="ctrl.taskGroupIdInSelect"
+                            ng-options="s.value as s.label for s in ctrl.taskGroups"
+                            ng-disabled="ctrl.isReadonlyTask"
+                            data-ng-on-change="ctrl.changeTaskGroup(ctrl.taskGroupIdInSelect)"
+                            class="form-control input-alt-mobile"
+                            convert-to-number></select>
+                    </div>
+                    <div class="form-group flex middle-xs between-xs m-b-sm">
+                        <label class="control-label">{{'Admin.Js.Tasks.EditTask.DateOfCreation' | translate}}</label>
+                        <div class="" ng-bind="ctrl.dateAppointedFormatted"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" data-e2e="edittaskComment" bs-modifiable="false">
+                <h4 class="control-label">{{'Admin.Js.Tasks.EditTask.Comments' | translate}}</h4>
+                <admin-comments
+                    ng-if="ctrl.id != null"
+                    obj-id="ctrl.id"
+                    obj-url="ctrl.taskUrl"
+                    type="ctrl.commentsType"
+                    form-visible="true"
+                    on-init="ctrl.addAdminCommentsCtrl(adminCommentsCtrl)"></admin-comments>
+                <change-history
+                    data-e2e="ShowHistory"
+                    ng-if="ctrl.id != null && !ctrl.isReadonlyTask || !ctrl.acceptedOrCanceled"
+                    obj-id="ctrl.id"
+                    type="task"
+                    hide="true"></change-history>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="btn-group ng-cloak">
+            <button
+                class="btn btn-save btn-primary"
+                data-e2e="edittaskButtonSave"
+                type="submit"
+                ladda="ctrl.btnSleep"
+                disabled
+                ng-disabled="!ctrl.formInited || !editTaskForm.modified"
+                ng-if="!ctrl.isReadonlyTask"
+                button-validation
+                button-validation-success="ctrl.saveAndCheckUnsaveData({func:ctrl.buttonActionDefault.fn})"
+                ng-bind="ctrl.buttonActionDefault.text"
+                ng-class="{'btn-save--not-dropdown': isMobile.value}"></button>
+            <button
+                type="button"
+                class="ng-cloak btn btn-save btn-primary dropdown-toggle"
+                ng-if="!isMobile.value && !ctrl.isReadonlyTask"
+                data-bs-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                disabled
+                ng-disabled="!ctrl.formInited || !editTaskForm.modified">
+                <span class="caret"></span>
+            </button>
+            <ul
+                class="ng-cloak dropdown-menu pull-right save-task-popover"
+                ng-if="!isMobile.value && !ctrl.isReadonlyTask"
+                ng-class="{'save-task-popover--top' : ctrl.buttonActionsCurrentCount > 2}">
+                <li class="dropdown-submenu" ng-repeat="(name, action) in ctrl.buttonActionsCurrent">
+                    <a ng-click="ctrl.saveAndCheckUnsaveData({func:ctrl.callAndSaveButtonAction, arg: name})" ng-bind="action.text"></a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.dismiss()">{{'Admin.Js.Tasks.EditTask.Cancel' | translate}}</button>
+    </div>
+</form>
+
+<script type="text/ng-template" id="editItems">
+    <div class="more-button-popover__inner">
+        <div class="more-button-popover__item" ng-repeat="statusList in ctrl.statusGroup"
+             ng-if="statusList.data.length > 1 || (statusList.data.length === 1 && statusList.data[0].id !== ctrl.statusId)">
+            <button type="button" class="btn btn--simple  btn-link   btn--horizontal-padding-zero  more-button-popover__btn"
+               ng-click="statusList.actionButton ?  ctrl.finishTask(ctrl.id, statusList) : ctrl.pressButtonChangeStatus(statusList)">
+                <span class="btn-text">{{statusList.text}}</span>
+            </button>
+            <div class="more-button-popover__item" ng-repeat="status in statusList.data" ng-if="!ctrl.isReadonlyTask && statusList.data.length > 1">
+                <button type="button" class="btn btn--simple  btn-link   btn--horizontal-padding-zero  more-button-popover__btn"
+                   ng-click="statusList.actionButton ?  ctrl.finishTask(ctrl.id, status) : ctrl.pressButtonChangeStatus(statusList, $index)"
+                        ng-bind="status.name"></button>
+            </div>
+        </div>
+        <div class="more-button-popover__item" ng-if="ctrl.canDelete">
+            <a class="btn btn--simple  btn-link   btn--horizontal-padding-zero  more-button-popover__btn"
+               ng-click="ctrl.copyTask()">{{'Admin.Js.Tasks.EditTask.Copy' | translate}}</a>
+        </div>
+        <div class="more-button-popover__item" ng-if="ctrl.canDelete">
+            <a class="btn btn--simple btn--link  btn-danger   btn--horizontal-padding-zero  more-button-popover__btn"
+               ng-click="ctrl.deleteTask()">{{'Admin.Js.Tasks.EditTask.Delete' | translate}}</a>
+        </div>
+    </div>
+</script>

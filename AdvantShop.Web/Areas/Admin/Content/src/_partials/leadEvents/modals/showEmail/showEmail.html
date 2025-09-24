@@ -1,0 +1,49 @@
+<form novalidate>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.ShowEmail.Title'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal m-r m-l">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="page-name-block-text">{{ctrl.email.Subject}}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="bold m-b-xs">{{ctrl.email.From}}</div>
+                        <div class="m-b-xs">{{'Admin.Js.ShowEmail.Title'|translate}} {{ctrl.email.To}}</div>
+                        <div>{{ctrl.email.Date | date:'dd MMM HH:mm'}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group form-group--with-iframe">
+                <div
+                    class="email-body ng-cloak"
+                    ng-if="ctrl.email.TextBody != null && (ctrl.email.HtmlBody == null || ctrl.email.TextBody.trim() == '')">
+                    <pre>{{ctrl.email.TextBody}}</pre>
+                </div>
+                <iframe id="emailBody" style="border: none; width: 100%; display: none"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <ui-modal-trigger
+            ng-if="ctrl.email.FromEmail != null"
+            data-controller="'ModalSendLetterToCustomerCtrl'"
+            controller-as="ctrl"
+            size="lg"
+            template-url="../areas/admin/content/src/_shared/modal/sendLetterToCustomer/sendLetterToCustomer.html"
+            data-resolve="{params: {customerId: ctrl.customerId, email: ctrl.email.FromEmail, subject: ctrl.email.Subject, isRe: true, reId: ctrl.id }}"
+            data-on-close="ctrl.onWriteAnswerClose()">
+            <button class="btn btn-save btn-primary" type="button">{{'Admin.Js.ShowEmail.WriteAnswer'|translate}}</button>
+        </ui-modal-trigger>
+
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.ShowEmail.Close'|translate}}</button>
+    </div>
+</form>

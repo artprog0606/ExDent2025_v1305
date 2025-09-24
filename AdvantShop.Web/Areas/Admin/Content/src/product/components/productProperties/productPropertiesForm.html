@@ -1,0 +1,99 @@
+<div ng-form="" name="formProductPropertiesAddForm" is-mobile>
+    <div ng-class="{'modal-header': $ctrl.asModal, 'properties-group properties-group--add-new-item form-control-title': !$ctrl.asModal}">
+        <ui-modal-cross ng-if="$ctrl.asModal"></ui-modal-cross>
+        <h2 class="modal-header-title" ng-if="$ctrl.asModal">{{::'Admin.Js.ProductProperties.AddingProperty' | translate}}</h2>
+        <div class="properties-group-name cs-t-5" ng-if="!$ctrl.asModal">{{::'Admin.Js.ProductProperties.AddingProperty' | translate}}</div>
+    </div>
+    <div ng-class="{'row bottom-xs': !$ctrl.asModal}">
+        <div ng-class="{'modal-body': $ctrl.asModal, 'col-sm-8': !$ctrl.asModal}">
+            <div ng-class="{'row': !$ctrl.asModal}">
+                <div
+                    ng-class="{'col-sm-6': !$ctrl.asModal, 'col-sm-12': !$ctrl.asModal && $ctrl.selectedProperty && $ctrl.selectedProperty.Type == 4}">
+                    <div class="properties-block-add-item">
+                        <div class="properties-new-item">{{'Admin.Js.ProductProperties.Name' | translate}}</div>
+                        <ui-select
+                            class="input-alt"
+                            data-e2e="selectProperty"
+                            validation-input-text="{{::'Admin.Js.ProductProperties.Name' | translate}}"
+                            reach-infinity="$ctrl.getMore()"
+                            ng-model="$ctrl.selectedProperty"
+                            uis-open-close="$ctrl.closeSelectProperty(isOpen)"
+                            on-select="$ctrl.selectProperty($item, $model)"
+                            ng-click="$ctrl.clickProperty()"
+                            reset-search-input="true"
+                            append-to-body="true"
+                            skip-focusser="true">
+                            <!--                            theme="../Areas/Admin/Templates/Mobile/Content/vendors/ui-select/templates/bootstrap"-->
+                            <ui-select-match allow-clear="true" placeholder="{{'Admin.Js.ProductProperties.EnterPropertyName' | translate}}">
+                                {{$select.selected.Name}}
+                            </ui-select-match>
+                            <ui-select-choices
+                                refresh="$ctrl.findProperty($select.search, $select)"
+                                refresh-delay="250"
+                                repeat="item in $ctrl.propertiesList track by item.PropertyId"
+                                minimum-input-length="1">
+                                <span ng-bind="item.Name"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div
+                    ng-class="{'col-sm-6': !$ctrl.asModal, 'col-sm-12 m-t-sm': !$ctrl.asModal && $ctrl.selectedProperty && $ctrl.selectedProperty.Type == 4}">
+                    <div class="properties-block-add-item">
+                        <div class="properties-new-item">{{'Admin.Js.ProductProperties.Value' | translate}}</div>
+                        <div ng-if="$ctrl.selectedProperty.Type == 4">
+                            <textarea
+                                class="form-control input-alt"
+                                rows="3"
+                                ng-model="$ctrl.selectedPropertyValue.Value"
+                                validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                data-e2e="inputPropertyValue"></textarea>
+                        </div>
+                        <div ng-if="$ctrl.selectedProperty.Type != 4">
+                            <ui-select
+                                class="input-alt"
+                                data-e2e="selectPropertyValue"
+                                validation-input-text="{{::'Admin.Js.AddPropertyValue.Title' | translate}}"
+                                reach-infinity="$ctrl.getMorePropertiesValue()"
+                                ng-model="$ctrl.selectedPropertyValue"
+                                uis-open-close="$ctrl.closeSelectPropertyValue(isOpen)"
+                                on-select="$ctrl.selectPropertyValue($item, $model)"
+                                ng-click="$ctrl.firstCallPropertyValues()"
+                                reset-search-input="true"
+                                append-to-body="true"
+                                skip-focusser="true">
+                                <ui-select-match allow-clear="true" placeholder="{{'Admin.Js.ProductProperties.EnterPropertyValue'|translate}}">
+                                    {{$select.selected.Value}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                    refresh="$ctrl.findPropertyValue($ctrl.selectedProperty.PropertyId, $select.search, $select)"
+                                    refresh-delay="250"
+                                    repeat="item in $ctrl.propertyValuesList track by item.PropertyValueId"
+                                    minimum-input-length="1">
+                                    <span ng-bind="(item.Name ? item.Name + ' - ' + item.Value : item.Value)"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            ng-class="{'modal-footer': $ctrl.asModal, 'col-sm-3': !$ctrl.asModal, 'col-sm-12 m-t-md': !$ctrl.asModal && $ctrl.selectedProperty && $ctrl.selectedProperty.Type == 4}">
+            <button
+                type="button"
+                data-e2e="propertyAddSelected"
+                class="btn"
+                ng-class="{'btn-action btn-sm': !$ctrl.isMobileMode, 'btn-success': $ctrl.isMobileMode,
+                    'properties-block-add-item-btn': !$ctrl.asModal }"
+                ng-click="$ctrl.selectedProperty != null && $ctrl.selectedPropertyValue != null ? $ctrl.addPropertyWithValue(formProductPropertiesAddForm) : null"
+                ng-disabled="$ctrl.selectedProperty == null || $ctrl.selectedProperty.Value.length === 0 || $ctrl.selectedPropertyValue == null || $ctrl.selectedPropertyValue.Value.length == 0"
+                ng-if="!($ctrl.showNewProperty || $ctrl.showNewPropertyValue)">
+                {{::'Admin.Js.AddEdit.Add' | translate}}
+            </button>
+            <button ng-if="$ctrl.asModal" class="btn btn-default btn-cancel" type="button" ng-click="$ctrl.dismiss()">
+                {{::'Admin.Js.ProductSelection.Cancel' | translate}}
+            </button>
+        </div>
+    </div>
+</div>

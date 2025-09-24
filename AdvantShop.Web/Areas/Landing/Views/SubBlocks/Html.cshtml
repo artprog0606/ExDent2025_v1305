@@ -1,0 +1,25 @@
+﻿@model SubBlockModel
+@using AdvantShop.Core.Services.Diagnostics;
+
+@if (DebugMode.IsDebugMode(eDebugMode.Html))
+{
+    var ngModel = "block_" + Model.ParentBlock.Id + "_sublock_" + Model.SubBlock.Id + "_content_debug";
+    <textarea class="ng-cloak" data-ckeditor data-ng-model="@(ngModel)">
+        @Html.Raw(Model.SubBlock.ContentHtml)
+    </textarea>
+    <div class="text-align-right-xs m-t-sm">
+        <button class="blocks-constructor-btn-confirm" type="button" data-ng-click="blocksConstructorContainer.onInplaceSaveSubblock('@Model.SubBlock.Name', 'ContentHtml', @ngModel)">Сохранить</button>
+    </div>
+}
+else if (Model.InPlace)
+{
+    <div data-inplace-rich
+         @Html.Raw(!Model.HidePlaceholder ? "placeholder=\"Нажмите сюда, чтобы добавить описание\"" : "placeholder=\"\"")
+         data-inplace-on-save="blocksConstructorContainer.onInplaceSaveSubblock('@Model.SubBlock.Name', 'ContentHtml', value)">
+        <div>@Html.Raw(Html.InplaceEscapeScripts(Model.SubBlock.ContentHtml))</div>
+    </div>
+}
+else
+{
+    @Html.Raw(Model.SubBlock.ContentHtml)
+}

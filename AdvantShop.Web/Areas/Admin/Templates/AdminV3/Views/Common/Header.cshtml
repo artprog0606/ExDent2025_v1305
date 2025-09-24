@@ -1,0 +1,38 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel
+
+@if (!Model.ShowOnlySticky)
+{
+    @Html.Raw("<div class=\"balance__padding-page balance__padding-page--bg-white\"><div class=\"main-panel-page\">")
+}
+<div class="sticky-page-name p-b-n" sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner @(Model.ShowOnlySticky ? "header-hidden" : "")">
+        <div class="page-name-block-item-main">
+            @if (Model.Back != null && Model.EnabledBack)
+            {
+                @Html.Back(T("Admin.Templates.Common.Header.Back").ToString(), Model.Back.Url, Model.Back.Classes, Model.Back.Attributes, Model.Back.NgBackTriggerCallback)
+            }
+            <h1 class="page-name-block-text page-name-block-text--bigger sticky-page-name-text m-b-xs">
+                @Html.Raw(Model.Title)
+            </h1>
+            @if (Model.SubTitle.IsNotEmpty())
+            {
+                @Html.Raw(Model.SubTitle)
+            }
+        </div>
+        @if (Model.Controls.Count > 0)
+        {
+            foreach (var button in Model.Controls)
+            {
+                if(button.GetType() == typeof(ButtonModel)){
+                @Html.Button(button.Text, button.Type, button.Size, button.ColorType, button.Link, 
+                    button.CssClass, button.Name, button.Validation, button.Attributes, button.IsOutline, button.Icon, 
+                    button.Modificators, button.WrapStart, button.WrapEnd)
+                }
+            }
+        }
+    </div>
+</div>
+@if (!Model.ShowOnlySticky)
+{
+    @Html.Raw("</div></div>")
+}

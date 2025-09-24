@@ -1,0 +1,39 @@
+﻿@using AdvantShop.Customers
+@model AdvantShop.ViewModel.Home.MainPageCategoriesViewModel
+@{
+    var width = 100 / (float)(Model.CountMainPageCategoriesInLine != 0 ? Model.CountMainPageCategoriesInLine : 4);
+    var widthString = width.ToInvariantString() + "%";
+}
+@if (Model.Categories.Count > 0)
+{
+    <div class="categories-specials-container">
+        <article class="categories-specials-block categories-specials-best cs-br-1">
+            <header class="categories-specials-header">
+                <div class="h2 h-inline categories-specials-best-h">@T("Home.MainPageCategoriesTitle")</div>
+            </header>
+            <div class="row categories-view categories-view-tile row">
+                @foreach (var category in Model.Categories)
+                {
+                    <div class="product-categories-item-slim" style="-webkit-flex-basis: @(widthString); -ms-flex-preferred-size: @(widthString); flex-basis: @(widthString); max-width: @(widthString);">
+                        <div class="product-categories-item-inner-slim">
+                            <div class="product-categories-header-slim @(!string.IsNullOrEmpty(category.MiniPicture.PhotoName) ? "product-categories-header-slim-extend" : "")">
+                                <div class="product-categories-header-container">
+                                    <a href="@Url.AbsoluteRouteUrl("Category", new {url = category.UrlPath})" class="product-categories-header-slim-title">@Html.Raw(category.Name)</a>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(category.MiniPicture.PhotoName) || InplaceEditorService.CanUseInplace(RoleAction.Catalog))
+                            {
+                                <figure class="product-categories-item-picture-slim center-aligner">
+                                    <a href="@Url.AbsoluteRouteUrl("Category", new {url = category.UrlPath})" class="product-categories-item-photo-link-slim" style="height: @(SettingsPictureSize.SmallCategoryImageHeight)px;">
+                                        <img class="product-categories-item-picture-obj-slim" data-qazy src="@category.MiniPicture.ImageSrcSmall()" alt="@Html.Encode(category.Name)" title="@Html.Encode(category.Name)" @Html.InplaceImageCategory(category.CategoryId, ImageInplaceField.CategorySmall) />
+                                    </a>
+                                </figure>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </article>
+
+    </div>
+}

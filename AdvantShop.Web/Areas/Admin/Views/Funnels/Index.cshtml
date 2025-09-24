@@ -1,0 +1,65 @@
+﻿@using AdvantShop.Track;
+@model  AdvantShop.Web.Admin.Models.Landings.LandingsFilterResult
+@{
+    Layout = "~/Areas/Admin/Views/Funnels/_LandingAdminLayout.cshtml";
+}
+
+<div class="row  m-b-sm">
+    <div class="col-xs-12" style="position:relative;">
+        <div class="sticky-page-name">
+            <div style="position: absolute; right: 18px; top: 14px;">
+                <a href="@Url.AbsoluteActionUrl("CreateFunnel")" class="btn btn-sm btn-success" data-e2e="createFunnelBtn" onclick="return advTrack('@ETrackEvent.Shop_Funnels_ClickCreateFunnel.ToString()');">
+                    <span class="fa fa-plus"></span> @T("Admin.Product.LandingFunnels.CreateLandingFunnel")
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-4">
+                    <h1 class="page-name-block-text m-t-none m-b-xs">Воронки</h1>
+                    <div class="m-t-sm">
+                        <span>Выберите воронку для редактирования</span>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <input type="text" class="form-control" style="margin-top: 14px;" placeholder="Поиск"
+                           ng-model="landings.q"
+                           ng-change="landings.search()" />
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="landing-block-container">
+    <div ng-if="(landings.q == null || landings.q == '') && landings.itemsHtml.length === 0 ">
+        @Html.Partial("_Item", Model)
+    </div>
+    <div ng-repeat="page in landings.itemsHtml track by $index" bind-html-compile="page"></div>
+
+    <div class="landing-block-wrap pointer">
+        <a href="@Url.AbsoluteActionUrl("CreateFunnel")" class="text-decoration-none" onclick="return advTrack('@ETrackEvent.Shop_Funnels_ClickCreateFunnel.ToString()');">
+            <div class="ibox landing-block landing-block-add flex center-xs middle-xs flex-column">
+                <div class="flex center-xs middle-xs flex-column">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 42 42" class="m-b-md landing-block-add-icon" width="75px" height="75px">
+                        <polygon points="42,19 23,19 23,0 19,0 19,19 0,19 0,23 19,23 19,42 23,42 23,23 42,23 " fill="#c3c3c3"></polygon>
+                    </svg>
+                    <span class="landing-block-add-text" data-e2e="createFunnelBlock">@T("Admin.Product.LandingFunnels.CreateLandingFunnel")</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+@if (Model.TotalPageCount > 1)
+{
+    <div class="text-center text-center p-t-md p-b-lg" ng-if="@Model.TotalPageCount !== landings.page">
+        <button type="button" class="btn btn-md btn-success" data-ladda="landings.inProgress" ng-click="landings.getMore()">Показать еще</button>
+    </div>
+}
+
+@section TrialUserInfo
+{
+    @Html.Action("UserInformation", "Home", new { NgOnFinish = "landings.showModalCreate()" })
+}

@@ -1,0 +1,270 @@
+﻿@model AdvantShop.Web.Admin.Models.Catalog.Warehouses.WarehouseModel
+@{
+    var isEditMode = Model.Id > 0;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Html.AddAsset("settingsWarehouses");
+}
+
+<form method="POST" action="@(isEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" name="form" novalidate="novalidate">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id, new { ng_value = "warehouse.warehouseId", ng_init = "warehouse.warehouseId=" + Model.Id, ng_model = "warehouse.warehouseId" })
+
+    @if (isMobile) {
+
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.ShowOnlySticky = true;
+        headerModel.EnabledBack = true;
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Text = T("Admin.Settings.IndexSettings").ToString(),
+            Url = Url.AbsoluteActionUrl("Index", "SettingsWarehouses") + "?warehousesTab=warehouses",
+            NgBackTriggerCallback = "",
+        };
+
+        headerModel.Title = "<span class=\"float-header-page\">" + Html.Raw(T("Admin.Warehouse.AddEdit.Title")) + " " + (isEditMode ? Html.Raw(Model.Name) : Html.Raw(T("Admin.Warehouse.AddEdit.NewWarehouse") )) + "</span>";
+
+        headerModel.Controls.Add(
+           new ButtonModel()
+           {
+               Modificators = new List<eButtonModificators>()
+                    {
+                        eButtonModificators.OnlyIcon
+                                },
+               ColorType = eColorType.Secondary,
+               Type = eButtonType.Save,
+               Attributes = new[] { "type=\"submit\"", "data-button-validation disabled", "ng-disabled=\"!form.modified\"" },
+               Icon = new ButtonIcon()
+               {
+                   SvgName = "done",
+                   Attributes = new { width = 25, height = 25 }
+               }
+           }
+      );
+        if (Model.Id != 0 && Model.CanDeleting)
+        {
+
+            var moreButton = new MoreButtonModel();
+            moreButton.ColorType = eColorType.Secondary;
+            moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+            moreButton.Attributes = new string[] { };
+            moreButton.Items = new List<MoreButtonPopoverItem>();
+
+            moreButton.Items.Add(new MoreButtonPopoverItem()
+            {
+                Type = eButtonType.Link,
+                ColorType = eColorType.Danger,
+                Modificators = new List<eButtonModificators>()
+{
+                eButtonModificators.HorizontalPaddingZero
+            },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "remove",
+                    Attributes = new { width = 24, height = 24 }
+                },
+                Text = T("Admin.Delete"),
+                Attributes = new string[] { "ng-click=\"warehouse.deleteWarehouse(@Model.Id)\"" }
+            });
+
+
+            headerModel.Controls.Add(moreButton);
+        }
+        @Html.Header(headerModel)
+    } else
+    {
+    <div class="">
+        <div sticky sticky-top="0" class="sticky-page-name page-name-block sticky-page-name-inner top-xs p-b-n" style="padding-bottom:3px;">
+            <div class="page-name-block-item-main flex flex-column p-t-xs">
+                <h1 class="page-name-block-text sticky-page-name-text">
+                    @T("Admin.Warehouse.AddEdit.Title") <strong>"@(isEditMode ? Html.Raw(Model.Name) : Html.Raw(T("Admin.Warehouse.AddEdit.NewWarehouse")))"</strong>
+                </h1>
+            </div>
+            <div class="page-name-block-item-additional">
+                @if (Model.Id != 0 && Model.CanDeleting)
+                {
+                    <a href="" class="link-danger m-r-xs" ng-click="warehouse.deleteWarehouse(@Model.Id)">@T("Admin.Warehouse.AddEdit.Delete")</a>
+                }
+                @Html.Button(T("Admin.Save"), eButtonType.Save, eButtonSize.Small, eColorType.Success, validation: true, attributes: new[] { "ng-disabled=\"!form.modified\"", "disabled" })
+            </div>
+        </div>
+    </div>
+    <ul class="breadcrumb sticky-page-name-subtext">
+        <li>
+            <a class="link-invert" href="@(Url.AbsoluteActionUrl("Index", "SettingsWarehouses") + "?warehousesTab=warehouses")">@T("Admin.Warehouse.AddEdit.Back")</a>
+        </li>
+    </ul>
+    }
+    <div class="row">
+        <div class="@(isMobile ? "col-xs-12" : "flex-grow flex-basis-n flex-width-n")">
+            <div class="row @(isMobile ? "form-group" : "")">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <h2 class="category-title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.Main")</h2>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div>
+                                <div class="row middle-xs category-row @(isMobile ? "form-group" : "")">
+                                    <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                                        <span class="text-required">@T("Admin.Warehouse.AddEdit.Name")</span>
+                                    </div>
+
+                                    <div class="col-xs-12 col-md-10 flex middle-xs">
+                                        @Html.TextBoxFor(x => x.Name, new
+                                        {
+                                            @class = "form-control input-alt",
+                                            url_generator = "",
+                                            url_generator_enabled = Model.UrlPath.IsNotEmpty() ? "false" : "true",
+                                            url_path = "warehouse.UrlPath",
+                                            required = "required",
+                                            ng_model = "warehouse.urlPath",
+                                            validation_input_text = T("Admin.Warehouse.AddEdit.Name")
+                                        })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="row category-row @(isMobile ? "form-group" : "")">
+                                    @if (!isMobile) {
+                                        <div class="col-xs-2">
+                                            <label for="Enabled" class="form-label-block">@T("Admin.Warehouse.AddEdit.Enabled")</label>
+                                        </div>
+                                    }
+                                    <div class="col-xs">
+                                        <label class="adv-checkbox-label form-label-block">
+                                            @Html.CheckBoxFor(x => x.Enabled, new { ng_model = "warehouse.enabled", ng_init = "warehouse.enabled=" + Model.Enabled.ToLowerString(), @class = "adv-checkbox-input" })
+                                            <span class="adv-checkbox-emul"></span>
+                                             @if (isMobile) { 
+                                                <span>@T("Admin.Warehouse.AddEdit.Enabled")</span>
+                                             }
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-2 @(isMobile ? "control-label" : "")">
+                                        @T("Admin.Warehouse.AddEdit.Type")
+                                    </div>
+                                    @if (isMobile)
+                                    {
+                                <div class="col-xs-12 col-md"
+                                     data-ng-init="warehouse.TypeName='@Html.AttributeEncode(Model.TypeName ?? T("Admin.Warehouse.AddEdit.Type.NotSelected").ToString())'">
+                                    <div ng-if="warehouse.TypeId" class="swipe-line" style="margin-bottom: 3px">
+                                        <div class="swipe-line__inner" data-swipe-line>
+                                            <div class="swipe-line__content shipping-methods-list__card card card--middle"
+                                                 data-ng-bind-html="warehouse.TypeName | sanitize">
+                                                <span>@Model.TypeName</span>
+                                            </div>
+                                            <div data-swipe-line-right class="swipe-line__right swipe-line__btn-group">
+                                                <button class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                                        ng-click="warehouse.clearType()">
+                                                    @T("Admin.Warehouse.AddEdit.Type.Delete")
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div ng-if="!warehouse.TypeId">@T("Admin.Warehouse.AddEdit.Type.NotSelected")</div>
+                                    <div class="relative m-t-md">
+                                        <ui-modal-trigger data-controller="'ModalSelectTypeWarehouseCtrl'" controller-as="ctrl"
+                                                          data-on-close="warehouse.changeType(result)"
+                                                          data-resolve="{selected: warehouse.TypeId }"
+                                                          template-url="@Html.GetAssetPath("selectTypeWarehouse.html")">
+                                            <a href="" class="btn btn-sm btn-success">@T("Admin.Warehouse.AddEdit.Type.Select")</a>
+                                        </ui-modal-trigger>
+                                    </div>
+                                    @Html.HiddenFor(x => x.TypeId, new { ng_value = "warehouse.TypeId", ng_init = "warehouse.TypeId=" + (Model.TypeId.HasValue ? Model.TypeId.ToString() : "null"), ng_model = "warehouse.TypeId" })
+                                </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-xs-12 col-md">
+                                            <span data-ng-bind-html="warehouse.TypeName | sanitize" data-ng-init="warehouse.TypeName='@Html.AttributeEncode(Model.TypeName ?? T("Admin.Warehouse.AddEdit.Type.NotSelected").ToString())'">
+                                                @Html.Raw(Model.TypeName ?? T("Admin.Warehouse.AddEdit.Type.NotSelected").ToString())
+                                            </span>
+                                            <a class="link-invert link-decoration-none fas fa-times vertical-middle" ng-click="warehouse.clearType()" ng-if="warehouse.TypeId" href="" title="@T("Admin.Warehouse.AddEdit.Type.Delete")"></a>
+                                            <div class="relative inline">
+                                                <ui-modal-trigger data-controller="'ModalSelectTypeWarehouseCtrl'" controller-as="ctrl"
+                                                                  data-on-close="warehouse.changeType(result)"
+                                                                  data-resolve="{selected: warehouse.TypeId }"
+                                                                  template-url="@Html.GetAssetPath("selectTypeWarehouse.html")">
+                                                    <a href="" class="edit">@T("Admin.Warehouse.AddEdit.Type.Select")</a>
+                                                </ui-modal-trigger>
+                                            </div>
+                                            @Html.HiddenFor(x => x.TypeId, new { ng_value = "warehouse.TypeId", ng_init = "warehouse.TypeId=" + (Model.TypeId.HasValue ? Model.TypeId.ToString() : "null"), ng_model = "warehouse.TypeId" })
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row @(isMobile ? "form-group" : "")">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <h2 class="category-title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.WorkTime")</h2>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <times-of-work times="warehouse.timesOfWork" on-change-fn="warehouse.changeTimesOfWork(times)"></times-of-work>
+                            @Html.HiddenFor(x => x.TimesOfWorkJson, new { ng_value = "warehouse.timesOfWorkJson", ng_init = "warehouse.initTimesOfWork(" + Model.TimesOfWorkJson + ")", ng_model = "warehouse.timesOfWorkJson" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row @(isMobile ? "form-group" : "")">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <h2 class="category-title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.WarehouseDescription")</h2>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <div>
+                                <div class="row category-row">
+
+                                    <div class="col-xs-12 m-b-sm relative  @(isMobile ? "control-label" : "")">
+                                        @T("Admin.Warehouse.AddEdit.WarehouseDescription.Description")
+                                    </div>
+
+                                    <div class="col-xs-12">
+                                        @Html.TextAreaFor(x => x.Description, new { @class = "wysiwyg", ckeditor = "", ng_model = "warehouse.description" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_Address", Model)
+
+            <div class="row @(isMobile ? "form-group" : "")">
+                <div class="col-xs-12 col-md-3 col-wl-2">
+                    <h2 class="category-title @(isMobile ? "setting__subtitle" : "")">@T("Admin.Warehouse.AddEdit.Geo")</h2>
+                    <div class="category-page__description" style="@(isMobile ? "margin:-15px 0 15px 0;" : "")">
+                        @T("Admin.Warehouse.AddEdit.Geo.About")
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-9 col-wl-10">
+                    <div class="ibox category-block">
+                        <div class="ibox-content category-content border_none">
+                            <warehouse-cities warehouse-id="warehouse.warehouseId" on-change-fn="warehouse.changeWarehouseCities(warehouseCities)"></warehouse-cities>
+                            @Html.HiddenFor(x => x.WarehouseCitiesJson, 
+                                            new { ng_value = "warehouse.warehouseCitiesJson", ng_model = "warehouse.warehouseCitiesJson" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_Seo", Model)
+        </div>
+
+        @Html.Partial("_RightPanel", Model)
+    </div>
+</form>

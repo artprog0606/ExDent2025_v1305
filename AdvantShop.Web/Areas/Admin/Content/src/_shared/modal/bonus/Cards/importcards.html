@@ -1,0 +1,49 @@
+﻿<form is-mobile novalidate>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.Cards.UploadCards'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal" ng-if="!ctrl.btnLoading" ng-class="{'m-r m-l' : !isMobile.value}">
+            <div class="form-group row middle-xs setting__form-group">
+                <div ng-if="!isMobile.value" class="setting-label-wrap col-xs-12 col-md-7">
+                    <label for="accrueBonuses">{{'Admin.Js.Cards.AccrueBonuses'|translate}}</label>
+                </div>
+                <div class="col-xs">
+                    <label class="adv-checkbox-label" data-e2e="accrueBonuses" ng-class="{'flex middle-xs' : isMobile.value}">
+                        <input type="checkbox" class="adv-checkbox-input" ng-model="ctrl.params.accrueBonuses" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span ng-if="isMobile.value" class="flex-grow m-l-sm setting__label">{{'Admin.Js.Cards.AccrueBonuses'|translate}}</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <file-uploader
+                    class="col-xs"
+                    upload-url="cards/ImportCards"
+                    upload-params="ctrl.params"
+                    on-before-send="ctrl.onBeforeSend()"
+                    on-success="ctrl.onSuccess(data)"></file-uploader>
+            </div>
+        </div>
+        <cm-stat ng-if="ctrl.isStartExport" data-on-finish="cmStat.deleteObsevarable()">
+            <uib-progressbar max="cmStat.entity.Total" value="cmStat.entity.Processed"
+                ><span style="color: white; white-space: nowrap">{{cmStat.entity.ProcessedPercent }} %</span></uib-progressbar
+            >
+
+            <div ng-if="cmStat.entity.ProcessedPercent === 100 && cmStat.entity.Error === 0">
+                <div class="form-group setting__form-group">
+                    <div class="setting-label-wrap">{{'Admin.Js.Cards.Completed'|translate}}</div>
+                </div>
+            </div>
+        </cm-stat>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.cancel()" ng-if="!ctrl.btnLoading">
+            {{'Admin.Js.Cards.Cancel'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()" ng-if="ctrl.btnLoading">
+            {{'Admin.Js.Cards.Close'|translate}}
+        </button>
+    </div>
+</form>

@@ -1,0 +1,658 @@
+﻿@using AdvantShop.Core.Services.Admin
+@using AdvantShop.Trial
+@model AdvantShop.Web.Admin.Models.Settings.SystemSettingsModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="setting-title-top">
+    <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.Common")</h3>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.AdminAreaTemplate, @T("Admin.Settings.SystemSettings.AdminStartPage"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.AdminStartPage, Model.AdminStartPages, new { @class = "form-control input-alt", ng_model = "settingsSystem.AdminStartPage" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.Settings.SystemSettings.AdminStartPage")'>
+            @T("Admin.Settings.SystemSettings.AdminStartPageNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.AdminDateFormat, T("Admin.Settings.SystemSettings.AdminDateFormat"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.AdminDateFormat, new { @class = "form-control input-alt", ng_model = "settingsSystem.AdminDateFormat" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs  @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.Settings.SystemSettings.AdminDateFormat")'>
+            @T("Admin.Settings.SystemSettings.AdminDateFormatNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ShortDateFormat, T("Admin.Settings.SystemSettings.ShortDateFormat"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ShortDateFormat, new { @class = "form-control input-alt", ng_model = "settingsSystem.ShortDateFormat" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.Settings.SystemSettings.ShortDateFormat")'>
+            @T("Admin.Settings.SystemSettings.ShortDateFormatNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnablePhoneMask, T("Admin.Settings.SystemSettings.UsePhoneMask"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnablePhoneMask, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnablePhoneMask" })
+            <span class="adv-checkbox-emul" data-e2e="UsePhoneMask"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnablePhoneMask, T("Admin.Settings.SystemSettings.UsePhoneMask"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.MaskForPhone")'>
+            @T("Admin.Settings.SystemSettings.MaskForPhoneNote")
+        </help-trigger>
+    </div>
+</div>
+@*<div class="form-group row">
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @T("Admin.Settings.SystemSettings.ShowImageSearchEnabled")
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <label class="adv-checkbox-label">
+                @Html.CheckBoxFor(x => x.ShowImageSearchEnabled, new { @class = "adv-checkbox-input", ng_model = "settingsCatalog.ImageSearchEnabled", ng_init = "settingsCatalog.ImageSearchEnabled=" + Model.ShowImageSearchEnabled.ToLowerString() })
+                <span class="adv-checkbox-emul" data-e2e="ImageSearchEnabled"></span>
+            </label>
+            <help-trigger class="ng-cloak p-l-xs" data-title='@T("Admin.Settings.SystemSettings.ShowImageSearchEnabled")'>
+                @T("Admin.Settings.SystemSettings.ShowImageSearchEnabledNote")
+            </help-trigger>
+        </div>
+    </div>*@
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @T("Admin.Settings.SystemSettings.TrackProductChanges")
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.TrackProductChanges, new { @class = "adv-checkbox-input", ng_model = "settingsCatalog.TrackProductChanges" })
+            <span class="adv-checkbox-emul" data-e2e="TrackProductChanges"></span>
+        </label>
+        @if (isMobile)
+        {
+            <label for="TrackProductChanges" class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @T("Admin.Settings.SystemSettings.TrackProductChanges")
+            </label>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.ChangeProduct")'>
+            @T("Admin.Settings.SystemSettings.ChangeProductNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.SystemSettings.FileSize")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")" ng-init="settingsSystem.showFileStorageRecalc = @((SettingsMain.CurrentFilesStorageLastUpdateTime < DateTime.Now.AddHours(-1) || CustomerContext.CurrentCustomer.IsVirtual).ToLowerString())">
+        @Html.Label(Model.FilesSizeFormatted)
+        <a class="@(isMobile ? "m-l-xs flex-grow" : "")" href="" data-e2e="StorageRecalc" ng-click="settingsSystem.fileStorageRecalc()" ng-show="settingsSystem.showFileStorageRecalc">@T("Admin.SettingsSystem.SystemCommon.Recalculate")</a>
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.FileSize")'>
+            @T("Admin.Settings.SystemSettings.FileSizeNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ImageQuality, T("Admin.Settings.SystemSettings.ImageQuality"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ImageQuality, new { @class = "form-control input-alt", ng_model = "settingsSystem.ImageQuality", @type = "number", validation_input_text = T("Admin.Settings.SystemSettings.ImageQuality"), required = "required", min = "0", max = "100" })
+
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.Settings.SystemSettings.ImageQuality")'>
+            @T("Admin.Settings.SystemSettings.ImageQualityNote")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" style="display: none;">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.AdminAreaTemplate, T("Admin.SettingsSystem.SystemCommon.AdministrationPanel"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.AdminAreaTemplate, Model.AdminAreaTemplates, new { @class = "form-control input-alt", ng_model = "settingsSystem.AdminAreaTemplate" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.SettingsSystem.SystemCommon.AdministrationPanel")'>
+            @T("Admin.SettingsSystem.SystemCommon.AdministrationPanelHint")
+        </help-trigger>
+    </div>
+</div>
+@if (AdminAreaTemplate.Current == "adminv3")
+{
+    <div class="form-group row middle-xs setting__form-group">
+        <div class="col-xs-12 col-md-3">
+            <div class="setting-label-wrap setting__label">
+                @Html.LabelFor(x => x.AdminAreaColorScheme, T("Admin.SettingsSystem.SystemCommon.AdminAreaColorScheme"))
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 relative @(isMobile ? "flex middle-xs" : "")">
+            @Html.DropDownListFor(x => x.AdminAreaColorScheme, Model.AdminAreaColorSchemes, new { @class = "form-control input-alt", ng_model = "settingsSystem.AdminAreaColorScheme", ng_change = "settingsSystem.changeColorScheme()" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.SettingsSystem.SystemCommon.AdminAreaColorScheme")'>
+                @T("Admin.SettingsSystem.SystemCommon.AdminAreaColorSchemeHint")
+            </help-trigger>
+        </div>
+    </div>
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.SiteLanguage, T("Admin.Settings.SystemSettings.SiteLanguage"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-2 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.SiteLanguage, Model.Languages, new { @class = "form-control input-alt", ng_model = "settingsSystem.SiteLanguage" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "p-l-sm")" classes="'setting__catalog-popover-custom'" data-title='@T("Admin.Settings.SystemSettings.SiteLanguage")'>
+            @T("Admin.Settings.SystemSettings.SiteLanguageNote")
+        </help-trigger>
+    </div>
+</div>
+
+@if (TrialService.IsTrialEnabled)
+{
+    <div class="row middle-xs setting__form-group">
+        <div class="col-xs-12">
+            <ui-modal-trigger data-controller="'ModalClearDataCtrl'" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("ClearData.html")">
+
+                <a class="link-invert" href="">
+                    @T("Admin.Settings.ClearData")
+                </a>
+            </ui-modal-trigger>
+        </div>
+    </div>
+}
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.Settings.Captcha")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInCheckout, T("Admin.SettingsSystem.SystemCommon.ShowInOrder"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInCheckout, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInCheckout" })
+            <span data-e2e="EnableCaptchaInCheckout" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInCheckout, T("Admin.SettingsSystem.SystemCommon.ShowInOrder"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")<br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInRegistration, T("Admin.SettingsSystem.SystemCommon.ShowAtRegistration"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInRegistration, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInRegistration" })
+            <span data-e2e="EnableCaptchaInRegistration" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInRegistration, T("Admin.SettingsSystem.SystemCommon.ShowAtRegistration"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInSmsConfirmation, T("Admin.SettingsSystem.SystemCommon.EnableCaptchaInSmsConfirmation"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInSmsConfirmation, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInSmsConfirmation" })
+            <span data-e2e="EnableCaptchaInSmsConfirmation" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInSmsConfirmation, T("Admin.SettingsSystem.SystemCommon.EnableCaptchaInSmsConfirmation"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInPreOrder, T("Admin.SettingsSystem.SystemCommon.ShowInPurchase"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInPreOrder, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInPreOrder" })
+            <span data-e2e="EnableCaptchaInPreOrder" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInPreOrder, T("Admin.SettingsSystem.SystemCommon.ShowInPurchase"))
+            </div>
+        }
+        <help-trigger class="ng-cloak  @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInGiftCerticate, T("Admin.SettingsSystem.SystemCommon.ShowInPurchaseOfGift"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInGiftCerticate, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInGiftCerticate" })
+            <span data-e2e="EnableCaptchaInGiftCerticate" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInGiftCerticate, T("Admin.SettingsSystem.SystemCommon.ShowInPurchaseOfGift"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInFeedback, T("Admin.SettingsSystem.SystemCommon.ShowOnPageSendMessage"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInFeedback, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInFeedback" })
+            <span data-e2e="EnableCaptchaInFeedback" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInFeedback, T("Admin.SettingsSystem.SystemCommon.ShowOnPageSendMessage"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableCaptchaInProductReview, T("Admin.SettingsSystem.SystemCommon.ShowInProductReview"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label  @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInProductReview, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInProductReview" })
+            <span data-e2e="EnableCaptchaInProductReview" class="adv-checkbox-emul"></span>
+        </label>
+        @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInProductReview, T("Admin.SettingsSystem.SystemCommon.ShowInProductReview"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+    <div class="col-xs-3">
+        <div class="setting-label-wrap">
+            @Html.LabelFor(x => x.EnableCaptchaInBuyInOneClick, T("Admin.SettingsSystem.SystemCommon.ShowCaptchaInBuyInOneClick"))
+        </div>
+    </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptchaInBuyInOneClick, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptchaInBuyInOneClick" })
+            <span data-e2e="EnableCaptchaInBuyInOneClick" class="adv-checkbox-emul"></span>
+        </label>
+           @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptchaInBuyInOneClick, T("Admin.SettingsSystem.SystemCommon.ShowCaptchaInBuyInOneClick"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+    <div class="col-xs-3">
+        <div class="setting-label-wrap">
+            @Html.LabelFor(x => x.EnableCaptcha, T("Admin.SettingsSystem.SystemCommon.OnOtherPages"))
+        </div>
+    </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableCaptcha, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableCaptcha" })
+            <span data-e2e="EnableCaptcha" class="adv-checkbox-emul"></span>
+        </label>
+           @if (isMobile)
+        {
+            <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+                @Html.LabelFor(x => x.EnableCaptcha, T("Admin.SettingsSystem.SystemCommon.OnOtherPages"))
+            </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "p-l-xs")" data-title='@T("Admin.Settings.SystemSettings.EnableCaptcha")'>
+            @T("Admin.Settings.SystemSettings.EnableCaptchaNote")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha" target="_blank">@T("Admin.SettingsSystem.SystemCommon.Capcha")</a>
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CaptchaMode, T("Admin.SettingsSystem.SystemCommon.Alphabet"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.CaptchaMode, Model.CaptchaModes, new { @class = "form-control input-alt", ng_model = "settingsSystem.CaptchaMode" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.SettingsSystem.SystemCommon.Alphabet")'>
+            @T("Admin.SettingsSystem.SystemCommon.AlphabetHint")
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.CaptchaLength, T("Admin.SettingsSystem.SystemCommon.NumberOfCharacters"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.CaptchaLength, new { @class = "form-control input-alt", ng_model = "settingsSystem.CaptchaLength", @type = "number", validation_input_text = T("Admin.SettingsSystem.SystemCommon.NumberOfCharacters") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.SettingsSystem.SystemCommon.NumberOfCharacters")'>
+            @T("Admin.SettingsSystem.SystemCommon.NumberOfCharactersInCaptcha")
+            @T("Admin.SettingsSystem.SystemCommon.ChangeTo0")
+            <br /><br />
+            @T("Admin.SettingsSystem.SystemCommon.MoreDetails"):<br />
+            <a href="https://www.advantshop.net/help/pages/captcha#count-symbol" target="_blank">@T("Admin.SettingsSystem.SystemCommon.NumberOfCharacters")</a>
+        </help-trigger>
+    </div>
+</div>
+
+@if (!Model.IsTrial)
+{
+    <div class="setting-title">
+        <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.License")</h3>
+    </div>
+    <fieldset ng-disabled="@Model.IsSaas.ToString().ToLower()" style="@(isMobile ? "border:none;padding:0;" : "")">
+        <div class="form-group row setting__form-group">
+            <div class="col-xs-12 col-md-3">
+                <div class="setting-label-wrap setting__label">
+                    @Html.LabelFor(x => x.LicKey, T("Admin.Settings.SystemSettings.LicKey"))
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+                @Html.TextBoxFor(x => x.LicKey, new { @class = "form-control input-alt", ng_model = "settingsSystem.LicKey" })
+                <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title='@T("Admin.Settings.SystemSettings.LicKey")'>
+                    @T("Admin.Settings.SystemSettings.LicKeyNote")
+                </help-trigger>
+                @if (!Model.IsSaas && !isMobile)
+                {
+                    <a class="link-decoration-none" href="" data-e2e="CheckLicKey" ng-click="settingsSystem.checkLicense()">@T("Admin.Settings.SystemSettings.CheckLicense")</a>
+                }
+            </div>
+            @if (!Model.IsSaas && isMobile)
+            {
+                <div class="col-xs-12 m-t-sm">
+                    <a class="link-decoration-none"  href="" data-e2e="CheckLicKey" ng-click="settingsSystem.checkLicense()">@T("Admin.Settings.SystemSettings.CheckLicense")</a>
+                </div>
+            }
+        </div>
+    </fieldset>
+}
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.ActiveLic, T("Admin.Settings.SystemSettings.ActiveLic"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex" : "")" data-e2e="ActiveLicense" ng-init="settingsSystem.ActiveLic=@Model.ActiveLic.ToLowerString()">
+        @Html.Label("lblActiveLicense", T("Admin.Settings.SystemSettings.IsActiveLicense"), new { @class = "adv-checkbox-input flex-grow", ng_if = "settingsSystem.ActiveLic" })
+        @Html.Label("lblActiveLicense", T("Admin.Settings.SystemSettings.IsNotActiveLicense"), new { @class = "adv-checkbox-input flex-grow", ng_if = "!settingsSystem.ActiveLic" })
+        <help-trigger class="ng-cloak" style="padding-bottom:2px;" data-title='@T("Admin.Settings.SystemSettings.ActiveLic")'>
+            @T("Admin.Settings.SystemSettings.ActiveLicNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">
+        @T("Admin.Settings.Template.CopyrightText")
+    </h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-3">
+        <label for="settingsSystemCopyrightMode" class="control-label">
+            @Html.LabelFor(x => x.CopyrightMode, T("Admin.Settings.Template.CopyrightText"))
+        </label>
+    </div>
+    <div class="col-xs-12 col-md-4 @(isMobile ? "flex middle-xs flex-wrap" : "")">
+        @if (!Model.DisableCopyrightEdit)
+        {
+        <div class="relative @(isMobile ? "flex middle-xs flex-grow" : "")">
+            @Html.DropDownListFor(x => x.CopyrightMode, new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Text = T("Admin.Settings.SystemSettings.CopyrightMode.Default").ToString(),
+                        Value = "default",
+                        Selected = !Model.ShowCustomCopyright
+                    },
+                    new SelectListItem
+                    {
+                        Text = T("Admin.Settings.SystemSettings.CopyrightMode.Custom").ToString(),
+                        Value = "custom",
+                        Selected = Model.ShowCustomCopyright
+                    }
+                }, new
+                {
+                    id = "settingsSystemCopyrightMode",
+                    @class = "form-control input-alt-mobile",
+                    ng_model = "settingsSystem.CopyrightMode",
+                    ng_disabled = Model.DisableCopyrightEdit.ToLowerString()
+                })
+            <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "help-trigger-icon-abs m-l-xs")" data-title='@T("Admin.Settings.Template.CopyrightText")'>
+                @T("Admin.Settings.SystemSettings.ShowCopyrightNote")
+            </help-trigger>
+        </div>
+        }
+        else
+        {
+            <span class="m-t-xs">@T("Admin.Settings.NotInTariff")</span>
+        }
+    </div>
+</div>
+
+<div class="form-group row setting__form-group" ng-if="settingsSystem.CopyrightMode === 'custom'">
+    <div class="col-xs-12 col-md-3"></div>
+    <div class="col-xs-12 col-md-6">
+        <div>
+            @Html.TextAreaFor(x => x.CopyrightText, new
+            {
+                @class = "wysiwyg input-alt-mobile",
+                ckeditor = "",
+                ng_model = "settingsSystem.CopyrightText",
+                ng_disabled = Model.DisableCopyrightEdit.ToLowerString()
+            })
+            <p class="m-b-none">@T("Admin.Settings.Template.VariableCopyrightText")</p>
+        </div>
+        
+    </div>
+</div>
+@Html.HiddenFor(x => x.CopyrightText, new { ng_model = "settingsSystem.CopyrightText", ng_if = "settingsSystem.CopyrightMode === 'default'" })
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle">@T("Admin.Settings.SystemSettings.ExperimentalFeatures")</h3>
+</div>
+
+<div class="form-group row setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="col-xs-3">
+            <div class="setting-label-wrap">
+                @Html.LabelFor(x => x.EnableExperimentalFeatures, T("Admin.Settings.SystemSettings.EnableExperimentalFeatures"))
+            </div>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label @(isMobile ? "p-r-sm" : "")">
+            @Html.CheckBoxFor(x => x.EnableExperimentalFeatures, new { @class = "adv-checkbox-input", ng_model = "settingsSystem.EnableExperimentalFeatures" })
+            <span data-e2e="EnableExperimentalFeatures" class="adv-checkbox-emul"></span>
+        </label>
+             @if (isMobile)
+        {
+        <div class="setting-label-wrap setting__label setting--m-none flex-grow">
+            @Html.LabelFor(x => x.EnableExperimentalFeatures, T("Admin.Settings.SystemSettings.EnableExperimentalFeatures"))
+        </div>
+        }
+        <help-trigger class="ng-cloak @(isMobile ? "m-l-sm p-l-xs" : "")" style="@(isMobile ? "" : "padding-bottom:2px;")" data-title='@T("Admin.Settings.SystemSettings.EnableExperimentalFeatures")'>
+            @T("Admin.Settings.SystemSettings.EnableExperimentalFeaturesNote")
+        </help-trigger>
+    </div>
+</div>
+
+<div ng-show="settingsSystem.EnableExperimentalFeatures">
+    @foreach (EFeature feature in Enum.GetValues(typeof(EFeature)))
+    {
+        var ngModel = "settingsSystem.Features." + feature;
+        var description = feature.DescriptionKey();
+        <div class="form-group row setting__form-group @(isMobile ? "flex middle-xs" : "")" @Html.Raw(feature == EFeature.MarkingRequired ? "style=\"display:none\"" : "")>
+            <div class="col-md-3 @(isMobile ? "flex-grow col-xs" : "")">
+                <div class="setting-label-wrap setting__label setting--m-none">
+                    @Html.LabelFor(x => x.Features[feature.ToString()], feature.Localize())
+                </div>
+            </div>
+            <div class=" col-md-6 flex middle-xs">
+                <switch-on-off checked="@ngModel" data-id="Features[@feature]" ng-init="@(ngModel + "=" + Model.Features[feature.ToString()].ToLowerString())"></switch-on-off>
+                @if (description.IsNotEmpty())
+                {
+                    <help-trigger class="ng-cloak p-l-xs @(isMobile ? "m-l-sm" : "")" data-title='@feature.Localize()'>
+                        @description
+                    </help-trigger>
+                }
+            </div>
+        </div>
+    }
+</div>

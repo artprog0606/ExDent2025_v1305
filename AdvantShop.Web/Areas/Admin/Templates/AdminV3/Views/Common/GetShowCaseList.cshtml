@@ -1,0 +1,62 @@
+﻿@model Dictionary<string, string>
+@{
+    var first = Model.FirstOrDefault();
+}
+
+@if (!first.IsDefault() || Model.Count > 1)
+{
+    <div class="btn-group btn-group--flex" data-submenu-parent>
+
+        @if (!first.IsDefault())
+        {
+            var link = first.Key.Contains("http://") || first.Key.Contains("https://") ? first.Key : "http://" + first.Key;
+            if (SettingsMain.IsTechDomainsReady)
+            {
+                @Html.AbsoluteActionLink(first.Value, "RedirectWithAuth", "Account", new { domain = link }, new
+                {
+                    @class = "btn btn-xs btn-success p-l-sm p-r-sm",
+                    title = first.Value,
+                    onclick = "return advTrack('" + AdvantShop.Track.ETrackEvent.Core_Common_ClickStorefrontLink + "');",
+                    target = "_blank"
+                })
+            }
+            else
+            {
+                <a class="btn btn-xs btn-success p-l-sm p-r-sm" href="@link"
+                   title="@first.Value" onclick="return advTrack('@AdvantShop.Track.ETrackEvent.Core_Common_ClickStorefrontLink.ToString()');"
+                   target="_blank">
+                    @first.Value
+                </a>
+            }
+        }
+        @if (Model.Count > 1)
+        {
+            <button type="button" class="btn btn-xs btn-success dropdown-toggle">
+                <span class="caret"></span>
+                <span class="sr-only"></span>
+            </button>
+            <ul class="dropdown-menu pull-left top-panel-submenu" data-submenu>
+                @foreach (var item in Model.Skip(1))
+                {
+                    var link = item.Key.Contains("http://") || item.Key.Contains("https://") ? item.Key : "http://" + item.Key;
+                    <li class="dropdown-submenu">
+                        @if (SettingsMain.IsTechDomainsReady)
+                        {
+                            @Html.AbsoluteActionLink(item.Value, "RedirectWithAuth", "Account", new { domain = link }, new
+                            {
+                                title = item.Value,
+                                onclick = "return advTrack('" + AdvantShop.Track.ETrackEvent.Core_Common_ClickStorefrontLink + "');",
+                                target = "_blank"
+                            })
+                        }
+                        else
+                        {
+                            <a href="@link" target="_blank">@item.Value</a>
+                        }
+
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}

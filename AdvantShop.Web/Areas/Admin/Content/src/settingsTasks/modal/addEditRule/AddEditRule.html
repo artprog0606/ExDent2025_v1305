@@ -1,0 +1,423 @@
+﻿<form novalidate name="addEditRuleForm" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode == "add" ? ('Admin.Js.SettingsTasks.NewRule'|translate) : ('Admin.Js.SettingsTasks.EditingTheRule'|translate)}}
+        </h2>
+    </div>
+    <div class="modal-body" ng-init="ctrl.addEditRuleForm = addEditRuleForm">
+        <h3 ng-class="{'setting__subtitle' : isMobile.value}">{{'Admin.Js.SettingsTasks.TermsOfSelection'|translate}}</h3>
+        <div class="form-group form-inline setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-2 control-label setting__label">{{'Admin.Js.SettingsTasks.Type'|translate}}</label>
+                <div class="col-xs-12 col-md-10">
+                    <span ng-bind="ctrl.eventName" data-e2e="BizRuleType"></span>
+                    <span ng-if="ctrl.showEventObject">
+                        {{'Admin.Js.SettingsTasks.On'|translate}}
+                        <select
+                            ng-model="ctrl.eventObjectGroup"
+                            ng-if="ctrl.eventObjectGroups"
+                            ng-options="s.value as s.label for s in ctrl.eventObjectGroups"
+                            class="form-control m-r-sm input-alt setting--m-t-sm"
+                            ng-change="ctrl.getEventObjects(ctrl.eventObjectGroup)"
+                            data-e2e="BizRuleSalesFunnel"></select>
+                        <select
+                            data-e2e="BizRuleTypeStatus"
+                            ng-model="ctrl.eventObject"
+                            ng-options="s.label for s in ctrl.eventObjects track by s.value"
+                            class="form-control input-alt setting--m-t-sm"
+                            required
+                            validation-input-text="{{'Admin.Js.SettingsTasks.Type'|translate}}">
+                            <option value="">{{'Admin.Js.SettingsTasks.SelectTheType'|translate}}</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group setting__form-group">
+            <div class="row">
+                <label class="col-xs-12 col-md-2 control-label setting__label">{{'Admin.Js.SettingsTasks.RulePriority'|translate}}</label>
+                <div class="col-xs-12 col-md-2">
+                    <input type="number" class="form-control input-alt" ng-model="ctrl.priority" data-e2e="BizRulePriority" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group setting__form-group" ng-if="ctrl.useFilter">
+            <h4 ng-bind="ctrl.filterTypeName" ng-class="{'control-label setting--m-t-none' : isMobile.value}">
+                {{'Admin.Js.SettingsTasks.TermsOfSelection'|translate}}
+            </h4>
+            <div>
+                <ol ng-if="ctrl.filter != null && ctrl.filter.Comparers.length > 0 && !isMobile.value">
+                    <li ng-repeat="comparer in ctrl.filter.Comparers track by $index">
+                        <ui-modal-trigger
+                            data-controller="'ModalAddEditFilterRuleCtrl'"
+                            controller-as="ctrl"
+                            data-resolve="{'rule': comparer, 'event': {'type': ctrl.eventType}}"
+                            template-url="../areas/admin/content/src/settingsTasks/modal/addEditFilterRule/AddEditFilterRule.html"
+                            data-on-close="ctrl.processFilterRule(comparer, result)">
+                            <a
+                                href=""
+                                title="{{'Admin.Js.SettingsTasks.EditTheCondition'|translate}}"
+                                class="link-invert link-decoration-none"
+                                data-e2e="BizRuleFilter">
+                                <b ng-bind="comparer.FieldName" data-e2e="BizRuleFilterName"></b>
+
+                                <span ng-if="comparer.FieldValueObjectName" ng-bind="'= ' + comparer.FieldValueObjectName"></span>
+                                <span
+                                    ng-if="comparer.FieldComparer.From"
+                                    ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + comparer.FieldComparer.From"></span>
+                                <span
+                                    ng-if="comparer.FieldComparer.To"
+                                    ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + comparer.FieldComparer.To"></span>
+                                <span
+                                    ng-if="comparer.FieldComparer.DateFromString"
+                                    ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + comparer.FieldComparer.DateFromString"></span>
+                                <span
+                                    ng-if="comparer.FieldComparer.DateToString"
+                                    ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + comparer.FieldComparer.DateToString"></span>
+                                <span
+                                    ng-if="comparer.FieldComparer.Type == 3"
+                                    ng-bind="'= ' + (comparer.FieldComparer.Flag ? '{{'Admin.Js.SettingsTasks.Yes'|translate}}' : '{{'Admin.Js.SettingsTasks.No'|translate}}')"></span>
+                                <span
+                                    ng-if="!comparer.FieldValueObjectName && comparer.FieldComparer.Value"
+                                    ng-bind="(comparer.FieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : '= ') + comparer.FieldComparer.Value"></span>
+
+                                <span ng-if="comparer.FieldComparer.Type == 5">
+                                    <span ng-repeat="item in comparer.FieldComparer.Products track by $index">
+                                        <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                    </span>
+                                </span>
+                                <span ng-if="comparer.FieldComparer.Type == 6">
+                                    <span ng-repeat="item in comparer.FieldComparer.Categories track by $index">
+                                        <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                    </span>
+                                </span>
+                                <span
+                                    ng-if="comparer.FieldComparer.Type == 11 || comparer.FieldComparer.Type == 12"
+                                    ng-bind="comparer.FieldComparer.SalesFunnelName + ' ' + comparer.FieldComparer.DealStatusName"></span>
+
+                                <span class="fas fa-pencil-alt p-l-xs"></span>
+                            </a>
+                        </ui-modal-trigger>
+                        <a
+                            href=""
+                            ng-click="ctrl.processFilterRule(comparer)"
+                            class="fa fa-times link-invert link-decoration-none p-l-xs"
+                            title="{{'Admin.Js.SettingsTasks.Delete'|translate}}"
+                            data-e2e="BizRuleFilterDelete"></a>
+                    </li>
+                </ol>
+
+                <div class="m-b-sm" ng-if="ctrl.filter != null && ctrl.filter.Comparers.length > 0 && isMobile.value">
+                    <div ng-repeat="comparer in ctrl.filter.Comparers">
+                        <div class="swipe-line-container">
+                            <div class="swipe-line m-b-sm">
+                                <div data-swipe-line class="swipe-line__inner">
+                                    <div class="swipe-line__content">
+                                        <ui-modal-trigger
+                                            data-controller="'ModalAddEditFilterRuleCtrl'"
+                                            controller-as="ctrl"
+                                            data-resolve="{'rule': comparer, 'event': {'type': ctrl.eventType}}"
+                                            template-url="../areas/admin/content/src/settingsTasks/modal/addEditFilterRule/AddEditFilterRule.html"
+                                            data-on-close="ctrl.processFilterRule(comparer, result)">
+                                            <div class="card card--gap-row-sm">
+                                                <div class="setting__label m-b-xs" ng-bind="comparer.FieldName" data-e2e="BizRuleFilterName"></div>
+                                                <div>
+                                                    <span ng-if="comparer.FieldValueObjectName" ng-bind="'= ' + comparer.FieldValueObjectName"></span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.From"
+                                                        ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + comparer.FieldComparer.From"></span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.To"
+                                                        ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + comparer.FieldComparer.To"></span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.DateFromString"
+                                                        ng-bind="'{{'Admin.Js.SettingsTasks.From'|translate}}' + comparer.FieldComparer.DateFromString"></span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.DateToString"
+                                                        ng-bind="'{{'Admin.Js.SettingsTasks.To'|translate}}' + comparer.FieldComparer.DateToString"></span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.Type == 3"
+                                                        ng-bind="'= ' + (comparer.FieldComparer.Flag ? '{{'Admin.Js.SettingsTasks.Yes'|translate}}' : '{{'Admin.Js.SettingsTasks.No'|translate}}')"></span>
+                                                    <span
+                                                        ng-if="!comparer.FieldValueObjectName && comparer.FieldComparer.Value"
+                                                        ng-bind="(comparer.FieldComparer.Type == 4 ? '{{'Admin.Js.SettingsTasks.Contains'|translate}}' : '= ') + comparer.FieldComparer.Value"></span>
+
+                                                    <span ng-if="comparer.FieldComparer.Type == 5">
+                                                        <span ng-repeat="item in comparer.FieldComparer.Products track by $index">
+                                                            <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                                        </span>
+                                                    </span>
+                                                    <span ng-if="comparer.FieldComparer.Type == 6">
+                                                        <span ng-repeat="item in comparer.FieldComparer.Categories track by $index">
+                                                            <span ng-bind="($index != 0 ? ', ' : '') + item.Name"></span>
+                                                        </span>
+                                                    </span>
+                                                    <span
+                                                        ng-if="comparer.FieldComparer.Type == 11 || comparer.FieldComparer.Type == 12"
+                                                        ng-bind="comparer.FieldComparer.SalesFunnelName + ' ' + comparer.FieldComparer.DealStatusName"></span>
+                                                </div>
+                                            </div>
+                                        </ui-modal-trigger>
+                                    </div>
+                                    <div data-swipe-line-right class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                                        <a
+                                            href=""
+                                            ng-click="ctrl.processFilterRule(comparer)"
+                                            class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                            data-e2e="BizRuleFilterDelete"
+                                            >Удалить</a
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ui-modal-trigger
+                    data-controller="'ModalAddEditFilterRuleCtrl'"
+                    controller-as="ctrl"
+                    data-resolve="{'event': { 'type': ctrl.eventType}}"
+                    size="lg"
+                    template-url="../areas/admin/content/src/settingsTasks/modal/addEditFilterRule/AddEditFilterRule.html"
+                    data-on-close="ctrl.processFilterRule(null, result)">
+                    <button class="btn btn-action btn-sm" type="button" data-e2e="BizRuleFilterAdd">
+                        <i class="fa fa-plus"></i><span ng-class="{'bold' : !isMobile.value}">{{'Admin.Js.SettingsTasks.Add'|translate}}</span>
+                    </button>
+                </ui-modal-trigger>
+                <input type="text" hidden ng-model="ctrl.filterSerialized" /><!-- to enable submit button -->
+            </div>
+        </div>
+        <div class="form-group setting__form-group">
+            <h4 ng-class="{'control-label setting--m-t-none' : isMobile.value}">
+                <span class="text-required">{{'Admin.Js.SettingsTasks.EmployeeSelectionCondition'|translate}}</span>
+            </h4>
+            <div>
+                <ol ng-if="ctrl.managerFilter != null && ctrl.managerFilter.Comparers.length > 0 && !isMobile.value">
+                    <li ng-repeat="comparer in ctrl.managerFilter.Comparers track by $index">
+                        <ui-modal-trigger
+                            data-controller="'ModalAddEditManagerFilterRuleCtrl'"
+                            controller-as="ctrl"
+                            data-resolve="{'rule': comparer, 'event': {'type': ctrl.eventType}}"
+                            template-url="../areas/admin/content/src/settingsTasks/modal/addEditManagerFilterRule/AddEditManagerFilterRule.html"
+                            data-on-close="ctrl.processManagerFilterRule(comparer, result)">
+                            <a
+                                href=""
+                                title="{{'Admin.Js.SettingsTasks.EditCondition'|translate}}"
+                                class="link-invert link-decoration-none"
+                                data-e2e="BizRuleManagerName">
+                                <span ng-bind="ctrl.getManagerFilterHtml(comparer)"></span>
+                                <span class="fas fa-pencil-alt p-l-xs"></span>
+                            </a>
+                        </ui-modal-trigger>
+                        <a
+                            href=""
+                            ng-click="ctrl.processManagerFilterRule(comparer)"
+                            class="fa fa-times link-invert link-decoration-none p-l-xs"
+                            title="{{'Admin.Js.SettingsTasks.Delete'|translate}}"
+                            data-e2e="BizRuleManagerDelete"></a>
+                    </li>
+                </ol>
+
+                <div class="m-b-sm" ng-if="ctrl.managerFilter != null && ctrl.managerFilter.Comparers.length > 0 && isMobile.value">
+                    <div ng-repeat="comparer in ctrl.managerFilter.Comparers">
+                        <div class="swipe-line-container">
+                            <div class="swipe-line m-b-sm">
+                                <div data-swipe-line class="swipe-line__inner">
+                                    <div class="swipe-line__content">
+                                        <ui-modal-trigger
+                                            data-controller="'ModalAddEditManagerFilterRuleCtrl'"
+                                            controller-as="ctrl"
+                                            data-resolve="{'rule': comparer, 'event': {'type': ctrl.eventType}}"
+                                            template-url="../areas/admin/content/src/settingsTasks/modal/addEditManagerFilterRule/AddEditManagerFilterRule.html"
+                                            data-on-close="ctrl.processManagerFilterRule(comparer, result)">
+                                            <div class="card card--gap-row-sm">
+                                                <div class="setting__label m-b-xs" ng-bind="ctrl.getManagerFilterHtml(comparer)"></div>
+                                            </div>
+                                        </ui-modal-trigger>
+                                    </div>
+                                    <div data-swipe-line-right class="swipe-line__right ui-grid-custom__swipe-line-right swipe-line__btn-group">
+                                        <a
+                                            href=""
+                                            ng-click="ctrl.processManagerFilterRule(comparer)"
+                                            class="btn btn-sm btn-danger btn--as-swipe-line flex center-xs middle-xs"
+                                            data-e2e="BizRuleFilterDelete"
+                                            >Удалить</a
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ui-modal-trigger
+                    data-controller="'ModalAddEditManagerFilterRuleCtrl'"
+                    controller-as="ctrl"
+                    data-resolve="{'event': {'type': ctrl.eventType}}"
+                    template-url="../areas/admin/content/src/settingsTasks/modal/addEditManagerFilterRule/AddEditManagerFilterRule.html"
+                    data-on-close="ctrl.processManagerFilterRule(null, result)">
+                    <button class="btn btn-action btn-sm" type="button" data-e2e="BizRuleManagerAdd">
+                        <i class="fa fa-plus"></i><span ng-class="{'bold' : !isMobile.value}">{{'Admin.Js.SettingsTasks.Add'|translate}}</span>
+                    </button>
+                </ui-modal-trigger>
+                <input type="text" hidden ng-model="ctrl.managerFilterSerialized" /><!-- to enable submit button -->
+            </div>
+        </div>
+
+        <div class="form-group setting__form-group">
+            <div class="divider-form"></div>
+        </div>
+
+        <h3 ng-class="{'setting__subtitle' : isMobile.value}">{{'Admin.Js.SettingsTasks.TaskParameters'|translate}}</h3>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="form-group setting__form-group">
+                    <label class="control-label setting__label">
+                        <span class="text-required">{{'Admin.Js.SettingsTasks.TaskName'|translate}}</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control input-alt"
+                        ng-model="ctrl.taskName"
+                        data-autofocus="!isMobile.value"
+                        required
+                        validation-input-text="{{'Admin.Js.SettingsTasks.TaskName'|translate}}"
+                        textcomplete
+                        textcomplete-data="ctrl.availableVariables"
+                        data-e2e="BizRuleTaskName" />
+                    <span
+                        class="help-block block setting--m-t-sm"
+                        ng-if="ctrl.availableVariables"
+                        ng-bind="('Admin.Js.SettingsTasks.AvailableVariables'|translate) + ctrl.availableVariables.join(', ')"></span>
+                </div>
+                <div class="form-group setting__form-group">
+                    <label class="control-label setting__label">
+                        <span class="text-required">{{'Admin.Js.SettingsTasks.TaskText'|translate}}</span>
+                    </label>
+                    <textarea
+                        class="form-control r-v input-alt"
+                        rows="5"
+                        ng-model="ctrl.taskDescription"
+                        required
+                        validation-input-text="{{'Admin.Js.SettingsTasks.TaskDescription'|translate}}"
+                        textcomplete
+                        textcomplete-data="ctrl.availableVariables"
+                        data-e2e="BizRuleTaskText"></textarea>
+                    <span
+                        class="help-block block setting--m-t-sm"
+                        ng-if="ctrl.availableVariables"
+                        ng-bind="('Admin.Js.SettingsTasks.AvailableVariables'|translate) + ctrl.availableVariables.join(', ')"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-7 setting__label">{{'Admin.Js.SettingsTasks.TimeForExecution'|translate}}</label>
+                        <div class="col-xs-12 col-md-5 setting--m-t-sm">
+                            <label class="adv-checkbox-label" ng-class="{'col-xs-12' : isMobile.value}">
+                                <input
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.taskDueDateIntervalNotSet"
+                                    ng-change="ctrl.taskDueDateIntervalFocus = !ctrl.taskDueDateIntervalNotSet"
+                                    data-e2e="BizRuleTaskDueDateInput" />
+                                <span class="adv-checkbox-emul" data-e2e="BizRuleTaskDueDateEmul"></span>
+                                <span>{{'Admin.Js.SettingsTasks.NotIndicated'|translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row setting--m-t-sm" ng-if="!ctrl.taskDueDateIntervalNotSet">
+                        <div class="col-xs-5 col-md-4">
+                            <input
+                                type="number"
+                                class="form-control input-alt"
+                                ng-model="ctrl.taskDueDateInterval.Interval"
+                                data-autofocus="ctrl.taskDueDateIntervalFocus"
+                                data-e2e="BizRuleTaskDueDate" />
+                        </div>
+                        <div class="col-xs-7 col-md-8">
+                            <select
+                                ng-model="ctrl.taskDueDateInterval.IntervalType"
+                                convert-to-number
+                                ng-options="s.value as s.label for s in ctrl.intervalTypes"
+                                class="form-control input-alt"
+                                data-e2e="BizRuleTaskDueDateSelect"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <div class="row">
+                        <label class="col-xs-12 col-md-7 setting__label">{{'Admin.Js.SettingsTasks.TermOfSettingTask'|translate}}</label>
+                        <div class="col-xs-12 col-md-5 setting--m-t-sm">
+                            <label class="adv-checkbox-label" ng-class="{'col-xs-12' : isMobile.value}">
+                                <input
+                                    type="checkbox"
+                                    class="adv-checkbox-input control-checkbox"
+                                    ng-model="ctrl.taskCreateIntervalNotSet"
+                                    ng-change="ctrl.taskCreateIntervalFocus = !ctrl.taskCreateIntervalNotSet"
+                                    data-e2e="BizRuleTaskCreateDateInput" />
+                                <span class="adv-checkbox-emul" data-e2e="BizRuleTaskCreateDateEmul"></span>
+                                <span>{{'Admin.Js.SettingsTasks.AtOnce'|translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row setting--m-t-sm" ng-if="!ctrl.taskCreateIntervalNotSet">
+                        <div class="col-xs-5 col-md-4">
+                            <input
+                                type="number"
+                                class="form-control input-alt"
+                                ng-model="ctrl.taskCreateInterval.Interval"
+                                data-autofocus="ctrl.taskCreateIntervalFocus"
+                                data-e2e="BizRuleTaskCreateDate" />
+                        </div>
+                        <div class="col-xs-7 col-md-8">
+                            <select
+                                ng-model="ctrl.taskCreateInterval.IntervalType"
+                                convert-to-number
+                                ng-options="s.value as s.label for s in ctrl.intervalTypes"
+                                class="form-control input-alt"
+                                data-e2e="BizRuleTaskCreateDateSelect"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group setting__form-group">
+                    <label class="control-label setting__label">{{'Admin.Js.SettingsTask.TaskPriority'|translate}}</label>
+                    <select
+                        ng-model="ctrl.taskPriority"
+                        convert-to-number
+                        ng-options="s.value as s.label for s in ctrl.taskPriorities"
+                        class="form-control form-control input-alt"
+                        data-e2e="BizRuleTaskPriority"></select>
+                </div>
+                <div class="form-group setting__form-group">
+                    <label class="control-label setting__label">{{'Admin.Js.SettingsTask.Project'|translate}}</label>
+                    <select
+                        ng-model="ctrl.taskGroupId"
+                        ng-options="s.value as s.label for s in ctrl.taskGroups"
+                        class="form-control input-alt"
+                        convert-to-number
+                        data-e2e="BizRuleTaskGroup">
+                        <option value="">{{'Admin.Js.SettingsTask.Default'|translate}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation-success="ctrl.save()"
+            data-button-validation
+            ladda="ctrl.btnSleep"
+            data-e2e="BizRuleOk"
+            disabled
+            ng-disabled="ctrl.mode == 'edit' && (!ctrl.formInited || !addEditRuleForm.modified)"
+            ng-bind="ctrl.mode == 'add' ? ('Admin.Js.SettingsTasks.Add'|translate) : ('Admin.Js.SettingsTasks.Save'|translate)"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()" data-e2e="BizRuleCancel">
+            {{'Admin.Js.SettingsTasks.Cancel'|translate}}
+        </button>
+    </div>
+</form>

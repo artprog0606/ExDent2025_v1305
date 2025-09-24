@@ -1,0 +1,189 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.ApiShipShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info" style="@(isMobile ? "display:flex;" : "max-width:910px;")">
+            <div>
+                Если у вас нет учетной записи в сервисе Apiship, Вам необходимо зарегистрироваться
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">ApiKey</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ApiKey, new { ng_model = "shippingMethod.Params.ApiKey", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.ApiShip.ApiKey") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.ApiShip.ApiKey")">
+            @T("Admin.ShippingMethods.ApiShip.ApiKey")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">Город отправления</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.CityFrom, new { ng_model = "shippingMethod.Params.CityFrom", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.ShippingMethods.ApiShip.CityOfWarehouse") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="@T("Admin.ShippingMethods.ApiShip.CityOfWarehouse")">
+            @T("Admin.ShippingMethods.ApiShip.CityOfWarehouse")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="ShowPointsAsList">Отображать пункты выдачи списком</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        <label class="adv-checkbox-label form-label-block @(isMobile ? "flex-grow" : "")">
+            @Html.CheckBoxFor(x => x.ShowPointsAsList, new { ng_model = "shippingMethod.Params.ShowPointsAsList", ng_init = "shippingMethod.Params.ShowPointsAsList=" + Model.ShowPointsAsList.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul" data-e2e="ShowPointsAsList"></span>
+            @if (isMobile)
+            {
+                <span>Отображать пункты выдачи списком</span>
+            }
+        </label>
+        <help-trigger class="m-l-xs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Отображать пункты выдачи списком">
+            Отображать пункты выдачи списком или с помощью виджета с картой
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="!shippingMethod.Params.ShowPointsAsList">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required",
+       validation_input_text = T("Admin.ShippingMethods.ApiShip.ApiYndexMap") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs" ng-if="!shippingMethod.Params.ShowPointsAsList && !shippingMethod.Params.ShowApiShipWidjet">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            <label for="ShowAddressComment">Отображать описание схемы проезда</label>
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.ShowAddressComment, new { ng_model = "shippingMethod.Params.ShowAddressComment", ng_init = "shippingMethod.Params.ShowAddressComment=" + Model.ShowAddressComment.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отображать описание схемы проезда</span>
+            }
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        ФИО контактного лица
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderName, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderName", validation_input_text = "ФИО контактного лица" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="ФИО контактного лица">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Номер телефона
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderPhone, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderPhone", validation_input_text = "Номер телефона" })
+        <div>
+            Должен передаваться в международном формате: код страны (для России +7) и сам номер (10 и более цифр)
+        </div>
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Номер телефона">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Регион отправителя
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderRegion, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderRegion", validation_input_text = "ФИО контактного лица" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Регион отправителя">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Адрес отправителя
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.SenderAddress, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.SenderAddress", validation_input_text = "Адрес отправителя" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Адрес отправителя">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Адрес для возврата
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.ReturnAddress, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.ReturnAddress", validation_input_text = "Адрес для возврата" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Адрес для возврата">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Страна отправки
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.SendedCountry, Model.ListCountries, new { @class = "form-control input-alt", 
+                               required = "required", ng_model = "shippingMethod.SendedCountry", 
+                               ng_init = "shippingMethod.SendedCountry='" + Model.SendedCountry + "'", 
+                               validation_input_text = T("Admin.ShippingMethods.ApiShip.CountrySending") })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Адрес для возврата">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="flex-grow-n @(isMobile ? "col-xs-12 setting__label setting--m-b-sm" : "col-fixed-size-md")">
+        Страна возврата
+    </div>
+    <div class="col-xs-12 col-md-6 relative @(isMobile ? "flex middle-xs" : "")">
+        @Html.DropDownListFor(x => x.ReturnCountry, Model.ListCountries, new
+        {
+            @class = "form-control input-alt", required = "required",
+            ng_model = "shippingMethod.ReturnCountry", ng_init = "shippingMethod.ReturnCountry='" + Model.ReturnCountry + "'",
+            validation_input_text = T("Admin.ShippingMethods.ApiShip.CountryReturn")
+        })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Адрес для возврата">
+            Используется при передаче заказа в ApiShip
+        </help-trigger>
+    </div>
+</div>

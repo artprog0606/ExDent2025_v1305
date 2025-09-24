@@ -1,0 +1,57 @@
+﻿@model AdvantShop.ViewModel.News.NewsCategoryViewModel
+@{
+    Html.AddAsset("news");
+}
+<div class="mobile-container-fluid desktop-col-p-v main-content mobile-container-size-viewport">
+    <div class="page-title-row">
+        <div class="news-item-title page-title cs-bg-4--mobile">
+            <h1 class="main-title">
+                @Model.H1
+            </h1>
+            @if (Model.ViewRss)
+            {
+                <a href="news/rss" class="icon-rss-squared-before news-rss-link link-text-decoration-none" target="_blank" title="RSS"></a>
+            }
+        </div>
+    </div>
+    <div class="row news-item">
+        <div class="col-xs-12 col-sm-9 news-category-block">
+            <div class="news-item-inner">
+                @Html.Action("BreadCrumbs", "Common", new { breadCrumbs = Model.BreadCrumbs })
+                @foreach (var news in Model.News)
+                {
+                    var inplace = Html.InplaceImageNews(news.NewsId);
+                    var photoSrc = !string.IsNullOrEmpty(news.Picture.ImageSrc()) ? news.Picture.ImageSrc() : (inplace.ToString().IsNotEmpty() ? "images/nophoto_small.png" : null);
+                    <div class="row news-list-item">
+                        @if (!string.IsNullOrEmpty(photoSrc))
+                        {
+                            <div class="col-xs-12 col-sm-3 news-item-img-col text-align-center">
+                                <img src="@photoSrc" data-qazy alt="@news.Title" title="@news.Title" width="@(Model.PhotoWidth)" height="@(Model.PhotoHeight)" @inplace />
+                            </div>
+                        }
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="h3">
+                                <a href="@Url.AbsoluteRouteUrl("News", new {url = news.UrlPath})" class="news-link-title">@Html.Raw(news.Title)</a>
+                            </div>
+                            <div class="subheader">
+                                @Html.Raw(news.AddingDate.ToShortDateTime())
+                            </div>
+                            <div class="news-list-item-bDescr" @Html.InplaceNews(news.NewsId, NewsInplaceField.TextAnnotation)>
+                                @Html.Raw(news.TextAnnotation)
+                            </div>
+                        </div>
+                    </div>
+                }
+                @Html.Paging(Model.Pager)
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-3">
+            @Html.Partial("_NewsCategoryList", Model.SubCategories)
+            @Html.Action("NewsSubscriptionSlim")
+            <div class="vk-news-block">
+                @Html.StaticBlock("Vk")
+                @Html.StaticBlock("BlockInNews")
+            </div>
+        </div>
+    </div>
+</div>

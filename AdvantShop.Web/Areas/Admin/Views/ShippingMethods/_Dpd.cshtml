@@ -1,0 +1,232 @@
+﻿@using Newtonsoft.Json
+@model AdvantShop.Web.Infrastructure.Admin.ShippingMethods.DpdShippingAdminModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row" ng-if="!shippingMethod.Params.ExistApi">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            Внимание! Если метод доставки создается в магазине впервые, то после сохранения настроек с корректно введенными данными доступа к API будет долгая загрузка страницы.
+            В это время будут загружаться географические данные Dpd, это необходимо для дальнейшей настройки метода.
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Клиентский номер в системе DPD</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.ClientNumber, new { ng_model = "shippingMethod.Params.ClientNumber", @class = "form-control input-alt", required = "required", validation_input_text = "Клиентский номер в системе DPD", type = "number" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Уникальный ключ для авторизации</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.ClientKey, new { ng_model = "shippingMethod.Params.ClientKey", @class = "form-control input-alt", required = "required", validation_input_text = "Уникальный ключ для авторизации" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    @if (!isMobile)
+    {
+        <div class="flex-grow-n col-fixed-size-md">
+            Использовать тестовый сервер DPD
+        </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(!isMobile ? "" : "flex middle-xs")">
+        <label class="adv-checkbox-label form-label-block @(!isMobile ? "" : "flex-grow")">
+            @Html.CheckBoxFor(x => x.TestServers, new { ng_model = "shippingMethod.Params.TestServers", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Использовать тестовый сервер DPD</span>    
+            }
+        </label>
+         
+        <help-trigger class="ng-cloak @(!isMobile ? "p-l-sm " : "m-l-sm p-l-xs")" data-title='Тестовый сервер DPD'>
+            Использовать тестовый сервер DPD для тестирования работы веб-служб
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group"
+     ng-init="@("shippingMethod.Params.EAEUCountries='" + string.Join(",", Model.EAEUCountriesIso2) + "'")">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Страна отправки</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.PickupCountryIso2, Model.Countries, new { ng_model = "shippingMethod.Params.PickupCountryIso2", ng_init = "shippingMethod.Params.PickupCountryIso2='" + Model.PickupCountryIso2 + "'; shippingMethod.Params.InitedPickupCountryIso2='" + Model.PickupCountryIso2 + "'", validation_input_text = "Страна отправки", required = "required", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Страна отправки">
+            Страна из которой осуществляется отправка посылок
+        </help-trigger>
+    </div>
+</div>
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.EAEUCountries.indexOf(shippingMethod.Params.PickupCountryIso2) !== -1">
+    @if (!isMobile)
+    {
+    <div class="flex-grow-n col-fixed-size-md">
+        Отправка с пунтка приема/терминала
+    </div>
+    }
+    <div class="col-xs-12 col-md-6 relative @(!isMobile ? "" : "flex middle-xs")">
+        <label class="adv-checkbox-label form-label-block @(!isMobile ? "" : "flex-grow")">
+            @Html.CheckBoxFor(x => x.SelfPickup, new { ng_model = "shippingMethod.Params.SelfPickup", @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+            @if (isMobile)
+            {
+                <span>Отправка с пунтка приема/терминала</span>
+            }
+        </label>
+        <help-trigger class="ng-cloak @(!isMobile ? "p-l-sm " : "m-l-sm p-l-xs")" data-title='Метод передачи посылок'>
+            Передача осуществляется в пункте приема/терминале или курьеру?<br />
+            <strong>Активировать</strong> если в пункте приема/терминале.<br />
+            <strong>Не активировать</strong> если курьеру.
+        </help-trigger>
+    </div>
+</div>
+
+@Html.Hidden("ExistApi", (Model.ClientNumber + Model.ClientKey), new { ng_model = "shippingMethod.Params.ExistApi" })
+<div class="form-group row setting__form-group" ng-if="!shippingMethod.Params.ExistApi || shippingMethod.Params.PickupCountryIso2 !== shippingMethod.Params.InitedPickupCountryIso2">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <span ng-if="!shippingMethod.Params.ExistApi">После ввода данных доступа к API, необходимо сохранить настройки, после чего появятся дополнительные настройки</span>
+            <span ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.PickupCountryIso2 !== shippingMethod.Params.InitedPickupCountryIso2">Сохраните настройки, после чего появятся дополнительные настройки</span>
+        </div>
+    </div>
+</div>
+
+@if (Model.EAEUCountriesIso2.Contains(Model.PickupCountryIso2, StringComparer.OrdinalIgnoreCase))
+{
+    <div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && shippingMethod.Params.PickupCountryIso2 === shippingMethod.Params.InitedPickupCountryIso2">
+        <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+            <span class="text-required" ng-if="shippingMethod.Params.SelfPickup">Пункт отправки</span>
+            <span class="text-required" ng-if="!shippingMethod.Params.SelfPickup">Выберите любой пункт в вашем городе</span>
+        </div>
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+            @Html.DropDownListFor(x => x.PickupPointCode, Model.PickupPoints, new { ng_model = "shippingMethod.Params.PickupPointCode", ng_init = "shippingMethod.Params.PickupPointCode='" + Model.PickupPointCode + "'", required = "required", validation_input_text = "Пункт", @class = "form-control input-alt" })
+            <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="Пункт" use-template="true">
+                <span ng-if="shippingMethod.Params.SelfPickup">Пункт отправки посылок</span>
+                <span ng-if="!shippingMethod.Params.SelfPickup">Любой пункт <strong>в вашем городе</strong>. Его данные понадобятся для расчета доставки.</span>
+            </help-trigger>
+        </div>
+    </div>
+}
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && (shippingMethod.Params.EAEUCountries.indexOf(shippingMethod.Params.PickupCountryIso2) === -1 || shippingMethod.Params.PickupPointCode === '-1')">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Регион отправки</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.PickupRegionName, new { ng_model = "shippingMethod.Params.PickupRegionName", @class = "form-control input-alt", required = "required", validation_input_text = "Регион отправки" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.ExistApi && (shippingMethod.Params.EAEUCountries.indexOf(shippingMethod.Params.PickupCountryIso2) === -1 || shippingMethod.Params.PickupPointCode === '-1')">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Город отправки</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.PickupCityName, new { ng_model = "shippingMethod.Params.PickupCityName", @class = "form-control input-alt", required = "required", validation_input_text = "Город отправки" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Расчитывать услуги DPD
+    </div>
+    @{
+        var selectedServices = Model.ServiceCodesList.FindAll(x => Model.ServiceCodes.Any(y => x.Value == y));
+    }
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+         data-ng-init='shippingMethod.serviceCodesList = @JsonConvert.SerializeObject(Model.ServiceCodesList); shippingMethod.selectedServices = @JsonConvert.SerializeObject(selectedServices)'>
+        <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-init="shippingMethod.serviceCodesList"
+                       ng-model="shippingMethod.selectedServices"
+                       validation-input-text="Расчитывать услуги DPD">
+                <ui-select-match placeholder="Выберите услуги">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="service in shippingMethod.serviceCodesList | filter:$select.search track by service.Value"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="tariff.Disabled === true"
+                                   @* refresh="product.getTagsByPaging(250, $select.search)" *@
+                                   refresh-delay="0">
+                    {{service.Text}}
+                </ui-select-choices>
+            </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="ServiceCodes" id="ServiceCodesList" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedServices" ng-repeat="option in shippingMethod.selectedServices track by $index"></option>
+            </select>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        Расчитывать варианты доставки
+    </div>
+        @{
+            var selectedTariff = Model.ListDeliveryTypes.FindAll(x => Model.DeliveryTypes.Any(y => x.Value == y));
+        }
+        <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")"
+             data-ng-init='shippingMethod.tariffsList = @JsonConvert.SerializeObject(Model.ListDeliveryTypes); shippingMethod.selectedTariff = @JsonConvert.SerializeObject(selectedTariff)'>
+            <ui-select class="input-alt"
+                       multiple
+                       sortable="true"
+                       ng-model="shippingMethod.selectedTariff"
+                       validation-input-text="Расчитывать варианты доставки"
+                       data-e2e="SelectTariffs">
+                <ui-select-match placeholder="Выберите варианты доставки">{{$item.Text}}</ui-select-match>
+                <ui-select-choices repeat="tariff in shippingMethod.tariffsList | filter:$select.search track by $index"
+                                   minimum-input-length="1"
+                                   ui-disable-choice="tariff.Disabled === true"
+                                   refresh-delay="0">
+                    {{tariff.Text}}
+                </ui-select-choices>
+             </ui-select>
+            @* select для отправки данных через обычный post *@
+            <select name="DeliveryTypes" id="DeliveryTypes" multiple hidden>
+                <option selected value="{{option.Value}}" ng-model="shippingMethod.selectedTariff" ng-repeat="option in shippingMethod.selectedTariff track by $index"></option>
+            </select>
+            <input type="hidden" name="DeliveryTypes" value="" ng-if="!shippingMethod.Params.DeliveryTypes.length" hidden/>
+        </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="WithInsure">Со страховкой</label>
+    </div>
+    <div class="col-xs-1 col-sm-6 relative">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.WithInsure, new { ng_model = "shippingMethod.Params.WithInsure", ng_init = "shippingMethod.Params.WithInsure=" + Model.WithInsure.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.findChoseItem(shippingMethod.selectedTariff, '1') != null">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">Отображение ПВЗ</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.DropDownListFor(x => x.TypeViewPoints, Model.ListTypesViewPoints, new { ng_model = "shippingMethod.Params.TypeViewPoints", @class = "form-control input-alt", required = "required", validation_input_text = "Отображение ПВЗ" })
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-if="shippingMethod.Params.TypeViewPoints === '0'">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">API-ключ яндекс.карт</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(!isMobile ? "" : "flex middle-xs")">
+        @Html.TextBoxFor(x => x.YaMapsApiKey, new { @class = "form-control input-alt", ng_model = "shippingMethod.Params.YaMapsApiKey", required = "required", validation_input_text = "API-ключ яндекс.карт" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(!isMobile ? "" : "m-l-sm p-l-xs")" data-title="API-ключ яндекс.карт">
+            <a href="https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html#get-api-key" target="_blank">Как получить ключ?</a>
+        </help-trigger>
+    </div>
+</div>

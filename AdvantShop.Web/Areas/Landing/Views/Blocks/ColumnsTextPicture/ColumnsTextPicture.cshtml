@@ -1,0 +1,123 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    /**/
+
+    var items = Model.Block.TryGetSettingAsList<ServicesModel>("items");
+    var itemsCountInRow = Model.Block.TryGetSetting("items_in_row") != null ? (int)Model.Block.TryGetSetting("items_in_row") : 3;
+}
+<article class="container-fluid">
+    <div class="lp-container">
+        <div>
+            @Html.BlockHeader(Model)
+        </div>
+        @if (items != null)
+        {
+            float width = 100 / itemsCountInRow;
+            var widthString = width.ToInvariantString() + "%";
+            var minWidth = LpService.SiteWidthContent / itemsCountInRow;
+    <style>
+                #block_@Model.Block.Id .columns-text-picture__item {
+                    min-width: 100%;
+                    flex-basis: 100%;
+                    max-width: 100%;
+                }
+
+                    @@media (min-width: 48em) {
+                        #block_@Model.Block.Id .columns-text-picture__item {
+                            flex-basis: 50%;
+                            max-width: 50%;
+                            min-width: 50%;
+                        }
+                    }
+
+                    @@media (min-width: 64em) {
+                        #block_@Model.Block.Id .columns-text-picture__item {
+                            flex-basis: @(widthString);
+                            max-width: @(widthString);
+                            min-width: @(widthString);
+                        }
+                    }
+    </style>
+            <div class="row columns-text-picture__row @(Model.Block.TryGetSetting("align_items") != null ? Model.Block.TryGetSetting("align_items") : "start-xs")" data-e2e="ServicesContent" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="columns-text-picture__item @(Model.Block.TryGetSetting("align_text") != null ? Model.Block.TryGetSetting("align_text") : "start-xs")" data-e2e="ServicesItem">
+                        <div class="columns-text-picture__item-inner">
+                            <div class="columns-text-picture__picture" data-e2e="ServicesLoadPic">
+                                @Html.PictureLoaderTrigger(new PictureLoaderTriggerModel()
+                                {
+                                    LandingPageId = Model.Block.LandingId,
+                                    BlockId = Model.Block.Id,
+                                    Current = items[i].Picture != null ? items[i].Picture.Src : null,
+                                    GalleryIconsEnabled = false,
+                                    OnApply = "blocksConstructorContainer.onApplyPicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                    OnDelete = "blocksConstructorContainer.onDeletePicture(blocksConstructorContainer.data.Settings.items, " + i + ")",
+                                    OnResize = "blocksConstructorContainer.onResizePicture(blocksConstructorContainer.data.Settings.items, result, " + i + ")",
+                                    OnLazyLoadChange = "blocksConstructorContainer.onLazyLoadChange(blocksConstructorContainer.data, result," + i + ")",
+                                    LazyLoadType = ePictureLoaderLazyLoadType.Default,
+                                    LazyLoadEnabled = items[i].Picture != null ? items[i].Picture.LazyLoadEnabled : true,
+                                    MaxWidthPicture = PictureLoaderImageSize.XSMiddleWidth,
+                                    MaxHeightPicture = PictureLoaderImageSize.XSMiddleHeight,
+                                    WidthPicture = items[i].Picture != null ? items[i].Picture.Width : null,
+                                    HeightPicture = items[i].Picture != null ? items[i].Picture.Height : null
+                                })
+                            </div>
+                            <div class="columns-text-picture__content">
+                                <div class="lp-font-size--large columns-text-picture__header" data-e2e="ServicesItemHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].header")>
+                                    @Html.Raw(items[i].Header)
+                                </div>
+                                <div class="lp-h3--color lp-font-size--middle columns-text-picture__text" data-e2e="ServicesItemText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                    @Html.Raw(items[i].Text)
+                                </div>
+                            </div>
+                                @*@if (items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                {
+                                    <div class="columns-text-picture__button" data-e2e="ServicesBtn">
+                                        <div class="row @(Model.Block.TryGetSetting("align_btns"))">
+                                            <div class="col-xs-12">
+                                                @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                                {
+                                                    @:<a href="@Html.ButtonHref(items[i].Button)" class="lp-btn lp-btn--primary lp-btn--xs link-text-decoration-none" @Html.Raw(items[i].Button.TargetBlank ? "target=\"_blank\"" : null)>
+                                                    }
+                                                    else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                                    {
+                                                        @:<button class="lp-btn lp-btn--primary lp-btn--xs" type="button" data-scroll-to-block="@items[i].Button.ActionSection">
+                                                        }
+
+                                                @items[i].Button.Text
+
+                                                @if (items[i].Button.Action == LpButtonAction.Url.ToString())
+                                                {
+                                                    @:
+                                                </a>
+                                            }
+                                            else if (items[i].Button.Action == LpButtonAction.Section.ToString())
+                                            {
+                                                @:</button>
+                                            }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }*@
+
+                                @if (items[i].Button != null && items[i].Button.Show != null && items[i].Button.Show == true)
+                                {
+                                    <div class="columns-text-picture__footer">
+                                        <div class="columns-text-picture__button">
+                                            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs")" data-e2e="ColumnsBtnRow">
+                                                <div class="col-xs-12">
+                                                    @Html.Button(Model.Block, items[i].Button, null, items[i].Header)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                        </div>
+                    </div>
+
+                }
+            </div>
+        }
+    </div>
+</article>

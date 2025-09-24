@@ -1,0 +1,154 @@
+﻿@using AdvantShop.Orders
+@using AdvantShop.Catalog
+@using AdvantShop.Core.Services.Configuration.Settings
+@using AdvantShop.FilePath
+@using AdvantShop.ViewCommon
+@using AdvantShop.ViewModel.Shared
+@model AdvantShop.Core.Services.Catalog.ProductViewModel
+@{
+    var nameHeight = SettingsMobile.CountLinesProductName * 18;
+    var imgWrapStyle = "height:" + Model.BlockProductPhotoHeight + "px";
+    var imgWrapNgStyle = "productViewItem.getStylePropByViewMode('height', " + Model.BlockProductPhotoHeight + " , {viewName: 'single', value: " + Model.BlockProductPhotoMiddleHeight + "})";
+    var imgStyle = "max-height:" +
+                   (Model.ProductViewMode != ProductViewMode.Single ? Model.BlockProductPhotoHeight : Model.BlockProductPhotoMiddleHeight) + "px";
+    var imgNgStyle = "productViewItem.getStylePropByViewMode('maxHeight'," + Model.BlockProductPhotoHeight + ", {viewName: 'single', value: " + Model.BlockProductPhotoMiddleHeight + "})";
+}
+
+@helper GetImg(ProductPhoto photo, string ngSrc, string imgStyle, string imgNgStyle)
+{
+    <img src="@photo.ImageSrc(Model.ProductImageType)"
+         data-ng-src="{{productViewItem.getPictureByViewMode(@Html.Raw(ngSrc))}}"
+         alt="@Html.AttributeEncode(photo.Alt)"
+         title="@Html.AttributeEncode(photo.Title)"
+         onerror="this.src = '@PhotoService.GetNoPhotoPath(Model.ProductImageType)'"
+         loading="lazy"
+         class="mobile-product-view-item-image"
+         width="@(Model.PhotoWidth)"
+         height="@(Model.PhotoHeight)"
+         style="@Html.Raw(imgStyle)"
+         data-ng-style="@Html.Raw(imgNgStyle)">
+}
+
+
+@foreach (var product in Model.Products)
+{
+    var productUrl = Url.AbsoluteRouteUrl("Product", new { url = product.UrlPath });
+    var isNotPhoto = product.CountPhoto == 0;
+    var isUseScroll = product.CountPhoto > 1;
+    var allowToBuy = Model.AllowBuyOutOfStockProducts || Model.AllowPreOrderOutOfStockProducts && product.AllowPreorder;
+
+
+    <div class="mobile-product-view-item cs-t-1"
+            style="width: @(Model.BlockProductPhotoHeight)px;"
+            data-product-view-item data-offer-id="@product.OfferId" data-product-id="@product.ProductId"
+            data-offer="{Amount: @product.Amount.ToInvariantString(), RoundedPrice: @product.RoundedPrice.ToInvariantString(), OfferId: @product.OfferId}">
+        <div class="mobile-product-view-item-image-wrap">
+            <a href="@productUrl" class="mobile-product-view-item-image-block" @Html.Raw(isUseScroll ? "data-product-view-scroll-photos" : "")>
+                @for (var i = 0; i < Math.Min(isNotPhoto ? 1 : product.CountPhoto, 5); i++)
+                {
+                    <span class="mobile-product-view-item-image-inner" style="@Html.Raw(imgWrapStyle)" data-ng-style="@Html.Raw(imgWrapNgStyle)">
+                        @GetImg(product.Photo, i == 0 ? product.StartPhotoJson : "productViewItem.isLoad === true && productViewItem.photos.length > 0 ? productViewItem.photos[" + i + "] : null", imgStyle, imgNgStyle)
+                    </span>
+                }
+            </a>
+            <div class="products-view-labels">
+                @if (Model.ShowNotAvailableLabel && !allowToBuy)
+                {
+                    <div class="products-view-label ng-hide availability ng-cloak" ng-show="productViewItem.offer != null && productViewItem.offer.Amount <= 0">
+                        <span class="products-view-label-inner not-available">@T("Product.NotAvailable")</span>
+                    </div>
+                }
+                @if (!Model.HideMarkers && (product.Recomend || product.Sales || product.Bestseller || product.New || product.TotalDiscount.HasValue))
+                {
+                    @Html.RenderLabels(product.Recomend, product.Sales, product.Bestseller, product.New, product.TotalDiscount, customLabels: Model.Labels)
+                }
+            </div>
+            @if (product.Gifts)
+            {
+                <div class="prod-gift-icon"></div>
+            }
+            @Html.Action("WishListBlock", "Wishlist", new { OfferId = product.OfferId, NgOfferId = product.OfferId, NgNameCallbackInit = "product.wishlistControlInit", Mode = "product", Checked = ShoppingCartService.CurrentWishlist.Any(x => x.OfferId == product.OfferId), area = "" })
+        </div>
+        <div class="mobile-prod-info-wrap mobile-product-view-item__wrap">
+            <div class="mobile-product-view-item__inner">
+
+                @if (Model.DisplayRating)
+                {
+                    <div class="products-view-rating">
+                        @Html.Partial("_Rating", new RatingViewModel(product.ManualRatio ?? product.Ratio))
+                    </div>
+                }
+
+                @if (Model.DisplayProductArtNo)
+                {
+                    <div class="mobile-prod-artno cs-t-7">@product.ArtNo</div>
+                }
+
+                <a href="@productUrl" class="prod-name text-floating" data-ng-href="{{productViewItem.getUrl('@productUrl')}}" style="height: @(nameHeight)px;">@Html.Raw(product.Name)</a>
+
+                @if (!Model.HidePrice)
+                {
+                    <div class="price cs-l-8">@Html.Raw(product.PreparedPrice)</div>
+                }
+                else
+                {
+                    <div class="text-instead-of-price cs-l-8">@Html.Raw(Model.TextInsteadOfPrice)</div>
+                }
+
+                @if (!string.IsNullOrEmpty(product.Colors))
+                {
+                    <div class="mobile-product-view-item__colors-wrap">
+                        <div class="mobile-product-view-item__colors-inner">
+                            @Html.Partial("_Colors", new ColorsViewModel()
+                            {
+                                NgColors = product.Colors,
+                                ColorWidth = Model.ColorImageWidth,
+                                ColorHeight = Model.ColorImageHeight,
+                                SelectedColors = Model.SelectedColors,
+                                ColorsViewMode = SettingsCatalog.ColorsViewMode
+                            })
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="products-view-colors-empty products-view-list-element-hidden products-view-table-element-hidden" style="height: @(Model.ColorImageHeight)px"></div>
+                }
+
+                @if (SettingsMobile.ShowAddButton && !Model.HidePrice)
+                {
+                    var isAvailable = product.RoundedPrice > 0 && product.AmountByMultiplicity > 0;
+                    var showBuyButton = isAvailable || allowToBuy;
+                    var showPreOrderButton = Model.DisplayPreOrderButton && !showBuyButton && !isAvailable && product.AllowPreorder && product.OfferId != 0 && !Model.AllowBuyOutOfStockProducts;
+
+                    <div class="mobile-product-view-item__btn-wrap">
+                        @if (showBuyButton)
+                        {
+                            @Html.Partial("_CartAdd", new CartAddViewModel()
+                            {
+                                Href = productUrl,
+                                Source = "mobile",
+                                NgHref = "{{productViewItem.getUrl('"+ productUrl + "')}}",
+                                OfferId = 0,
+                                ProductId = product.ProductId,
+                                Amount = product.MinAmount,
+                                Classes = "btn btn-small btn-buy icon-bag-before products-view-buy",
+                                BtnContent = Model.BuyButtonText,
+                            })
+                        }
+                        @if (showPreOrderButton)
+                        {
+                            <a href="@Url.RouteUrl("PreOrder", new { offerid = product.OfferId })" data-cart-preorder data-offer-id="productViewItem.offer.OfferId" class="btn btn-small btn-action icon-bag-before products-view-buy">@Model.PreOrderButtonText</a>
+                        }
+
+                    </div>
+                }
+
+                @if (!Model.HidePrice && Model.ShowAmountsTableInCatalog)
+                {
+                    @Html.RenderAmountTable(product)
+                }
+            </div>
+        </div>
+    </div>
+}

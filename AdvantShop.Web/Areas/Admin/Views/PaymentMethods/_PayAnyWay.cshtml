@@ -1,0 +1,89 @@
+﻿@model AdvantShop.Web.Infrastructure.Admin.PaymentMethods.PayAnyWayPaymentModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-9">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(!isMobile ? "max-width:910px;" : "display:flex;")">
+            <div>
+                Если у вас нет учетной записи в сервисе PayAnyWay (Moneta.ru), вы можете зарегистрироваться по <a href="https://go.advantshop.net/payanyway" target="_blank">ссылке</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.PayAnyWay.ExtendedAccountNumber")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.MerchantId, new { ng_model = "paymentMethod.Parameters.MerchantId", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.PayAnyWay.ExtendedAccountNumber").ToString() })
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        <span class="text-required">@T("Admin.PaymentMethods.PayAnyWay.DataIntegrityVerificationCode")</span>
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+        @Html.TextBoxFor(x => x.Signature, new { ng_model = "paymentMethod.Parameters.Signature", @class = "form-control input-alt", required = "required", validation_input_text = T("Admin.PaymentMethods.PayAnyWay.DataIntegrityVerificationCode").ToString() })
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="TestMode">@T("Admin.PaymentMethods.PayAnyWay.TestMode")</label>
+    </div>
+    <div class="col-xs-1 col-sm-6">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.TestMode, new { ng_model = "paymentMethod.Parameters.TestMode", ng_init = "paymentMethod.Parameters.TestMode=" + Model.TestMode.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.PayAnyWay.PreliminaryChoicePaymentSystem")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.UnitId, new { ng_model = "paymentMethod.Parameters.UnitId", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.PayAnyWay.PreliminaryChoicePaymentSystem")">
+            @T("Admin.PaymentMethods.PayAnyWay.ListOfPaymentSystems")<br><br>
+            @T("Admin.PaymentMethods.PayAnyWay.ListOfAvailableSystems") (<a href="https://www.moneta.ru/viewPaymentMethods.htm" target="_blank">https://www.moneta.ru/viewPaymentMethods.htm</a>)
+        </help-trigger>
+    </div>
+</div>
+
+
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+        @T("Admin.PaymentMethods.PayAnyWay.ListOfSystemsWhichShouldDisplayed")
+    </div>
+    <div class="col-xs-12 col-md-6 relative setting--m-t-sm @(isMobile ? "flex middle-xs" : "")">
+        @Html.TextBoxFor(x => x.LimitIds, new { ng_model = "paymentMethod.Parameters.LimitIds", @class = "form-control input-alt" })
+        <help-trigger class="ng-cloak help-trigger-icon-abs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.PaymentMethods.PayAnyWay.ListOfSystemsWhichShouldDisplayed")">
+            @T("Admin.PaymentMethods.PayAnyWay.ListOfIdentifiersSystem")<br><br>
+            @T("Admin.PaymentMethods.PayAnyWay.Example")
+        </help-trigger>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+    <div class="flex-grow-n setting__label setting--m-none @(isMobile ? "col-xs-11" : "col-fixed-size-md")">
+        <label for="UseKassa">@T("Admin.PaymentMethods.PayAnyWay.OnlineTicketOffice")</label>
+    </div>
+    <div class="col-xs-1 col-sm-6">
+        <label class="adv-checkbox-label form-label-block">
+            @Html.CheckBoxFor(x => x.UseKassa, new { ng_model = "paymentMethod.Parameters.UseKassa", ng_init = "paymentMethod.Parameters.UseKassa=" + Model.UseKassa.ToLowerString(), @class = "adv-checkbox-input" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>

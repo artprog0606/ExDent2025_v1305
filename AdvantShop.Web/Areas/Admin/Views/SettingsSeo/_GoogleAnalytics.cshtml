@@ -1,0 +1,295 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SEOSettingsModel
+@{
+    var sendOrderSelectItems = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Все оформленные заказы (скрипт на странице thankyou page)", Value = "False"},
+        new SelectListItem { Text = "При смене статуса заказа (Measurement Protocol)", Value = "True"},
+    };
+
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="robots-txt__info">
+    <div class="adv-panel-info m-b @(isMobile ? "adv-panel-info--show" : "")">
+        <div>
+            @T("Admin.Settings.GoogleAnalytics.RussianPersonalDataProcessingPolicyWarning")
+        </div>
+    </div>
+</div>
+<div class="robots-txt__info">
+    <div class="adv-panel-info m-b @(isMobile ? "adv-panel-info--show" : "")">
+        <div>
+            @T("Admin.Settings.GoogleAnalytics.RussianCrossBorderDataTransferWarning")
+        </div>
+    </div>
+</div>
+
+<div class="setting-title m-t-none flex middle-xs setting--flex-column @(isMobile ? "m-b-md" : "")">
+    @if (!isMobile)
+    {
+        <h3 class="setting__subtitle setting--align-top">@T("Admin.Settings.GoogleAnalytics.Header")</h3>
+    }
+    <div class="@(isMobile ? "setting--align-top" : "")">
+        <a href="https://www.advantshop.net/help/pages/install-google-analytics-api" target="_blank" class="link-academy link-invert inline-flex middle-xs @(isMobile ? "setting--help-link" : "m-l-md")">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+            </svg>
+            <span>@T("Admin.Settings.GoogleAnalytics.Instruction")</span>
+        </a>
+    </div>
+</div>
+<div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+    <div class="col-xs-11 col-md-2">
+        <div class="setting-label-wrap setting__label setting--m-none">
+            @Html.LabelFor(x => x.GoogleAnalyticsEnabled, T("Admin.Settings.GoogleAnalytics.GoogleAnalyticsEnabled"))
+        </div>
+    </div>
+    <div class="col-xs-1 col-sm-6">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.GoogleAnalyticsEnabled, new { @class = "adv-checkbox-input", ng_init = "settingsSeo.GoogleAnalyticsEnabled=" + Model.GoogleAnalyticsEnabled.ToLowerString(), ng_model = "settingsSeo.GoogleAnalyticsEnabled" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+<div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+    <div class="col-xs-11 col-md-2">
+        <div class="setting-label-wrap setting__label setting--m-none">
+            @Html.LabelFor(x => x.GoogleAnalyticsEnableDemogrReports, T("Admin.Settings.GoogleAnalytics.GoogleAnalyticsEnableDemogrReports"))
+        </div>
+    </div>
+    <div class="col-xs-1 col-sm-6">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.GoogleAnalyticsEnableDemogrReports, new { @class = "adv-checkbox-input", ng_init = "settingsSeo.GoogleAnalyticsEnableDemogrReports=" + Model.GoogleAnalyticsEnableDemogrReports.ToLowerString(), ng_model = "settingsSeo.GoogleAnalyticsEnableDemogrReports" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleAnalyticsNumber, T("Admin.Settings.GoogleAnalytics.GoogleAnalyticsNumber"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-inline">
+        @Html.TextBoxFor(x => x.GoogleAnalyticsNumber, new { @class = "form-control input-alt", ng_model = "settingsSeo.GoogleAnalyticsNumber", placeholder = "UA-123456789" })
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleAnalyticsSendOrderOnStatusChanged, T("Admin.Settings.GoogleAnalytics.TransferringOrders"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-7">
+        @Html.DropDownListFor(x => x.GoogleAnalyticsSendOrderOnStatusChanged, sendOrderSelectItems, new { @class = "form-control input-alt", ng_model = "settingsSeo.GoogleAnalyticsSendOrderOnStatusChanged" })
+    </div>
+</div>
+<div class="form-group row setting__form-group ng-hide" ng-show="settingsSeo.GoogleAnalyticsSendOrderOnStatusChanged == 'True'">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleAnalyticsOrderStatusIdToSend, "Статус заказа")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-7">
+        @Html.DropDownListFor(x => x.GoogleAnalyticsOrderStatusIdToSend, Model.OrderStatuses, new { @class = "form-control", ng_model = "settingsSeo.GoogleAnalyticsOrderStatusIdToSend" })
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <span style="@(isMobile ? "font-weight:500;" : "")">@T("Admin.SettingsSeo.GoogleAnalytics.EventCategory")</span>
+        <br />
+        <div style="@(isMobile ? "opacity:0.65;" : "")">
+            <br />
+            @T("Admin.SettingsSeo.GoogleAnalytics.AvailableEvents")
+            <br />
+            addToCart - @T("Admin.SettingsSeo.GoogleAnalytics.AddToCart")
+            <br />
+            order - @T("Admin.SettingsSeo.GoogleAnalytics.Ordering")
+            <br />
+            sendPreOrder - @T("Admin.SettingsSeo.GoogleAnalytics.sendPreOrder")
+            <br />
+            addToCompare - @T("Admin.SettingsSeo.GoogleAnalytics.addToCompare")
+            <br />
+            addToWishlist - @T("Admin.SettingsSeo.GoogleAnalytics.addToWishList")
+            <br />
+            buyOneClickForm - @T("Admin.SettingsSeo.GoogleAnalytics.OneClickForm")
+            <br />
+            buyOneClickConfirm - @T("Admin.SettingsSeo.GoogleAnalytics.buyOneClickConfirm")
+            <br />
+            sendFeedback - @T("Admin.SettingsSeo.GoogleAnalytics.Feedback")
+            <br />
+            addResponse - @T("Admin.SettingsSeo.GoogleAnalytics.addResponse")
+            <br />
+            getCallBack - @T("Admin.SettingsSeo.GoogleAnalytics.getCallBack")
+            <br />
+            callBack - @T("Admin.SettingsSeo.GoogleAnalytics.callBack")
+            <br />
+            callBackRequest - @T("Admin.SettingsSeo.GoogleAnalytics.BackRequest")
+            <br />
+            userRegistration - @T("Admin.SettingsSeo.GoogleAnalytics.UserRegistration")
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex !important;" : "")">
+            <a href="http://www.advantshop.net/help/pages/install-google-analytics" target="_blank">@T("Admin.SettingsSeo.GoogeAnalytics.StatisticCounter")</a>
+        </div>
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex !important;" : "")">
+            <a href="http://www.advantshop.net/help/pages/google-analytics-goals" target="_blank">@T("Admin.SettingsSeo.GoogleAnalytics.SetUpGoals")</a>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.GoogleAnalyticsApi.Header")</h3>
+</div>
+
+<div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+    <div class="col-xs-11 col-md-2">
+        <div class="setting-label-wrap setting__label setting--m-none">
+            @Html.LabelFor(x => x.GoogleAnalyticsApiEnabled, T("Admin.Settings.GoogleAnalyticsApi.GoogleAnalyticsApiEnabled"))
+        </div>
+    </div>
+    <div class="col-xs-1 col-sm-6">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.GoogleAnalyticsApiEnabled, new { @class = "adv-checkbox-input", ng_init = "settingsSeo.GoogleAnalyticsApiEnabled=" + Model.GoogleAnalyticsApiEnabled.ToLowerString(), ng_model = "settingsSeo.GoogleAnalyticsApiEnabled" })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleAnalyticsAccountID, T("Admin.Settings.GoogleAnalyticsApi.GoogleAnalyticsAccountID"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-inline">
+        @Html.TextBoxFor(x => x.GoogleAnalyticsAccountID, new { @class = "form-control input-alt", ng_model = "settingsSeo.GoogleAnalyticsAccountID" })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleClientId, T("Admin.Settings.GoogleAnalyticsApi.GoogleClientId"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.LabelFor(x => x.GoogleClientId, Model.GoogleClientId, new { ng_model = "settingsSeo.GoogleClientId" })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @Html.LabelFor(x => x.GoogleClientSecret, T("Admin.Settings.GoogleAnalyticsApi.GoogleClientSecret"))
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.LabelFor(x => x.GoogleClientSecret, Model.GoogleClientSecret, new { ng_model = "settingsSeo.GoogleClientSecret" })
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-8">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.SettingsSeo.GoogleAnalytics.OpenIDPage")
+        </div>
+    </div>
+</div>
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            Redirect URL
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        @Html.LabelFor(x => x.GoogleClientSecret, SettingsMain.SiteUrl.TrimEnd('/') + "/login", new { ng_model = "settingsSeo.GoogleClientSecret" })
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 col-md-offset-2">
+        <a class="auth-google" href="" ng-click="settingsSeo.googleAnalitycsOauth('user/LoginGoogleAnalytics?pagetoredirect=login')">@T("Admin.SettingsSeo.GoogleAnalytics.SignUpOnGoogleAnalytics")</a>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info">
+            <a href="http://www.advantshop.net/help/pages/google-analytics-api" target="_blank">@T("Admin.SettingsSeo.GoogleAnalytics.ConnectToGoogleAnalitics")</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="setting-title">
+    <h3 class="setting__subtitle @(isMobile ? "m-b-md m-t-lg" : "")">@T("Admin.Settings.Checkout.SriptsGtm")</h3>
+</div>
+
+<div class="form-group row setting__form-group setting--label-with-checkbox-reverse">
+    <div class="col-xs-11 col-md-2">
+        <div class="setting-label-wrap setting__label setting--m-none">
+            @T("Admin.Settings.Checkout.ScriptsGtmEnabled")
+        </div>
+    </div>
+    <div class="col-xs-1 col-sm-4">
+        <label class="adv-checkbox-label">
+            @Html.CheckBoxFor(x => x.UseGTM, new { @class = "adv-checkbox-input", ng_model = "settings.checkout.scripts.useGtm", ng_init = "settings.checkout.scripts.useGtm = " + Model.UseGTM.ToLowerString() })
+            <span class="adv-checkbox-emul"></span>
+        </label>
+       
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Checkout.ScriptsGTMContainerId")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-inline @(isMobile ? "flex middle-xs" : "")">
+        <div class="input-prefix">
+            GTM-
+        </div>
+        @Html.TextBoxFor(x => x.GTMContainerId, new { @class = "form-control input-alt", ng_model = "settings.checkout.scripts.gtmContainerId", ng_init = "settings.checkout.scripts.gtmContainerId = '" + Model.GTMContainerId + "'" })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-2">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.Checkout.ScriptsGTMOfferIdType")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-inline">
+        @Html.DropDownListFor(x => x.GTMOfferIdType, new SelectList(Model.GTMOfferIdTypes, "Key", "Value", Model.GTMOfferIdType), new { @class = "form-control input-alt", ng_model = "settings.checkout.scripts.GTMOfferIdType", ng_init = "settings.checkout.scripts.GTMOfferIdType = '" + Model.GTMOfferIdType + "'" })
+    </div>
+</div>
+
+<div class="form-group row setting__form-group">
+    <div class="col-xs-12 col-md-offset-2">
+        <span style="@(isMobile ? "font-weight:500;" : "")">@T("Admin.SettingsSeo.GoogleAnalytics.AvailableEvents")</span><br /><br />
+        <div style="@(isMobile ? "opacity:0.65;" : "")">
+        addToCart - @T("Admin.SettingsSeo.GoogleAnalytics.AddToCart")<br />
+        order - @T("Admin.SettingsSeo.GoogleAnalytics.Ordering")<br />
+        addToCompare - @T("Admin.SettingsSeo.GoogleAnalytics.addToCompare")<br />
+        addToWishlist - @T("Admin.SettingsSeo.GoogleAnalytics.addToWishList")<br />
+        buyOneClickForm - @T("Admin.SettingsSeo.GoogleAnalytics.OneClickForm")<br />
+        buyOneClickConfirm - @T("Admin.SettingsSeo.GoogleAnalytics.buyOneClickConfirm")<br />
+        sendFeedback - @T("Admin.SettingsSeo.GoogleAnalytics.Feedback")<br />
+        addResponse - @T("Admin.SettingsSeo.GoogleAnalytics.addResponse")<br />
+        getCallBack - @T("Admin.SettingsSeo.GoogleAnalytics.getCallBack")<br />
+        callBack - @T("Admin.SettingsSeo.GoogleAnalytics.callBack")<br />
+        callBackRequest - @T("Admin.SettingsSeo.GoogleAnalytics.BackRequest")<br />
+        userRegistration - @T("Admin.SettingsSeo.GoogleAnalytics.UserRegistration")
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@using AdvantShop.Repository.Currencies
+@model AdvantShop.ViewModel.GiftCertificate.GiftCertificateModalViewModel
+@{
+    string code = "", nameTo = "", nameFrom = "", message = "", sum = "";
+    if (Model.GiftCertificate != null)
+    {
+        code = Model.GiftCertificate.CertificateCode;
+        nameTo = Model.GiftCertificate.ToName;
+        nameFrom = Model.GiftCertificate.FromName;
+        message = Model.GiftCertificate.CertificateMessage;
+        sum = Model.GiftCertificate.Sum.ToString();
+    }
+    else
+    {
+        code = "0000-0000-0000";
+    }
+}
+
+<div id="giftcertificatePreview" @Html.Raw(Model.IsModal ? "data-modal-control data-move-in-body=\"true\" class=\"ng-hide\"" : "")>
+    <div class="modal-content certificate-modal">
+        <div class="certifiacte-custom" style="font-family:Circe,sans-serif !important;">
+            <div class="header">
+                <div class="logo-wrap">
+                    @Html.Action("Logo", "Common", new { imgId = "logoInGiftCertificateModal" })
+                </div>
+            </div>
+            <div class="descr">
+                <h2>Подарочный</h2>
+                <p>сертификат <span class="certifiacte-custom__cert-price-mobile">на <span data-ng-bind="giftcertificate.Sum">@Html.Raw(sum)</span> <span>@CurrencyService.CurrentCurrency.Iso3</span></span></p>
+            </div>
+            <div class="certifiacte-custom__persons">
+                <p class="certifiacte-custom__person-to">
+                    <span>Кому:</span>
+                    <span data-ng-bind="giftcertificate.NameTo">@Html.Raw(nameTo)</span>
+                </p>
+                <p class="certifiacte-custom__person-from">
+                    <span>От:</span>
+                    <span data-ng-bind="giftcertificate.NameFrom">@Html.Raw(nameFrom)</span>
+                </p>
+            </div>
+            <div class="certifiacte-custom__cert-price">
+                <span data-ng-bind="giftcertificate.Sum">@Html.Raw(sum)</span>
+                <span style="display:block;font-size:18px;">@CurrencyService.CurrentCurrency.Iso3</span>
+            </div>
+            <div class="certifiacte-custom__bow">
+                <img src="~/images/giftcertificate/bow2.png" />
+            </div>
+            <div class="certifiacte-custom__message">
+                <span data-ng-bind="giftcertificate.Message">@Html.Raw(message)</span>
+            </div>
+            <div class="certifiacte-custom__use">
+                @T("GiftCertificate.GiftCertificateModal.CanBeUsed")
+                <a href="@SettingsMain.SiteUrl" target="_blank" class="site-use">
+                    @SettingsMain.SiteUrl
+                </a>
+            </div>
+            <div class="certifiacte-custom__code-wrap">
+                <div class="certifiacte-custom__text">
+                    Код:
+                </div>
+                <div class="certifiacte-custom__code">
+                    @Html.Raw(code)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

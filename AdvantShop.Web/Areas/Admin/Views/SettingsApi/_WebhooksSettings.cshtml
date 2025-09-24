@@ -1,0 +1,49 @@
+﻿@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="" ng-controller="SettingsApiWebhooksCtrl as apiWebhooks"   @Html.Raw(isMobile ? "ng-init=\"settings.apiWebhooks = apiWebhooks\"" : "")>
+    @if (!isMobile)
+    {
+        <div class="flex between-xs m-b-sm">
+            <div class="setting-title m-t-none m-b-none">
+                <h2 class="page-name-block-text sticky-page-name-text m-b-none">Webhooks</h2>
+            </div>
+            <div class="m-b-sm flex middle-xs end-xs">
+                <ui-modal-trigger class="pull-right" backdrop="static" size="lg" data-controller="'ModalAddEditApiWebhookCtrl'" data-controller-as="ctrl"
+                                  data-on-close="apiWebhooks.addApiWebhookModal(result)"
+                                  template-url="@Html.GetAssetPath("addEditApiWebhook.html")">
+                    <button class="btn btn-sm btn-success" type="button"
+                            disabled ng-disabled="!apiWebhooks.gridInited || !apiWebhooks.loadedWebhooks">
+                        <span class="fa fa-plus"></span>
+                        {{'Admin.Js.AddEdit.Add'|translate}}
+                    </button>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    }
+    <div>
+        <ui-grid-custom grid-unique-id="gridApiWebhooks"
+                        grid-on-init="apiWebhooks.gridApiWebhooksOnInit(grid)"
+                        grid-filter-enabled="false"
+                        grid-pagination-enabled="false"
+                        grid-selection-enabled="false"
+                        grid-options="apiWebhooks.gridApiWebhooksOptions"
+                        grid-extend-ctrl="apiWebhooks"
+                        grid-empty-text="'Admin.Js.SettingsApiAuth.Index.Webhook.NoWebhooks' | translate"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm card--p-18">
+                    <div class="">
+                        <div class="fs-xs">
+                            <span style="opacity:0.7;">{{'Admin.Js.SettingsApiAuth.Index.Webhook.Event'|translate}}: </span><span>{{row.entity.EventTypeName}}</span>
+                        </div>
+                        <div class="m-t-sm fs-xs">
+                            <span style="opacity: 0.7;">Url: </span><span style="word-break:break-all;">{{row.entity.Url}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>

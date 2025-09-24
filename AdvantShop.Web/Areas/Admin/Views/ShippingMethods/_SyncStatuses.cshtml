@@ -1,0 +1,57 @@
+﻿@model AdvantShop.Core.Services.Shipping.ShippingMethodAdminModel
+@using Newtonsoft.Json
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<ng-form name="shippingSyncStatus" ng-init="shippingMethod.initSyncStatuses('@JsonConvert.SerializeObject(Model.Statuses)', '@Model.StatusesReference')">
+    <div is-mobile>
+        <div class="form-group row middle-xs setting__form-group setting--label-with-checkbox-reverse">
+            <div ng-if="!isMobile.value" class="col-xs-11 flex-grow-n col-fixed-size-md setting__label setting--m-none">
+                <label for="StatusesSync">Синхронизировать статусы заказов из доставки</label>
+            </div>
+            <div class="col-xs-12 col-md-6 relative">
+                <label class="adv-checkbox-label form-label-block">
+                    @Html.CheckBoxFor(x => x.StatusesSync, new { ng_model = "shippingMethod.Params.StatusesSync", ng_init = "shippingMethod.Params.StatusesSync=" + Model.StatusesSync.ToLowerString(), @class = "adv-checkbox-input" })
+                    <span class="adv-checkbox-emul" data-e2e="StatusesSyncShipping"></span>
+                    <span ng-if="isMobile.value">
+                        Синхронизировать статусы заказов из доставки
+                    </span>
+
+                </label>
+            </div>
+        </div>
+        @if (Model.AdditionalSettingsStatusesViewPath.IsNotEmpty())
+        {
+            @Html.Partial(Model.AdditionalSettingsStatusesViewPath, Model)
+        }
+        <div ng-show="shippingMethod.Params.StatusesSync">
+            <div class="shipping-item-settings-header inline content-header m-b-md setting__subtitle">
+                Статусы
+            </div>
+            <div class="form-group row middle-xs setting__form-group" ng-repeat="item in shippingMethod.advStatuses track by $index">
+                <div class="flex-grow-n setting__label @(isMobile ? "col-xs-12" : "col-fixed-size-md")">
+                    <span>{{item.label}}</span>
+                </div>
+                <div class="col-xs-12 col-md-6 relative setting--m-t-sm">
+                    <ui-select class="input-alt"
+                               multiple
+                               sortable="true"
+                               data-e2e="SelectStatus"
+                               ng-model="shippingMethod.mappedStatuses[$index]"
+                               on-select="shippingMethod.addSyncStatuses($model, item.value, $index)"
+                               on-remove="shippingMethod.deleteSyncStatuses($model, item.value)"
+                               ng-click="shippingMethod.updateAvailableStatuses()">
+                        <ui-select-match placeholder="Выберите соответствующие статусы доставки">{{$item.label}}</ui-select-match>
+                        <ui-select-choices repeat="s.value as s in shippingMethod.availableStatuses | filter: $select.search">
+                            <div>{{s.label}}</div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="StatusesReference" value="{{shippingMethod.statusesReference}}" />
+</ng-form>

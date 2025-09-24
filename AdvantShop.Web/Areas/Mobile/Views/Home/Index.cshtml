@@ -1,0 +1,44 @@
+﻿@using AdvantShop.CMS;
+@using AdvantShop.Core.Services.Configuration.Settings
+@model AdvantShop.Areas.Mobile.Models.Home.HomeMobileViewModel
+@{
+    Html.AddAsset("home");
+}
+
+@Html.Partial("_HomeHead", Model)
+
+<div id="content">
+    @* @Html.Action("GeoMode", "Home", new { area = "Mobile" }) *@
+    @Html.StaticBlock("mainpage_before_carousel")
+    @Html.Action("Carousel", "Home")
+    @Html.RenderModules("mobile_after_carousel")
+
+    @if (!StaticBlockService.GetPagePartByKeyWithCache("TextOnMain").Content.Contains("Это тег H1"))
+    {
+        <div class="mobile-content-padding">
+            @Html.StaticBlock("TextOnMain")
+        </div>
+    }
+
+    @Html.RenderModules("mainpage_block")
+    @Html.Action("CatalogRootsOnMain", "Catalog")
+    @Html.RenderModules("mainpage_products_before")
+    
+    @if (Model.MainPageCatalogView != SettingsMobile.eMainPageCatalogView.None)
+    {
+        foreach (var productList in Model.ProductLists)
+        {
+            @Html.Action("MainPageProducts", "Home", new { products = productList })
+        }
+    }
+
+    @Html.RenderModules("mainpage_products")
+    @Html.RenderModules("store_reviews")
+
+    @Html.Action("ProductReviewsOnMain", "Product", new { count = 10, area = "" })
+    <div class="mobile-content-padding">
+        @Html.StaticBlock("TextOnMain2")
+    </div>
+    @Html.Action("NewsBlock", "News", new { area = "" })
+    @Html.Action("NewsSubscriptionSlim", "News", new { area = "" })
+</div>

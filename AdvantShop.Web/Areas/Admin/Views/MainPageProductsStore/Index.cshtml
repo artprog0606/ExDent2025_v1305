@@ -1,0 +1,287 @@
+﻿@model AdvantShop.Web.Admin.ViewModels.Catalog.MainPageProducts.MainPageProductsViewModel
+@{
+    Html.AddAsset("mainPageProducts");
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    Layout = "~/Areas/Admin/Views/MainPageProductsStore/_Layout.cshtml";
+}
+
+<div ng-init="mainpageproducts.init('@Model.Type.ToString().ToLower()', @Model.ListId)" data-is-mobile>
+    <div ng-if="mainpageproducts.showMode != 'list' && mainpageproducts.selectedList != null" class="ng-cloak">
+        @if (!isMobile)
+        {
+            <div class="sticky-page-name p-b-xsm" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="page-name-block-item-main">
+                        <div>
+
+                            <div class="flex middle-xs">
+                                <h1 class="page-name-block-text sticky-page-name-text inline bottom-cell m-r-xs" data-e2e="MainPageTitle">
+                                    {{mainpageproducts.selectedList.Name}}
+                                </h1>
+                                <a href="https://www.advantshop.net/help/pages/product-on-main" target="_blank" class="p-l-xs link-academy link-invert inline-flex middle-xs ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+                                    <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+                                    </svg>
+                                    <span>@T("Admin.MainPageProductsStore.Index.InstructionsProductsMain")</span>
+                                </a>
+                            </div>
+
+
+                            <div class="m-t-xs m-r-xs">
+                                <a href="{{mainpageproducts.selectedList.Link}}" class="link-gray link-decoration-invert" target="_blank">{{mainpageproducts.selectedList.Link}}</a>
+                                <i class="fa fa-copy pointer m-l-xs"
+                                    ng-click="mainpageproducts.copyToClipBoard(mainpageproducts.selectedList.Link)"
+                                    title="{{'Admin.Js.MainPageProducts.CopyTheLink'|translate}}"
+                                    aria-hidden="true"></i>
+                            </div>
+                            <div class="m-t-xs">
+                                <label class="adv-checkbox-label control-label" data-e2e="MainPageListEnabled">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.Enabled" ng-change="mainpageproducts.changeEnabled()" class="adv-checkbox-input control-checkbox" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.ShowList")</span>
+                                </label>
+                            </div>
+                            <div class="m-t-xs sticky-hidden">
+                                <label class="adv-checkbox-label" data-e2e="ProductListShowOnMainPage">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShowOnMainPage" ng-change="mainpageproducts.changeShowOnMainPage()" class="adv-checkbox-input control-checkbox"/>
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.ShowOnMainPage")</span>
+                                </label>
+                            </div>
+                            <div class="m-t-xs sticky-hidden" ng-if="mainpageproducts.selectedList.TypeStr == 'new' && mainpageproducts.selectedList.Enabled">
+                                <label class="adv-checkbox-label control-label" data-e2e="DisplayLatestProductsInNewOnMainPage">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.DisplayLatestProductsInNewOnMainPage" ng-change="mainpageproducts.changeDisplayLatestProductsInNewOnMainPageEnabled()" class="adv-checkbox-input control-checkbox" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.DisplayLatestProducts")</span>
+                                </label>
+                            </div>
+
+                            <div class="row middle-xs control-label m-t-xs sticky-hidden">
+                                <div class="col-xs-slim">
+                                    <label class="adv-checkbox-label" data-e2e="MainPageListShuffle">
+                                        <input type="checkbox" ng-model="mainpageproducts.selectedList.ShuffleList" ng-change="mainpageproducts.changeShuffleList()" class="adv-checkbox-input control-checkbox" />
+                                        <span class="adv-checkbox-emul"></span>
+                                        <span>@T("Admin.MainPageProductsStore.Index.ShuffleList")</span>
+                                    </label>
+                                </div>
+                                <help-trigger class="ng-cloak m-l-xs" use-template="true" data-title="{{'Admin.Js.EditMainPageList.ShuffleList'|translate}}">
+                                    <div class="help-content" ng-bind-html="'Admin.Js.EditMainPageList.ShuffleListHint'|translate"></div>
+                                </help-trigger>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-name-block-item-additional">
+                        <ui-modal-trigger data-controller="'ModalEditMainPageListCtrl'" controller-as="ctrl" size="lg"
+                                          template-url="@Html.GetAssetPath("editMainPageList.html")"
+                                          data-resolve="{data: {'typeStr': mainpageproducts.selectedList.TypeStr}}"
+                                          data-on-close="mainpageproducts.getItemByType(mainpageproducts.selectedList.TypeStr, null)">
+                            <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="editMainPageList">
+                                @T("Admin.MainPageProducts.Index.Edit")
+                            </button>
+                        </ui-modal-trigger>
+
+                        <ui-modal-trigger ng-if="mainpageproducts.selectedList.TypeStr != 'sale'"
+                                          class="header-subtext"
+                                          data-controller="'ModalProductsSelectvizrCtrl'" controller-as="ctrl" size="xs-11"
+                                          on-close="mainpageproducts.addProductsModal(result)"
+                                          template-url="@Html.GetAssetPath("productsSelectvizrModal.html")">
+                            <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="mainPageListAddProduct">
+                                <span class="fa fa-plus"></span> @T("Admin.AddProduct")
+                            </button>
+                        </ui-modal-trigger>
+                    </div>
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="m-b-md">
+                <a href="{{mainpageproducts.selectedList.Link}}" class="link-gray link-decoration-invert" target="_blank">{{mainpageproducts.selectedList.Link}}</a>
+                <i class="fa fa-copy pointer m-l-xs"
+                   ng-click="mainpageproducts.copyToClipBoard(mainpageproducts.selectedList.Link)"
+                   title="{{'Admin.Js.MainPageProducts.CopyTheLink'|translate}}"
+                   aria-hidden="true"></i>
+            </div>
+            <div class="m-b-md">
+                <label class="adv-checkbox-label" data-e2e="MainPageListEnabled">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.Enabled" ng-change="mainpageproducts.changeEnabled()" class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.ShowList")</span>
+                </label>
+            </div>
+            <div class="m-b-md" ng-if="mainpageproducts.selectedList.TypeStr == 'new' && mainpageproducts.selectedList.Enabled">
+                <label class="adv-checkbox-label" data-e2e="DisplayLatestProductsInNewOnMainPage">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.DisplayLatestProductsInNewOnMainPage" ng-change="mainpageproducts.changeDisplayLatestProductsInNewOnMainPageEnabled()" class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.DisplayLatestProducts")</span>
+                </label>
+            </div>
+            <div class="m-b-md">
+                <label class="adv-checkbox-label" data-e2e="ProductListShowOnMainPage">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShowOnMainPage" ng-change="mainpageproducts.changeShowOnMainPage()" class="adv-checkbox-input control-checkbox"/>
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.ShowOnMainPage")</span>
+                </label>
+            </div>
+            <div class="m-b-md">
+                <div class="flex middle-xs">
+                    <label class="adv-checkbox-label flex-grow" data-e2e="MainPageListShuffle">
+                        <input type="checkbox" ng-model="mainpageproducts.selectedList.ShuffleList" ng-change="mainpageproducts.changeShuffleList()" class="adv-checkbox-input control-checkbox" />
+                        <span class="adv-checkbox-emul"></span>
+                        <span>@T("Admin.MainPageProductsStore.Index.ShuffleList")</span>
+                    </label>
+                    <help-trigger class="ng-cloak m-l-sm" use-template="true" data-title="{{'Admin.Js.EditMainPageList.ShuffleList'|translate}}">
+                        <div class="help-content" ng-bind-html="'Admin.Js.EditMainPageList.ShuffleListHint'|translate"></div>
+                    </help-trigger>
+                </div>
+            </div>
+        }
+
+        <ui-grid-custom grid-unique-id="{{mainpageproducts.gridUniqueId}}"
+                        grid-extend-ctrl="mainpageproducts"
+                        grid-row-identificator="'ProductId'"
+                        grid-on-init="mainpageproducts.onInitGrid(grid)"
+                        grid-options="mainpageproducts.gridOptions"
+                        grid-params="{type: mainpageproducts.selectedList.TypeStr}"
+                        grid-url="'mainpageproducts/getcatalog'"
+                        grid-inplace-url="'mainpageproducts/inplaceproduct'"
+                        grid-on-delete="mainpageproducts.onGridDeleteItem()"
+                        grid-selection-mass-apply="mainpageproducts.onGridDeleteItem()"
+                        grid-swipe-line="isMobile.value">
+            <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                <div data-product-grid-item
+                     data-row="row"
+                     data-grid-scope="grid.appScope"
+                     data-custom-link="true"
+                     data-renderer-columns="colContainer.renderedColumns">
+                </div>
+            </ui-grid-custom-override-control>
+            <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="mainpageproducts.grid.gridOptions.TotalString">
+            </ui-grid-custom-footer>
+        </ui-grid-custom>
+    </div>
+
+
+    <div ng-controller="ProductListsCtrl as productlists" ng-init="mainpageproducts.productlistsCtrl = productlists">
+        <div ng-if="mainpageproducts.showMode == 'list' && mainpageproducts.selectedList != null" class="ng-cloak">
+        @if (!isMobile)
+        {
+            <div class="sticky-page-name" sticky sticky-top="0">
+                <div class="page-name-block sticky-page-name-inner">
+                    <div class="page-name-block-item-main">
+                        <div>
+                            <h1 class="page-name-block-text sticky-page-name-text inline bottom-cell m-r-xs" data-e2e="ProductListTitle">
+                                @T("Admin.ProductLists.Products.List") "{{mainpageproducts.selectedList.Name}}"
+                            </h1>
+                            <div class="m-t-xs m-r-xs">
+                                <a href="{{mainpageproducts.selectedList.Link}}" class="link-gray link-decoration-invert" target="_blank">{{mainpageproducts.selectedList.Link}}</a>
+                                <i class="fa fa-copy pointer m-l-xs"
+                                    ng-click="mainpageproducts.copyToClipBoard(mainpageproducts.selectedList.Link)"
+                                    title="{{'Admin.Js.MainPageProducts.CopyTheLink'|translate}}"
+                                    aria-hidden="true"></i>
+                            </div>
+                            <div class="m-t-xs m-r-xs">
+                                <label class="adv-checkbox-label" data-e2e="ProductListEnabled">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.Enabled" ng-change="mainpageproducts.changeEnabled()" class="adv-checkbox-input control-checkbox"/>
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.ShowList")</span>
+                                </label>
+                            </div>
+
+                            <div class="m-t-xs sticky-hidden">
+                                <label class="adv-checkbox-label" data-e2e="ProductListShowOnMainPage">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShowOnMainPage" ng-change="mainpageproducts.changeShowOnMainPage()" class="adv-checkbox-input control-checkbox"/>
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.ShowOnMainPage")</span>
+                                </label>
+                            </div>
+
+                            <div class="m-t-xs sticky-hidden">
+                                <label class="adv-checkbox-label" data-e2e="ProductListShuffle">
+                                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShuffleList" ng-change="mainpageproducts.changeShuffleList()" class="adv-checkbox-input control-checkbox"/>
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>@T("Admin.MainPageProductsStore.Index.ShuffleList")</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-name-block-item-additional">
+                        <ui-modal-trigger data-controller="'ModalAddEditProductListCtrl'" controller-as="ctrl" size="lg"
+                                          template-url="@Html.GetAssetPath("addEditProductList.html")"
+                                          on-close="mainpageproducts.updateProductLists()"
+                                          data-resolve="{'id': mainpageproducts.selectedList.Id}">
+                            <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="editProductList">
+                                @T("Admin.ProductList.Products.EditList")
+                            </button>
+                        </ui-modal-trigger>
+
+                        <ui-modal-trigger class="header-subtext" data-controller="'ModalProductsSelectvizrCtrl'" controller-as="ctrl" size="xs-11"
+                                          on-close="productlists.addProductsModal(result)"
+                                          template-url="@Html.GetAssetPath("productsSelectvizrModal.html")">
+                            <button class="btn btn-sm btn-success btn--margin-left" type="button" data-e2e="product_ProductListAdd">
+                                <span class="fa fa-plus"></span> @T("Admin.AddProduct")
+                            </button>
+                        </ui-modal-trigger>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="m-b-md">
+                <a href="{{mainpageproducts.selectedList.Link}}" class="link-gray link-decoration-invert" target="_blank">{{mainpageproducts.selectedList.Link}}</a>
+                <i class="fa fa-copy pointer m-l-xs"
+                   ng-click="mainpageproducts.copyToClipBoard(mainpageproducts.selectedList.Link)"
+                   title="{{'Admin.Js.MainPageProducts.CopyTheLink'|translate}}"
+                   aria-hidden="true"></i>
+            </div>
+            
+            <div class="m-b-md">
+                <label class="adv-checkbox-label" data-e2e="MainPageListEnabled">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.Enabled" ng-change="mainpageproducts.changeEnabled()" class="adv-checkbox-input control-checkbox" />
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.ShowList")</span>
+                </label>
+            </div>
+           
+            <div class="m-b-md">
+                <label class="adv-checkbox-label" data-e2e="ProductListShowOnMainPage">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShowOnMainPage" ng-change="mainpageproducts.changeShowOnMainPage()" class="adv-checkbox-input control-checkbox"/>
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.ShowOnMainPage")</span>
+                </label>
+            </div>
+
+            <div class="m-b-md">
+                <label class="adv-checkbox-label" data-e2e="ProductListShuffle">
+                    <input type="checkbox" ng-model="mainpageproducts.selectedList.ShuffleList" ng-change="mainpageproducts.changeShuffleList()" class="adv-checkbox-input control-checkbox"/>
+                    <span class="adv-checkbox-emul"></span>
+                    <span>@T("Admin.MainPageProductsStore.Index.ShuffleList")</span>
+                </label>
+            </div>
+        }
+
+            <ui-grid-custom grid-unique-id="gridListProducts"
+                            grid-options="productlists.gridProductsOptions"
+                            grid-on-init="productlists.gridProductsOnInit(grid);"
+                            grid-params="{ listId: mainpageproducts.selectedList.Id }"
+                            grid-url="'productlists/getProductsByList'"
+                            grid-inplace-url="'productlists/inplaceProduct'"
+                            grid-on-delete="productlists.onGridDeleteItem()"
+                            grid-selection-mass-apply="productlists.onGridDeleteItem()"
+                            grid-swipe-line="isMobile.value">
+                <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+                   <div data-product-grid-item
+                         data-row="row"
+                         data-grid-scope="grid.appScope"
+                         data-custom-link="true"
+                         data-renderer-columns="colContainer.renderedColumns">
+                    </div>
+
+                </ui-grid-custom-override-control>
+            </ui-grid-custom>
+        </div>
+    </div>
+</div>

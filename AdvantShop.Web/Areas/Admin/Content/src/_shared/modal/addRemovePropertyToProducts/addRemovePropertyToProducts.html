@@ -1,0 +1,78 @@
+﻿<form name="formAddRemovePropertyToProducts" is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2
+            class="modal-header-title"
+            ng-bind="ctrl.mode === 'add' ? ('Admin.Js.AddRemovePropertyToProducts.AddingProperty'|translate) : ('Admin.Js.AddRemovePropertyToProducts.RemovingProperty'|translate)"></h2>
+    </div>
+    <div class="modal-body" style="{{isMobile.value ? '' : 'min-height: 180px;'}}">
+        <div class="form-group row">
+            <div class="col-xs-12 col-md-6 form-group">
+                <ui-select
+                    data-e2e="selectProperty"
+                    class="input-alt"
+                    validation-input-text="{{::'Admin.Js.AddRemovePropertyToProducts.PropertyName' | translate}}"
+                    reach-infinity="ctrl.getMore()"
+                    ng-model="ctrl.selectedProperty"
+                    uis-open-close="ctrl.closeSelectProperty(isOpen)"
+                    on-select="ctrl.selectProperty($item, $model)"
+                    ng-click="ctrl.firstCallProperties()"
+                    skip-focusser="true"
+                    reset-search-input="true">
+                    <ui-select-match
+                        allow-clear="true"
+                        placeholder="{{isMobile.value ? 'Admin.Js.AdminMobile.AddRemovePropertyToProducts.EnterPropertyName' : 'Admin.Js.AddRemovePropertyToProducts.EnterPropertyName' | translate}}">
+                        {{$select.selected.Name}}
+                    </ui-select-match>
+                    <ui-select-choices
+                        refresh="ctrl.findProperty($select.search, $select)"
+                        refresh-delay="250"
+                        repeat="item in ctrl.propertiesList track by item.PropertyId"
+                        minimum-input-length="1"
+                        style="max-height: 120px">
+                        <span ng-bind="item.Name"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group">
+                <ui-select
+                    data-e2e="selectPropertyValue"
+                    class="input-alt"
+                    validation-input-text="{{::'Admin.Js.AddRemovePropertyToProducts.Properties' | translate}}"
+                    reach-infinity="ctrl.getMorePropertiesValue()"
+                    ng-model="ctrl.selectedPropertyValue"
+                    uis-open-close="ctrl.closeSelectPropertyValue(isOpen)"
+                    on-select="ctrl.selectPropertyValue($item, $model)"
+                    ng-click="ctrl.firstCallPropertyValues()"
+                    skip-focusser="true"
+                    reset-search-input="true">
+                    <ui-select-match
+                        allow-clear="true"
+                        placeholder="{{isMobile.value ? 'Admin.Js.AdminMobile.AddRemovePropertyToProducts.EnterPropertyValue' : 'Admin.Js.AddRemovePropertyToProducts.EnterPropertyValue'|translate}}">
+                        {{$select.selected.Value}}
+                    </ui-select-match>
+                    <ui-select-choices
+                        refresh="ctrl.findPropertyValue(ctrl.selectedProperty.PropertyId, $select.search, $select)"
+                        refresh-delay="250"
+                        repeat="item in ctrl.propertyValuesList track by item.PropertyValueId"
+                        minimum-input-length="1"
+                        style="max-height: 120px">
+                        <span ng-bind="item.Value"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            type="button"
+            data-e2e="propertyAddSelected"
+            class="btn btn-save btn-primary"
+            ng-click="ctrl.selectedProperty != null && ctrl.selectedPropertyValue != null ? ctrl.send(formAddRemovePropertyToProducts) : null"
+            ng-disabled="ctrl.selectedProperty == null || ctrl.selectedProperty.Value.length === 0 || ctrl.selectedPropertyValue == null || ctrl.selectedPropertyValue.Value.length == 0"
+            ng-bind="ctrl.mode === 'add' ? ('Admin.Js.AddRemovePropertyToProducts.Add'|translate) : ('Admin.Js.AddRemovePropertyToProducts.Remove'|translate)"></button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddRemovePropertyToProducts.Cancel'|translate}}
+        </button>
+    </div>
+</form>

@@ -1,0 +1,105 @@
+﻿<div ng-switch="$ctrl.locationTypeSelected" is-mobile>
+    <div ng-switch-default>
+        <div class="sticky-page-name">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h2 data-e2e="h1-country" class="sticky-page-name-text" style="margin-top: 0">
+                        {{'Admin.Js.SettingsLocation.ListOfCountries'|translate}}
+                    </h2>
+                </div>
+                <div class="page-name-block-item-additional" ng-if="!isMobile.value">
+                    <ui-modal-trigger
+                        data-controller="'ModalAddEditCountryCtrl'"
+                        template-url="../areas/admin/content/src/settingsSystem/location/modal/addEditCountry/AddEditCountry.html"
+                        data-on-close="$ctrl.locationGrids[$ctrl.enumLocation.country].fetchData()">
+                        <button data-e2e="AddCountry" class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> {{'Admin.Js.SettingsLocation.AddCountry'|translate}}
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+        <grid-country on-grid-init="$ctrl.gridCountryOnInit(grid)" on-select="$ctrl.selectCountry(id, name, entity)"></grid-country>
+    </div>
+    <div ng-switch-when="region">
+        <div class="sticky-page-name">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h2
+                        data-e2e="h1-region"
+                        class="sticky-page-name-text"
+                        style="margin-top: 0"
+                        ng-bind="$ctrl.locationGridsParams[$ctrl.enumLocation.region].countryName + ' - ' + ('Admin.Js.SettingsLocation.ListOfRegions'|translate) "></h2>
+                </div>
+                <div class="page-name-block-item-additional" ng-if="!isMobile.value">
+                    <ui-modal-trigger
+                        controller="'ModalAddEditRegionsCtrl'"
+                        template-url="../areas/admin/content/src/settingsSystem/location/modal/addEditRegion/AddEditRegions.html"
+                        resolve="{entity : { 'CountryId': $ctrl.locationGridsParams[$ctrl.enumLocation.region].id }}"
+                        on-close="$ctrl.locationGrids[$ctrl.enumLocation.region].fetchData()">
+                        <button data-e2e="AddRegion" class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> {{'Admin.Js.SettingsLocation.AddRegion'|translate}}
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+        <div class="ibox">
+            <div class="form-group" ng-if="!isMobile.value">
+                <div>
+                    <a href="" data-e2e="GoToCountry" ng-click="$ctrl.revertSubject($ctrl.enumLocation.country)"
+                        >{{'Admin.Js.SettingsLocation.BackCountries'|translate}}</a
+                    >
+                </div>
+                <div>
+                    <a href="" data-e2e="GoToCity" ng-click="$ctrl.viewAllCity($ctrl.enumLocation.city)"
+                        >{{'Admin.Js.SettingsLocation.AllCities'|translate}}</a
+                    >
+                </div>
+            </div>
+            <grid-region
+                on-grid-init="$ctrl.gridRegionOnInit(grid)"
+                on-select="$ctrl.selectRegion(id, name)"
+                grid-params="$ctrl.locationGridsParams[$ctrl.enumLocation.region]"></grid-region>
+        </div>
+    </div>
+    <div ng-switch-when="city">
+        <div class="sticky-page-name">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <h2
+                        data-e2e="h1-city"
+                        class="sticky-page-name-text"
+                        style="margin-top: 0"
+                        ng-bind="($ctrl.locationGridsParams[$ctrl.enumLocation.city].regionName != null ? $ctrl.locationGridsParams[$ctrl.enumLocation.city].regionName : $ctrl.countryNameFromUrl) + ' - ' + ('Admin.Js.SettingsLocation.ListOfCities'|translate)"></h2>
+                </div>
+                <div class="page-name-block-item-additional" ng-if="!isMobile.value">
+                    <ui-modal-trigger
+                        controller="'ModalAddEditCitysCtrl'"
+                        controller-as="ctrl"
+                        template-url="../areas/admin/content/src/settingsSystem/location/modal/addEditCitys/AddEditCitys.html"
+                        resolve="{'entity': { 'RegionId': $ctrl.locationGridsParams[$ctrl.enumLocation.city].id, 'cityCountrys': $ctrl.locationGridsParams[$ctrl.enumLocation.city].cityCountrys }}"
+                        on-close="$ctrl.locationGrids[$ctrl.enumLocation.city].fetchData()">
+                        <button data-e2e="AddCity" class="btn btn-sm btn-success btn--margin-left" type="button">
+                            <span class="fa fa-plus"></span> {{'Admin.Js.SettingsLocation.AddCity'|translate}}
+                        </button>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-if="!isMobile.value">
+            <div>
+                <a data-e2e="GoToRegion" href="" ng-click="$ctrl.revertSubject($ctrl.enumLocation.region)"
+                    >{{'Admin.Js.SettingsLocation.BackRegions'|translate}}</a
+                >
+            </div>
+            <div>
+                <a data-e2e="GoToCountry" href="" ng-click="$ctrl.revertSubject($ctrl.enumLocation.country)"
+                    >{{'Admin.Js.SettingsLocation.BackCountries'|translate}}</a
+                >
+            </div>
+        </div>
+        <grid-city on-grid-preinit="$ctrl.gridCityOnPreinit(grid)" grid-params="$ctrl.locationGridsParams[$ctrl.enumLocation.city]"></grid-city>
+    </div>
+</div>

@@ -1,0 +1,90 @@
+﻿@using AdvantShop.Core.Services.Repository
+@model List<AdditionalPhone>
+
+<div class="phones-number-list">
+    <a rel="nofollow" href="tel: {{zone.MobilePhone}}"  class="phones-number-list__item cs-br-1" data-zone-current data-start-val="{Phone: '@Html.GetCityPhone(true)'}">
+        <div class="phones-number-list__icon">
+            <div class="phones-number__icon phones-number__icon-phone">
+                <svg width="25" height="25">
+                    <use xlink:href="images/additional-phones-icon/icons.svg#mobilePhone"></use>
+                </svg>
+            </div>
+        </div>
+        <div class="phones-number-list__item-text">
+            <span class="phones-number-list__item-tel" data-ng-bind-html="zone.Phone">
+                @Html.GetCityPhone()
+            </span>
+            @if (!string.IsNullOrEmpty(SettingsMain.PhoneDescription))
+            {
+                <div class="phones-number-list__item-descr">
+                    @Html.Raw(SettingsMain.PhoneDescription)
+                </div>
+            }
+        </div>
+    </a>
+
+    @foreach (var phone in Model)
+    {
+        <a rel="nofollow" href="@phone.PhoneLinkByType" class="phones-number-list__item cs-br-1">
+            <div class="phones-number-list__icon">
+                @if (phone.Type == EAdditionalPhoneType.Phone)
+                {
+                    <div class="phones-number__icon phones-number__icon-phone">
+                        <svg width="25" height="25">
+                            <use xlink:href="images/additional-phones-icon/icons.svg#mobilePhone"></use>
+                        </svg>
+                    </div>
+                }
+                else if (phone.Type == EAdditionalPhoneType.WhatsApp)
+                {
+                    <div class="phones-number__icon phones-number__icon-whatsapp">
+                        <svg width="25" height="25">
+                            <use xlink:href="images/additional-phones-icon/icons.svg#whatsapp"></use>
+                        </svg>
+                    </div>
+                }
+                else if (phone.Type == EAdditionalPhoneType.Viber)
+                {
+                    <div class="phones-number__icon phones-number__icon-viber">
+                        <svg width="25" height="25">
+                            <use xlink:href="images/additional-phones-icon/icons.svg#viber"></use>
+                        </svg>
+                    </div>
+                }
+                else if (phone.Type == EAdditionalPhoneType.Telegram)
+                {
+                    <div class="phones-number__icon phones-number__icon-telegram">
+                        <svg width="25" height="25">
+                            <use xlink:href="images/additional-phones-icon/icons.svg#tg"></use>
+                        </svg>
+                    </div>
+                }
+                else if (phone.Type == EAdditionalPhoneType.Skype)
+                {
+                    <div class="phones-number__icon phones-number__icon-telegram">
+                        <svg width="25" height="25">
+                            <use xlink:href="images/additional-phones-icon/icons.svg#skype"></use>
+                        </svg>
+                    </div>
+                }
+                else if (phone.Type == EAdditionalPhoneType.Svg && !string.IsNullOrEmpty(phone.Icon))
+                {
+                    <div class="phones-number__icon phones-number__icon-other">
+                        @Html.Raw(phone.Icon)
+                    </div>
+                }
+            </div>
+            <div class="phones-number-list__item-text">
+                <span class="phones-number-list__item-tel">
+                    @phone.PhoneTextByType
+                </span>
+                @if (!string.IsNullOrEmpty(phone.Description))
+                {
+                    <div class="phones-number-list__item-descr">
+                        @Html.Raw(phone.Description)
+                    </div>
+                }
+            </div>
+        </a>
+    }
+</div>

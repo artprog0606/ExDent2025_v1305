@@ -1,0 +1,113 @@
+﻿@using AdvantShop.Core.Services.Landing.Pictures;
+@model BlockModel
+@{
+    var items = Model.Block.TryGetSettingAsList<TextModel>("items");
+    var itemsCountInRow = (int)Model.Block.TryGetSetting("items_in_row");
+
+}
+
+<div class="container-fluid">
+    <div class="lp-container">
+        <div class="row center-xs lp-block-video-columns__row">
+            @if (Model.Block.TryGetSetting("show_title") == true || Model.Block.TryGetSetting("show_subtitle") == true)
+            {
+                <div class="col-xs-12">
+                    <div class="lp-block-video-columns__title">
+                        @if (Model.Block.TryGetSetting("show_title") == true)
+                        {
+                            <div class="lp-h2 lp-h2--color" data-e2e="videosThreeIconsTitle">
+                                @Html.SubBlock(Model, "title")
+                            </div>
+                        }
+                        @if (Model.Block.TryGetSetting("show_subtitle") == true)
+                        {
+                            <div class="lp-h3 lp-h3--color" data-e2e="videosThreeIconsSubtitle">
+                                @Html.SubBlock(Model, "subtitle")
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="flex flex-wrap @(Model.Block.TryGetSetting("align_items")) lp-block-video-columns__wrap" @Html.Raw(Model.Inplace ? "lozad-adv=\"blocksConstructorContainer.getData()\"" : "")>
+
+            @if (items.Any())
+            {
+                float width = 100 / itemsCountInRow;
+                var widthString = width.ToInvariantString() + "%";
+                var minWidth = LpService.SiteWidthContent / Model.Block.TryGetSetting("items_in_row");
+                <style>
+                    #block_@Model.Block.Id .lp-block-video-columns__text {
+                        min-width: @(widthString);
+                        -webkit-flex-basis: 100%;
+                        -ms-flex-preferred-size: 100%;
+                        flex-basis: 100%;
+                        max-width: 100%;
+                    }
+                        @@media (min-width: 48em) {
+                            #block_@Model.Block.Id .lp-block-video-columns__text {
+                                -webkit-flex-basis: @(widthString);
+                                -ms-flex-preferred-size: @(widthString);
+                                flex-basis: @(widthString);
+                                max-width: @(widthString);
+                                min-width:  @(widthString);
+                            }
+                        }
+                </style>
+
+
+                for (var i = 0; i < items.Count; i++)
+                {
+
+                    <div class="lp-font-size--middle lp-block-video-columns__text lp-block-video-columns__col">
+                        <div class="lp-block-video-columns__item">
+                            <div class="@(Model.Block.TryGetSetting("columnBackground") == true ? "color-scheme__bg--alt" : "") lp-block-video-columns__item-inner">
+                                <div data-e2e="videosThreeIconsIcon">
+                                    <div>
+                                        @*@Html.SubBlock(Model, "video")*@
+                                        @{
+                                            var settings = new System.Collections.Generic.Dictionary<string, object>()
+                                            {
+                                                {"inModal", items[i].Video.inModal},
+                                                {"urlVideo", items[i].Video.urlVideo},
+                                                {"alignButton", items[i].Video.alignButton},
+                                                {"autoplayVideo", items[i].Video.autoplayVideo},
+                                                {"preview", items[i].Video.preview},
+                                                {"coverVideo", items[i].Video.coverVideo},
+                                                {"heightVideo", items[i].Video.heightVideo},
+                                                {"widthVideo", items[i].Video.widthVideo},
+                                                {"asBackground", items[i].Video.asBackground},
+                                                {"insertionMethod", items[i].Video.insertionMethod},
+                                                {"upload", items[i].Video.upload}
+                                            };
+                                        }
+                                        @Html.Partial("~/Areas/Landing/Views/SubBlocks/Video.cshtml", new SubBlockModel(new AdvantShop.Core.Services.Landing.Blocks.LpSubBlock() { MappedSettings = settings, Settings = Newtonsoft.Json.JsonConvert.SerializeObject(settings), ContentHtml = "" }))
+                                    </div>
+                                </div>
+                                <div class="lp-block-video-columns__text-inner text-center">
+                                    <div class="lp-block-video-columns__header" data-e2e="videosThreeIconsHeader" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].title")>
+                                        @Html.Raw(items[i].Title)
+                                    </div>
+                                    <div class="lp-h3--color" data-e2e="videosThreeIconsText" @Html.InplaceSettings(Model.Block.Id, "blocksConstructorContainer.data", "items[" + i + "].text")>
+                                        @Html.Raw(items[i].Text)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            }
+        </div>
+        @if (Model.Block.TryGetSetting("show_button") == true)
+        {
+            <div class="row @(Model.Block.TryGetSetting("align_btns") != null ? Model.Block.TryGetSetting("align_btns") : "center-xs") lp-block-video-columns__button" data-e2e="VideoBtnRow">
+                <div class="col-xs-12">
+                    @Html.Button(Model.Block, "button")
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

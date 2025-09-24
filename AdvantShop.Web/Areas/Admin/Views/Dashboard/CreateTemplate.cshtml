@@ -1,0 +1,86 @@
+﻿@using AdvantShop.Trial
+@model AdvantShop.Web.Admin.Models.Dashboard.CreateTemplateModel
+<div class="create__site-page">
+    <div class="balance__padding-page balance__padding-page--bg-white">
+        <div class="create-balance__block create-balance__block--title-wrap ">
+            
+            <div class="breadcrumb__link-block page-head__back">
+                @Html.Back(T("Admin.Dashboard.CreateTemplate.Back").ToString(), Url.AbsoluteActionUrl("CreateSite", new { mode = Model.Mode}))
+            </div>
+            <div class="create__site-page-title">
+                <span class="visible-xs hidden-md page-head__name">Создание шаблона</span>
+                <h1 class="page-name-block-text hidden-xs visible-md">Шаблон @Model.Name</h1>
+            </div>
+
+        </div>
+        <div class=" f-s-18 bold visible-xs hidden-md">@Model.Name</div>
+
+    </div>
+    <div class="balance__padding-page balance__padding-page--m-t-n ">
+        <div class="create__sites-balance__block create__sites-balance__block--max-width">
+            <div class="m-t-md p-t-xs">
+                <div class="create__sites-block-content">
+                    <div class="create__sites-left-block">
+                        <div>
+                            @Html.Raw(Model.Description)
+                        </div>
+
+                        @*@if (Model.Colors.Count > 0)
+                            {
+                                <div class="m-t">
+                                    <h3 class="m-b">Варианты цветовых схем</h3>
+
+                                    @foreach (var color in Model.Colors)
+                                    {
+                                        <span class="dashboard-color-item" style="background-color: @color"></span>
+                                    }
+                                </div>
+                            }*@
+
+                        <div class="m-t-md">
+                            @*<button class="btn btn-sm m-r-xs btn-success">
+                                    Создать сайт
+                                </button>*@
+
+                            @if (Model.Price == 0 || Model.Active || TrialService.IsTrialEnabled)
+                            {
+                                <form novalidate class="inline"
+                                      ng-controller="DesignCtrl as design"
+                                      ng-init="design.checkStore=true"
+                                      ng-submit="design.installTemplate('@Model.StringId',@Model.Id,'@Model.Version', '@Url.AbsoluteActionUrl("Index", "Design")')">
+                                    <input type="submit" disabled ng-disabled="!design.pageLoaded" class="btn btn-md btn-success" value="@T("Admin.Design.Index.Install")" />
+                                </form>
+                            }
+                            else if (!TrialService.IsTrialEnabled)
+                            {
+                                <a href="@Url.AbsoluteActionUrl("BuyTemplate", "Service", new {id = Model.StringId})" class="btn btn-md btn-success">@T("Admin.Design.Index.Buy")</a>
+                            }
+
+                            @if (Model.OnlineDemoLink.IsNotEmpty())
+                            {
+                                <a href="@Model.OnlineDemoLink" class="m-l-xs btn btn-md btn-default" target="_blank">Online demo</a>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="col-xs-slim first-xs last-sm">
+                        @if (!string.IsNullOrEmpty(Model.Icon))
+                        {
+                            <div class="create__site-img-wrap">
+                                <div class="browser-top-menu-block">
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--red"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--orange"></div>
+                                    <div class="browser-top-menu-oval browser-top-menu-oval--green"></div>
+                                </div>
+                                <img src="@Model.Icon" />
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+

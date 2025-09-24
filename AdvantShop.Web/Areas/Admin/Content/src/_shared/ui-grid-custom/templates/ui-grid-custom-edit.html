@@ -1,0 +1,85 @@
+<div class="ui-grid-cell-contents ui-grid-custom-edit-block js-grid-not-clicked form-row" is-mobile>
+    <div class="ui-grid-custom-edit__title control-label" ng-if="uiGridEditCustom.isMobile" ng-bind="col.colDef.displayName"></div>
+    <form name="inputForm" class="ui-grid-custom-edit-block ui-grid-custom-edit-number">
+        <div class="ui-grid-custom-edit-form" ng-init="uiGridEditCustom.form = inputForm" ng-switch="col.colDef.type">
+            <div ng-switch-when="number">
+                <div ng-switch="uiGridEditCustom.isShowInput()">
+                    <span class="ui-grid-custom-edit__text--default" ng-bind="COL_DEF_CUSTOM_EDIT" ng-switch-default></span>
+                    <input
+                        type="number"
+                        ng-class="{'input--without-controls': !inputHover}"
+                        class="ui-grid-custom-edit-field form-control input-alt-mobile"
+                        ng-switch-when="true"
+                        data-ng-mouseenter="inputHover = true"
+                        data-ng-mouseleave="inputHover = false"
+                        ng-model="MODEL_CUSTOM_EDIT"
+                        ng-focus="uiGridEditCustom.focus($event, MODEL_CUSTOM_EDIT)"
+                        ng-keyup="uiGridEditCustom.keyup(row.entity, col.colDef, MODEL_CUSTOM_EDIT, $event)"
+                        ng-blur="inputForm.$valid ? uiGridEditCustom.change(row.entity, col.colDef, MODEL_CUSTOM_EDIT, INPLACE_TYPES.SINGLE) : null"
+                        INPUT_ATTRIBUTES />
+                </div>
+            </div>
+            <div ng-switch-when="select" data-e2e="select">
+                <div ng-switch="uiGridEditCustom.isShowInput()">
+                    <span class="ui-grid-custom-edit__text--default" ng-bind="COL_DEF_CUSTOM_EDIT" ng-switch-default></span>
+                    <!--isOpen в uis-open-close, переменная внутренняя ui-select-->
+                    <div class="ui-grid-custom-edit-field" ng-switch-when="true">
+                        <ui-select
+                            ng-model="MODEL_CUSTOM_EDIT"
+                            on-select="uiGridEditCustom.change(row.entity, col.colDef, MODEL_CUSTOM_EDIT, INPLACE_TYPES.SINGLE)"
+                            uis-open-close="uiGridEditCustom.selectToggle($event, isOpen, MODEL_CUSTOM_EDIT)"
+                            append-to-body="isMobile.value ? false : true"
+                            class="input-alt-mobile"
+                            INPUT_ATTRIBUTES>
+                            <ui-select-match>
+                                <span ng-bind="$select.selected[uiGridEditCustom.editDropdownValueLabel]" data-e2e="itemSelected"></span>
+                            </ui-select-match>
+                            <ui-select-choices
+                                repeat="item[uiGridEditCustom.editDropdownIdLabel] as item in uiGridEditCustom.editDropdownOptionsArray | greedysearch: $select.search">
+                                <span ng-bind="item[uiGridEditCustom.editDropdownValueLabel]" data-e2e="itemDropDownSelect"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <label class="ui-grid-custom-edit-field adv-checkbox-label" ng-switch-when="checkbox" data-e2e="switchOnOffLabel" INPUT_ATTRIBUTES>
+                <input
+                    type="checkbox"
+                    class="adv-checkbox-input"
+                    ng-model="MODEL_CUSTOM_EDIT"
+                    ng-change="uiGridEditCustom.change(row.entity, col.colDef, MODEL_CUSTOM_EDIT, INPLACE_TYPES.SINGLE)"
+                    data-e2e="switchOnOffSelect"
+                    INPUT_ATTRIBUTES />
+                <span class="adv-checkbox-emul" data-e2e="switchOnOffInput"></span>
+            </label>
+            <div ng-switch-when="textarea">
+                <div ng-switch="uiGridEditCustom.isShowInput()">
+                    <span class="ui-grid-custom-edit__text--default" ng-bind="COL_DEF_CUSTOM_EDIT" ng-switch-default></span>
+                    <textarea
+                        rows="2"
+                        class="ui-grid-custom-edit-field form-control"
+                        ng-switch-when="true"
+                        ng-model="MODEL_CUSTOM_EDIT"
+                        ng-focus="uiGridEditCustom.focus($event, MODEL_CUSTOM_EDIT)"
+                        ng-keyup="uiGridEditCustom.keyup(row.entity, col.colDef, MODEL_CUSTOM_EDIT, $event)"
+                        ng-blur="inputForm.$valid ? uiGridEditCustom.change(row.entity, col.colDef, MODEL_CUSTOM_EDIT, INPLACE_TYPES.SINGLE) : null"
+                        INPUT_ATTRIBUTES></textarea>
+                </div>
+            </div>
+            <div ng-switch-default>
+                <div ng-switch="uiGridEditCustom.isShowInput()">
+                    <span class="ui-grid-custom-edit__text--default" ng-bind="COL_DEF_CUSTOM_EDIT" ng-switch-default></span>
+                    <input
+                        type="text"
+                        class="ui-grid-custom-edit-field form-control input-alt-mobile"
+                        ng-switch-when="true"
+                        ng-model="MODEL_CUSTOM_EDIT"
+                        ng-focus="uiGridEditCustom.focus($event, MODEL_CUSTOM_EDIT)"
+                        ng-keyup="uiGridEditCustom.keyup(row.entity, col.colDef, MODEL_CUSTOM_EDIT, $event)"
+                        ng-blur="inputForm.$valid ? uiGridEditCustom.change(row.entity, col.colDef, MODEL_CUSTOM_EDIT, INPLACE_TYPES.SINGLE) : null"
+                        INPUT_ATTRIBUTES />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

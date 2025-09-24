@@ -1,0 +1,163 @@
+﻿@using AdvantShop.Core.Services.SalesChannels;
+@using AdvantShop.Trial
+@using AdvantShop.Core.Services.Landing;
+@*@{
+
+        var isFirstTimeCreateStore = SalesChannelService.IsFirstTimeCreateStore();
+        if (isFirstTimeCreateStore)
+        {
+            Layout = "~/Areas/Admin/Templates/AdminV3/Views/Shared/_FirstTimeCreateLayout.cshtml";
+        }
+
+    }*@
+
+@model AdvantShop.Web.Admin.Models.Dashboard.CreateSiteModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+@{
+    Html.AddAsset("createSite");
+}
+
+
+@{
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Text = T("Admin.Dashboard.CreateSite.Back").ToString(),
+        Url = Model.Mode == "store" ? isMobile ? Url.AbsoluteActionUrl("Index", "Design") : Url.AbsoluteActionUrl("Index", "Design") : Url.AbsoluteActionUrl("Index")
+    };
+
+    headerModel.Title = isMobile ? T("Admin.Dashboard.CreateSite.WebsiteCreation").ToString() : (Model.Mode != "store" ? T("Admin.Dashboard.CreateSite.CreateStoreFunnelLanding").ToString() : T("Admin.Dashboard.CreateSite.OnlineStoreDesignTemplates").ToString());
+    headerModel.SubTitle = Model.Mode != "store" ? T("Admin.Dashboard.CreateSite.SelectWebsiteTypeTemplate").ToString() : T("Admin.Dashboard.CreateSite.SelectTemplate").ToString();
+}
+
+@Html.Header(headerModel)
+
+<div class="create__site-page">
+    <div class="balance__padding-page balance__padding-page--body balance__padding-page--m-t-n">
+        <div class="create-balance__block create-balance__block--content @(isMobile ? "nav-tabs-wrap nav-tabs-wrap--chips tabs--template" : "")" ng-init="createSite.selectCategory('@Model.Categories[0].Type');">
+            @if (Model.Categories.Count > 1)
+            {
+                <ul class="nav scrollbar-custom scrollbar-custom--scroll-h nav-tabs nav-tabs--{{createSite.current.toLowerCase()}}">
+                    @for (var i = 0; i < Model.Categories.Count; i++)
+                    {
+                        <li class="uib-tab nav-item ng-tab"
+                            scroll-into-view="'@Model.Categories[i].Type' ===  createSite.current"
+                            ng-class="{'active': '@Model.Categories[i].Type' ===  createSite.current}"
+                            ng-click="createSite.selectCategory('@Model.Categories[i].Type')">
+                            <a class="nav-link">@Model.Categories[i].Name</a>
+                        </li>
+                    }
+
+                </ul>
+            }
+
+            <ul class="create-site__list-tabs ng-cloak adv-radio-group adv-radio-group--horizontal" ng-if="createSite.current  === 'Store'" ng-init="createSite.setTypeStore('all')">
+                @*ng-init="createSite.setTypeStore(@(isFirstTimeCreateStore ? "'free'" : "'all'"))"*@
+                <li class="create-site__tabs-item">
+                    <label class="adv-radio-label" for="all"
+                           ng-click="createSite.setTypeStore('all')">
+                        @*@(!isFirstTimeCreateStore ? "checked=checked" : "")*@
+                        <input checked="checked"
+                               class="adv-radio-input"
+                               id="all"
+                               type="radio"
+                               name="typeStore">
+                        <span class="adv-radio-label-text">@T("Admin.Dashboard.CreateSite.All")</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </li>
+                <li class="create-site__tabs-item">
+                    <label class="adv-radio-label" for="paid"
+                           ng-click="createSite.setTypeStore('paid')">
+                        <input class="adv-radio-input" id="paid" type="radio" name="typeStore">
+                        <span class="adv-radio-label-text">@T("Admin.Dashboard.CreateSite.Paid")</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </li>
+                <li class="create-site__tabs-item">
+                    <label class="adv-radio-label" for="free"
+                           ng-click="createSite.setTypeStore('free')">
+                        
+                        @*@(isFirstTimeCreateStore ? "checked=checked" : "")*@
+                        <input class="adv-radio-input"
+                               id="free"
+                               type="radio"
+                               name="typeStore">
+                        <span class="adv-radio-label-text">@T("Admin.Dashboard.CreateSite.Free")</span>
+                        <span class="adv-radio-emul"></span>
+                    </label>
+                </li>
+            </ul>
+            @if (TrialService.IsTrialEnabled)
+            {
+                <div ng-if="createSite.current  === 'Store'" class="m-t-md ng-cloak">@T("Admin.Dashboard.CreateSite.PaidTemplates")</div>
+            }
+
+            <div class="tab-content">
+                <div class="ng-cloak tab-pane active">
+                    <div>
+                        <div class="last-item-row last-item-row--{{createSite.current.toLowerCase()}}"
+                             ng-if="createSite.lpTemplates != null">
+                            <div class="last-item @(isMobile ? "card card--form-control" : "")" ng-repeat="item in createSite.lpTemplates track by $index">
+                                @Html.Partial("_CreateSiteTemplateItem", Model)
+                            </div>
+
+                            @*@if (!isFirstTimeCreateStore)
+                                {*@
+                            <div class="last-item last-item-empty-template-wrap create-site-item">
+                                <div class="last-item-empty-template">
+                                    <ui-modal-trigger class="card card--stretch"
+                                                      data-controller="'ModalAddLandingSiteCtrl'" controller-as="ctrl" size="lg" data-backdrop="static"
+                                                      template-url="@Html.GetAssetPath("addLandingSite.html")">
+                                        <a ng-href="" class="last-item-empty-template-funnel ibox-content text-decoration-none create-site-item__link">
+                                            <div class="">
+                                                <div class="text-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 42 42" style="enable-background:new 0 0 42 42;" xml:space="preserve" width="61px" height="61px">
+                                                        <polygon points="42,19 23,19 23,0 19,0 19,19 0,19 0,23 19,23 19,42 23,42 23,23 42,23 " fill="#eaeced"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="landing-block-add-text text-center m-t">@T("Admin.Dashboard.CreateSite.BlankTemplate")</div>
+                                            </div>
+                                        </a>
+                                    </ui-modal-trigger>
+                                </div>
+                            </div>
+                            @*}*@
+                        </div>
+                        <div class="relative p-t-lg p-b-lg text-center"
+                             ng-if="createSite.isLoadingFunnelTemplates">
+                            <div>
+                                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="createSite.current  === 'Store'">
+                        <div class="create-site__free-template"
+                             infinite-scroll-disabled="createSite.stateTemplateParams.infiniteScrollTemplatesTerminated"
+                             infinite-scroll="createSite.getTemplates()">
+                            <div ng-if="createSite.templates != null && createSite.templates.length">
+                                <div class="last-item-row last-item-row--{{createSite.current.toLowerCase()}}">
+                                    <div class="last-item @(isMobile ? "card card--form-control" : "")" ng-repeat="item in createSite.templates track by item.Name">
+                                        @Html.Partial("_CreateSiteTemplateItem", Model)
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="relative p-t-lg p-b-lg text-center"
+                                 ng-if="createSite.stateTemplateParams.isLoadingTemplates">
+                                <div>
+                                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

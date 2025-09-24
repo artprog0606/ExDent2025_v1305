@@ -1,0 +1,21 @@
+﻿@using AdvantShop.Helpers
+@{
+    var cookie = CommonHelper.GetCookie("oldadmin");
+    var isOldAdmin = cookie != null && cookie.Value == "true";
+    var linkText = T("Common.TopPanel.Administration").ToString();
+}
+
+@if (SettingsMain.IsTechDomainsReady)
+{
+    @Html.ActionLink(linkText, "RedirectWithAuth", "Account",
+        new { area = "AdminV2", domain = SettingsMain.TechDomainAdminPanel, path = "/adminv2" },
+        new
+        {
+            @class = "cs-l-3 toolbar-top-link-alt",
+            title = linkText
+        })
+}
+else
+{
+    <a class="cs-l-3 toolbar-top-link-alt" href="@UrlService.GetUrl(isOldAdmin ? "admin" : "adminv2")">@T("Common.TopPanel.Administration")</a>
+}

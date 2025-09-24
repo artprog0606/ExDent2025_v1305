@@ -1,0 +1,47 @@
+﻿@using AdvantShop.Core.Services.Admin
+
+@model List<AdvantShop.Core.Services.Crm.TaskGroup>
+@if (Model.Any())
+{
+    <li class="dropdown-submenu">
+        <a class="link-disabled">
+            <strong>@T("Admin.Tasks.NavMenu.RecentProjects")</strong>
+        </a>
+    </li>
+}
+@foreach (var taskGroup in Model)
+{
+    <li class="dropdown-submenu" data-submenu-parent>
+        <a href="@Url.AbsoluteRouteUrl(AdminAreaTemplate.Current == null ? "Admin_project" : "Admin_v3_project", new { taskGroupId = taskGroup.Id })">
+            @taskGroup.Name
+        </a>
+    </li>
+}
+@if (Model.Any())
+{
+    <li class="divider divider-small">
+    </li>
+}
+<li class="dropdown-submenu" data-submenu-parent>
+    <a href="@Url.AbsoluteActionUrl("Index", "Tasks")">
+        @T("Admin.Tasks.Index.Title")
+    </a>
+</li>
+<li class="dropdown-submenu" data-submenu-parent>
+    <a href="@Url.AbsoluteActionUrl("Index", "SettingsTasks")?tasksTab=taskGroups">
+        @T("Admin.Tasks.NavMenu.ControlProjects")
+    </a>
+</li>
+@if (CustomerContext.CurrentCustomer.IsAdmin)
+{
+    <li class="divider divider-small">
+    </li>
+    <li class="dropdown-submenu" data-submenu-parent>
+        <ui-modal-trigger data-controller="'ModalAddEditTaskGroupCtrl'" template-url="@Html.GetAssetPath("addEditTaskGroup.html")" resolve="{'goToProjectPage': true}">
+            <a href="javascript:void(0)">
+                @T("Admin.Tasks.NavMenu.AddProject")
+            </a>
+        </ui-modal-trigger>
+    </li>
+}
+

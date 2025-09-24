@@ -1,0 +1,67 @@
+﻿@using AdvantShop.Catalog
+@using AdvantShop.Core.Services.Configuration.Settings
+@model AdvantShop.Areas.Mobile.Models.Home.MainPageProductsMobileViewModel
+@{
+    var defaultViewMode = Model.Products.ProductViewMode.ToString().ToLower();
+    var routeParams = new
+    {
+        type = Model.Products.Type.ToString().ToLower(),
+        list = Model.Products.Type == EProductOnMain.List ? Model.Products.UrlPath : null
+    };
+}
+@if (Model.Products.Products.Count > 0)
+{
+    <div data-ng-class="{'prodList-section mainpage-products' : @((Model.Products.Type == EProductOnMain.List).ToLowerString()),
+                     'mainpage-products mainpage-products--best cs-t-1' : @((Model.Products.Type == EProductOnMain.Best).ToLowerString()), 
+                     'novelty-section mainpage-products': @((Model.Products.Type == EProductOnMain.New || Model.Products.Type == EProductOnMain.NewArrivals).ToLowerString()), 
+                     'sale-section mainpage-products': @((Model.Products.Type == EProductOnMain.Sale).ToLowerString())}">
+        <div class=" cs-t-9 mainpage-products__header">
+            <div class="mainpage-products__header-title">
+                <a href="@Url.AbsoluteRouteUrl("ProductList", routeParams)">
+                    @if (Model.Products.Type == EProductOnMain.New 
+                         || Model.Products.Type == EProductOnMain.NewArrivals)
+                    {
+                        <i class="icon-star-empty-before"></i>
+                    }
+                    @Html.Raw(Model.Products.Title)
+                </a>
+            </div>
+            <div class="mainpage-products__all">
+                <a class="mainpage-products__all-link"
+                   href="@Url.AbsoluteRouteUrl("ProductList", routeParams)">
+                    @Html.Raw(Model.Products.LinkText)
+                </a>
+            </div>
+        </div>
+        <div data-ng-class="{'prodList-section__content' : @((Model.Products.Type == EProductOnMain.List).ToLowerString()),
+                             'bestsellers-section__content' : @((Model.Products.Type == EProductOnMain.Best).ToLowerString()), 
+                             'novelty-section__content': @((Model.Products.Type == EProductOnMain.New || Model.Products.Type == EProductOnMain.NewArrivals).ToLowerString()), 
+                             'sale-section__content': @((Model.Products.Type == EProductOnMain.Sale).ToLowerString())}" >
+            @if (Model.MainPageCatalogView == SettingsMobile.eMainPageCatalogView.Vertical)
+            {
+                <div class="catalog-view products-view-mobile-modern-@(defaultViewMode)"
+                     data-product-view-mode
+                     data-default-view-mode="@(defaultViewMode)"
+                     data-name="mobileModern"
+                     data-view-list-name="mobileModern"
+                     data-is-mobile="true"
+                     data-photo-height-by-view-mode-default="'@(Model.Products.BlockProductPhotoHeight)px'"
+                     data-photo-height-by-view-mode="{viewName: 'single', value: '@(Model.Products.BlockProductPhotoMiddleHeight)px'}">
+                    <div class="catalog-view__product-item-wrap">
+                        @Html.Partial("_ProductView", Model.Products)
+                    </div>
+                </div>
+            }
+            else
+            {
+                var cssClass = "panel link-text-decoration-none inked ink-dark cs-br-1 mainpage-products__content-item";
+                Model.Products.WrapCssClass = cssClass;
+                <div class="mainpage-products__content scroll-always-visible main-page-catalog-view--horizontal products-view-mobile-modern-tile">
+                    @Html.Partial("_ProductView", Model.Products)
+                </div>
+            }
+        </div>
+    </div>
+}
+
+

@@ -1,0 +1,73 @@
+<form is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddEditDomainGeoLocation.Title' | translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div ng-class="{'container-fluid' : !isMobile.value}">
+            <div class="form-group row">
+                <label class="col-xs-12 col-md-2 control-label setting--m-b-sm">
+                    <span class="text-required setting__label">{{'Admin.Js.AddEditDomainGeoLocation.Domain' | translate}}</span>
+                </label>
+                <div class="col-xs-12 col-md-8 relative setting-form-input-wrap__mobile">
+                    <input
+                        type="text"
+                        class="form-control input-alt"
+                        ng-model="ctrl.domain.Url"
+                        required
+                        validation-input-text="{{'Admin.Js.AddEditDomainGeoLocation.Domain' | translate}}"
+                        data-autofocus="!isMobile.value" />
+
+                    <help-trigger
+                        class="ng-cloak help-trigger-icon-abs"
+                        ng-class="{'m-l-xs p-l-sm' : isMobile.value}"
+                        data-title="{{'Admin.Js.AddEditDomainGeoLocation.Domain' | translate}}">
+                        <div data-ng-bind-html="'Admin.Js.AddEditDomainGeoLocation.Domain.About' | translate"></div>
+                    </help-trigger>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-xs-12 col-md-2 control-label setting--m-b-sm">
+                    <span class="text-required setting__label">{{'Admin.Js.AddEditDomainGeoLocation.GeoName' | translate}}</span>
+                </label>
+                <div class="col-xs-12 col-md-8 relative setting-form-input-wrap__mobile">
+                    <input type="text" class="form-control input-alt" ng-model="ctrl.domain.GeoName" required validation-input-text="GeoName" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-xs-12 col-md-2 control-label setting--m-b-sm">
+                    <span class="text-required setting__label">{{'Admin.Js.AddEditDomainGeoLocation.Cities' | translate}}</span>
+                </label>
+                <div class="col-xs-12 col-md-10">
+                    <div class="row" ng-ig="ctrl.domain.Cities != null && ctrl.domain.Cities.length > 0">
+                        <div class="col-xs-6 col-md-3 m-b-sm" ng-repeat="item in ctrl.domain.Cities">
+                            <div class="flex middle-xs">
+                                <span>{{item.CityName}}</span>
+                                <a class="link link-invert link-decoration-none fas fa-trash m-l-sm" ng-click="ctrl.removeCity(item)"></a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <ui-modal-trigger
+                        size="middle"
+                        controller="'ModalSelectCitiesCtrl'"
+                        controller-as="ctrl"
+                        data-resolve="{params: {countryId: ctrl.countryId, regionId: ctrl.regionId}}"
+                        template-url="../areas/admin/content/src/_shared/modal/selectCities/selectCities.html"
+                        on-close="ctrl.addCities(result)">
+                        <a href="">{{'Admin.Js.AddEditDomainGeoLocation.AddCities' | translate}}</a>
+                    </ui-modal-trigger>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-save btn-primary" type="button" data-button-validation-success="ctrl.save()" data-button-validation>
+            {{ctrl.mode === 'add' ? ('Admin.Js.AddEdit.Add'|translate) : ('Admin.Js.AddEdit.Save'|translate)}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddEdit.Cancel'|translate}}</button>
+    </div>
+</form>

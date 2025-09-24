@@ -1,0 +1,132 @@
+﻿@using AdvantShop.Core.Services.Configuration.Settings
+@model AdvantShop.ViewModel.ProductDetails.ProductTabsViewModel
+@{
+    var product = Model.ProductModel.Product;
+    var modulesAfterDescriptions = Html.RenderModules("product_after_description", new { product });
+    var isMobile = SettingsDesign.IsMobileTemplate;
+    bool isAccordion = SettingsMobile.IsProductInfoBlocksAccordion;
+}
+
+@helper  Arrow()
+{
+    <svg class="product-tab__arrow" version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 238.003 238.003' width="16" height="16"><path style='fill:currentColor;' d='M181.776,107.719L78.705,4.648c-6.198-6.198-16.273-6.198-22.47,0s-6.198,16.273,0,22.47 l91.883,91.883l-91.883,91.883c-6.198,6.198-6.198,16.273,0,22.47s16.273,6.198,22.47,0l103.071-103.039 c3.146-3.146,4.672-7.246,4.64-11.283C186.416,114.902,184.89,110.833,181.776,107.719z' /></svg>
+}
+
+<div data-ng-init="product.productTabsModeInMobile(@isAccordion.ToLowerString(), @isMobile.ToLowerString())">
+    @if (product.Description.IsNotEmpty() || Model.AdditionalDescription.IsNotEmpty() || !string.IsNullOrEmpty(modulesAfterDescriptions.ToString()))
+    {
+        <div class="mobile-product-main-info">
+            <article class="product-data @(isAccordion ? "accordion-css__product-data" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"Description\" type=\"checkbox\" class=\"accordion-css__state\"/>" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"Description\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")">@T("Product.ProductTabs.Description")</label>
+                    @Html.Raw(isAccordion ? "<label for=\"Description\">" + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body @(isAccordion ? "accordion-css__body" : "")" itemprop="description">
+                    @Html.Raw(product.Description)
+                    @Html.Raw(Model.AdditionalDescription)
+                    @modulesAfterDescriptions
+                </div>
+            </article>
+        </div>
+    }
+
+    @if (Model.ProductModel.ProductProperties.Any(x => x.Property.UseInDetails))
+    {
+        <div class="mobile-product-main-info">
+            <article class="product-data @(isAccordion ? "accordion-css__product-data" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"Properties\" type=\"checkbox\" class=\"accordion-css__state\" />" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"Properties\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")">@T("Product.ProductTabs.Properties")</label>
+                    @Html.Raw(isAccordion ? "<label for=\"Properties\">" + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body @(isAccordion ? "accordion-css__body" : "")">
+                    @Html.Action("ProductProperties", new { area = "", productModel = Model.ProductModel, countVisisble = 10 })
+                </div>
+            </article>
+        </div>
+    }
+
+    @if (product.ProductVideos.Any())
+    {
+        <div class="mobile-product-main-info">
+            <article class="product-data @(isAccordion ? "accordion-css__product-data" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"VideosCount\" type=\"checkbox\" class=\"accordion-css__state\" />" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"VideosCount\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")">
+                        @T("Product.ProductTabs.Video")
+                        <span data-ng-init="product.videosCount = @Model.VideosCount" data-ng-bind="product.videosCount > 0 ? '(' + product.videosCount + ')' : ''"></span>
+                    </label>
+                    @Html.Raw(isAccordion ? "<label for=\"VideosCount\">" + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body  @(isAccordion ? "accordion-css__body" : "")">
+                    @Html.Action("ProductVideos", new { area = "", product.ProductId })
+                </div>
+            </article>
+        </div>
+    }
+
+    @foreach (var tab in Model.Tabs)
+    {
+        <div class="mobile-product-main-info">
+            <article class="product-data @(isAccordion ? "accordion-css__product-data" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"" + tab.Title + "\" type=\"checkbox\" class=\"accordion-css__state\" />" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"" + tab.Title + "\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")"> @tab.Title </label>
+                    @Html.Raw(isAccordion ? "<label for=\"" + tab.Title + "\" > " + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body @(isAccordion ? "accordion-css__body" : "")">
+                    @if (tab.Controller.IsNotEmpty() && tab.Action.IsNotEmpty())
+                    {
+                        @Html.Action(tab.Action, tab.Controller, new { productId = tab.ProductId, area = "" })
+                    }
+                    else
+                    {
+                        @Html.Raw(tab.Body)
+                    }
+                </div>
+            </article>
+        </div>
+    }
+
+    @if (SettingsCatalog.AllowReviews)
+    {
+        <div class="mobile-product-main-info">
+            <article class="product-data @(isAccordion ? "accordion-css__product-data accordion-css__product-data--last" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"Reviews\" type=\"checkbox\" class=\"accordion-css__state\" />" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"Reviews\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")">
+                        @T("Product.ProductTabs.Reviews")
+                        <span data-ng-init="product.reviewsCount = @Model.ReviewsCount" data-ng-bind="product.reviewsCount > 0 ? '(' + product.reviewsCount + ')' : ''"></span>
+                    </label>
+                    @Html.Raw(isAccordion ? "<label for=\"Reviews\">" + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body  @(isAccordion ? "accordion-css__body" : "")">
+                    @(Model.UseStandartReviews
+                    ? Html.Action("ProductReviews", new { area = "", productModel = Model.ProductModel, ProductId = product.ProductId })
+                    : Html.RenderModules("product_reviews"))
+
+                </div>
+            </article>
+        </div>
+    }
+
+    @if (SettingsCatalog.ShowAvaliableLableInProduct && SettingsCatalog.ShowAvailableInWarehouseInProduct)
+    {
+        <div class="mobile-product-main-info">
+             <article class="product-data product-stocks-data @(isAccordion ? "accordion-css__product-data" : "")">
+                @Html.Raw(isAccordion ? "<input id=\"ProductStocks\" type=\"checkbox\" class=\"accordion-css__state\" />" : "")
+                <header class="product-data__header @(isAccordion ? "flex middle-xs between-xs" : "")">
+                    <label @Html.Raw(isAccordion ? "for=\"ProductStocks\"" : "") class="@(isAccordion ? "accordion-css__header flex-grow" : "")"> @T("Product.ProductTabs.Stocks")</label>
+                    @Html.Raw(isAccordion ? "<label for=\"ProductStocks\">" + Arrow() + "</label>" : "")
+                </header>
+                <div class="product-data__body @(isAccordion ? "accordion-css__body" : "")">
+                    @Html.Partial("ProductStocks")
+                </div>
+            </article>
+            @* @Html.Action("ProductStocks", "Product", new { area = "", model = Model }) *@
+        </div>
+    }
+    
+
+</div>

@@ -1,0 +1,70 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteModel
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<form name="settingsForm" novalidate class="funnel-setting">
+    <uib-tabset uid="funnelSettingsTab"
+                ng-init="landingSite.settingsForm = settingsForm"
+                on-select-batch="landingSite.onSelectTabInside(tab.index);"
+                @Html.Raw(isMobile ? "tabs-mode=\"'navigation'\" class=\"tabs-navigation\"" : "")>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.General")" index="'common'" classes="ng-tab">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.General")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_Common", Model.Settings)
+        </uib-tab>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.Domains")" index="'domains'" classes="ng-tab">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.Domains")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_Domains", Model.Settings)
+        </uib-tab>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.Counters")" index="'counters'" classes="ng-tab">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.Counters")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_SeoCounters", Model.Settings)
+        </uib-tab>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.CSSStyles")" index="'css'" classes="ng-tab">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.CSSStyles")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_CssStyles", Model.Settings)
+        </uib-tab>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.SitemapRobots")" index="'seo'" classes="ng-tab" ng-show="landingSite.domain != null && landingSite.domain.length > 0">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.SitemapRobots")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_SeoSitemapAndRobots", Model.Settings)
+        </uib-tab>
+        @if (Model.Site.Template == AdvantShop.Core.Services.Landing.LpFunnelType.ProductCrossSellDownSell.ToString())
+        {
+            <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.Upselling")" index="'additionalSales'" classes="ng-tab">
+                <uib-tab-heading class="flex middle-xs">
+                    <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.Upselling")</span>
+                </uib-tab-heading>
+                @Html.Partial("Settings/_AdditionalSales", Model.Settings)
+            </uib-tab>
+        }
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.Access")" index="'auth'" classes="ng-tab">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.Access")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_Auth", Model.Settings)
+        </uib-tab>
+        <uib-tab heading="@T("Admin.Views.Funnels.SiteSettings.MobileApp")" index="'mobileApp'" classes="ng-tab hidden">
+            <uib-tab-heading class="flex middle-xs">
+                <span class="navigation-item__text">@T("Admin.Views.Funnels.SiteSettings.MobileApp")</span>
+            </uib-tab-heading>
+            @Html.Partial("Settings/_MobileApp", Model.Settings)
+        </uib-tab>
+    </uib-tabset>
+
+
+
+    <button type="button" class="btn-mobile__from-outsite-click" style="display:none;"
+            data-button-validation data-button-validation-success="landingSite.saveSettings()">
+    </button>
+</form>

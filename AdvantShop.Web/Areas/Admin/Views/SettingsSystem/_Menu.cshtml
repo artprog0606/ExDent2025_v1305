@@ -1,0 +1,30 @@
+﻿@using AdvantShop.CMS
+
+@{ 
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div ng-controller="MenusCtrl as menus"  @Html.Raw(isMobile ? "ng-init=\"settingsSystem.menus = menus\"" : "")>
+    <div class="setting-title-top flex middle-xs @(isMobile ? "m-b-md" : "")">
+        <h3 class="setting__subtitle setting--m-b-none @(isMobile ? "flex-grow" : "")">@T("Admin.Settings.SystemSettings.CustomMenu")</h3>
+        <help-trigger class="ng-cloak m-l-xs " data-title='@T("Admin.Settings.SystemSettings.CustomMenu")'>
+            @T("Admin.Settings.SystemSettings.CustomMenuHint")
+        </help-trigger>
+    </div>
+
+    <div class="flex-grow flex-basis-n">
+        @if (!isMobile)
+        {
+            <div class="m-b-sm">
+                <ui-modal-trigger data-controller="'ModalAddEditMenuItemCtrl'" controller-as="ctrl"
+                                  template-url="@Html.GetAssetPath("AddEditMenuItem.html")"
+                                  data-resolve="{params: {menuType: '@EMenuType.Admin'}}"
+                                  data-on-close="menus.updateMenu(result, 'admin')">
+                    <a class="btn btn-sm btn-success">@T("Admin.Menus.Index.AddMenuPoint")</a>
+                </ui-modal-trigger>
+            </div>
+        }
+
+        <menu-treeview selected-id="0" type="@EMenuType.Admin" menu-treeview-on-init="menus.menuTreeviewInit(jstree, 'admin')" level="1"></menu-treeview>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+﻿<div>
+    <div class="ibox">
+        <div class="ibox-content no-top-border p-xs-x2 p-b-n bottom-xs flex">
+            <div class="form-group m-r-sm" id="flatpickrDateFrom">
+                <label class=""><span class="text-required">Дата от</span></label>
+                <div
+                    class="input-group"
+                    ng-flatpickr
+                    fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false, minDate: '01.01.2000', appendTo: '#flatpickrDateFrom'}"
+                    fp-on-change="$ctrl.changeDate()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control input-alt" required ng-flatpickr-input ng-model="$ctrl.dateFrom" />
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group m-r-sm" id="flatpickrDateTo">
+                <label class=""><span class="text-required">Дата по</span></label>
+                <div
+                    class="input-group"
+                    ng-flatpickr
+                    fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false, minDate: '01.01.2000', appendTo: '#flatpickrDateTo' }"
+                    fp-on-change="$ctrl.changeDate()">
+                    <span class="flatpickr-custom-wrap">
+                        <input type="text" class="form-control input-alt" required ng-flatpickr-input ng-model="$ctrl.dateTo" />
+                    </span>
+                    <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ibox" ng-class="{'booking-sheduler-processing': $ctrl.shedulerProcessing}">
+        <div class="ibox-content no-top-border p-xs-x2 p-b-n bottom-xs">
+            <div class="sheduler-by-days container-fluid">
+                <div class="row sheduler-by-days__weeks" ng-repeat="week in $ctrl.shedulerObj.Weeks">
+                    <div class="col-xs sheduler-by-days__days" ng-repeat="day in week.Days">
+                        <div class="sheduler-by-days__header" ng-if="day.Date">
+                            <div class="sheduler-by-days__day">{{day.DayOfWeek}}</div>
+                            <div class="sheduler-by-days__date">{{day.DateString}}</div>
+                        </div>
+                        <div class="row" ng-repeat="reservationResource in day.ReservationResources">
+                            <div
+                                class="col-xs sheduler-by-days__content"
+                                ng-class="{'sheduler-by-days__content--red': reservationResource.CheckErros}"
+                                ng-click="$ctrl.showReservationResourceSheduler($ctrl._params.affiliateFilterId, reservationResource.Id, day.Date, null, reservationResource.Name, null)">
+                                <div class="sheduler-by-days__resource-name flex between-xs">
+                                    <div class="word-break"><span>{{$index + 1}}. </span><span>{{reservationResource.Name}}</span></div>
+                                    <div>
+                                        <span class="sheduler-by-days__resource-counts"
+                                            >(<span>{{reservationResource.BookingsCount}}</span> /
+                                            <span>{{reservationResource.FillingPlace !== null ? reservationResource.FillingPlace + '%' : '-'}}</span
+                                            >)</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

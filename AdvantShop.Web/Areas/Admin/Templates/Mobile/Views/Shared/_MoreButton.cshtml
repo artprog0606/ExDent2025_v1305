@@ -1,0 +1,36 @@
+﻿@model MoreButtonModel
+
+@{
+    var ngIsOpen = Model.NgIsOpen.IsNotEmpty() ? "popover-is-open=\"" + Model.NgIsOpen + "\"" : "";
+
+    string[] attrs = new string[]
+    {
+        "more-button",
+        "popover-class=\"more-button-popover\"",
+        "uib-popover-template=\"'" + Model.NgTemplateId + "'\"",
+        "popover-append-to-body=\"true\"",
+        ngIsOpen
+    };
+
+    if (Model.Attributes != null && Model.Attributes.Length > 0)
+    {
+        attrs = attrs.Concat(Model.Attributes).ToArray();
+    }
+}
+
+
+@Html.Button(Model.Text != null ? Model.Text : T("Больше"), colorType: Model.ColorType, size: eButtonSize.Default, attributes: attrs, icon: Model.Icon, modificators: Model.Modificators, cssClass: Model.CssClass)
+@if (!Model.UseExternalTemplate)
+{
+    <script type="text/ng-template" id="@Model.NgTemplateId">
+    <div class="more-button-popover__inner">
+        @foreach (var button in Model.Items)
+        {
+            var buttonClass = button.CssClass + " more-button-popover__btn";
+            <div class="more-button-popover__item" @Html.Raw(button.RowAttributesSerialized)>
+            @Html.Button(button.Text, button.Type, button.Size, button.ColorType, button.Link, buttonClass, button.Name, button.Validation, button.Attributes, button.IsOutline, button.Icon, button.Modificators, button.WrapStart, button.WrapEnd, button.HtmlElement)
+            </div>
+        }
+    </div>
+</script>
+}

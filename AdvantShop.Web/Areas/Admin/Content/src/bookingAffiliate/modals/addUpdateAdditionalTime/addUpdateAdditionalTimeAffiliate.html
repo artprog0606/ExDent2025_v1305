@@ -1,0 +1,109 @@
+﻿<form novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title" ng-if="ctrl.date">
+            {{'Admin.Js.BookingAffiliate.AdditionalTimeFor'|translate}} {{ctrl.toLocaleDateString(ctrl.date)}}
+        </h2>
+        <h2 class="modal-header-title" ng-if="ctrl.startDate && ctrl.endDate">
+            {{'Admin.Js.BookingAffiliate.AdditionalTimeFrom'|translate}} {{ctrl.toLocaleDateString(ctrl.startDate)}}
+            {{'Admin.Js.BookingAffiliate.AdditionalTimeTo'|translate}} {{ctrl.toLocaleDateString(ctrl.endDate)}}
+        </h2>
+    </div>
+    <div class="modal-body task-modal-content-new-item">
+        <div class="form-horizontal" ng-class="{'m-r m-l': !isMobile.value}">
+            <div class="form-group">
+                <div class="form-group row" ng-if="ctrl.mode === 'select-day'">
+                    <label class=""><span class="text-required">{{'Admin.Js.BookingAffiliate.Date'|translate}}</span></label>
+                    <div
+                        class="input-group"
+                        ng-flatpickr
+                        fp-opts="{dateFormat: 'd.m.Y', startDateFormat: 'Y-m-d', wrap: true, enableTime: false}"
+                        fp-on-change="ctrl.changeDate()">
+                        <span class="flatpickr-custom-wrap">
+                            <input
+                                data-e2e="bookingBeginDate"
+                                type="text"
+                                class="form-control input-alt"
+                                required
+                                ng-flatpickr-input
+                                ng-model="ctrl.date" />
+                            <span class="flatpickr-custom-clear" data-close data-clear><i class="fas fa-times"></i></span>
+                        </span>
+                        <span class="input-group-addon" data-toggle><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div class="btn-group">
+                            <button
+                                class="btn btn-sm"
+                                ng-class="{'btn-default': ctrl.freeDay, 'btn-success': !ctrl.freeDay}"
+                                type="button"
+                                ng-click="ctrl.changeFreeDay()">
+                                Рабочий
+                            </button>
+                            <button
+                                class="btn btn-sm"
+                                ng-class="{'btn-red-white btn-default': !ctrl.freeDay, 'btn-success': ctrl.freeDay}"
+                                type="button"
+                                ng-click="ctrl.changeFreeDay()">
+                                Выходной
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row" ng-show="!ctrl.freeDay">
+                    <div class="col-xs-12 col-md-6" oc-lazy-load="['jqueryUiSelectable']">
+                        <div class="setting-label-wrap" ng-class="{'control-label': isMobile.value}">
+                            {{'Admin.Js.BookingAffiliate.Time'|translate}}
+                            <help-trigger class="ng-cloak m-l-xs" use-template="true">
+                                <div class="help-content">
+                                    <img src="../areas/admin/content/images/selectable.gif" height="220" width="150" />
+                                </div>
+                            </help-trigger>
+                        </div>
+
+                        <div
+                            selectable
+                            selectable-list="ctrl.times"
+                            selectable-options="{filter:'div'}"
+                            selectable-events="{stop:'ctrl.selectionStop($selected, ctrl.workTimes)'}">
+                            <div ng-repeat="time in ctrl.times track by $index" ng-class="{'m-t-xs': isMobile.value}">
+                                <label class="adv-checkbox-label form-label-block">
+                                    <input type="checkbox" checklist-model="ctrl.workTimes" checklist-value="time" class="adv-checkbox-input" />
+                                    <span class="adv-checkbox-emul"></span>
+                                    <span>{{time}}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            data-e2e="AffiliateAdditionalTimeDelete"
+            class="btn btn-red-white btn-default"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.deleteAdditionalTime(); ctrl.btnDeleteLoading = true"
+            ng-if="ctrl.mode !== 'select-day' && ctrl.existAdditionalTimes"
+            ladda="(ctrl.btnDeleteLoading || ctrl.btnLoading)">
+            {{'Admin.Js.BookingAffiliate.Delete'|translate}}
+        </button>
+        <button
+            data-e2e="AffiliateAdditionalTimeAdd"
+            class="btn btn-save btn-primary"
+            type="submit"
+            button-validation
+            button-validation-success="ctrl.addUpdateAdditionalTime(); ctrl.btnLoading = true"
+            ng-disabled="!ctrl.times.length"
+            ladda="ctrl.btnLoading">
+            {{ctrl.existAdditionalTimes ? ('Admin.Js.AddEdit.Save'|translate) : ('Admin.Js.AddEdit.Add'|translate)}}
+        </button>
+        <button data-e2e="AffiliateAdditionalTimeCancel" class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">
+            {{'Admin.Js.AddEdit.Cancel'|translate}}
+        </button>
+    </div>
+</form>

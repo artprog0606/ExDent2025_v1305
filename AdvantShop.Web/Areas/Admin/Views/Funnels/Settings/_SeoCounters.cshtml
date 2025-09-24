@@ -1,0 +1,122 @@
+﻿@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteSettings
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.HtmlHEAD")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextAreaFor(x => x.BlockInHead, new { @class = "form-control input-alt", ng_model = "landingSite.settings.BlockInHead", rows = "12" })
+    </div>
+</div>
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.HtmlBODY")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextAreaFor(x => x.BlockInBodyBottom, new { @class = "form-control input-alt", ng_model = "landingSite.settings.BlockInBodyBottom", rows = "12" })
+    </div>
+</div>
+
+
+@if (!AdvantShop.Trial.TrialService.IsTrialEnabled)
+{
+<div class="form-group row funnel__form-group @(isMobile ? "middle-xs" : "")" style="@(isMobile ? "flex-direction:row-reverse;" : "")">
+    @if (isMobile && Model.DisableCopyrightEdit || !isMobile)
+    {
+        <div class="col-xs-12 col-md-3 col-wl-2">
+            <div class="setting-label-wrap @(isMobile ? "funnel__label funnel--m-none" : "")">
+                @T("Admin.Views.Funnels.Settings.SeoCounters.HideCopyright")
+            </div>
+        </div>
+    }
+        <div class="col-xs-12 col-md-8 relative">
+            @if (!Model.DisableCopyrightEdit)
+            {
+                <label class="adv-checkbox-label @(isMobile ? "flex" : "")" data-e2e="HideCopyright">
+                @Html.CheckBoxFor(x => x.HideAdvantshopCopyright, new
+                {
+                    @class = "adv-checkbox-input", 
+                    ng_model = "landingSite.settings.HideAdvantshopCopyright", 
+                    ng_disabled=Model.DisableCopyrightEdit.ToLowerString()
+                })
+                <span class="adv-checkbox-emul"></span>
+                @if (isMobile)
+                {
+                    <span class="m-l-sm flex-grow @(isMobile ? "funnel--m-none" : "")">
+                        @T("Admin.Views.Funnels.Settings.SeoCounters.HideCopyright")
+                    </span>
+                }
+            </label>
+            }
+           else
+            {
+                @T("Admin.Settings.NotInTariff")
+            }
+        </div>
+    </div>
+}
+
+<div class="setting-title">
+    <h3 class="@(isMobile ? "funnel__subtitle" : "")">@T("Admin.Views.Funnels.Settings.SeoCounters.YandexMetrica")</h3>
+</div>
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.MeterNumberMetrics")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextBoxFor(x => x.YandexCounterId, new { @class = "form-control input-alt", ng_model = "landingSite.settings.YandexCounterId" })
+    </div>
+</div>
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.CounterCode")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextAreaFor(x => x.YandexCounterHtml, new { @class = "form-control input-alt", ng_model = "landingSite.settings.YandexCounterHtml", rows = "12" })
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="@(isMobile ? "funnel__subtitle" : "")">Google Analytics</h3>
+</div>
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.GoogleAnalyticsAccount") <br>@T("Admin.Views.Funnels.Settings.SeoCounters.LineLike")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextBoxFor(x => x.GoogleCounterId, new { @class = "form-control input-alt", ng_model = "landingSite.settings.GoogleCounterId" })
+    </div>
+</div>
+
+<div class="setting-title">
+    <h3 class="@(isMobile ? "funnel__subtitle" : "")">Google Tag Manager</h3>
+</div>
+
+<div class="form-group row funnel__form-group">
+    <div class="col-xs-12 col-md-3 col-wl-2">
+        <div class="setting-label-wrap @(isMobile ? "funnel__label m-b-sm" : "")">
+            @T("Admin.Views.Funnels.Settings.SeoCounters.ContainerID")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8 relative">
+        @Html.TextBoxFor(x => x.GoogleTagManagerId, new { @class = "form-control input-alt", ng_model = "landingSite.settings.GoogleTagManagerId" })
+    </div>
+</div>

@@ -1,0 +1,403 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Funnels/_LandingAdminLayout.cshtml";
+    if (Request["scheme"] == "true")
+    {
+        Layout = null;
+    }
+
+    var showBooking = SettingsMain.BookingActive &&
+        AdvantShop.Saas.SaasDataService.IsEnabledFeature(AdvantShop.Saas.ESaasProperty.HaveBooking) &&
+        CustomerContext.CurrentCustomer.HasRoleAction(RoleAction.Booking);
+}
+@model AdvantShop.Web.Admin.Models.Landings.LandingAdminSiteModel
+@{
+    Html.AddAsset("funnel");
+}
+
+@if (Request["scheme"] != "true")
+{
+    
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            Url = Url.AbsoluteActionUrl("Index", "Dashboard"),
+            Text = T("Admin.Funnels.Site.MySites").ToString(),
+            NgBackTriggerCallback = "landingSite.back()"
+        };
+
+        headerModel.DefaultTitle = T("Admin.Funnels.Site.FunnelFunnel").ToString();
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if = \"landingSite.tabActiveIndex == null\"" };
+
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"landingSite.getDomainsTab()\"" },
+            Text = T("Admin.Funnels.Site.ConnectYourDomain"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "www",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"landingSite.openEditNameModal()\"" },
+            Text = T("Admin.Funnels.Site.Rename"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "edit2",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"landingSite.setEnabled(!landingSite.siteEnabled)\"" },
+            Text = @T("{{landingSite.siteEnabled ? " + "'" + @T("Admin.Funnels.Site.RemoveFromPublication") + "' : '" + @T("Admin.Funnels.Site.Publish") + "'}}"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "on",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"landingSite.copyLandingSite(" + Model.Site.Id + ")\"", "data-e2e=\"funnelCopy\"" },
+            Text = T("Admin.Funnels.Site.CreateCopyFunnel"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "copy2",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Link = UrlService.GetUrl("lp/") + "{{landingSite.actualSiteUrl}}?inplace=true",
+            Text = T("Admin.Funnels.Site.GoWebsite"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "go",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "ng-click=\"landingSite.deleteFunnel(" + @Model.Site.Id + ")\"" },
+            Text = T("Admin.Funnels.Site.Delete"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls = new List<IButton>()
+{
+            moreButton
+        };
+
+        headerModel.Controls.Add(
+          new ButtonModel()
+          {
+              Modificators = new List<eButtonModificators>()
+                      {
+                                eButtonModificators.OnlyIcon
+                                },
+              ColorType = eColorType.Secondary,
+              Type = eButtonType.Save,
+              // Attributes = new[] { "ng-if=\"landingSite.tabActiveIndex === 'pages'\"" },
+              WrapStart = " <ui-modal-trigger ng-if=\"landingSite.tabActiveIndex === 'pages'\" data-controller=\"'ModalAddLandingCtrl'\" template-url=\"../areas/admin/content/src/landing/modal/addLanding.html\" controller-as=\"ctrl\" data-resolve=\"{ siteId:" + Model.Site.Id + "}\">",
+              WrapEnd = "</ui-modal-trigger>",
+              Icon = new ButtonIcon()
+              {
+                  SvgName = "plus-alt",
+                  Attributes = new { width = 16, height = 16 },
+              }
+          });
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                     {
+                                eButtonModificators.OnlyIcon
+                               },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             Attributes = new[] { "ng-if=\"landingSite.tabActiveIndex === 'email_sequence'\"", "ng-click=\"landingSite.addTrigger()\"" },
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 },
+             }
+         });
+
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Text = @T("Admin.Settings.Common.Save"),
+             Validation = false,
+             Attributes = new string[] { "ng-if=\"landingSite.tabInsideActiveIndex != 'additionalSales' && app.getTitle() !== 'Настройки'\"",
+                 "ng-disabled=\"!landingSite.settingsForm.modified\"", "ng-click=\"landingSite.settingsFormBtnClick()\"" },
+             Type = eButtonType.Save,
+             Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "done",
+                 Attributes = new { width = 25, height = 25 }
+             }
+         });
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                     {
+                                eButtonModificators.OnlyIcon
+                               },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             WrapStart = " <ui-modal-trigger ng-if=\"landingSite.tabInsideActiveIndex == 'additionalSales'\" data-controller=\"'ModalProductsSelectvizrCtrl'\" template-url=\"" + Html.GetAssetPath("productsSelectvizrModal.html") + "\" controller-as=\"ctrl\" data-on-close=\"landingSite.addSiteProducts(result)\">",
+             WrapEnd = "</ui-modal-trigger>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 },
+             }
+         });
+
+@Html.Header(headerModel);
+
+    <div ng-init="landingSite.initSite(@Model.Site.Id, '@Model.Settings.SiteUrl', @Model.Settings.OrderSourceId);landingSite.title = '@Html.AttributeEncode(Model.Site.Name)';landingSite.siteEnabled = @Model.Site.Enabled.ToLowerString()">
+        <div ng-if="landingSite.tabActiveIndex == null && landingSite.tabsIsInit" class="ng-cloak">
+                  <div class="m-b-md">
+                      <h3 class="funnel__name" ng-bind-html="landingSite.title"></h3>
+                      <div class="flex middle-xs m-t-xs">
+                          <div class="flex-grow funnel__siteEnabled" ng-class="{'funnel__siteEnabled--enabled': landingSite.siteEnabled, 'funnel__siteEnabled--not-enabled':!landingSite.siteEnabled}" 
+                               data-ng-bind="landingSite.siteEnabled ? '@T("Admin.Funnels.Site.Published")' : '@T("Admin.Funnels.Site.NotPublished")'"></div>
+                          <help-trigger class="ng-cloak m-l-xs" data-title="@T("Admin.Funnels.Site.Published")">
+                              <div class="help-content">
+                                  @T("Admin.Funnels.Site.VisibleFunnelPublished")
+                              </div>
+                          </help-trigger>
+                      </div>
+                  </div>
+                  <div class="funnel-preview funnel-preview--overflow">
+                      @if (Model.Site.ScreenShot != null)
+                      {
+                          
+                          <div class="text-center">
+                              <img width="414"
+                                   src="@Model.Site.ScreenShot" />
+                          </div>
+                      }
+                      else
+                      {
+
+                          <a href="@UrlService.GetUrl("lp/"){{landingSite.actualSiteUrl}}?inplace=true" target="_blank" class="block landing-link-iframe">
+                              <iframe class="tpl-site-online landing-block-preview"
+                                      frameborder="0"
+                                      scrolling="no"
+                                      src="@UrlService.GetUrl("lp/")@Model.Site.Url?previewInAdmin=true"
+                                      ng-style="landingSite.initScaleIframe[@Model.Site.Id]"
+                                      ng-init="landingSite.initScaleIframe[@Model.Site.Id] = landingSite.scaleIframeDashboardSites()"
+                                      onload="this.nextElementSibling.classList.add('ng-hide')"></iframe>
+                              <div class="tpl-iframe-loading">
+                                  <i class="fas fa-spinner fa-spin fa-4x"></i>
+                              </div>
+                          </a>
+                      }
+                  </div>
+              
+                  <div class="text-center m-t">
+                      @if (Model.Site.Url != null)
+                      {
+                          <a href="@UrlService.GetUrl("lp/")@Model.Site.Url?inplace=true" class="link-alternative" target="_blank">
+                              @T("Admin.Dashboard.GoToTheSite")
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-l-sm">
+                                  <path fill-rule="evenodd" clip-rule="evenodd" d="M3.707 0V2.001H8.292L0 10.293L1.414 11.707L9.706 3.415V8H11.707V0H3.707Z" fill="currentColor" />
+                              </svg>
+                          </a>
+                      }
+                      else
+                      {
+                          <a href="@UrlService.GetUrl("lp/")@Model.Site.DomainUrl" class="link-alternative" target="_blank">
+                              @T("Admin.Dashboard.GoToTheSite")
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-l-sm">
+                                  <path fill-rule="evenodd" clip-rule="evenodd" d="M3.707 0V2.001H8.292L0 10.293L1.414 11.707L9.706 3.415V8H11.707V0H3.707Z" fill="currentColor" />
+                              </svg>
+                          </a>
+                      }
+                  </div>  
+        </div>
+        
+        <div class="m-t-md funnel__tab-block">
+            <uib-tabset uid="funnelTab"
+                        on-select-batch="landingSite.onSelectTab(tab.index);"
+                        data-on-init="landingSite.tabsIsInit = true;"
+                        tabs-mode="'navigation'" class="tabs-navigation">
+                <uib-tab heading="@T("Admin.Funnels.Site.Pages")" index="'pages'" classes="ng-tab" removable="false">
+                    <uib-tab-heading class="flex middle-xs">
+                        <span class="navigation-item__icon">
+                            @Html.SvgSprite("pages", "", new { width = 24, height = 24 })
+                        </span>
+                        <span class="navigation-item__text">@T("Admin.Funnels.Site.Pages")</span>
+                    </uib-tab-heading>
+                    <div>
+                        <div class="ibox">
+                            <div class="ibox-content">
+                                <ui-grid-custom grid-unique-id="grid"
+                                                grid-on-init="landingSite.gridOnInit(grid)"
+                                                grid-options="landingSite.gridOptions"
+                                                grid-url="'funnels/getLandingPages'"
+                                                grid-params="{SiteId:@Model.Site.Id}"
+                                                grid-inplace-url="'funnels/landingPageInplace'"
+                                                grid-on-inplace-apply="landingSite.updateGrid()"
+                                                grid-extend-ctrl="landingSite"
+                                                grid-swipe-line="true">
+                                    <ui-grid-custom-override-header-control class="ng-cloak">
+                                        <span class="ui-grid-custom-override-header__cell">@T("Admin.Funnels.Site.Name")</span>
+                                        <span class="ui-grid-custom-override-header__cell">@T("Admin.Funnels.Site.Home")</span>
+                                    </ui-grid-custom-override-header-control>
+                                    <ui-grid-custom-override-control class="ng-cloak">
+                                        <div class="card card--gap-row-sm card--p-18" style="padding:0;">
+                                            <div class="flex between-xs center-xs">
+                                                <a ng-href="{{row.entity.TechUrl}}?inplace=true" onclick="return advTrack('Shop_Funnels_ViewPageEditor');" class="flex-grow card__col m-r-xs card--p-18 funnel__grid-link">
+                                                    <div>
+                                                        {{row.entity.Name}}
+                                                    </div>
+                                                </a>
+                                                <div class="card__col card__col--end setting--align-center card--p-18">
+                                                    <ui-grid-custom-switch row="row" field-name="IsMain"></ui-grid-custom-switch>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui-grid-custom-override-control>
+                                </ui-grid-custom>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="@T("Admin.Funnels.Site.EmailChains")" index="'email_sequence'" classes="ng-tab" removable="false">
+                    <uib-tab-heading class="flex middle-xs">
+                        <span class="navigation-item__icon">
+                            @Html.SvgSprite("email_sequence", "", new { width = 24, height = 24 })
+                        </span>
+                        <span class="navigation-item__text">@T("Admin.Funnels.Site.EmailChains")</span>
+                    </uib-tab-heading>
+                    <div>
+                        <funnel-email-sequences order-source-id="@Model.Settings.OrderSourceId"></funnel-email-sequences>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="@T("Admin.Funnels.Site.Leads")" index="'leads'" classes="ng-tab" removable="false">
+                    <uib-tab-heading class="flex middle-xs">
+                        <span class="navigation-item__icon">
+                            @Html.SvgSprite("leads", "", new { width = 24, height = 24 })
+                        </span>
+                        <span class="navigation-item__text">@T("Admin.Funnels.Site.Leads")</span>
+                    </uib-tab-heading>
+                    <div>
+                        <funnel-leads order-source-id="@Model.Settings.OrderSourceId"></funnel-leads>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="@T("Admin.Funnels.Site.Orders")" index="'orders'" classes="ng-tab" removable="false">
+                    <uib-tab-heading class="flex middle-xs">
+                        <span class="navigation-item__icon">
+                            @Html.SvgSprite("orders2", "", new { width = 24, height = 24 })
+                        </span>
+                        <span class="navigation-item__text">@T("Admin.Funnels.Site.Orders")</span>
+                    </uib-tab-heading>
+                    <div>
+                        <funnel-orders order-source-id="@Model.Settings.OrderSourceId"></funnel-orders>
+                    </div>
+                </uib-tab>
+                @if (showBooking)
+                {
+                    <uib-tab heading="@T("Admin.Funnels.Site.Armor")" index="'bookings'" classes="ng-tab" removable="false">
+                        <uib-tab-heading class="flex middle-xs">
+                            <span class="navigation-item__icon">
+                                @Html.SvgSprite("bookings", "", new { width = 24, height = 24 })
+                            </span>
+                            <span class="navigation-item__text">@T("Admin.Funnels.Site.Armor")</span>
+                        </uib-tab-heading>
+                        <div>
+                            <funnel-bookings order-source-id="@Model.Settings.OrderSourceId"></funnel-bookings>
+                        </div>
+                    </uib-tab>
+                }
+                <uib-tab heading="@T("Admin.Funnels.Site.Settings")" index="'settings'" classes="ng-tab" removable="false">
+                    <uib-tab-heading class="flex middle-xs">
+                        <span class="navigation-item__icon">
+                            @Html.SvgSprite("settings3", "", new { width = 24, height = 24 })
+                        </span>
+                        <span class="navigation-item__text">@T("Admin.Funnels.Site.Settings")</span>
+                    </uib-tab-heading>
+                    <div>
+                        @Html.Partial("SiteSettings", Model)
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+}
+else
+{
+<html>
+<head>
+    <title>@T("Admin.Funnels.Site.FunnelFunnel") @Model.Site.Name</title>
+</head>
+<body>
+    <div class="siteId" data-id="@Model.Site.Id">
+        <div id="funnelSheme" class="funnels-scheme">
+        </div>
+    </div>
+
+    @Html.RenderAssetFilesAsHtml("funnelsScheme")
+    @Html.RenderAssetFilesAsHtml("runtime")
+</body>
+</html>
+}

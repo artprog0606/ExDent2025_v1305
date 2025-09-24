@@ -1,0 +1,102 @@
+﻿@model AdvantShop.Web.Admin.Models.Marketing.Analytics.AnalyticsFilterModel
+
+<div class="sticky-page-name" sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main">
+            <h1 class="page-name-block-text sticky-page-name-text">
+                @T("Admin.Analytics.Analytics")
+            </h1>
+            <span>@T("Admin.Analytics.StatisticsBy")</span>
+        </div>
+        <div class="page-name-block-item-additional">
+            
+        </div>
+    </div>
+</div>
+<div class="ibox">
+    <div class="ibox-content">
+
+        @if (Model.Type == "abcxyz")
+        {
+            <div class="m-b-lg" style="font-size: 14px">
+                @T("Admin.Analytics.GoodsInGroup") <span class="bold">@Model.Group.ToUpper()</span> @T("Admin.Analytics.From") <span class="bold">@Model.From</span> @T("Admin.Analytics.To") <span class="bold">@Model.To</span>
+                <div class="ng-cloak" ng-init="analyticsFilter.group='@Model.Group.ToLower()'">
+
+                    <div ng-if="analyticsFilter.group=='ax'">
+                        <div>@T("Admin.Analytics.SuppliesRhythmically")</div>
+                        <div>@T("Admin.Analytics.SuppliersManufacturers")</div>
+                        <div>@T("Admin.Analytics.ControlDaily")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='ay'">
+                        <div>@T("Admin.Analytics.SuppliesModerateParties")</div>
+                        <div>@T("Admin.Analytics.SuppliersManufacturers")</div>
+                        <div>@T("Admin.Analytics.ControlDaily")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='az'">
+                        <div>@T("Admin.Analytics.SuppliesMinParties")</div>
+                        <div>@T("Admin.Analytics.SuppliersDistributors")</div>
+                        <div>@T("Admin.Analytics.ControlDaily")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='bx'">
+                        <div>@T("Admin.Analytics.SuppliesRhythmically")</div>
+                        <div>@T("Admin.Analytics.SuppliersManufacturers")</div>
+                        <div>@T("Admin.Analytics.Control2times")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='by'">
+                        <div>@T("Admin.Analytics.SuppliesModerateParties")</div>
+                        <div>@T("Admin.Analytics.SuppliersManufacturers")</div>
+                        <div>@T("Admin.Analytics.Control2times")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='bz'">
+                        <div>@T("Admin.Analytics.SuppliesMinParties")</div>
+                        <div>@T("Admin.Analytics.SuppliersDistributors")</div>
+                        <div>@T("Admin.Analytics.Control2times")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='cx'">
+                        <div>@T("Admin.Analytics.SuppliesRarlyMax")</div>
+                        <div>@T("Admin.Analytics.SuppliersManufacturers")</div>
+                        <div>@T("Admin.Analytics.Control1time")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='cy'">
+                        <div>@T("Admin.Analytics.SuppliesRarlyMax")</div>
+                        <div>@T("Admin.Analytics.SuppliersDistributors")</div>
+                        <div>@T("Admin.Analytics.Control1time")</div>
+                    </div>
+
+                    <div ng-if="analyticsFilter.group=='cz'">
+                        <div>@T("Admin.Analytics.PositionsOfThisSection")</div>
+                    </div>
+                </div>
+            </div>
+
+            <ui-grid-custom grid-unique-id="grid"
+                            grid-filter-enabled="false"
+                            grid-options="analyticsFilter.gridOptionsAbcxyz"
+                            grid-params="{group: '@Model.Group', from: '@Model.From', to: '@Model.To'}"
+                            grid-url="'analytics/getAnalyticsFilterAbcxyz'">
+            </ui-grid-custom>
+        }
+
+        @if (Model.Type == "rfm")
+        {
+            var arr = Model.Group.Split('_');
+
+            <div class="m-b-lg" style="font-size: 14px">
+                @T("Admin.Analytics.CustomersAtGroup") <span class="text-uppercase">@arr[0]</span> = @arr[2], <span class="text-uppercase">@arr[1]</span> = @arr[3] @T("Admin.Analytics.From") @Model.From @T("Admin.Analytics.To") @Model.To
+            </div>
+            <ui-grid-custom grid-unique-id="grid"
+                            grid-filter-enabled="false"
+                            grid-options="analyticsFilter.gridOptionsRfm"
+                            grid-params="{group: '@Model.Group', from: '@Model.From', to: '@Model.To'}"
+                            grid-url="'analytics/getAnalyticsFilterRfm'">
+            </ui-grid-custom>
+        }
+    </div>
+</div>

@@ -1,0 +1,427 @@
+﻿<form name="formAddEditSalesFunnel" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross ng-if="!isMobile.value"></ui-modal-cross>
+        <h2 class="modal-header-title">
+            {{ctrl.mode === 'edit' ? ('Admin.Js.SettingsCrm.EditSalesFunnel'|translate) : ('Admin.Js.SettingsCrm.NewSalesFunnel'|translate)}}
+        </h2>
+    </div>
+    <div ng-if="!isMobile.value" class="modal-body">
+        <div class="tabs-container tabs-default m-b">
+            <ul class="nav nav-tabs">
+                <li ng-class="{'active': ctrl.tab == 'tab-common'}">
+                    <a data-bs-toggle="tab" ng-click="ctrl.changeTab('tab-common')">'{{'Admin.Js.SettingsCrm.EditSalesFunnel.Base'|translate}}'</a>
+                </li>
+                <li ng-class="{'active': ctrl.tab == 'tab-leadFields'}">
+                    <a data-bs-toggle="tab" ng-click="ctrl.changeTab('tab-leadFields')"
+                        >{{'Admin.Js.SettingsCrm.EditSalesFunnel.AdditionalFields'|translate}}</a
+                    >
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-common" class="tab-pane" ng-class="{'active': ctrl.tab == 'tab-common'}">
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label">
+                                    <span class="text-required">{{'Admin.Js.SettingsCrm.Name'|translate}}</span>
+                                </label>
+                                <div class="col-xs-9">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)" ng-model-options="{ updateOn: 'blur' }" -->
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        ng-model="ctrl.Item.Name"
+                                        required
+                                        data-autofocus="!isMobile.value"
+                                        validation-input-text="{{'Admin.Js.SettingsCrm.Name'|translate}}"
+                                        data-e2e="salesFunnelName" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-xs-12">{{'Admin.Js.SettingsCrm.StagesOfTransaction'|translate}}</div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <deal-statuses
+                                        sales-funnel-id="ctrl.id"
+                                        items="ctrl.dealStatuses"
+                                        system-items="ctrl.systemDealStatuses"></deal-statuses>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label"> {{'Admin.Js.SettingsCrm.EditSalesFunnel.ActionLeadClosure'|translate}} </label>
+                                <div class="col-xs-9">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <select
+                                        ng-model="ctrl.Item.FinalSuccessAction"
+                                        ng-options="x.value as x.label for x in ctrl.Item.FinalSuccessActions"
+                                        data-e2e="salesFunnelFinalSuccessAction"
+                                        class="form-control"
+                                        convert-to-number></select>
+                                </div>
+                            </div>
+                            <div>
+                                <div
+                                    class="row"
+                                    ng-class="{'form-group': ctrl.Item.LeadAutoCompleteActionType != 1 && ctrl.Item.LeadAutoCompleteActionType != 2}">
+                                    <label class="col-xs-3 control-label">
+                                        {{'Admin.Js.SettingsCrm.EditSalesFunnel.AutoLeadComplete'|translate}}
+                                    </label>
+                                    <div class="col-xs-9">
+                                        <select
+                                            ng-model="ctrl.Item.LeadAutoCompleteActionType"
+                                            ng-options="x.value as x.label for x in ctrl.Item.LeadAutoCompleteActionTypes"
+                                            data-e2e="salesFunnelLeadAutoCompleteActionType"
+                                            class="form-control"
+                                            convert-to-number></select>
+                                    </div>
+                                </div>
+                                <div
+                                    class="form-group row"
+                                    ng-if="ctrl.Item.LeadAutoCompleteActionType == 1 || ctrl.Item.LeadAutoCompleteActionType == 2">
+                                    <div class="col-xs-4 col-xs-offset-3">
+                                        <div>{{'Admin.Js.SettingsCrm.EditSalesFunnel.OrderMustContainAll'|translate}}</div>
+                                        <div ng-repeat="item in ctrl.Item.LeadAutoCompleteProducts track by $index" class="m-b-xs">
+                                            <a href="product/edit/{{item.value}}" target="_blank">{{item.label}}</a>
+                                            <a
+                                                ng-click="ctrl.deleteLeadAutoCompleteProduct($index)"
+                                                href=""
+                                                class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                        </div>
+                                        <div>
+                                            <ui-modal-trigger
+                                                data-controller="'ModalProductsSelectvizrCtrl'"
+                                                controller-as="ctrl"
+                                                size="xs-11"
+                                                template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html"
+                                                data-resolve="{'value': { 'itemsSelected' : ctrl.Item.LeadAutoCompleteProductIds}}"
+                                                data-on-close="ctrl.selectLeadAutoCompleteProducts(result)">
+                                                <a href="" data-e2e="salesFunnelProducts"
+                                                    >{{'Admin.Js.SettingsCrm.EditSalesFunnel.SelectProducts'|translate}}</a
+                                                >
+                                            </ui-modal-trigger>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <div>{{'Admin.Js.SettingsCrm.EditSalesFunnel.OrderMustContainAny'|translate}}</div>
+                                        <div ng-repeat="item in ctrl.Item.LeadAutoCompleteCategories track by $index" class="m-b-xs">
+                                            <a href="catalog?categoryid={{item.value}}" target="_blank">{{item.label}}</a>
+                                            <a
+                                                ng-click="ctrl.deleteLeadAutoCompleteCategory($index)"
+                                                href=""
+                                                class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                        </div>
+                                        <div>
+                                            <ui-modal-trigger
+                                                data-controller="'ModalSelectCategoriesCtrl'"
+                                                controller-as="ctrl"
+                                                template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                                                data-resolve="{'params': { 'selectedIds': ctrl.Item.LeadAutoCompleteCategoryIds}}"
+                                                data-on-close="ctrl.selectLeadAutoCompleteCategories(result)">
+                                                <a href="" data-e2e="salesFunnelCategories"
+                                                    >{{'Admin.Js.SettingsCrm.EditSalesFunnel.SelectCategories'|translate}}</a
+                                                >
+                                            </ui-modal-trigger>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label relative">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.Managers'|translate}}
+                                    <help-trigger
+                                        class="ng-cloak"
+                                        data-title="{{'Admin.Js.SettingsCrm.EditSalesFunnel.Managers'|translate}}"
+                                        use-template="true">
+                                        <div class="help-content">
+                                            {{'Admin.Js.SettingsCrm.EditSalesFunnel.ManagersInfoOne'|translate}}
+                                            <a href="settingsmail" target="_blank"
+                                                >{{'Admin.Js.SettingsCrm.EditSalesFunnel.ManagersInfoTwo'|translate}}</a
+                                            >
+                                        </div>
+                                    </help-trigger>
+                                </label>
+                                <div class="col-xs-9">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <ui-select multiple convert-to-number ng-model="ctrl.Item.ManagerIds" data-e2e="salesFunnelManagers">
+                                        <ui-select-match placeholder="">{{$item.label}}</ui-select-match>
+                                        <ui-select-choices repeat="s.value as s in ctrl.Item.Managers | filter:$select.search">
+                                            {{s.label}}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label relative">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.NoSendNotificationsCreate'|translate}}
+                                </label>
+                                <div class="col-xs-9">
+                                    <label class="adv-checkbox-label" data-e2e="salesFunnelSendMailNew">
+                                        <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                        <input class="adv-checkbox-input" ng-model="ctrl.Item.NotSendNotificationsOnLeadCreation" type="checkbox" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label relative">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.NoSendNotificationsChange'|translate}}
+                                </label>
+                                <div class="col-xs-9">
+                                    <label class="adv-checkbox-label" data-e2e="salesFunnelSendMailEdit">
+                                        <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                        <input class="adv-checkbox-input" ng-model="ctrl.Item.NotSendNotificationsOnLeadChanged" type="checkbox" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xs-3 control-label relative"> {{'Admin.Js.SettingsCrm.EditSalesFunnel.Activity'|translate}} </label>
+                                <div class="col-xs-9">
+                                    <label class="adv-checkbox-label" data-e2e="salesFunnelEnabled">
+                                        <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                        <input class="adv-checkbox-input" ng-model="ctrl.Item.Enable" type="checkbox" />
+                                        <span class="adv-checkbox-emul"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-leadFields" class="tab-pane" ng-class="{'active': ctrl.tab == 'tab-leadFields'}">
+                    <div class="panel-body">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <lead-fields-list sales-funnel-id="ctrl.id" items="ctrl.leadFields"></lead-fields-list>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="isMobile.value" class="modal-body">
+        <uib-tabset active uid="salesFunnels" class="nav-tabs-wrap nav-tabs-wrap--chips">
+            <uib-tab index="'tab-common'" heading="'{{'Admin.Js.SettingsCrm.EditSalesFunnel.Base'|translate}}'" removable="true">
+                <div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group row setting__form-group">
+                                <label class="col-xs-12 control-label setting-label-wrap setting__label">
+                                    <span class="text-required">{{'Admin.Js.SettingsCrm.Name'|translate}}</span>
+                                </label>
+                                <div class="col-xs-12">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)" ng-model-options="{ updateOn: 'blur' }" -->
+                                    <input
+                                        type="text"
+                                        class="form-control input-alt"
+                                        ng-model="ctrl.Item.Name"
+                                        required
+                                        data-autofocus="!isMobile.value"
+                                        validation-input-text="{{'Admin.Js.SettingsCrm.Name'|translate}}"
+                                        data-e2e="salesFunnelName" />
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <div class="col-xs-12 setting-label-wrap setting__label control-label">
+                                    {{'Admin.Js.SettingsCrm.StagesOfTransaction'|translate}}
+                                </div>
+                                <div class="col-xs-12">
+                                    <deal-statuses
+                                        sales-funnel-id="ctrl.id"
+                                        items="ctrl.dealStatuses"
+                                        system-items="ctrl.systemDealStatuses"></deal-statuses>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <label class="col-xs-12 control-label setting-label-wrap setting__label">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.ActionLeadClosure'|translate}}
+                                </label>
+                                <div class="col-xs-12">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <select
+                                        ng-model="ctrl.Item.FinalSuccessAction"
+                                        ng-options="x.value as x.label for x in ctrl.Item.FinalSuccessActions"
+                                        class="form-control input-alt"
+                                        data-e2e="salesFunnelFinalSuccessAction"
+                                        convert-to-number></select>
+                                </div>
+                            </div>
+                            <div>
+                                <div
+                                    class="form-group row setting__form-group"
+                                    ng-class="{'form-group': ctrl.Item.LeadAutoCompleteActionType != 1 && ctrl.Item.LeadAutoCompleteActionType != 2}">
+                                    <label class="col-xs-12 control-label setting-label-wrap setting__label">
+                                        {{'Admin.Js.SettingsCrm.EditSalesFunnel.AutoLeadComplete'|translate}}
+                                    </label>
+                                    <div class="col-xs-12">
+                                        <select
+                                            ng-model="ctrl.Item.LeadAutoCompleteActionType"
+                                            ng-options="x.value as x.label for x in ctrl.Item.LeadAutoCompleteActionTypes"
+                                            class="form-control input-alt"
+                                            data-e2e="salesFunnelLeadAutoCompleteActionType"
+                                            convert-to-number></select>
+                                    </div>
+                                </div>
+                                <div
+                                    class="form-group row setting__form-group"
+                                    ng-if="ctrl.Item.LeadAutoCompleteActionType == 1 || ctrl.Item.LeadAutoCompleteActionType == 2">
+                                    <div class="col-xs-12 m-b-md">
+                                        <div class="setting__label setting-label-wrap">
+                                            {{'Admin.Js.SettingsCrm.EditSalesFunnel.OrderMustContainAll'|translate}}
+                                        </div>
+                                        <div ng-repeat="item in ctrl.Item.LeadAutoCompleteProducts track by $index" class="m-b-xs m-t-xs m-b-xs">
+                                            <div class="flex middle-xs">
+                                                <a href="product/edit/{{item.value}}" target="_blank">{{item.label}}</a>
+                                                <a
+                                                    ng-click="ctrl.deleteLeadAutoCompleteProduct($index)"
+                                                    href=""
+                                                    class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <ui-modal-trigger
+                                                data-controller="'ModalProductsSelectvizrCtrl'"
+                                                controller-as="ctrl"
+                                                size="xs-11"
+                                                template-url="../areas/admin/content/src/_shared/modal/products-selectvizr/productsSelectvizrModal.html"
+                                                data-resolve="{'value': { 'itemsSelected' : ctrl.Item.LeadAutoCompleteProductIds}}"
+                                                data-on-close="ctrl.selectLeadAutoCompleteProducts(result)">
+                                                <a href="" data-e2e="salesFunnelProducts"
+                                                    >{{'Admin.Js.SettingsCrm.EditSalesFunnel.SelectProducts'|translate}}</a
+                                                >
+                                            </ui-modal-trigger>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="setting__label setting-label-wrap">
+                                            {{'Admin.Js.SettingsCrm.EditSalesFunnel.OrderMustContainAny'|translate}}
+                                        </div>
+                                        <div ng-repeat="item in ctrl.Item.LeadAutoCompleteCategories track by $index" class="m-b-xs m-t-xs m-b-xs">
+                                            <div class="flex middle-xs">
+                                                <a href="catalog?categoryid={{item.value}}" target="_blank">{{item.label}}</a>
+                                                <a
+                                                    ng-click="ctrl.deleteLeadAutoCompleteCategory($index)"
+                                                    href=""
+                                                    class="fa fa-times link-invert link-decoration-none p-l-xs"></a>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <ui-modal-trigger
+                                                data-controller="'ModalSelectCategoriesCtrl'"
+                                                controller-as="ctrl"
+                                                template-url="../areas/admin/content/src/_shared/modal/selectCategories/selectCategories.html"
+                                                data-resolve="{'params': { 'selectedIds': ctrl.Item.LeadAutoCompleteCategoryIds}}"
+                                                data-on-close="ctrl.selectLeadAutoCompleteCategories(result)">
+                                                <a href="" data-e2e="salesFunnelCategories"
+                                                    >{{'Admin.Js.SettingsCrm.EditSalesFunnel.SelectCategories'|translate}}</a
+                                                >
+                                            </ui-modal-trigger>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group">
+                                <label class="col-xs-12 control-label setting-label-wrap setting__label">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.Managers'|translate}}
+                                </label>
+                                <div class="setting--flex-align-center flex-grow">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <div class="flex middle-xs flex-grow" ng-class="{'col-xs-12': isMobile.value}">
+                                        <div class="flex-grow setting__ui-select-wrap" ng-class="{'col-xs': !isMobile.value}">
+                                            <ui-select
+                                                multiple
+                                                convert-to-number
+                                                ng-model="ctrl.Item.ManagerIds"
+                                                data-e2e="salesFunnelManagers"
+                                                class="input-alt">
+                                                <ui-select-match placeholder="">{{$item.label}}</ui-select-match>
+                                                <ui-select-choices repeat="s.value as s in ctrl.Item.Managers | filter:$select.search">
+                                                    {{s.label}}
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                        <help-trigger
+                                            ng-class="{'m-l-xs p-l-sm': isMobile.value}"
+                                            data-title="{{'Admin.Js.SettingsCrm.EditSalesFunnel.Managers'|translate}}"
+                                            use-template="true">
+                                            <div class="help-content">
+                                                {{'Admin.Js.SettingsCrm.EditSalesFunnel.ManagersInfoOne'|translate}}
+                                                <a href="settingsmail" target="_blank"
+                                                    >{{'Admin.Js.SettingsCrm.EditSalesFunnel.ManagersInfoTwo'|translate}}</a
+                                                >
+                                            </div>
+                                        </help-trigger>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row setting__form-group col-xs-12 middle-xs">
+                                <label class="adv-checkbox-label" data-e2e="salesFunnelSendMailNew">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <input
+                                        id="salesFunnelSendMailNew"
+                                        class="adv-checkbox-input"
+                                        ng-model="ctrl.Item.NotSendNotificationsOnLeadCreation"
+                                        type="checkbox" />
+                                    <span class="adv-checkbox-emul"></span>
+                                </label>
+                                <label for="salesFunnelSendMailNew" class="col-xs-11 bold relative setting__label">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.NoSendNotificationsCreate'|translate}}
+                                </label>
+                            </div>
+                            <div class="form-group row setting__form-group col-xs-12 middle-xs">
+                                <label class="adv-checkbox-label" data-e2e="salesFunnelSendMailEdit">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <input
+                                        id="salesFunnelSendMailEdit"
+                                        class="adv-checkbox-input"
+                                        ng-model="ctrl.Item.NotSendNotificationsOnLeadChanged"
+                                        type="checkbox" />
+                                    <span class="adv-checkbox-emul"></span>
+                                </label>
+                                <label for="salesFunnelSendMailEdit" class="col-xs-11 bold relative setting__label">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.NoSendNotificationsChange'|translate}}
+                                </label>
+                            </div>
+                            <div class="form-group row setting__form-group col-xs-12 middle-xs">
+                                <label class="adv-checkbox-label" data-e2e="salesFunnelEnabled">
+                                    <!--ng-change="ctrl.saveItem(ctrl.Item)"-->
+                                    <input id="salesFunnelEnabled" class="adv-checkbox-input" ng-model="ctrl.Item.Enable" type="checkbox" />
+                                    <span class="adv-checkbox-emul"></span>
+                                </label>
+                                <label for="salesFunnelEnabled" class="col-xs-11 bold relative setting__label">
+                                    {{'Admin.Js.SettingsCrm.EditSalesFunnel.Activity'|translate}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+            <uib-tab index="'tab-leadFields'" heading="{{'Admin.Js.SettingsCrm.EditSalesFunnel.AdditionalFields'|translate}}" removable="true">
+                <div class="panel-body">
+                    <div class="row" ng-class="{'form-group': !isMobile.value}">
+                        <div class="col-xs-12">
+                            <lead-fields-list sales-funnel-id="ctrl.id" items="ctrl.leadFields"></lead-fields-list>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            ng-click="ctrl.saveItem(ctrl.Item)"
+            ladda="ctrl.btnSleep"
+            type="submit"
+            data-button-validation
+            data-e2e="salesFunnelSave">
+            {{'Admin.Js.SettingsCrm.Save'|translate}}
+        </button>
+        <!--<button class="btn btn-default btn-red-white" ladda="ctrl.btnSleep" type="button" data-button-validation-success="ctrl.deleteItem(ctrl.Item.Id)" data-button-validation data-e2e="salesFunnelSave">{{'Admin.Js.SettingsCrm.RemoveAFunnel'|translate}}</button>-->
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()" data-e2e="salesFunnelCancel">
+            {{'Admin.Js.SettingsCrm.Cancel'|translate}}
+        </button>
+    </div>
+</form>

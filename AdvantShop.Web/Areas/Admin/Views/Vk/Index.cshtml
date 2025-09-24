@@ -1,0 +1,145 @@
+﻿@{
+    Html.AddAsset("vkChannel");
+}
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (isMobile)
+    {
+        var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+
+        headerModel.Controls = new List<IButton>();
+        headerModel.DefaultTitle = "Канал продаж Вконтакте";
+        headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+        {
+            NgBackTriggerCallback = "vkMain.vkChannel.tabActiveIndex = null",
+            Attributes = "ng-if=\"vkMain.vkChannel.tabActiveIndex != null\""
+
+        };
+
+        var moreButton = new MoreButtonModel();
+        moreButton.ColorType = eColorType.Secondary;
+        moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+        moreButton.Attributes = new string[] { "ng-if=\"vkMain.vkChannel.tabActiveIndex == null || vkMain.vkChannel.tabActiveIndex == 'export'\"" };
+        moreButton.Items = new List<MoreButtonPopoverItem>();
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            RowAttributes = new { ng_if = "vkMain.vkChannel.tabActiveIndex != null && vkMain.vkChannel.tabActiveIndex == 'export'" },
+            WrapStart = "<ui-modal-trigger data-controller=\"'ModalSaveVkMarketSettingsCtrl'\" controller-as=\"ctrl\" template-url=\""+ Html.GetAssetPath("saveVkMarketSettings.html") + "\">",
+            WrapEnd = "</ui-modal-trigger>",
+            Text = T("Параметры выгрузки"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "settings2",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "vk-header-button=\"removeChannel\"" },
+            RowAttributes = new { ng_if = "vkMain.vkChannel.tabActiveIndex == null" },
+            Text = T("Отключить канал"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "on",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Link,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "vk-header-button=\"openGroup\"" },
+            RowAttributes = new { ng_if = "vkMain.vkChannel.tabActiveIndex == null && vkMain.vkChannel.groupId" },
+            Text = T("Открыть группу ВКонтакте"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "go",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            RowAttributes = new { ng_if = "vkMain.vkChannel.tabActiveIndex != null && vkMain.vkChannel.tabActiveIndex == 'export' && vkMain.vkChannel.groupId" },
+            Attributes = new[] { "vk-header-button=\"deleteAllProducts\"" },
+            Text = T("Удалить все товары из ВКонтакте"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        moreButton.Items.Add(new MoreButtonPopoverItem()
+        {
+            Type = eButtonType.Link,
+            ColorType = eColorType.Danger,
+            Modificators = new List<eButtonModificators>()
+{
+                            eButtonModificators.HorizontalPaddingZero
+                        },
+            Attributes = new[] { "vk-header-button=\"deleteGroup\"" },
+            RowAttributes = new { ng_if = "vkMain.vkChannel.tabActiveIndex == null && vkMain.vkChannel.groupId" },
+            Text = T("Удалить привязку"),
+            Icon = new ButtonIcon()
+            {
+                SvgName = "remove",
+                Attributes = new { width = 24, height = 24 }
+            }
+        });
+
+        headerModel.Controls.Add(
+         new ButtonModel()
+         {
+             Modificators = new List<eButtonModificators>()
+                  {
+                        eButtonModificators.OnlyIcon
+                                          },
+             ColorType = eColorType.Secondary,
+             Type = eButtonType.Save,
+             // Attributes = new[] { "ng-if=\"vkMain.vkChannel.tabActiveIndex != null && vkMain.vkChannel.tabActiveIndex == 'export'\"" },
+             WrapStart = "<ui-modal-trigger ng-if=\"vkMain.vkChannel.tabActiveIndex != null && vkMain.vkChannel.tabActiveIndex == 'export'\" data-controller=\"'ModalAddEditVkCategoryCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("ModalAddEditVkCategory.html") + "\" data-on-close=\"vkMain.refreshChild('vkMarketCategories')\">",
+             WrapEnd = "</ui-modal-trigger>",
+             Icon = new ButtonIcon()
+             {
+                 SvgName = "plus-alt",
+                 Attributes = new { width = 16, height = 16 }
+             }
+         }
+    );
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+
+}
+
+
+<vk-channel redirect-url="'@UrlService.GetCanonicalUrlAdminArea().TrimEnd("/")/integration'" on-init="vkMain.initVkChannel(vkChannel)"></vk-channel>

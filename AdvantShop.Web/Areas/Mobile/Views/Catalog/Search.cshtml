@@ -1,0 +1,103 @@
+﻿@model  AdvantShop.Models.Catalog.SearchCatalogViewModel
+@{
+    Html.AddAsset("catalogSearch");
+
+    var sumFounded = Model.Pager.TotalItemsCount + Model.Categories.Categories.Count;
+}
+<div id="content" class="catalog catalog-search">
+    <div class="page-title-row catalog-title-row">
+        <div class="catalog-title page-title main-title">
+            @(string.IsNullOrWhiteSpace(Model.SearchCatalogModel.Q)
+                          ? T("Search.Index.EnterSearchTerm")
+                          : T("Search.Index.Found", sumFounded, Model.SearchCatalogModel.Q.HtmlEncode()))
+        </div>
+    </div>
+    
+    @Html.StaticBlock("search_page_top")
+    @Html.RenderModules("search_page_top", Model.SearchCatalogModel.Q)
+
+    @Html.Partial("CategoryList", Model.Categories)
+    
+    @if (Model.HasProducts)
+    {
+        <div class="panel no-borders catalog-sort-block cs-br-1 cs-bg-4">
+            <div class="catalog-sort-pnl catalog__sort-panel" data-ng-controller="CatalogFilterMobileCtrl as catalogFilter">
+                @Html.Partial("_Sorting", Model.SortingList)
+                <div>
+                    <div class="catalog-filter-trigger-wrap--mobile">
+                        <button type="button" class="catalog-filter-trigger--mobile icon-right-open-big-after"
+                                data-ng-click="catalogFilter.openInSidebar('catalogfilterTpl')">
+                            @T("Mobile.Search.CatalogFilter") <span data-ng-bind="catalogFilter.selectedFiltersCount != null && catalogFilter.selectedFiltersCount != 0 ? '(' + catalogFilter.selectedFiltersCount + ')' : ''"></span>
+                        </button>
+                    </div>
+                    <script type="text/ng-template" id="catalogfilterTpl">
+                    <div data-catalog-filter data-url="search/filter"
+                         data-url-count="search/filterproductCount"
+                         data-parameters='{searchQuery : "@Html.AttributeEncode(Model.SearchCatalogModel.Q)"}'
+                         data-is-mobile="true"
+                         data-adv-popover-options="{position: 'top'}"
+                         data-footer-sticky="true">
+                    </div>
+                </script>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel catalog-sort-view-mode cs-br-1">
+            <div class="catalog-sort-pnl">
+                <div class="catalog-sort__count">@T("Mobile.Category.Index.ProductsCount"): @Model.Pager.TotalItemsCount</div>
+                @if (Model.Filter.AllowChangeViewMode)
+                {
+                    @Html.Partial("_ViewMode", Model.Filter.ViewMode)
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.HasProducts)
+    {
+        <div class="catalog-view products-view-mobile-modern-@(Model.Products.ProductViewMode.ToString().ToLower())"
+             data-product-view-mode
+             data-name="mobileModern"
+             data-view-list-name="mobileModern"
+             data-is-mobile="true"
+             data-default-view-mode="@Model.Filter.ViewMode"
+             data-photo-height-by-view-mode-default="'@(Model.Products.BlockProductPhotoHeight)px'"
+             data-photo-height-by-view-mode="{viewName: 'single', value: '@(Model.Products.BlockProductPhotoMiddleHeight)px'}">
+            <div data-show-more
+                 data-request-url="/mobile/catalog/getSearchProductList"
+                 data-data-params="{q: '@Model.SearchCatalogModel.Q.HtmlEncode()', categoryId: '@Model.SearchCatalogModel.CategoryId', page: @Model.Pager.CurrentPage, priceFrom: '@Model.SearchCatalogModel.PriceFrom', priceTo: '@Model.SearchCatalogModel.PriceTo', brand: '@Model.SearchCatalogModel.Brand', sort: '@Model.SearchCatalogModel.Sort' }">
+                @* priceTo строчка т.к по умолчанию число 2,147484E+09 *@
+                <div class="catalog-view__product-item-wrap"
+                     data-show-more-init-html>
+                    @Html.Partial("_ProductView", Model.Products)
+                </div>
+                <div class="catalog-view__product-item-wrap"
+                     data-bind-html-compile="showMore.products">
+                </div>
+                <div data-ng-if="showMore.isShowSpinner"
+                     class="spinner-after spinner text-align-center">
+                </div>
+
+                <div class="panel no-borders pagination-block-wrap cs-br-1">
+                    <div class="text-align-center js-get-more-btn-wrap">
+                        <button type="button"
+                                data-ng-click="showMore.getMore()"
+                                class="btn btn-middle btn-action btn-block"
+                                data-ng-if="showMore.page < @Model.Pager.TotalPages">
+                            @T("Mobile.Catalog.ShowMore")
+                        </button>
+                    </div>
+                    @Html.Paging(Model.Pager, "center-aligner", "showMore", true)
+                </div>
+            </div>
+        </div>
+    }
+    else if (sumFounded == 0)
+    {
+        <div class="panel no-borders cs-br-1">
+            @T("Search.Index.NothingFound")
+        </div>
+    }
+    @Html.StaticBlock("search_page_bottom")
+</div>

@@ -1,0 +1,238 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.APISettingsModel
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/leads/add</span>
+        <span class="description">@T("Admin.SettingsApi.Index.CreateLead")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST @Model.GetApiUrl("/api/leads/add")
+        </div>
+
+        @T("Admin.SettingsApi.Index.JsonExample")
+        <pre class="m-t-sm">{
+    "FirstName": "@T("Admin.SettingsApi.Index.Ivan")",             // @T("Admin.SettingsApi.Index.Name")
+            "LastName": "@T("Admin.SettingsApi.Index.Ivanov")",            // @T("Admin.SettingsApi.Index.LastName")
+            "Patronymic": "@T("Admin.SettingsApi.Index.Ivanovich")",        // @T("Admin.SettingsApi.Index.Patronymic")
+            "Phone": "790000000",            // @T("Admin.SettingsApi.Index.Phone")
+            "Email": "ivan@gmail.com",       // email
+    "CustomerId": "",                // @T("Admin.SettingsApi.Index.UserID")
+            "DiscountValue": "100",          // @T("Admin.SettingsApi.Index.DiscountNumber")
+            "DiscountPercent": "0",          // @T("Admin.SettingsApi.Index.DiscountPercentage")
+            "Description": "lead from api",  // @T("Admin.SettingsApi.Index.Description")
+            "Source": "",                    // @T("Admin.SettingsApi.Index.LeadSource")
+            "FunnelId": 1,                   // @T("Admin.SettingsApi.Index.SalesFunnelID")
+            "Sum": "0",                      // @T("Admin.SettingsApi.Index.ProductsAmount")
+            "Products": [                    // @T("Admin.SettingsApi.Index.ArrayOfProducts")
+            {                            // @T("Admin.SettingsApi.Index.ProductFoundByArticle")
+            "ArtNo": "977",
+		    "Name": "@T("Admin.SettingsApi.Index.Shoes")",
+		    "Amount": 1,
+		    "Price": 1500
+	    }
+    ]
+}
+</pre>
+        <div class="m-t-sm">
+            @T("Admin.SettingsApi.Index.AtLeast1FieldMustBeSpecified")
+        </div>
+
+        <div class="m-t-sm">
+            @T("Admin.SettingsApi.Index.InCaseOfSuccess")
+            <pre class="m-t-sm">{
+    "leadId": 1,
+    "status": "ok",
+    "errors": "",
+    "warnings": ""
+}
+</pre>
+            <div class="m-t-sm">
+                @T("Admin.SettingsApi.Index.InCaseOfFailure")
+                <pre class="m-t-sm">{
+    "status": "error",
+    "errors": "@T("Admin.SettingsApi.Index.RequiredFields")"
+}
+</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="api-item post">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">POST</span>
+        <span class="path">/api/leads/getlist</span>
+        <span class="description">Список лидов</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            POST/GET @Model.GetApiUrl("/api/leads/getlist")
+        </div>
+
+        <p>Метод запроса может быть POST или GET. Если GET - то параметры в url, если POST, то передается json. Все параметры не обязательны.</p>
+        @T("Admin.SettingsApi.Index.JsonExample")
+        <pre class="m-t-sm">{
+	"customerId": "74593297-36eb-4ace-ae8e-5e8084f13c19",
+	"sumFrom": 0,
+	"sumTo": 100000,
+	"dateFrom": "1970-08-29T12:29:59.577",
+	"dateTo": "2024-08-29T12:29:59.577",
+	"loadItems": true,                     // по умолчанию false
+	"loadCustomerFields": true,            // по умолчанию false
+	"dealStatusId": 4,
+	"salesFunnelId": 1,
+	"search": "",
+	"description": "Описание",
+	"name": "Имя",
+	"managerId": 6,
+	"sourceId": 12,
+	"city": "city",
+	"customerFields": [{"1": {"Value": "value"}}],
+	"leadFields": [{"1": {"Value": "value"}}],
+
+	"itemsPerPage": 100,                  // по умолчанию 100
+	"page": 1                             // по умолчанию 1
+}
+</pre>
+
+        <div class="m-t-md">
+            <div class="setting-title m-t-none">
+                <h3>Пример ответа</h3>
+            </div>
+            <pre>{
+	"dataItems": [
+		{
+			"id": 5,
+			"title": "Лид №5",
+			"description": "Описание",
+			"createdDate": "2020-08-29T12:29:59.577",
+			"createdDateFormatted": "29.08.2020 12:29",
+			"sum": 500.0,
+			"sumFormatted": "500 руб.",
+			"customerComment": "",
+			"adminComment": null,
+			"dealStatusId": 4,
+			"dealStatusName": "Ожидание решения клиента",
+			"salesFunnelId": 1,
+			"salesFunnelName": "Лиды",
+			"sourceId": 12,
+			"customerId": "0000000000-0000-0000-0000-000000000",
+			"firstName": "Имя",
+			"lastName": "Фамилия",
+			"patronymic": "",
+			"phone": "+3(333)333-33-31",
+			"email": "",
+			"customerType": 1,
+			"customerFields": [
+				{
+					"id": 1,
+					"name": "Название организации",
+					"fieldType": "Text",
+					"value": "ООО \"Аааа\""
+				},
+				{
+					"id": 2,
+					"name": "Юридический адрес",
+					"fieldType": "Text",
+					"value": ""
+				},
+				{
+					"id": 3,
+					"name": "ИНН",
+					"fieldType": "Number",
+					"value": "111111111111"
+				},
+				{
+					"id": 4,
+					"name": "КПП",
+					"fieldType": "Number",
+					"value": "222222222222222"
+				},
+				{
+					"id": 5,
+					"name": "ОГРН",
+					"fieldType": "Number",
+					"value": "33333333333333333"
+				},
+				{
+					"id": 6,
+					"name": "ОКПО",
+					"fieldType": "Number",
+					"value": "44444444444444"
+				},
+				{
+					"id": 7,
+					"name": "БИК",
+					"fieldType": "Number",
+					"value": ""
+				},
+				{
+					"id": 8,
+					"name": "Название банка",
+					"fieldType": "Text",
+					"value": ""
+				},
+				{
+					"id": 9,
+					"name": "Корреспондентский счёт",
+					"fieldType": "Number",
+					"value": ""
+				},
+				{
+					"id": 10,
+					"name": "Расчётный счёт",
+					"fieldType": "Number",
+					"value": ""
+				}
+			],
+			"managerId": 6,
+			"managerName": "Администратор Магазина",
+			"productsSum": 0.0,
+			"productsCount": 0.0,
+			"country": null,
+			"region": null,
+			"district": null,
+			"city": null,
+			"zip": null,
+			"leadItems": []
+		}
+	],
+	"totalPageCount": 2,
+	"totalItemsCount": 4,
+	"pageIndex": 1,
+	"itemsPerPage": 2
+}
+</pre>
+        </div>
+        <div class="m-t-md">
+            <div class="setting-title m-t-none">
+                <h3>Пример ответа с ошибкой</h3>
+            </div>
+            <pre>{
+    "result": false,
+    "errors": [
+      "Заполните обязательное поле (имя, email, телефон или организацию)"
+    ]
+}
+</pre>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="api-item get">
+    <div class="api-item__header" ng-click="settings.showDetails($event)">
+        <span class="method">GET</span>
+        <span class="path">/api/vk</span>
+        <span class="description">@T("Admin.SettingsApi.Index.IntegrationWithVk")</span>
+    </div>
+    <div class="details">
+        <div class="m-b">
+            GET @Model.GetApiUrl("/api/vk")
+        </div>
+    </div>
+</div>

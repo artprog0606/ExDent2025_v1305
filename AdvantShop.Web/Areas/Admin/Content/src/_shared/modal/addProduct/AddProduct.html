@@ -1,0 +1,89 @@
+﻿<form name="formAddProduct" novalidate is-mobile>
+    <div class="modal-header">
+        <ui-modal-cross></ui-modal-cross>
+        <h2 class="modal-header-title">{{'Admin.Js.AddProduct.AddingProduct'|translate}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="m-b">
+            <div ng-class="{'m-b': !isMobile.value,'control-label form-control-title block': isMobile.value}">
+                <span>{{'Admin.Js.AddProduct.ProductName'|translate}}</span> <span class="text-required"></span>
+            </div>
+            <div>
+                <input
+                    type="text"
+                    placeholder=""
+                    ng-focus="ctrl.scrollToFormControl($event)"
+                    ng-model="ctrl.name"
+                    class="form-control input-alt"
+                    data-e2e="inputProductName"
+                    required
+                    data-autofocus="!isMobile.value"
+                    ng-keyup="formAddProduct.$valid && $event.keyCode === 13 && ctrl.addProduct()"
+                    validation-input-text="{{'Admin.Js.AddProduct.ProductName'|translate}}" />
+            </div>
+        </div>
+        <div ng-if="!isMobile.value">
+            <span>{{'Admin.Js.AddProduct.Category'|translate}}</span>
+
+            <span class="error-color" ng-show="formAddProduct.inputCategoryName.$invalid">{{'Admin.Js.AddProduct.SelectACategory'|translate}}</span>
+            <input
+                type="text"
+                class="input-ghost input-alt"
+                name="inputCategoryName"
+                required
+                ng-model="ctrl.categoryName"
+                ng-hide="formAddProduct.inputCategoryName.$invalid"
+                input-ghost
+                validation-input-text="{{'Admin.Js.AddProduct.SelectACategory'|translate}}" />
+
+            <ui-modal-trigger
+                data-controller="'ModalChangeParentCategoryCtrl'"
+                controller-as="ctrl"
+                data-on-close="ctrl.changeCategory(result)"
+                data-resolve="{showRoot: true, selected:0, currentId:0}"
+                template-url="../areas/admin/content/src/category/modal/changeParentCategory/ChangeParentCategory.html">
+                <a href="" class="edit">{{'Admin.Js.AddProduct.Select'|translate}}</a>
+            </ui-modal-trigger>
+        </div>
+        <div ng-if="isMobile.value" class="row">
+            <div class="col-xs-12 control-label form-control-title">
+                <span class="m-r-md">{{'Admin.Js.AddProduct.Category'|translate}}</span>
+                <span class="error-color" ng-show="formAddProduct.inputCategoryName.$invalid"
+                    >{{'Admin.Js.AddProduct.SelectACategory'|translate}}</span
+                >
+            </div>
+            <div class="col-xs-12 flex">
+                <input
+                    type="text"
+                    class="input-ghost input-alt m-r-sm"
+                    style="width: 100%"
+                    name="inputCategoryName"
+                    required
+                    ng-model="ctrl.categoryName"
+                    ng-hide="formAddProduct.inputCategoryName.$invalid"
+                    input-ghost
+                    validation-input-text="{{'Admin.Js.AddProduct.SelectACategory'|translate}}" />
+
+                <ui-modal-trigger
+                    data-controller="'ModalChangeParentCategoryCtrl'"
+                    controller-as="ctrl"
+                    data-on-close="ctrl.changeCategory(result)"
+                    data-resolve="{showRoot: true, selected:0, currentId:0}"
+                    template-url="../areas/admin/content/src/category/modal/changeParentCategory/ChangeParentCategory.html">
+                    <a href="" class="btn btn-sm btn-save btn-primary">{{'Admin.Js.AddProduct.Select'|translate}}</a>
+                </ui-modal-trigger>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-save btn-primary"
+            type="button"
+            data-button-validation
+            data-button-validation-success="ctrl.addProduct()"
+            ladda="ctrl.btnLoading">
+            {{'Admin.Js.AddProduct.Add'|translate}}
+        </button>
+        <button class="btn btn-default btn-cancel" type="button" ng-click="ctrl.close()">{{'Admin.Js.AddProduct.Cancel'|translate}}</button>
+    </div>
+</form>

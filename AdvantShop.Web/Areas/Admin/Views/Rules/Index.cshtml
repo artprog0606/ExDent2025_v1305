@@ -1,0 +1,88 @@
+﻿@using AdvantShop.Core.Services.Admin
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("rules");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + T("Admin.Rules.Index.Title") + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Bonus")
+    };
+
+    headerModel.Controls.Add(
+      new ButtonModel()
+      {
+          Modificators = new List<eButtonModificators>()
+     {
+                eButtonModificators.OnlyIcon
+                 },
+          ColorType = eColorType.Secondary,
+          Type = eButtonType.Add,
+          WrapStart = " <ui-modal-trigger data-controller=\"'ModalListRulesCtrl'\" controller-as=\"ctrl\" size=\"middle\" template-url=\"../areas/admin/content/src/_shared/modal/bonus/rule/listRules.html\">",
+          WrapEnd = "</ui-modal-trigger>",
+          Icon = new ButtonIcon()
+          {
+              SvgName = "plus-alt",
+              Attributes = new { width = 16, height = 16 },
+          }
+      }
+ );
+
+    @Html.Header(headerModel)
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }    
+}
+
+ @if (!isMobile)
+ {
+<div class="sticky-page-name m-t-n-xs m-b-xs " sticky sticky-top="0">
+    <div class="page-name-block sticky-page-name-inner">
+        <div class="page-name-block-item-main flex middle-xs">
+            <h2 class="m-r-xs  sticky-page-name-text m-t-none">
+                @T("Admin.Rules.Index.Title")
+            </h2>
+        </div>
+        <div class="page-name-block-item-additional">
+            <ui-modal-trigger data-controller="'ModalListRulesCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                              template-url="@Html.GetAssetPath("listRules.html")">
+                <a data-e2e="Add" class="btn btn-sm btn-success btn--margin-left" href="">
+                    <span class="fa fa-plus"></span>
+                    @T("Admin.Rules.Index.Add")
+                </a>
+            </ui-modal-trigger>
+        </div>
+    </div>
+</div>
+ }
+<div class="ibox">
+    <div class="ibox-content">
+        <ui-grid-custom grid-unique-id="grid"
+                        grid-on-init="rules.gridOnInit(grid)"
+                        grid-options="rules.gridOptions"
+                        grid-url="'rules/getrules'"
+                        grid-filter-enabled="false"
+                        grid-swipe-line="true">
+            <ui-grid-custom-override-control class="ng-cloak">
+                <div class="card card--gap-row-sm">
+                    <div class="flex middle-xs between-xs fs-xs">
+                        <div class="m-r-md">{{row.entity.Name}}</div>
+                        <div style="{{row.entity.Enabled ? 'color:green;' : 'color:red;white-space:nowrap;'}}">{{row.entity.Enabled ? 'Активно' : 'Не активно'}}</div>
+                    </div>
+                </div>
+            </ui-grid-custom-override-control>
+        </ui-grid-custom>
+    </div>
+</div>

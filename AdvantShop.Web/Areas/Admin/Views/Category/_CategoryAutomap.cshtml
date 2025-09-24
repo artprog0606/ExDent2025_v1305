@@ -1,0 +1,157 @@
+﻿@using AdvantShop.Catalog
+@model AdvantShop.Web.Admin.Models.Catalog.Categories.AdminCategoryModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+<div class="row ng-cloak" in-view="$inview ? category.categoryAutomapShowed = true : null">
+    <div class="col-xs-12 col-md-3 col-lg-3 col-wl-2">
+        <h2 class="category-page__title">@T("Admin.Category.CategoryAutomap.AutomapProductsByCategories")</h2>
+        <div class="category-page__description">
+            @T("Admin.Category.CategoryAutomap.AutomapProductsByCategories.Description")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-wl-10" ng-init="category.getAutomapCategories(@Model.CategoryId)">
+        <div class="ibox">
+            <div class="ibox-content border_none" bs-modifiable="false">
+                <div>
+                    <div class="category-row adv-radio-group @(!isMobile ? "adv-radio-group--horizontal" : "grid g-sm")">
+                        <label class="adv-radio-label g-col-12">
+                            <input class="adv-radio-input" ng-value="8" name="AutomapAction" ng-model="category.automapAction" type="radio" value="@ECategoryAutomapAction.DoNothing.ConvertIntString()"
+                                   ng-change="category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.DoNothing.ConvertIntString(), {{category.automapAction}})">
+                            <span class="adv-radio-label-text">@ECategoryAutomapAction.None.Localize()</span>
+                            <span class="adv-radio-emul" data-e2e="categoryDoNothingOnAutomap"></span>
+                        </label>
+                        <label class="adv-radio-label g-col-12" ng-if="category.mainAutomapCategory != @Model.CategoryId">
+                            <input class="adv-radio-input" ng-value="1" name="AutomapAction" ng-model="category.automapAction" type="radio" value="@ECategoryAutomapAction.Copy.ConvertIntString()"
+                                   ng-change="category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.Copy.ConvertIntString())">
+                            <span class="adv-radio-label-text">@ECategoryAutomapAction.Copy.Localize()</span>
+                            <span class="adv-radio-emul" data-e2e="categoryCopyProductsOnAutomap"></span>
+                        </label>
+                        <label class="adv-radio-label g-col-12" ng-if="category.mainAutomapCategory == @Model.CategoryId">
+                            <input class="adv-radio-input" ng-value="4" name="AutomapAction" ng-model="category.automapAction" type="radio" value="@ECategoryAutomapAction.CopyAndSetMain.ConvertIntString()"
+                                   ng-change="category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.CopyAndSetMain.ConvertIntString())">
+                            <span class="adv-radio-label-text">@ECategoryAutomapAction.Copy.Localize()</span>
+                            <span class="adv-radio-emul" data-e2e="categoryCopyProductsOnAutomap"></span>
+                        </label>
+                        <label class="adv-radio-label g-col-12">
+                            <input class="adv-radio-input" ng-value="2" name="AutomapAction" ng-model="category.automapAction" type="radio" value="@ECategoryAutomapAction.Move.ConvertIntString()"
+                                   ng-change="category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.Move.ConvertIntString()); category.mainAutomapCategory == @Model.CategoryId && category.setMainAutomapCategory(@Model.CategoryId, null, null)">
+                            <span class="adv-radio-label-text">@ECategoryAutomapAction.Move.Localize()</span>
+                            <span class="adv-radio-emul" data-e2e="categoryMoveProductsOnAutomap"></span>
+                        </label>
+                    </div>
+                    <div class="category-row" ng-if="category.categoryAutomapShowed" is-mobile>
+                        <div class="flex-grow flex-basis-n flex-width-n ng-cloak" style="@(isMobile ? "padding:0;" : "")" ng-if="category.automapCategories.length > 0" ng-switch="isMobile.value === true">
+                            <div ng-switch-when="false">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="flex payment-row middle-xs between-xs">
+                                            <div class="flex middle-xs col-xs">
+                                                @T("Admin.Category.CategoryAutomap.Category")
+                                            </div>
+                                            <div class="flex middle-xs col-xs-slim m-r-xl">
+                                                @T("Admin.Category.CategoryAutomap.SetMain")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-repeat="item in category.automapCategories track by $index" ng-cloak>
+                                    <div class="col-xs-12">
+                                        <div class="flex payment-row middle-xs between-xs">
+                                            <div class="flex middle-xs col-xs">
+                                                <a href="catalog?categoryid={{item.CategoryId}}" title="{{item.Path}}">{{item.Name}}</a>
+                                            </div>
+                                            <div class="flex middle-xs col-xs-slim p-n">
+                                                <label class="adv-radio-label">
+                                                    <input class="adv-radio-input" name="AutomapMainCategory" ng-model="category.mainAutomapCategory" type="radio" ng-value="item.CategoryId"
+                                                           ng-change="{{category.mainAutomapCategory || -1}} == @Model.CategoryId &&
+                                                            category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.Copy.ConvertIntString(),
+                                                                category.automapAction == @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.DoNothing.ConvertIntString() : 0,
+                                                                category.automapAction != @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.Copy.ConvertIntString() : @ECategoryAutomapAction.DoNothing.ConvertIntString(), true);
+                                                                category.setMainAutomapCategory(@Model.CategoryId, item.CategoryId);">
+                                                    <span class="adv-radio-emul"></span>
+                                                </label>
+                                            </div>
+                                            <div class="flex middle-xs col-fixed-size-ls">
+                                                <a href="" class="fa fa-times link-invert link-decoration-none" ng-click="category.deleteAutomapCategory(@Model.CategoryId, item.CategoryId)"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-switch-when="true" class="flex between-xs middle-xs m-b-xs">
+                                <div class="form-label">Категория</div>
+                                <div class="form-label">Назначить основной</div>
+                            </div>
+                            <div ng-switch-when="true" class="grid g-xs">
+                                <div class="swipe-line g-col-12" ng-repeat="item in category.automapCategories track by $index" ng-cloak>
+                                    <div class="swipe-line__inner" data-swipe-line>
+                                        <div class="swipe-line__content">
+                                            <div class="card card--gap-row-sm">
+                                                <div class="flex stretch-xs">
+                                                    <a href="catalog?categoryid={{item.CategoryId}}" class="flex-grow" title="{{item.Path}}">{{item.Name}}</a>
+                                                    <label class="adv-radio-label m-r-sm">
+                                                        <input class="adv-radio-input" name="AutomapMainCategory" ng-model="category.mainAutomapCategory" type="radio" ng-value="item.CategoryId"
+                                                               ng-change="{{category.mainAutomapCategory || -1}} == @Model.CategoryId &&
+                                                                category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.Copy.ConvertIntString(),
+                                                                    category.automapAction == @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.DoNothing.ConvertIntString() : 0,
+                                                                    category.automapAction != @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.Copy.ConvertIntString() : @ECategoryAutomapAction.DoNothing.ConvertIntString(), true);
+                                                                    category.setMainAutomapCategory(@Model.CategoryId, item.CategoryId);">
+                                                        <span class="adv-radio-emul adv-radio-emul--bordered"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-swipe-line-right class="swipe-line__right">
+                                            <button type="button" class="btn btn-danger" ng-click="category.deleteAutomapCategory(@Model.CategoryId, item.CategoryId)">Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="flex-grow flex-basis-n flex-width-n m-t-sm">
+                                <label class="adv-radio-label">
+                                    <input class="adv-radio-input" name="AutomapMainCategory" ng-model="category.mainAutomapCategory" type="radio"
+                                           ng-value="null" ng-change="
+                                               {{category.mainAutomapCategory || -1}} == @Model.CategoryId && category.setCategoryAutomapAction(@Model.CategoryId,
+                                                    @ECategoryAutomapAction.Copy.ConvertIntString(),
+                                                    category.automapAction == @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.DoNothing.ConvertIntString() : 0,
+                                                    category.automapAction != @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.Copy.ConvertIntString() : @ECategoryAutomapAction.DoNothing.ConvertIntString(), true);
+                                               category.setMainAutomapCategory(@Model.CategoryId)">
+                                    <span class="adv-radio-label-text">@T("Admin.Category.CategoryAutomap.DontChangeMainCategory")</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                            <div class="flex-grow flex-basis-n flex-width-n m-t-sm" ng-show="category.automapAction != @ECategoryAutomapAction.Move.ConvertIntString()">
+                                <label class="adv-radio-label">
+                                    <input class="adv-radio-input" name="AutomapMainCategory" ng-model="category.mainAutomapCategory" type="radio" ng-value="@Model.CategoryId"
+                                           ng-change="category.setCategoryAutomapAction(@Model.CategoryId, @ECategoryAutomapAction.CopyAndSetMain.ConvertIntString(),
+                                                   category.automapAction == @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.DoNothing.ConvertIntString() : 0,
+                                                   category.automapAction != @ECategoryAutomapAction.DoNothing.ConvertIntString() ? @ECategoryAutomapAction.CopyAndSetMain.ConvertIntString() : @ECategoryAutomapAction.DoNothing.ConvertIntString(), true);
+                                               category.setMainAutomapCategory(@Model.CategoryId);">
+                                    <span class="adv-radio-label-text">@ECategoryAutomapAction.CopyAndSetMain.Localize()</span>
+                                    <span class="adv-radio-emul"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex-grow  m-t-sm @(isMobile ? "" : "flex-basis-n flex-width-n")">
+                            <ui-modal-trigger data-controller="'ModalSelectCategoriesCtrl'" controller-as="ctrl"
+                                              template-url="@Html.GetAssetPath("selectCategories.html")"
+                                              data-resolve="{'params': {'selectedIds': category.automapCategoriesIds}}"
+                                              data-on-close="category.addAutomapCategories(@Model.CategoryId, result.categoryIds)">
+                                <a href="">@T("Admin.Category.CategoryAutomap.AddCategories")</a>
+                            </ui-modal-trigger>
+                            <a href="" class="m-l" ng-click="category.deleteAutomapCategories(@Model.CategoryId)" ng-if="category.automapCategories.length > 0">
+                                @T("Admin.Category.CategoryAutomap.ClearCategories")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

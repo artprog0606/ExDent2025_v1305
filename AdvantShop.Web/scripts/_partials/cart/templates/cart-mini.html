@@ -1,0 +1,156 @@
+<div>
+    <div
+        class="cart-mini-block js-cart-mini-block"
+        data-ng-if="cartMiniList.isVisibleCart === true || cartMiniList.isMobile === true"
+        data-ng-class="{'cart-mini-fixed': cartMiniList.isCartMiniFixed}"
+        data-ng-style="{'left': cartMiniList.isCartMiniFixed === true ? cartMiniList.staticPosition.left : 'auto', 'width': cartMiniList.isCartMiniFixed === true ? cartMiniList.staticPosition.width : 'auto'}">
+        <div data-ng-if="cartMiniList.cartData.CartProducts != null && cartMiniList.cartData.CartProducts.length > 0">
+            <div class="cart-mini-scrollbar-block" data-window-click="!cartMiniList.isMobile ? cartMiniList.clickOut(event) : null">
+                <div class="cart-mini-scrollbar">
+                    <ul class="cart-mini-list" data-window-scroll="!cartMiniList.isMobile ? cartMiniList.windowScroll(event) : null">
+                        <li class="cart-mini-item cs-br-1" data-ng-repeat="item in cartMiniList.cartData.CartProducts track by $index">
+                            <a
+                                href="javascript:void(0)"
+                                ng-if="!item.IsGift && cartMiniList.isShowRemove"
+                                data-ng-click="cartMiniList.remove(item.ShoppingCartItemId)"
+                                class="link-text-decoration-none cart-mini-remove cs-l-3"
+                                title="{{ ::'Js.Cart.HaveNoCartCard' | translate }}">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    viewBox="0 0 486.4 486.4">
+                                    <path
+                                        fill="currentColor"
+                                        d="M446,70H344.8V53.5c0-29.5-24-53.5-53.5-53.5h-96.2c-29.5,0-53.5,24-53.5,53.5V70H40.4c-7.5,0-13.5,6-13.5,13.5
+			                        S32.9,97,40.4,97h24.4v317.2c0,39.8,32.4,72.2,72.2,72.2h212.4c39.8,0,72.2-32.4,72.2-72.2V97H446c7.5,0,13.5-6,13.5-13.5
+			                        S453.5,70,446,70z M168.6,53.5c0-14.6,11.9-26.5,26.5-26.5h96.2c14.6,0,26.5,11.9,26.5,26.5V70H168.6V53.5z M394.6,414.2
+			                        c0,24.9-20.3,45.2-45.2,45.2H137c-24.9,0-45.2-20.3-45.2-45.2V97h302.9v317.2H394.6z"></path>
+                                    <path
+                                        fill="currentColor"
+                                        d="M243.2,411c7.5,0,13.5-6,13.5-13.5V158.9c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v238.5
+			                        C229.7,404.9,235.7,411,243.2,411z"></path>
+                                    <path
+                                        fill="currentColor"
+                                        d="M155.1,396.1c7.5,0,13.5-6,13.5-13.5V173.7c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v208.9
+			                        C141.6,390.1,147.7,396.1,155.1,396.1z"></path>
+                                    <path
+                                        fill="currentColor"
+                                        d="M331.3,396.1c7.5,0,13.5-6,13.5-13.5V173.7c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v208.9
+			                        C317.8,390.1,323.8,396.1,331.3,396.1z"></path>
+                                </svg>
+                            </a>
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <figure class="cart-mini-photo">
+                                        <a class="cart-mini-photo-link" href="{{item.Link}}"
+                                            ><img data-ng-src="{{item.PhotoPath}}" alt="{{item.PhotoAlt}}"
+                                        /></a>
+                                    </figure>
+                                </div>
+                                <div class="col-xs-9">
+                                    <div class="cart-mini-info">
+                                        <div class="cart-mini-name">
+                                            <a href="{{item.Link}}" class="cart-mini-name-link" data-ng-bind="item.Name"></a>
+                                        </div>
+                                        <div class="cart-mini-properties-item" data-ng-if="item.SizeName">
+                                            <span
+                                                class="cart-mini-properties-name cs-t-3"
+                                                data-ng-bind="(cartMiniList.cartData.SizeHeader + ':')"></span>
+                                            <span class="cart-mini-properties-value" data-ng-bind="item.SizeName"></span>
+                                        </div>
+                                        <div class="cart-mini-properties-item" data-ng-if="item.ColorName">
+                                            <span
+                                                class="cart-mini-properties-name cs-t-3"
+                                                data-ng-bind="(cartMiniList.cartData.ColorHeader + ':')"></span>
+                                            <span class="cart-mini-properties-value" data-ng-bind="item.ColorName"></span>
+                                        </div>
+                                        <div class="cart-mini-count">
+                                            <span class="cart-mini-count-text cs-t-3">{{ 'Js.Cart.Amount' | translate }}:</span>
+                                            <span class="cart-mini-count-value" data-ng-bind="item.Amount"></span>
+                                        </div>
+                                        <div class="cart-mini-amount-error-wrap">
+                                            <div class="cart-mini-amount-error" data-ng-bind="item.Avalible"></div>
+                                        </div>
+                                        <div class="cart-mini-amount-error-wrap">
+                                            <div class="cart-mini-amount-error" data-ng-if="item.Avalible == '' && item.AvailableAmount == 0">
+                                                {{ ::'Js.Cart.PreOrder' | translate }}
+                                            </div>
+                                        </div>
+                                        <div class="cart-mini-price">
+                                            <span class="cart-mini-price-text cs-t-3">{{ 'Js.Cart.Price' | translate }}:</span>
+                                            <span class="cart-mini-price-value" data-ng-bind="item.PriceWithDiscount"></span
+                                            ><span data-ng-if="cartMiniList.cartData.IsShowUnits && item.Unit" data-ng-bind="'/' + item.Unit"></span>
+                                        </div>
+                                        <div
+                                            class="cart-mini-custom-option"
+                                            data-ng-if="item.SelectedOptions.length > 0"
+                                            data-ng-repeat="option in item.SelectedOptions track by $index">
+                                            <span
+                                                data-ng-if="option.OptionTitle || option.OptionText || option.FormatPrice || option.OptionAmount > 1"
+                                                class="cs-t-3"
+                                                data-ng-bind="(option.CustomOptionTitle + ':&nbsp;')"></span>
+                                            <span>
+                                                <span
+                                                    data-ng-if="!option.OptionTitle && !option.OptionText && !option.FormatPrice && !(option.OptionAmount > 1)">
+                                                    {{option.CustomOptionTitle + option.OptionTitle}}
+                                                </span>
+                                                <span data-ng-bind="option.OptionTitle"></span>
+                                                <span data-ng-bind="option.OptionText"></span>
+                                                <span data-ng-bind="option.FormatPrice"></span>
+                                                <span
+                                                    data-ng-if="option.OptionAmount != null && option.OptionAmount > 1"
+                                                    data-ng-bind="'x ' + option.OptionAmount"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="cart-mini-result-block cs-br-1">
+                <div
+                    class="cart-mini-result-row"
+                    data-ng-if="cartMiniList.cartData.TotalProductPrice != null"
+                    data-ng-show="cartMiniList.cartData.TotalPrice != cartMiniList.cartData.TotalProductPrice">
+                    <span class="cart-mini-result-name">{{ ::'Js.Cart.Sum' | translate }}:</span>
+                    <span class="cart-mini-result-value cart-mini-result-sum" data-ng-bind="cartMiniList.cartData.TotalProductPrice"></span>
+                </div>
+                <div
+                    class="cart-mini-result-row"
+                    data-ng-if="cartMiniList.cartData.DiscountPrice != null"
+                    data-ng-show="cartMiniList.cartData.DiscountPrice != null">
+                    <span class="cart-mini-result-name">{{ ::'Js.Cart.Discount' | translate }}:</span>
+                    <span class="cart-mini-result-value cart-mini-result-discount-price" data-ng-bind="cartMiniList.cartData.DiscountPrice"></span>
+                </div>
+                <div class="cart-mini-result-row" data-ng-if="cartMiniList.cartData.Certificate != null">
+                    <span class="cart-mini-result-name">{{ ::'Js.Cart.Certificate' | translate }}:</span>
+                    <span class="cart-mini-result-value cart-mini-result-certificate" data-ng-bind="cartMiniList.cartData.Certificate"></span>
+                </div>
+                <div class="cart-mini-result-row" data-ng-if="cartMiniList.cartData.Coupon != null">
+                    <span class="cart-mini-result-name">{{ ::'Js.Cart.Coupon' | translate }}:</span>
+                    <span class="cart-mini-result-value cart-mini-result-coupon" data-ng-bind="cartMiniList.cartData.Coupon.Price"></span>
+                </div>
+                <div class="cart-mini-result-row" data-ng-if="cartMiniList.cartData.TotalPrice != null">
+                    <span class="cart-mini-result-name">{{ ::'Js.Cart.Total' | translate }}:</span>
+                    <span class="cart-mini-result-value cart-mini-result-total-price" data-ng-bind="cartMiniList.cartData.TotalPrice"></span>
+                </div>
+                <div class="cart-mini-buttons">
+                    <a data-ng-if="::cartMiniList.cartData.ShowConfirmButtons" href="cart" class="btn btn-buy btn-xsmall cart-mini-btn-cart">
+                        {{ ::'Js.Cart.Cart' | translate }}
+                    </a>
+                    <a href="checkout" class="btn btn-action btn-xsmall cart-mini-btn-checkout"> {{ ::'Js.Cart.Checkout' | translate }} </a>
+                </div>
+            </div>
+        </div>
+        <div
+            class="cart-mini-empty"
+            data-ng-if="cartMiniList.isVisibleCart === true && (cartMiniList.cartData.CartProducts == null || cartMiniList.cartData.CartProducts.length === 0)">
+            {{ ::'Js.Cart.EmptyCart' | translate }}
+        </div>
+    </div>
+</div>

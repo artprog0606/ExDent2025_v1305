@@ -1,0 +1,58 @@
+﻿@using AdvantShop.Core.Services.Auth
+@model AdvantShop.ViewModel.User.LoginViewModel
+@{
+    Html.AddAsset("login");
+}
+<div class="site-body-cell login">
+    <div class="col-p-v-desktop">
+        <div class="login__title-breadcrumbs-wrap">
+            <div class="page-title login__title">
+                <h1 class="main-login-title main-title main-title--m-t-n cs-bg-4--mobile">
+                    @T("User.Login.Authorization")
+                </h1>
+            </div>
+            @Html.SingleBreadCrumb(T("User.Login.Authorization").ToString())
+        </div>
+        <div class="mobile-container-fluid">
+            <div class="row">
+                <div class="col-xs-12 col-sm-10">
+                    <div class="row">
+                        <div class="col-sm-5 col-xs-12">
+                            <div class="login-block login-block-auth">
+                                <div class="login-title">
+                                    @T("User.Login.HaveAccount")
+                                </div>
+                                @switch (Model.AuthMethod)
+                                {
+                                    case EAuthMethod.Email:
+                                        @Html.Action("Authorization")
+                                        break;
+                                    case EAuthMethod.Code:
+                                        @Html.Action("CodeAuthorization");
+                                        break;
+                                }
+                                @Html.Action("LoginOpenId", "User", new { pagetoredirect = "/login" })
+                            </div>
+                        </div>
+                        @if (!SettingsMain.RegistrationIsProhibited)
+                        {
+                            <div class="col-sm-6 col-xs-12 col-sm-offset-1">
+                                <div class="login-block login-block-registration cs-bg-3">
+                                    <div class="login-title">
+                                        @T("User.Login.NewBuyer")
+                                    </div>
+                                    <div class="login-block-registration-text">
+                                        @Html.StaticBlock("loginRegBlock")
+                                    </div>
+                                    <div>
+                                        <a href="@Url.RouteUrl("Registration")" class="btn btn-middle btn-confirm">@T("User.Login.Registration")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

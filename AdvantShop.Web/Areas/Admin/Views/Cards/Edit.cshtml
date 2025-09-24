@@ -1,0 +1,231 @@
+﻿@using AdvantShop.Core.Services.Admin
+@model AdvantShop.Web.Admin.Models.Bonuses.Cards.CardModel
+
+@{
+    var isMobile = SettingsDesign.IsMobileTemplate;
+
+    if (AdminAreaTemplate.IsAdminv3() && !isMobile)
+    {
+        Layout = "~/Areas/Admin/Templates/" + AdminAreaTemplate.Current + "/Views/BonusSystem/_BonusSystemLayout.cshtml";
+    }
+
+    Html.AddAsset("cards");
+
+    var headerModel = new AdvantShop.Web.Admin.ViewModels.Shared.Common.HeaderViewModel();
+    headerModel.Title = "<span class=\"float-header-page\">" + (Model.IsEditMode ? Html.Raw(Model.Name) : T("Admin.Cards.Edit.NewCard")) + "</span>";
+    headerModel.ShowOnlySticky = true;
+    headerModel.EnabledBack = true;
+    headerModel.Back = new AdvantShop.Web.Admin.ViewModels.Shared.Common.BackViewModel()
+    {
+        Url = Url.AbsoluteActionUrl("Index", "Cards")
+    };
+
+    var moreButton = new MoreButtonModel();
+    moreButton.ColorType = eColorType.Secondary;
+    moreButton.NgTemplateId = "moreButtonHeaderTemplate";
+    moreButton.Items = new List<MoreButtonPopoverItem>();
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalAddBonusCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("addBonus.html") + "\" resolve=\"{params:{cardId:'" + Model.CardId + "'}}\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Начислить бонусы")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Link,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        WrapStart = "<ui-modal-trigger data-controller=\"'ModalSubtractBonusCtrl'\" controller-as=\"ctrl\" template-url=\"" + Html.GetAssetPath("subtractBonus.html") + "\" resolve=\"{params:{cardId:'" + Model.CardId + "'}}\">",
+        WrapEnd = "</ui-modal-trigger>",
+        Text = T("Списать бонусы")
+    });
+
+    moreButton.Items.Add(new MoreButtonPopoverItem()
+    {
+        Type = eButtonType.Link,
+        ColorType = eColorType.Danger,
+        Modificators = new List<eButtonModificators>()
+        {
+            eButtonModificators.HorizontalPaddingZero
+        },
+        Attributes = new[] { "ng-if=\"" + Model.IsEditMode.ToString().ToLower() + "\"", "ng-click=\"cards.deleteCard('" + Model.CardId + "')\"" },
+        Text = T("Удалить")
+    });
+
+}
+
+@if (!isMobile) {
+    @section BlockAdditional {
+        @Html.Partial("~/Areas/Admin/Templates/AdminV3/Views/BonusSystem/_AnalyticsLink.cshtml")
+    }
+}
+
+<form method="POST" action="@(Model.IsEditMode ? Url.AbsoluteActionUrl("Edit") : Url.AbsoluteActionUrl("Add"))" enctype="multipart/form-data" novalidate="novalidate" name="form">
+    @Html.AntiForgeryToken()
+
+    <div ng-init="cards.initCard('@Model.CardId', @Model.IsEditMode.ToLowerString(), @Model.CardNumber)">
+        <input name="IsEditMode" type="hidden" value="{{cards.isEditMode}}"/>
+        <input name="CardId" type="hidden" value="{{cards.customerId}}"/>
+        <input name="CardNumber" type="hidden" value="{{cards.cardNumber}}"/>
+    </div>
+
+    @{
+        headerModel.Controls.Add(
+            new ButtonModel()
+            {
+                Modificators = new List<eButtonModificators>()
+                {
+                    eButtonModificators.OnlyIcon
+                },
+                ColorType = eColorType.Secondary,
+                Type = eButtonType.Save,
+                Attributes = new[] { "type=\"submit\" data-button-validation disabled ng-disabled=\"!form.modified\"" },
+                Icon = new ButtonIcon()
+                {
+                    SvgName = "done",
+                    Attributes = new { width = 25, height = 25 }
+                }
+            }
+            );
+
+        headerModel.Controls.Add(moreButton);
+
+        @Html.Header(headerModel)
+    }
+
+    @if (!isMobile)
+    {
+        <div class="sticky-page-name" sticky sticky-top="0">
+            <div class="page-name-block sticky-page-name-inner">
+                <div class="page-name-block-item-main">
+                    <div class="flex">
+                        <div class="m-r-sm">
+                            <h2 class="page-name-block-text sticky-page-name-text">
+                                @if (Model.IsEditMode)
+                                {
+                                    <span>@T("Admin.Cards.Edit.Card")</span>
+                                    <strong>@Html.Raw(Model.Name)</strong>
+                                }
+                                else
+                                {
+                                    <strong>@T("Admin.Cards.Edit.NewCard")</strong>
+                                }
+                            </h2>
+                            <ul class="breadcrumb">
+                                <li>
+                                    <a class="link-invert" href="@Url.AbsoluteActionUrl("Index")">@T("Admin.Cards.Edit.AllCards")</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="inline order-header-item">
+                            <switcher-state checked="@(Model.Blocked ? "true" : "false")" text-off="@T("Admin.Cards.Edit.Blocked")" invert="true" text-on="@T("Admin.Cards.Edit.UnBlocked")" name="Blocked"></switcher-state>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-name-block-item-additional">
+                    <div class="flex middle-xs">
+                        <a href="" class="link-danger m-r-xs" ng-if="@Model.IsEditMode.ToString().ToLower()" ng-click="cards.deleteCard('@Model.CardId')">@T("Admin.Cards.Edit.Delete")</a>
+
+                        <div class="dropdown m-r-sm">
+                            <button data-e2e="AdditionalBonus" class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T("Admin.Cards.Edit.AdditionBonuses")
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <li>
+                                    <ui-modal-trigger data-controller="'ModalAddBonusCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                                                      template-url="@Html.GetAssetPath("addBonus.html")"
+                                                      resolve="{params:{cardId:'@Model.CardId'}}">
+                                        <a data-e2e="AdditionalBonusAdd" href="">@T("Admin.Cards.Edit.Accrue")</a>
+                                    </ui-modal-trigger>
+                                </li>
+                                <li>
+                                    <ui-modal-trigger data-controller="'ModalSubtractBonusCtrl'" controller-as="ctrl" size="md" backdrop="static"
+                                                      template-url="@Html.GetAssetPath("subtractBonus.html")"
+                                                      resolve="{params:{cardId:'@Model.CardId'}}">
+                                        <a data-e2e="AdditionalBonusSub" href="">@T("Admin.Cards.Edit.WriteOff")</a>
+                                    </ui-modal-trigger>
+                                </li>
+                            </ul>
+                        </div>
+                        <button data-e2e="SaveCard" type="submit" class="btn btn-sm btn-success" data-button-validation disabled ng-disabled="!form.modified">
+                            <i class="fa fa-check"></i>
+                            @T("Admin.Save")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="ibox">
+                        <div class="ibox-content category-content border_none" style="@(isMobile ? "" : "min-height:270px;")">
+                            @Html.Partial("_CardCommon")
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="ibox">
+                        <div class="ibox-content category-content border_none" style="@(isMobile ? "" : "min-height:270px;")">
+                            @{
+                                Html.RenderAction("_UserInfo", new { cardId = Model.CardId });
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs">
+            <div class="ibox category-block">
+                <div class="ibox-content category-content border_none">
+                    @{
+                        Html.RenderAction("_Bonuses", new { cardId = Model.CardId });
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs">
+            <div class="ibox category-block">
+                <div class="ibox-content category-content border_none">
+                    @{
+                        Html.RenderAction("_LastPurchase", new { cardId = Model.CardId });
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs">
+            <div class="ibox category-block">
+                <div class="ibox-content category-content border_none">
+                    @{
+                        Html.RenderAction("_LastTransaction", new { cardId = Model.CardId });
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

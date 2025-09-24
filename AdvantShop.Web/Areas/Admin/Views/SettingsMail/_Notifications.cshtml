@@ -1,0 +1,172 @@
+﻿@model AdvantShop.Web.Admin.Models.Settings.SettingsMail.MailSettingsModel
+@{
+    var bookingActive = SettingsMain.BookingActive;
+    var callsActive = !AdvantShop.Saas.SaasDataService.IsSaasEnabled || AdvantShop.Saas.SaasDataService.CurrentSaasData.HaveTelephony;
+    var isMobile = SettingsDesign.IsMobileTemplate;
+}
+
+
+<div class="setting-title setting-title__m-t-md flex middle-xs m-t-none">
+    @if (!isMobile)
+    {
+        <h3>@T("Admin.Settings.NotifyEMails.Notifications")</h3>
+    }
+    <div class="@(isMobile ? "m-b-md" : "p-l-sm")">
+        <a href="https://www.advantshop.net/help/pages/notification-settings " target="_blank" class="link-academy link-invert inline-flex middle-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="18" height="18" fill="#989a9b" class="m-r-xs">
+            <path d="M20.005,512c-5.097,0-10.116-1.948-13.925-5.641c-5.845-5.666-7.672-14.309-4.621-21.855l45.411-112.333  C16.162,332.253,0,285.425,0,236c0-63.375,26.855-122.857,75.62-167.489C123.891,24.331,187.952,0,256,0  s132.109,24.331,180.38,68.511C485.145,113.143,512,172.625,512,236c0,45.448-14.04,89.577-40.602,127.615  c-6.325,9.057-18.792,11.271-27.849,4.947s-11.271-18.792-4.947-27.849C460.452,309.425,472,273.215,472,236  c0-108.075-96.897-196-216-196S40,127.925,40,236c0,43.783,15.577,85.2,45.046,119.773c4.834,5.671,6.115,13.561,3.321,20.47  l-31.366,77.589l91.345-40.266c5.063-2.231,10.826-2.267,15.916-0.095C193.082,425.766,223.946,432,256,432  c36.892,0,73.299-8.587,105.286-24.832c9.85-5,21.887-1.072,26.889,8.775c5.001,9.849,1.073,21.887-8.775,26.889  C341.828,461.914,299.157,472,256,472c-34.48,0-67.835-6.191-99.276-18.413L28.068,510.301C25.474,511.444,22.728,512,20.005,512z   M276,325V217c0-11.046-8.954-20-20-20s-20,8.954-20,20v108c0,11.046,8.954,20,20,20S276,336.046,276,325z M256,128  c-11.046,0-20,8.954-20,20l0,0c0,11.046,8.954,20,20,20s20-8.954,20-20l0,0C276,136.954,267.046,128,256,128z"></path>
+            </svg>
+            <span>@T("Admin.Settings.NotifyEMails.Notifications.InstructionsNotifications")</span>
+        </a>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForOrders")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForOrders, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForOrders" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForOrders")">
+            @T("Admin.Settings.NotifyEMails.EmailForOrdersHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 0" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForOrders', emailTo: mailSettings.notifyemails.notifications.EmailForOrders}, 0)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForLeads")
+        </div>
+
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForLeads, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForLeads" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForLeads")">
+            @T("Admin.Settings.NotifyEMails.EmailForLeadsHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 1" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForLeads', emailTo: mailSettings.notifyemails.notifications.EmailForLeads}, 1)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-show="@bookingActive.ToString().ToLower()">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForBookings")
+        </div>
+
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForBookings, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForBookings" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForBookings")">
+            @T("Admin.Settings.NotifyEMails.EmailForBookingsHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 2" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForBookings', emailTo: mailSettings.notifyemails.notifications.EmailForBookings}, 2)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForProductDiscuss")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForProductDiscuss, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForProductDiscuss" })
+        <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForProductDiscuss")">
+            @T("Admin.Settings.NotifyEMails.EmailForProductDiscussHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 3" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForProductDiscuss', emailTo: mailSettings.notifyemails.notifications.EmailForProductDiscuss}, 3)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForRegReport")
+
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForRegReport, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForRegReport" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForRegReport")">
+            @T("Admin.Settings.NotifyEMails.EmailForRegReportHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 4" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForRegReport', emailTo: mailSettings.notifyemails.notifications.EmailForRegReport}, 4)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForFeedback")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForFeedback, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForFeedback" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForFeedback")">
+            @T("Admin.Settings.NotifyEMails.EmailForFeedbackHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 5" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForFeedback', emailTo: mailSettings.notifyemails.notifications.EmailForFeedback}, 5)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group">
+    <div class="col-xs-12 col-md-3 flex middle-xs">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForPartners")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForPartners, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForPartners" })
+        <help-trigger class="ng-cloak m-l-xs @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForPartners")">
+            @T("Admin.Settings.NotifyEMails.EmailForPartnersHint")
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 6" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForPartners', emailTo: mailSettings.notifyemails.notifications.EmailForPartners}, 6)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs setting__form-group" ng-show="@callsActive.ToString().ToLower()">
+    <div class="col-xs-12 col-md-3">
+        <div class="setting-label-wrap setting__label">
+            @T("Admin.Settings.NotifyEMails.EmailForMissedCall")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 flex middle-xs">
+        @Html.TextBoxFor(x => x.EmailForMissedCall, new { @class = "form-control input-small input-alt", ng_model = "mailSettings.notifyemails.notifications.EmailForMissedCall" })
+        <help-trigger class="ng-cloak m-l-xs  @(isMobile ? "m-l-sm p-l-xs" : "")" data-title="@T("Admin.Settings.NotifyEMails.EmailForPartners")" style="pointer-events:none;opacity:0;">
+
+        </help-trigger>
+    </div>
+    <div class="col-xs-12 col-md @(isMobile ? "m-t-sm" : "")">
+        <button type="button" class="btn btn-sm btn-success" ladda="mailSettings.sendingProgressMessage === 7" ng-click="mailSettings.sendTestMessageTemplate({nameTemplate:'EmailForMissedCall', emailTo: mailSettings.notifyemails.notifications.EmailForMissedCall}, 7)">Отправка пробного письма</button>
+    </div>
+</div>
+
+<div class="form-group row middle-xs">
+    <div class="col-xs-12 col-md-8">
+        <div class="adv-panel-info setting__mobile-adv-panel-info" style="@(isMobile ? "display:flex;" : "")">
+            <a><span> @T("Admin.SettingsMail.Notifications.2OrMoreRecipients")</span><br />
+            <span>@T("Admin.SettingsMail.EmailSettings.ForExample")email@email.ru; email2@email.ru; email3@email.ru</span>
+        </a>
+        </div>
+    </div>
+</div>
+

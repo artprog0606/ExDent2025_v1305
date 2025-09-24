@@ -1,0 +1,29 @@
+﻿<div ng-controller="NewsCategoryCtrl as newsCategory" data-is-mobile="">
+    <ui-grid-custom grid-unique-id="gridCategories"
+                    grid-row-identificator="'NewsCategoryId'"
+                    grid-options="newsCategory.gridOptions"
+                    grid-on-init="newsCategory.gridOnInit(grid);news.gridOnInit(grid)"
+                    grid-url="'newsCategory/getNewsCategory'"
+                    grid-inplace-url="'newsCategory/inplaceNewsCategory'"
+                    grid-swipe-line="isMobile.value"
+                    grid-extend-ctrl="newsCategory">
+        <ui-grid-custom-override-control class="ng-cloak" ng-if="isMobile.value">
+            <ui-modal-trigger data-controller="'ModalAddEditNewsCategoryCtrl'" class="card" controller-as="ctrl"
+                              template-url="@Html.GetAssetPath("addEditNewsCategpry.html")"
+                              data-resolve="{id: row.entity.NewsCategoryId}"
+                              data-on-close="grid.appScope.$ctrl.fetchData()">
+                
+                @* {"NewsCategoryId":43,"Name":"Общие","SortOrder":0,"CountNews":0,"UrlPath":"common","MetaType":4,"Meta":{"MetaId":0,"ObjId":0,"Type":4,"Title":"#STORE_NAME# - #NEWSCATEGORY_NAME#","MetaKeywords":"#STORE_NAME# - #NEWSCATEGORY_NAME#","MetaDescription":"#STORE_NAME# - #NEWSCATEGORY_NAME#","H1":"#NEWSCATEGORY_NAME#","IsDefaultMeta":false}} *@
+
+                <div class="card__row card__row--full-width" ng-bind="row.entity.Name">
+                </div>
+                <div class="card__row card__text">
+                    <div class="fs-xs" style="opacity:0.6;">{{'Admin.Js.NewsCategory.URLsynonym'|translate}}</div>
+                    <div class="card__col card__col--end fs-xs" style="opacity:0.6;" ng-bind="row.entity.UrlPath"></div>
+                </div>
+            </ui-modal-trigger>
+        </ui-grid-custom-override-control>
+        <ui-grid-custom-footer class="ui-grid-custom-footer" ng-bind="newsCategory.grid.gridOptions.TotalString">
+        </ui-grid-custom-footer>
+    </ui-grid-custom>
+</div>
